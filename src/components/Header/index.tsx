@@ -1,10 +1,11 @@
 import React from 'react'
 import Image from 'next/image'
-import { Box, Button, Container, Stack, Typography, IconButton, AppBar } from '@mui/material'
+import { Box, Button, Stack, Typography, IconButton, AppBar } from '@mui/material'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import MenuIcon from '@mui/icons-material/Menu'
+import { SectionContainer } from '@/components'
 
 const Navbar = () => {
   return (
@@ -13,20 +14,7 @@ const Navbar = () => {
         borderBottom: 1,
         borderColor: 'grey.200',
       }}>
-      <Container
-        sx={{
-          paddingX: {
-            xs: 2,
-            sm: 2,
-            md: 5,
-            lg: 5,
-            xl: 5,
-          },
-          height: 60,
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-        disableGutters>
+      <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>
         <Box
           sx={{
             display: 'flex',
@@ -48,10 +36,7 @@ const Navbar = () => {
             sx={{
               display: {
                 xs: 'none',
-                sm: 'none',
                 md: 'flex',
-                lg: 'flex',
-                xl: 'flex',
               },
             }}>
             Tous nos voyages et séjours
@@ -70,10 +55,7 @@ const Navbar = () => {
             sx={{
               display: {
                 xs: 'none',
-                sm: 'none',
-                md: 'none',
                 lg: 'flex',
-                xl: 'flex',
               },
             }}>
             <Typography
@@ -96,9 +78,6 @@ const Navbar = () => {
                 display: {
                   xs: 'none',
                   sm: 'flex',
-                  md: 'flex',
-                  lg: 'flex',
-                  xl: 'flex',
                 },
               }}>
               <Button href="/newsletter" color="primary">
@@ -125,9 +104,6 @@ const Navbar = () => {
                 display: {
                   xs: 'flex',
                   sm: 'none',
-                  md: 'none',
-                  lg: 'none',
-                  xl: 'none',
                 },
               }}>
               <IconButton aria-label="account" sx={{ color: 'common.black' }}>
@@ -136,7 +112,7 @@ const Navbar = () => {
             </Stack>
           </Stack>
         </Box>
-      </Container>
+      </SectionContainer>
     </Box>
   )
 }
@@ -149,26 +125,20 @@ const NavbarLinks = () => {
         borderColor: 'grey.200',
         display: {
           xs: 'none',
-          sm: 'none',
           md: 'block',
-          lg: 'block',
-          xl: 'block',
         },
       }}>
-      <Container
+      <SectionContainer
         sx={{
-          paddingX: 5,
           height: 60,
-          display: 'flex',
           alignItems: 'center',
           gap: 0.8,
-        }}
-        disableGutters>
+        }}>
         <Button variant="outlined">Ventes Flash</Button>
         <Button variant="outlined">Dernière minute</Button>
         <Button variant="outlined">Pâques</Button>
         <Button variant="outlined">WE de mai</Button>
-      </Container>
+      </SectionContainer>
     </Box>
   )
 }
@@ -176,10 +146,11 @@ const NavbarLinks = () => {
 export const Header = () => {
   return (
     <>
-      <AppBar position="sticky" sx={{ bgcolor: 'transparent' }}>
+      <AppBar sx={{ bgcolor: 'common.white', boxShadow: 'none' }}>
         <Navbar />
         <NavbarLinks />
       </AppBar>
+      <Box sx={{ height: { xs: 60, md: 120 } }}></Box>
     </>
   )
 }

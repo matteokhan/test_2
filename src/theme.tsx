@@ -4,7 +4,7 @@ import React from 'react'
 import { Roboto } from 'next/font/google'
 import { LinkProps as RouterLinkProps } from 'next/link'
 import Link from 'next/link'
-import { CommonColors, createTheme, PaletteColorOptions } from '@mui/material/styles'
+import { createTheme, PaletteColorOptions } from '@mui/material/styles'
 import { LinkProps } from '@mui/material/Link'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
