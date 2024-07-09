@@ -63,7 +63,7 @@ const Navbar = () => {
               fontWeight={500}
               lineHeight={18}
               letterSpacing={0.25}
-              color="leclercRed.main">
+              color="leclerc.red.main">
               0 825 884 620
             </Typography>
             <Typography fontSize={12} color="grey.700" fontWeight={400} letterSpacing={0.4}>

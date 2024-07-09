@@ -4,27 +4,43 @@ import React from 'react'
 import { Roboto } from 'next/font/google'
 import { LinkProps as RouterLinkProps } from 'next/link'
 import Link from 'next/link'
-import { createTheme, PaletteColorOptions } from '@mui/material/styles'
+import { createTheme, PaletteColorOptions, responsiveFontSizes } from '@mui/material/styles'
 import { LinkProps } from '@mui/material/Link'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+type LeclercPalette = {
+  red: PaletteColorOptions
+  blueLabel: PaletteColorOptions
+  blueNotif: PaletteColorOptions
+}
 declare module '@mui/material/styles' {
   interface Palette {
-    blueLabel: PaletteColorOptions
-    blueNotif: PaletteColorOptions
-    leclercRed: PaletteColorOptions
+    leclerc: LeclercPalette
   }
   interface PaletteOptions {
-    blueLabel: PaletteColorOptions
-    blueNotif: PaletteColorOptions
-    leclercRed: PaletteColorOptions
+    leclerc: LeclercPalette
   }
 }
 declare module '@mui/material/IconButton' {
   interface IconButtonPropsColorOverrides {
-    blueLabel: true
-    blueNotif: true
-    leclercRed: true
+    leclerc: true
+  }
+}
+declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    titleLg: React.CSSProperties
+    titleSm: React.CSSProperties
+  }
+
+  interface TypographyVariantsOptions {
+    titleLg?: React.CSSProperties
+    titleSm?: React.CSSProperties
+  }
+}
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    titleLg: true
+    titleSm: true
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
@@ -40,23 +56,25 @@ const LinkBehavior = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props
 })
 
 const { palette } = createTheme()
-const theme = createTheme({
+let theme = createTheme({
   palette: {
-    blueLabel: palette.augmentColor({
-      color: {
-        main: '#60A0D9',
-      },
-    }),
-    blueNotif: palette.augmentColor({
-      color: {
-        main: '#E4EFF9',
-      },
-    }),
-    leclercRed: palette.augmentColor({
-      color: {
-        main: '#BE003C',
-      },
-    }),
+    leclerc: {
+      red: palette.augmentColor({
+        color: {
+          main: '#BE003C',
+        },
+      }),
+      blueLabel: palette.augmentColor({
+        color: {
+          main: '#60A0D9',
+        },
+      }),
+      blueNotif: palette.augmentColor({
+        color: {
+          main: '#E4EFF9',
+        },
+      }),
+    },
     primary: {
       main: '#0066CC',
       light: '#00A5E1',
@@ -89,12 +107,18 @@ const theme = createTheme({
         root: ({ theme }) => ({
           borderRadius: '100px',
           textTransform: 'none',
-          height: theme.spacing(5),
           textWrap: 'nowrap',
         }),
         outlined: {
           borderColor: palette.grey[400],
         },
+        sizeMedium: ({ theme }) => ({
+          height: theme.spacing(5),
+        }),
+        sizeLarge: ({ theme }) => ({
+          height: theme.spacing(7),
+          padding: theme.spacing(2, 4),
+        }),
       },
       defaultProps: {
         disableElevation: true,
@@ -110,7 +134,127 @@ const theme = createTheme({
         LinkComponent: LinkBehavior,
       },
     },
+    MuiTypography: {
+      defaultProps: {
+        variantMapping: {
+          titleLg: 'h2',
+          titleSm: 'h4',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: '6px',
+        },
+      },
+    },
   },
+})
+
+theme = createTheme(theme, {
+  typography: {
+    titleLg: {
+      fontSize: theme.typography.pxToRem(22),
+      fontWeight: 500,
+      lineHeight: 1.2,
+    },
+    titleSm: {
+      fontSize: theme.typography.pxToRem(14),
+      fontWeight: 500,
+      lineHeight: 1.4,
+    },
+  },
+})
+
+theme = createTheme(theme, {
+  components: {
+    MuiTab: {
+      defaultProps: {
+        disableRipple: true,
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          textWrap: 'nowrap',
+          color: theme.palette.grey[700],
+          fontWeight: 500,
+          fontSize: theme.typography.titleSm.fontSize,
+          lineHeight: theme.typography.titleSm.lineHeight,
+          padding: 0,
+          minWidth: 'min-content',
+          '&.Mui-selected': {
+            color: theme.palette.primary.main,
+          },
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          width: 'fit-content',
+          height: theme.spacing(5),
+          minHeight: theme.spacing(5),
+        },
+        indicator: {
+          height: 3,
+          backgroundColor: theme.palette.primary.main,
+        },
+        flexContainer: {
+          gap: theme.spacing(4),
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiFilledInput-root': {
+            overflow: 'hidden',
+            borderRadius: 4,
+            backgroundColor: 'transparent',
+            border: '1px solid',
+            borderColor: theme.palette.grey[500],
+            transition: theme.transitions.create([
+              'border-color',
+              'background-color',
+              'box-shadow',
+            ]),
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+            '&.Mui-focused': {
+              backgroundColor: 'transparent',
+              // boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+              // borderColor: theme.palette.primary.main,
+            },
+          },
+        },
+      },
+      defaultProps: {
+        InputProps: {
+          disableUnderline: true,
+        },
+      },
+    },
+  },
+})
+
+theme = responsiveFontSizes(theme, {
+  variants: [
+    'titleLg',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'subtitle1',
+    'subtitle2',
+    'body1',
+    'body2',
+    'caption',
+    'overline',
+  ],
 })
 
 export default theme
