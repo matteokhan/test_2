@@ -42,12 +42,10 @@ const searchFlightParamsSchema = Yup.object().shape({
 
 type SearchFlightFormProps = {
   onSubmit: (values: SearchFlightParams, actions: FormikHelpers<SearchFlightParams>) => void
-  loading?: boolean
   multiDestinations?: boolean
 }
 
 export const SearchFlightsForm = ({
-  loading,
   onSubmit,
   multiDestinations = false,
 }: SearchFlightFormProps) => {
@@ -58,7 +56,7 @@ export const SearchFlightsForm = ({
       onSubmit={onSubmit}
       enableReinitialize>
       {({ values }) => (
-        <Form className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center">
+        <Form>
           <Stack direction="row" width="100%" gap={1}>
             <FieldArray name="segments">
               {({ remove, push }) => (
@@ -82,7 +80,6 @@ export const SearchFlightsForm = ({
                             sx={{ flexGrow: 1 }}
                           />
                           <DatePicker name={`segments.${index}.date`} label="Dates" />
-
                           {multiDestinations && (
                             <Stack justifyContent="center">
                               <IconButton
@@ -96,7 +93,6 @@ export const SearchFlightsForm = ({
                         </Stack>
                       </React.Fragment>
                     ))}
-
                   {multiDestinations && (
                     <Stack direction="row" alignItems="center">
                       <IconButton
