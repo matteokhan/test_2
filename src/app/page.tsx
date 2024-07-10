@@ -3,7 +3,7 @@ import { Header, SearchFlightsBanner } from '@/components'
 export default function Home() {
   return (
     <>
-      <Header />
+      <Header withLinks />
       <SearchFlightsBanner />
     </>
   )

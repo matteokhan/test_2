@@ -15,12 +15,7 @@ const Navbar = () => {
         borderColor: 'grey.200',
       }}>
       <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 5,
-          }}>
+        <Stack gap={5} alignItems="center" direction="row">
           <Box
             sx={{
               position: 'relative',
@@ -41,13 +36,8 @@ const Navbar = () => {
             }}>
             Tous nos voyages et séjours
           </Button>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'space-between',
-            gap: 3,
-          }}>
+        </Stack>
+        <Stack alignItems="space-between" direction="row" gap={3}>
           <Stack
             direction="row"
             alignItems="center"
@@ -58,15 +48,10 @@ const Navbar = () => {
                 lg: 'flex',
               },
             }}>
-            <Typography
-              fontSize={14}
-              fontWeight={500}
-              lineHeight={18}
-              letterSpacing={0.25}
-              color="leclerc.red.main">
+            <Typography color="leclerc.red.main" variant="bodyMd" fontWeight={500}>
               0 825 884 620
             </Typography>
-            <Typography fontSize={12} color="grey.700" fontWeight={400} letterSpacing={0.4}>
+            <Typography color="grey.700" variant="bodySm">
               (0,25€ TTC/min)
             </Typography>
           </Stack>
@@ -111,7 +96,7 @@ const Navbar = () => {
               </IconButton>
             </Stack>
           </Stack>
-        </Box>
+        </Stack>
       </SectionContainer>
     </Box>
   )
@@ -143,14 +128,19 @@ const NavbarLinks = () => {
   )
 }
 
-export const Header = () => {
+type HeaderProps = {
+  withLinks?: boolean
+}
+
+export const Header = ({ withLinks = false }: HeaderProps) => {
+  const boxHeight = withLinks ? 120 : 60
   return (
     <>
       <AppBar sx={{ bgcolor: 'common.white', boxShadow: 'none' }}>
         <Navbar />
-        <NavbarLinks />
+        {withLinks && <NavbarLinks />}
       </AppBar>
-      <Box sx={{ height: { xs: 60, md: 120 } }}></Box>
+      <Box sx={{ height: { xs: 60, md: boxHeight } }}></Box>
     </>
   )
 }
