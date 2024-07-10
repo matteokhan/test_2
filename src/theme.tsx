@@ -29,18 +29,33 @@ declare module '@mui/material/IconButton' {
 declare module '@mui/material/styles' {
   interface TypographyVariants {
     titleLg: React.CSSProperties
+    titleMd: React.CSSProperties
     titleSm: React.CSSProperties
+    bodyLg: React.CSSProperties
+    bodyMd: React.CSSProperties
+    bodySm: React.CSSProperties
+    labelMd: React.CSSProperties
   }
 
   interface TypographyVariantsOptions {
     titleLg?: React.CSSProperties
+    titleMd?: React.CSSProperties
     titleSm?: React.CSSProperties
+    bodyLg?: React.CSSProperties
+    bodyMd?: React.CSSProperties
+    bodySm?: React.CSSProperties
+    labelMd?: React.CSSProperties
   }
 }
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     titleLg: true
+    titleMd: true
     titleSm: true
+    bodyLg: true
+    bodyMd: true
+    bodySm: true
+    labelMd: true
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
@@ -82,8 +97,8 @@ let theme = createTheme({
       contrastText: '#FFFFFF',
     },
     common: {
-      black: '#010101',
-      white: '#FAFAFA',
+      black: 'black',
+      white: 'white',
     },
     grey: {
       50: '#FAFAFA',
@@ -104,11 +119,11 @@ let theme = createTheme({
   components: {
     MuiButton: {
       styleOverrides: {
-        root: ({ theme }) => ({
+        root: {
           borderRadius: '100px',
           textTransform: 'none',
           textWrap: 'nowrap',
-        }),
+        },
         outlined: {
           borderColor: palette.grey[400],
         },
@@ -138,7 +153,12 @@ let theme = createTheme({
       defaultProps: {
         variantMapping: {
           titleLg: 'h2',
+          titleMd: 'h3',
           titleSm: 'h4',
+          bodyLg: 'p',
+          bodyMd: 'p',
+          bodySm: 'p',
+          labelMd: 'label',
         },
       },
     },
@@ -148,6 +168,46 @@ let theme = createTheme({
           borderRadius: '6px',
         },
       },
+      defaultProps: {
+        elevation: 0,
+      },
+    },
+    MuiFormGroup: {
+      styleOverrides: {
+        root: {
+          gap: '6px',
+        },
+      },
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          color: palette.grey[500],
+          padding: theme.spacing(0.5),
+        }),
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          color: palette.grey[500],
+          padding: theme.spacing(0.5),
+        }),
+      },
+    },
+    MuiSlider: {
+      styleOverrides: {
+        root: {
+          height: '3px',
+        },
+        rail: {
+          color: palette.grey[400],
+        },
+        thumb: {
+          height: '20px',
+          width: '20px',
+        },
+      },
     },
   },
 })
@@ -155,14 +215,52 @@ let theme = createTheme({
 theme = createTheme(theme, {
   typography: {
     titleLg: {
+      fontFamily: roboto.style.fontFamily,
       fontSize: theme.typography.pxToRem(22),
       fontWeight: 500,
       lineHeight: 1.2,
     },
+    titleMd: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(16),
+      fontWeight: 500,
+      lineHeight: 1.3,
+      letterSpacing: '0.15px',
+    },
     titleSm: {
+      fontFamily: roboto.style.fontFamily,
       fontSize: theme.typography.pxToRem(14),
       fontWeight: 500,
       lineHeight: 1.4,
+      letterSpacing: '0.1px',
+    },
+    bodyLg: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(16),
+      fontWeight: 400,
+      lineHeight: 1.3,
+      letterSpacing: '0.5px',
+    },
+    bodyMd: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(14),
+      fontWeight: 400,
+      lineHeight: 1.3,
+      letterSpacing: '0.25px',
+    },
+    bodySm: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(12),
+      fontWeight: 400,
+      lineHeight: 1.2,
+      letterSpacing: '0.4px',
+    },
+    labelMd: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(12),
+      fontWeight: 500,
+      lineHeight: 1.2,
+      letterSpacing: '0.5px',
     },
   },
 })
@@ -242,6 +340,12 @@ theme = createTheme(theme, {
 theme = responsiveFontSizes(theme, {
   variants: [
     'titleLg',
+    'titleMd',
+    'titleSm',
+    'bodyLg',
+    'bodyMd',
+    'bodySm',
+    'labelMd',
     'h1',
     'h2',
     'h3',
