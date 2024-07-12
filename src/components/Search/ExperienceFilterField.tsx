@@ -1,19 +1,15 @@
 import { ExperienceFilterOption } from '@/types'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
-import { Field } from 'formik'
-
-type ExperienceFilterProps = {
-  field: typeof Field
-}
+import { FieldInputProps, Field } from 'formik'
 
 const options: { value: ExperienceFilterOption; label: string }[] = [
   { value: 'no-night-flight', label: 'Aucun vol de nuit' },
   { value: 'short-scales', label: 'Escales courtes' },
 ]
 
-export const ExperienceFilterField = ({ field, ...props }: ExperienceFilterProps) => {
+const ExperienceFilter = ({ ...props }: FieldInputProps<ExperienceFilterOption>) => {
   return (
-    <RadioGroup {...field} {...props}>
+    <RadioGroup {...props}>
       {options.map((option) => (
         <FormControlLabel
           key={option.value}
@@ -24,4 +20,8 @@ export const ExperienceFilterField = ({ field, ...props }: ExperienceFilterProps
       ))}
     </RadioGroup>
   )
+}
+
+export const ExperienceFilterField = ({ name }: { name: string }) => {
+  return <Field name={name} as={ExperienceFilter} />
 }

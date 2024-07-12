@@ -13,10 +13,8 @@ import {
   Typography,
 } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import WbSunnyIcon from '@mui/icons-material/WbSunny'
-import NightlightRoundIcon from '@mui/icons-material/NightlightRound'
-import WbTwilightIcon from '@mui/icons-material/WbTwilight'
-import { Form, Formik, FormikHelpers, Field } from 'formik'
+
+import { Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import { SearchFlightFilters } from '@/types'
 import {
@@ -25,6 +23,7 @@ import {
   OneNightScaleFilterField,
   MaxPriceFilterField,
   MaxPriceTypeFilterField,
+  FlightTimeFilterField,
 } from '@/components'
 
 const DEFAULT_FILTERS = {
@@ -33,14 +32,16 @@ const DEFAULT_FILTERS = {
   experience: null,
   maxPrice: 450,
   maxPriceType: 'per-person',
+  flightTime: null,
 } as SearchFlightFilters
 
 const filtersSchema = Yup.object().shape({
-  scales: Yup.string().required('Required'),
+  scales: Yup.string(),
   oneNightScale: Yup.boolean(),
-  experience: Yup.string(),
-  maxPrice: Yup.number().required('Required'),
-  maxPriceType: Yup.string().required('Required'),
+  experience: Yup.string().nullable(),
+  maxPrice: Yup.number(),
+  maxPriceType: Yup.string(),
+  flightTime: Yup.string().nullable(),
 })
 
 type SearchFlightsFiltersProps = {
@@ -57,11 +58,6 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
         enableReinitialize>
         {({ values }) => (
           <Form>
-            {/* <p>Scale: {values.scales}</p>
-            <p>One night scale: {values.oneNightScale ? 'yes' : 'no'}</p>
-            <p>Experience: {values.experience}</p>
-            <p>Max price: {values.maxPrice}</p>
-            <p>Max price type: {values.maxPriceType}</p> */}
             <Stack gap={3}>
               <Typography variant="titleLg">Filtrer par </Typography>
               <Box>
@@ -69,9 +65,9 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
                   Escales
                 </Typography>
                 <Box pl={1.5}>
-                  <Field as={ScalesFilterField} name="scales" />
+                  <ScalesFilterField name="scales" />
                   <Box sx={{ paddingTop: 1 }}>
-                    <Field as={OneNightScaleFilterField} name="oneNightScale" />
+                    <OneNightScaleFilterField name="oneNightScale" />
                   </Box>
                 </Box>
               </Box>
@@ -80,7 +76,7 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
                   Expérience de vol
                 </Typography>
                 <Box pl={1.5}>
-                  <Field as={ExperienceFilterField} name="experience" />
+                  <ExperienceFilterField name="experience" />
                 </Box>
               </Box>
               <Box pb={1}>
@@ -88,12 +84,11 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
                   <Typography variant="titleMd">Prix maximum</Typography>
                   <Typography variant="bodyLg">{values.maxPrice}€</Typography>
                 </Stack>
-                <Field as={MaxPriceFilterField} name="maxPrice" />
+                <MaxPriceFilterField name="maxPrice" />
                 <FormControl sx={{ m: 1, minWidth: 120, width: '100%', margin: 0 }}>
-                  <Field as={MaxPriceTypeFilterField} name="maxPriceType" />
+                  <MaxPriceTypeFilterField name="maxPriceType" />
                 </FormControl>
               </Box>
-
               <Box pb={1}>
                 <Typography variant="titleMd" pb={1}>
                   Temps de vol
@@ -106,53 +101,9 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
                   </Stack>
                   <Typography variant="bodySm">Départ de Paris Charles de Gaulle</Typography>
                 </Box>
-                <Stack direction="row" gap={0.5} mt={0.5}>
-                  <Stack
-                    px={2}
-                    py={1}
-                    alignItems="center"
-                    gap={1}
-                    sx={{ bgcolor: '#f2f2f2', borderRadius: '4px', width: '78px' }}>
-                    <WbSunnyIcon />
-                    <Typography variant="labelMd" noWrap>
-                      00h - 6h
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    px={2}
-                    py={1}
-                    alignItems="center"
-                    gap={1}
-                    sx={{ bgcolor: '#f2f2f2', borderRadius: '4px', width: '78px' }}>
-                    <WbSunnyIcon />
-                    <Typography variant="labelMd" noWrap>
-                      6h - 12h
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    px={2}
-                    py={1}
-                    alignItems="center"
-                    gap={1}
-                    sx={{ bgcolor: '#f2f2f2', borderRadius: '4px', width: '78px' }}>
-                    <WbTwilightIcon />
-                    <Typography variant="labelMd" noWrap>
-                      12h - 18h
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    px={2}
-                    py={1}
-                    alignItems="center"
-                    gap={1}
-                    sx={{ bgcolor: '#f2f2f2', borderRadius: '4px', width: '78px' }}>
-                    <NightlightRoundIcon />
-                    <Typography variant="labelMd" noWrap>
-                      18h - 24h
-                    </Typography>
-                  </Stack>
-                </Stack>
+                <FlightTimeFilterField name="flightTime" />
               </Box>
+
               <Box>
                 <Typography variant="titleMd" pb={1}>
                   Compagnies aériennes

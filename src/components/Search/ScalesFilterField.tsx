@@ -1,10 +1,6 @@
 import { ScalesFilterOption } from '@/types'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
-import { Field } from 'formik'
-
-type ScalesFilterProps = {
-  field: typeof Field
-}
+import { Field, FieldInputProps } from 'formik'
 
 const options: { value: ScalesFilterOption; label: string }[] = [
   { value: 'all', label: 'Tous' },
@@ -13,9 +9,9 @@ const options: { value: ScalesFilterOption; label: string }[] = [
   { value: '2-scale', label: "Jusqu'à 2 escales" },
 ]
 
-export const ScalesFilterField = ({ field, ...props }: ScalesFilterProps) => {
+const ScalesFilter = ({ ...props }: FieldInputProps<ScalesFilterOption>) => {
   return (
-    <RadioGroup {...field} {...props}>
+    <RadioGroup {...props}>
       {options.map((option) => (
         <FormControlLabel
           key={option.value}
@@ -26,4 +22,8 @@ export const ScalesFilterField = ({ field, ...props }: ScalesFilterProps) => {
       ))}
     </RadioGroup>
   )
+}
+
+export const ScalesFilterField = ({ name }: { name: string }) => {
+  return <Field name={name} as={ScalesFilter} />
 }

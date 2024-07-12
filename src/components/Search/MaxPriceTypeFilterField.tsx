@@ -1,19 +1,15 @@
 import { MaxPriceTypeFilterOption } from '@/types'
-import { MenuItem, Select, Slider } from '@mui/material'
-import { Field } from 'formik'
-
-type MaxPriceTypeFilterProps = {
-  field: typeof Field
-}
+import { MenuItem, Select } from '@mui/material'
+import { Field, FieldInputProps, useField } from 'formik'
 
 const options: { value: MaxPriceTypeFilterOption; label: string }[] = [
   { value: 'per-person', label: 'Par Personne' },
   { value: 'total', label: 'Prix total' },
 ]
 
-export const MaxPriceTypeFilterField = ({ field, ...props }: MaxPriceTypeFilterProps) => {
+const MaxPriceTypeFilter = ({ ...props }: FieldInputProps<MaxPriceTypeFilterOption>) => {
   return (
-    <Select {...field} {...props}>
+    <Select {...props}>
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>
           {option.label}
@@ -21,4 +17,8 @@ export const MaxPriceTypeFilterField = ({ field, ...props }: MaxPriceTypeFilterP
       ))}
     </Select>
   )
+}
+
+export const MaxPriceTypeFilterField = ({ name }: { name: string }) => {
+  return <Field name={name} as={MaxPriceTypeFilter} />
 }

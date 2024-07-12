@@ -1,17 +1,12 @@
 import { Checkbox, FormControlLabel } from '@mui/material'
-import { Field } from 'formik'
+import { Field, FieldInputProps } from 'formik'
 
-type OneNightScaleFilterProps = {
-  field: typeof Field
+const OneNightScaleFilter = ({ ...props }: FieldInputProps<boolean>) => {
+  return (
+    <FormControlLabel {...props} control={<Checkbox />} label="Autoriser les escales d'une nuit" />
+  )
 }
 
-export const OneNightScaleFilterField = ({ field, ...props }: OneNightScaleFilterProps) => {
-  return (
-    <FormControlLabel
-      {...field}
-      {...props}
-      control={<Checkbox />}
-      label="Autoriser les escales d'une nuit"
-    />
-  )
+export const OneNightScaleFilterField = ({ name }: { name: string }) => {
+  return <Field name={name} as={OneNightScaleFilter} />
 }
