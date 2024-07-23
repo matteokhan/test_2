@@ -4,14 +4,14 @@ import React from 'react'
 import { Roboto } from 'next/font/google'
 import { LinkProps as RouterLinkProps } from 'next/link'
 import Link from 'next/link'
-import { createTheme, PaletteColorOptions, responsiveFontSizes } from '@mui/material/styles'
+import { createTheme, responsiveFontSizes, SimplePaletteColorOptions } from '@mui/material/styles'
 import { LinkProps } from '@mui/material/Link'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 type LeclercPalette = {
-  red: PaletteColorOptions
-  blueLabel: PaletteColorOptions
-  blueNotif: PaletteColorOptions
+  red: SimplePaletteColorOptions
+  blueLabel: SimplePaletteColorOptions
+  blueNotif: SimplePaletteColorOptions
 }
 declare module '@mui/material/styles' {
   interface Palette {
@@ -28,33 +28,39 @@ declare module '@mui/material/IconButton' {
 }
 declare module '@mui/material/styles' {
   interface TypographyVariants {
+    headlineSm: React.CSSProperties
     titleLg: React.CSSProperties
     titleMd: React.CSSProperties
     titleSm: React.CSSProperties
     bodyLg: React.CSSProperties
     bodyMd: React.CSSProperties
     bodySm: React.CSSProperties
+    labelLg: React.CSSProperties
     labelMd: React.CSSProperties
   }
 
   interface TypographyVariantsOptions {
+    headlineSm?: React.CSSProperties
     titleLg?: React.CSSProperties
     titleMd?: React.CSSProperties
     titleSm?: React.CSSProperties
     bodyLg?: React.CSSProperties
     bodyMd?: React.CSSProperties
     bodySm?: React.CSSProperties
+    labelLg?: React.CSSProperties
     labelMd?: React.CSSProperties
   }
 }
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
+    headlineSm: true
     titleLg: true
     titleMd: true
     titleSm: true
     bodyLg: true
     bodyMd: true
     bodySm: true
+    labelLg: true
     labelMd: true
   }
 }
@@ -152,12 +158,14 @@ let theme = createTheme({
     MuiTypography: {
       defaultProps: {
         variantMapping: {
+          headlineSm: 'h2',
           titleLg: 'h2',
           titleMd: 'h3',
           titleSm: 'h4',
           bodyLg: 'p',
           bodyMd: 'p',
           bodySm: 'p',
+          labelLg: 'label',
           labelMd: 'label',
         },
       },
@@ -214,6 +222,12 @@ let theme = createTheme({
 
 theme = createTheme(theme, {
   typography: {
+    headlineSm: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(24),
+      fontWeight: 500,
+      lineHeight: 1.5,
+    },
     titleLg: {
       fontFamily: roboto.style.fontFamily,
       fontSize: theme.typography.pxToRem(22),
@@ -252,8 +266,15 @@ theme = createTheme(theme, {
       fontFamily: roboto.style.fontFamily,
       fontSize: theme.typography.pxToRem(12),
       fontWeight: 400,
-      lineHeight: 1.2,
+      lineHeight: 1.3,
       letterSpacing: '0.4px',
+    },
+    labelLg: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(14),
+      fontWeight: 500,
+      lineHeight: 1.4,
+      letterSpacing: '0.1px',
     },
     labelMd: {
       fontFamily: roboto.style.fontFamily,
@@ -339,12 +360,14 @@ theme = createTheme(theme, {
 
 theme = responsiveFontSizes(theme, {
   variants: [
+    'headlineSm',
     'titleLg',
     'titleMd',
     'titleSm',
     'bodyLg',
     'bodyMd',
     'bodySm',
+    'labelLg',
     'labelMd',
     'h1',
     'h2',

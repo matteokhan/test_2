@@ -1,13 +1,12 @@
 'use client'
 
 import React from 'react'
+import * as Yup from 'yup'
 import { TextField, Button, Stack, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Form, Formik, FormikHelpers, Field, FieldArray } from 'formik'
-import * as Yup from 'yup'
 import { SearchFlightParams } from '@/types'
 
 const DEFAULT_PARAMS = {
@@ -19,11 +18,11 @@ const DEFAULT_PARAMS = {
     },
   ],
   adults: 1,
-  children: 0,
-  infants: 0,
+  childrens: 0,
+  infant: 0,
   directFlight: false,
   nonStopFlight: false,
-}
+} as SearchFlightParams
 
 const searchFlightSegmentSchema = Yup.object().shape({
   from: Yup.string().required('Required'),
@@ -33,8 +32,8 @@ const searchFlightSegmentSchema = Yup.object().shape({
 
 const searchFlightParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Required'),
-  children: Yup.number().min(0).required('Required'),
-  infants: Yup.number().min(0).required('Required'),
+  childrens: Yup.number().min(0).required('Required'),
+  infant: Yup.number().min(0).required('Required'),
   directFlight: Yup.boolean().required('Required'),
   nonStopFlight: Yup.boolean().required('Required'),
   segments: Yup.array().of(searchFlightSegmentSchema).min(1, 'At least one segment is required'),
@@ -55,14 +54,14 @@ export const SearchFlightsForm = ({
       validationSchema={searchFlightParamsSchema}
       onSubmit={onSubmit}
       enableReinitialize>
-      {({ values }) => (
+      {({ values, setFieldValue }) => (
         <Form>
           <Stack direction="row" width="100%" gap={1}>
             <FieldArray name="segments">
               {({ remove, push }) => (
                 <Stack flexGrow={1} gap={2}>
                   {values.segments.length > 0 &&
-                    values.segments.map((segment, index) => (
+                    values.segments.map((_, index) => (
                       <React.Fragment key={index}>
                         <Stack gap={1} direction="row">
                           <Field
@@ -79,7 +78,13 @@ export const SearchFlightsForm = ({
                             variant="filled"
                             sx={{ flexGrow: 1 }}
                           />
-                          <DatePicker name={`segments.${index}.date`} label="Dates" />
+                          <DatePicker
+                            name={`segments.${index}.date`}
+                            label="Dates"
+                            onChange={(value) =>
+                              setFieldValue(`segments.${index}.date`, value, true)
+                            }
+                          />
                           {multiDestinations && (
                             <Stack justifyContent="center">
                               <IconButton

@@ -14,9 +14,9 @@ import {
 } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
-import { Form, Formik, FormikHelpers } from 'formik'
+import { Form, Formik, FormikHelpers, useFormikContext } from 'formik'
 import * as Yup from 'yup'
-import { SearchFlightFilters } from '@/types'
+import { SearchFlightFilters, SearchResponseFilterData } from '@/types'
 import {
   ExperienceFilterField,
   ScalesFilterField,
@@ -26,14 +26,13 @@ import {
   FlightTimeFilterField,
 } from '@/components'
 
-const DEFAULT_FILTERS = {
-  scales: 'all',
-  oneNightScale: false,
-  experience: null,
-  maxPrice: 450,
-  maxPriceType: 'per-person',
-  flightTime: null,
-} as SearchFlightFilters
+const AutoSubmit = () => {
+  const { values, submitForm } = useFormikContext()
+  React.useEffect(() => {
+    submitForm()
+  }, [values, submitForm])
+  return null
+}
 
 const filtersSchema = Yup.object().shape({
   scales: Yup.string(),
@@ -46,11 +45,21 @@ const filtersSchema = Yup.object().shape({
 
 type SearchFlightsFiltersProps = {
   onSubmit: (values: SearchFlightFilters, actions: FormikHelpers<SearchFlightFilters>) => void
+  filterData: SearchResponseFilterData
 }
 
-export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) => {
+export const SearchFlightsFilters = ({ onSubmit, filterData }: SearchFlightsFiltersProps) => {
+  const DEFAULT_FILTERS = {
+    scales: 'all',
+    oneNightScale: false,
+    experience: null,
+    maxPrice: Math.trunc((filterData.maxPrice - filterData.minPrice) / 2 + filterData.minPrice),
+    maxPriceType: 'per-person',
+    flightTime: null,
+  } as SearchFlightFilters
+
   return (
-    <Paper sx={{ paddingX: 2, paddingY: 4 }}>
+    <Paper sx={{ paddingX: 2, paddingY: 4, height: 'fit-content' }}>
       <Formik
         initialValues={DEFAULT_FILTERS}
         validationSchema={filtersSchema}
@@ -59,6 +68,7 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
         {({ values }) => (
           <Form>
             <Stack gap={3}>
+              <AutoSubmit />
               <Typography variant="titleLg">Filtrer par </Typography>
               <Box>
                 <Typography variant="titleMd" pb={1}>
@@ -84,11 +94,17 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
                   <Typography variant="titleMd">Prix maximum</Typography>
                   <Typography variant="bodyLg">{values.maxPrice}€</Typography>
                 </Stack>
-                <MaxPriceFilterField name="maxPrice" />
+                <MaxPriceFilterField
+                  name="maxPrice"
+                  highestPrice={filterData.maxPrice}
+                  lowestPrice={filterData.minPrice}
+                />
                 <FormControl sx={{ m: 1, minWidth: 120, width: '100%', margin: 0 }}>
                   <MaxPriceTypeFilterField name="maxPriceType" />
                 </FormControl>
               </Box>
+
+              {/* TODO: Hardcoded data here */}
               <Box pb={1}>
                 <Typography variant="titleMd" pb={1}>
                   Temps de vol
@@ -103,7 +119,7 @@ export const SearchFlightsFilters = ({ onSubmit }: SearchFlightsFiltersProps) =>
                 </Box>
                 <FlightTimeFilterField name="flightTime" />
               </Box>
-
+              {/* TODO: Hardcoded data here */}
               <Box>
                 <Typography variant="titleMd" pb={1}>
                   Compagnies aériennes

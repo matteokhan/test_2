@@ -1,3 +1,5 @@
+'use client'
+
 import { ExperienceFilterOption } from '@/types'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
 import { FieldInputProps, Field } from 'formik'

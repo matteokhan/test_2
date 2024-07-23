@@ -1,3 +1,5 @@
+'use client'
+
 import { FlightTimeFilterOption } from '@/types'
 import { Stack, Typography } from '@mui/material'
 import { useField, FieldHookConfig } from 'formik'
@@ -19,13 +21,13 @@ const FlightTimeOptionItem = styled(Stack)<{
   paddingBottom: theme.spacing(1),
   width: '78px',
   borderColor: selected ? theme.palette.primary.main : 'transparent',
-  backgroundColor: selected ? theme.palette.grey[200] : theme.palette.grey[100],
+  backgroundColor: selected ? theme.palette.leclerc.blueNotif.main : theme.palette.grey[100],
   borderWidth: '2px',
   borderStyle: 'solid',
   boxSizing: 'border-box',
   '&:hover': {
     cursor: 'pointer',
-    backgroundColor: theme.palette.grey[200],
+    backgroundColor: theme.palette.leclerc.blueNotif.main,
   },
   '& label:hover': {
     cursor: 'pointer',

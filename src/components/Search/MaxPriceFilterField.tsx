@@ -1,10 +1,28 @@
-import { Slider } from '@mui/material'
-import { Field, FieldHookConfig, FieldInputProps } from 'formik'
+'use client'
 
-export const MaxPriceFilter = ({ ...props }: FieldInputProps<number | number[]>) => {
-  return <Slider {...props} size="small" min={50} max={1000} step={10} />
+import React from 'react'
+import { Slider } from '@mui/material'
+import { Field, FieldInputProps } from 'formik'
+
+type MaxFilterProps = FieldInputProps<number | number[]> & {
+  highestPrice: number
+  lowestPrice: number
 }
 
-export const MaxPriceFilterField = ({ name }: { name: string }) => {
-  return <Field name={name} as={MaxPriceFilter} />
+export const MaxPriceFilter = ({ highestPrice, lowestPrice, ...props }: MaxFilterProps) => {
+  return <Slider {...props} size="small" min={lowestPrice} max={highestPrice} step={100} />
+}
+
+export const MaxPriceFilterField = ({
+  name,
+  highestPrice,
+  lowestPrice,
+}: {
+  name: string
+  highestPrice: number
+  lowestPrice: number
+}) => {
+  return (
+    <Field name={name} as={MaxPriceFilter} highestPrice={highestPrice} lowestPrice={lowestPrice} />
+  )
 }

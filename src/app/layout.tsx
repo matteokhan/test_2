@@ -2,10 +2,9 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'
-import { ThemeProvider } from '@mui/material/styles'
-import theme from '../theme'
-import './globals.css'
 import CssBaseline from '@mui/material/CssBaseline'
+import { Providers } from '@/components'
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <CssBaseline />
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          <Providers>{children}</Providers>
         </AppRouterCacheProvider>
       </body>
     </html>

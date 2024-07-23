@@ -1,3 +1,5 @@
+'use client'
+
 import { ScalesFilterOption } from '@/types'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
 import { Field, FieldInputProps } from 'formik'

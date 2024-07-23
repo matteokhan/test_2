@@ -1,3 +1,5 @@
+'use client'
+
 import { Checkbox, FormControlLabel } from '@mui/material'
 import { Field, FieldInputProps } from 'formik'
 

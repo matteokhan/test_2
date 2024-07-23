@@ -1,3 +1,5 @@
+'use client'
+
 import { Header, SearchFlightsBanner } from '@/components'
 
 export default function Home() {

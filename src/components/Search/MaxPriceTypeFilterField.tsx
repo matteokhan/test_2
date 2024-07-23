@@ -1,6 +1,8 @@
+'use client'
+
 import { MaxPriceTypeFilterOption } from '@/types'
 import { MenuItem, Select } from '@mui/material'
-import { Field, FieldInputProps, useField } from 'formik'
+import { Field, FieldInputProps } from 'formik'
 
 const options: { value: MaxPriceTypeFilterOption; label: string }[] = [
   { value: 'per-person', label: 'Par Personne' },

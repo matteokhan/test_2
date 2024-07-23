@@ -1,16 +1,12 @@
 'use client'
 
-import {
-  Header,
-  SearchFlightsModes,
-  SectionContainer,
-  FlightResult,
-  SearchFlightsFilters,
-} from '@/components'
+import React from 'react'
+import { Header, SearchFlightsModes, SectionContainer, SearchFlights } from '@/components'
 import { Box, Stack } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2'
+import { useFlightsContext } from '@/contexts'
 
-export default function Flights() {
+export default function FlighsPage() {
+  const { searchParams } = useFlightsContext()
   return (
     <>
       <Header />
@@ -21,17 +17,8 @@ export default function Flights() {
         <SectionContainer
           sx={{ justifyContent: 'space-between', paddingY: 3, flexDirection: 'column' }}>
           <SearchFlightsModes />
-          {/* <Grid container spacing={2} mt={2}>
-            <Grid xs={4}>
-              <SearchFlightsFilters onSubmit={(values) => console.log(values)} />
-            </Grid>
-            <Grid xs={8}>
-              <FlightResult />
-            </Grid>
-          </Grid> */}
           <Stack direction="row" spacing={2} mt={2}>
-            <SearchFlightsFilters onSubmit={(values) => console.log(values)} />
-            <FlightResult />
+            {searchParams.segments.length > 0 && <SearchFlights />}
           </Stack>
         </SectionContainer>
       </Box>
