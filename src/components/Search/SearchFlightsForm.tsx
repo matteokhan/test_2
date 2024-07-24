@@ -15,6 +15,7 @@ const DEFAULT_PARAMS = {
       from: '',
       to: '',
       date: new Date(),
+      dateReturn: undefined,
     },
   ],
   adults: 1,
@@ -42,11 +43,13 @@ const searchFlightParamsSchema = Yup.object().shape({
 type SearchFlightFormProps = {
   onSubmit: (values: SearchFlightParams, actions: FormikHelpers<SearchFlightParams>) => void
   multiDestinations?: boolean
+  returnFlight?: boolean
 }
 
 export const SearchFlightsForm = ({
   onSubmit,
   multiDestinations = false,
+  returnFlight = false,
 }: SearchFlightFormProps) => {
   return (
     <Formik
@@ -85,6 +88,15 @@ export const SearchFlightsForm = ({
                               setFieldValue(`segments.${index}.date`, value, true)
                             }
                           />
+                          {returnFlight && (
+                            <DatePicker
+                              name={`segments.${index}.dateReturn`}
+                              label="Dates"
+                              onChange={(value) =>
+                                setFieldValue(`segments.${index}.dateReturn`, value, true)
+                              }
+                            />
+                          )}
                           {multiDestinations && (
                             <Stack justifyContent="center">
                               <IconButton
