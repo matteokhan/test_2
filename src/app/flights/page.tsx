@@ -6,6 +6,7 @@ import { Box, Stack } from '@mui/material'
 import { useFlightsContext } from '@/contexts'
 
 export default function FlighsPage() {
+  // TODO: Try to remove this dependency and render SearchFlights always
   const { searchParams } = useFlightsContext()
   return (
     <>

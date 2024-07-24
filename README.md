@@ -10,7 +10,11 @@ If you have `npm` already installed, you can install `pnpm` like this:
 npm install -g pnpm
 ```
 
-## Getting Started
+## Environment variables
+
+Copy the `.env.example` and rename it to `.env`. Fill the values according.
+
+## Development
 
 Install dependencies, then run the development server:
 
@@ -20,3 +24,30 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
+
+## Run with docker
+
+Make sure to set environment variables in the `.env` file according before creating the container image.
+
+```bash
+docker build -t leclerc-website .
+docker run -p 80:3000 leclerc-website
+```
+
+## Create container image and publish to registry
+
+```bash
+gcloud auth login
+gcloud auth configure-docker europe-west9-docker.pkg.dev
+docker tag leclerc-website europe-west9-docker.pkg.dev/lec-lvo-refonteb2c-qua/leclerc-website/website:VERSION
+docker push europe-west9-docker.pkg.dev/lec-lvo-refonteb2c-qua/leclerc-website/website:VERSION
+```
+
+## Run in GCP's Cloud Run
+
+For now, we are deploying to Cloud Run using `gcloud` in the terminal. This method creates their own container
+images, but the idea is to create the images by our own and use terraform to deploy them. This is more so we don't forget how to do it with `gcloud` utility.
+
+```bash
+gcloud run deploy --set-env-vars "NEXT_PUBLIC_FLIGHTS_API_URL=flights_api_url,NEXT_PUBLIC_FLIGHTS_API_TOKEN=Bearer token"
+```

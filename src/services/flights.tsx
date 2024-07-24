@@ -2,14 +2,17 @@
 
 import { SearchFlightParamsDto, SearchResponseDto } from '@/types'
 import { useQuery } from '@tanstack/react-query'
+import { env } from 'next-runtime-env'
 
 export const searchFlights = async ({ params }: { params: SearchFlightParamsDto }) => {
-  const response = await fetch(process.env.NEXT_PUBLIC_FLIGHTS_API_URL + '/search' || '', {
+  const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL')
+  const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN')
+  const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/search' || '', {
     method: 'POST',
     body: JSON.stringify(params),
     headers: {
       'content-type': 'application/json',
-      authorization: process.env.NEXT_PUBLIC_FLIGHTS_API_TOKEN || '',
+      authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN || '',
     },
   })
   if (response.ok) {

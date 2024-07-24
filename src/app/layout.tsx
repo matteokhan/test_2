@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'
 import CssBaseline from '@mui/material/CssBaseline'
 import { Providers } from '@/components'
+import { PublicEnvScript } from 'next-runtime-env'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -20,6 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <PublicEnvScript />
+      </head>
       <body className={inter.className}>
         <CssBaseline />
         <AppRouterCacheProvider>
