@@ -19,7 +19,7 @@ export const FlightDetails = ({ route }: { route: Route; airline: string }) => {
     arrivalDateTime.getUTCHours().toString().padStart(2, '0') +
     ':' +
     arrivalDateTime.getUTCMinutes().toString().padStart(2, '0')
-  const numberDaysArrival = arrivalDateTime.getDate() - departureDateTime.getDate()
+  const daysToArrival = arrivalDateTime.getDate() - departureDateTime.getDate()
   const departureAirport = firstSegment.departure
   const departureCityCode = firstSegment.departureCityCode
   const arrivalAirport = lastSegment.arrival
@@ -80,9 +80,9 @@ export const FlightDetails = ({ route }: { route: Route; airline: string }) => {
             <Box width="100%" height="1px" bgcolor="grey.900"></Box>
             <Box borderRadius="4px" width="7px" height="7px" bgcolor="grey.900"></Box>
           </Stack>
-          {numberDaysArrival > 0 && (
+          {daysToArrival > 0 && (
             <Typography variant="bodySm" color="grey.700">
-              J+{numberDaysArrival}
+              J+{daysToArrival}
             </Typography>
           )}
           <Typography variant="titleLg" color="leclerc.red.main">

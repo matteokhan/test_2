@@ -46,7 +46,8 @@ export const FlightResult = ({ result }: { result: Solution }) => {
             {result.priceInfo.passengerNumber > 1 && (
               <Typography variant="bodySm" color="grey.800">
                 Vol pour {result.priceInfo.passengerNumber} voyageurs (
-                {result.priceInfo.total / result.priceInfo.passengerNumber}€ par pers.)
+                {result.priceInfo.total / result.priceInfo.passengerNumber}
+                {result.priceInfo.currencySymbol} par pers.)
               </Typography>
             )}
             {result.priceInfo.passengerNumber === 1 && (
