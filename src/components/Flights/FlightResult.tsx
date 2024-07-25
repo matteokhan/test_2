@@ -43,15 +43,15 @@ export const FlightResult = ({ result }: { result: Solution }) => {
               {result.priceInfo.total}
               {result.priceInfo.currencySymbol}
             </Typography>
-
             {result.priceInfo.passengerNumber > 1 && (
               <Typography variant="bodySm" color="grey.800">
-              Vol pour {result.priceInfo.passengerNumber} voyageurs ({result.priceInfo.total / result.priceInfo.passengerNumber}€ par pers.)
+                Vol pour {result.priceInfo.passengerNumber} voyageurs (
+                {result.priceInfo.total / result.priceInfo.passengerNumber}€ par pers.)
               </Typography>
             )}
             {result.priceInfo.passengerNumber === 1 && (
               <Typography variant="bodySm" color="grey.800">
-              Vol pour {result.priceInfo.passengerNumber} voyageur
+                Vol pour {result.priceInfo.passengerNumber} voyageur
               </Typography>
             )}
           </Stack>

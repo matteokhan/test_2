@@ -22,5 +22,6 @@ export const useSearchFlights = ({ params }: { params: SearchFlightParamsDto }) 
   return useQuery<SearchResponseDto>({
     queryKey: ['searchFlightsResults'],
     queryFn: async () => searchFlights({ params }),
+    refetchOnWindowFocus: false,
   })
 }
