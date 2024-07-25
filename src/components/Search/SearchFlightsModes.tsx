@@ -27,6 +27,7 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
         from: segment.from,
         to: segment.to,
         date: segment.date.toISOString().split('T')[0],
+        dateReturn: segment.dateReturn ? segment.dateReturn.toISOString().split('T')[0] : undefined,
       })),
     })
   }
@@ -49,7 +50,7 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
         </Tabs>
         {activeTab === 0 && (
           <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-            <SearchFlightsForm onSubmit={handleSearch} />
+            <SearchFlightsForm onSubmit={handleSearch} isRoundtrip={true} />
           </Box>
         )}
         {activeTab === 1 && (
