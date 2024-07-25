@@ -50,7 +50,7 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
         </Tabs>
         {activeTab === 0 && (
           <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-            <SearchFlightsForm onSubmit={handleSearch} returnFlight={true} />
+            <SearchFlightsForm onSubmit={handleSearch} isRoundtrip={true} />
           </Box>
         )}
         {activeTab === 1 && (

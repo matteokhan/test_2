@@ -1,5 +1,3 @@
-
-
 export type ScalesFilterOption = 'all' | 'direct' | '1-scale' | '2-scale'
 export type ExperienceFilterOption = 'no-night-flight' | 'short-scales' | null
 export type MaxPriceTypeFilterOption = 'per-person' | 'total'
@@ -13,5 +11,8 @@ export type SearchFlightFilters = {
   maxPriceType?: MaxPriceTypeFilterOption
   flightTime?: FlightTimeFilterOption
 }
-
-
+export type AirlineFilterData = {
+  carrier: string
+  price: number
+  currencySymbol: string
+}

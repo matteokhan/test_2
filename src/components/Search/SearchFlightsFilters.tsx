@@ -3,7 +3,6 @@
 import React from 'react'
 import {
   Box,
-  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -16,7 +15,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
 import { Form, Formik, FormikHelpers, useFormikContext } from 'formik'
 import * as Yup from 'yup'
-import { SearchFlightFilters, SearchResponseFilterData, Solution } from '@/types'
+import { AirlineFilterData, SearchFlightFilters, SearchResponseFilterData, Solution } from '@/types'
 import {
   ExperienceFilterField,
   ScalesFilterField,
@@ -46,12 +45,18 @@ const filtersSchema = Yup.object().shape({
 type SearchFlightsFiltersProps = {
   onSubmit: (values: SearchFlightFilters, actions: FormikHelpers<SearchFlightFilters>) => void
   filterData: SearchResponseFilterData
-  filteredData: Solution[] | undefined
+  airlines: AirlineFilterData[]
   departure: string
   arrival: string
 }
 
-export const SearchFlightsFilters = ({ onSubmit, filterData, departure, arrival, filteredData }: SearchFlightsFiltersProps) => {
+export const SearchFlightsFilters = ({
+  onSubmit,
+  filterData,
+  departure,
+  arrival,
+  airlines,
+}: SearchFlightsFiltersProps) => {
   const DEFAULT_FILTERS = {
     scales: 'all',
     oneNightScale: false,
@@ -60,26 +65,6 @@ export const SearchFlightsFilters = ({ onSubmit, filterData, departure, arrival,
     maxPriceType: 'per-person',
     flightTime: null,
   } as SearchFlightFilters
-
-  const getAirlines = () => {
-    const airlines: any[] = []
-    filteredData?.forEach((solution) => {
-      const indexAirline = airlines.findIndex((current) => solution.routes.map(route => route.carrier).includes(current.carrier))
-      if(indexAirline === -1) {
-        airlines.push({
-          carrier: solution.routes[0].carrier,
-          price: solution.priceInfo.total,
-          currencySymbol: solution.priceInfo.currencySymbol
-        })
-      } else { 
-        if(solution.priceInfo.total < airlines[indexAirline].price) {
-          airlines[indexAirline].price = solution.priceInfo.total
-        }
-      }
-    })
-    return airlines.sort((a, b) => a.price - b.price)
-  }
-
   return (
     <Paper sx={{ paddingX: 2, paddingY: 4, height: 'fit-content' }}>
       <Formik
@@ -133,30 +118,40 @@ export const SearchFlightsFilters = ({ onSubmit, filterData, departure, arrival,
                 </Typography>
                 <Box pb={1}>
                   <Stack direction="row" gap={1} alignItems="center">
-                    <Typography variant="titleSm">Ville de {departure} ({departure})</Typography>
+                    <Typography variant="titleSm">
+                      Ville de {departure} ({departure})
+                    </Typography>
                     <ArrowForwardIcon />
-                    <Typography variant="titleSm">Ville de {arrival} ({arrival})</Typography>
+                    <Typography variant="titleSm">
+                      Ville de {arrival} ({arrival})
+                    </Typography>
                   </Stack>
                   <Typography variant="bodySm">Départ de aeroport {departure}</Typography>
                 </Box>
                 <FlightTimeFilterField name="flightTime" />
               </Box>
-              {/* TODO: Hardcoded data here */}
               <Box>
                 <Typography variant="titleMd" pb={1}>
                   Compagnies aériennes
                 </Typography>
                 <Box pl={1.5} pb={1}>
                   <FormGroup>
-                    {getAirlines().map((airline) => (
-                      <Stack key={airline.carrier} justifyContent="space-between" direction="row" alignItems="center">
+                    {airlines.map((airline) => (
+                      <Stack
+                        key={airline.carrier}
+                        justifyContent="space-between"
+                        direction="row"
+                        alignItems="center">
                         <FormControlLabel
                           value={airline.carrier}
                           control={<Checkbox />}
                           name="airlines"
                           label={airline.carrier}
                         />
-                        <Typography variant="bodyMd">{airline.price}{airline.currencySymbol}</Typography>
+                        <Typography variant="bodyMd">
+                          {airline.price}
+                          {airline.currencySymbol}
+                        </Typography>
                       </Stack>
                     ))}
                   </FormGroup>

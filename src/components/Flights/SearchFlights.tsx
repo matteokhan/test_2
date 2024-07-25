@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Button, Stack, Typography } from '@mui/material'
-import { SearchFlightFilters } from '@/types'
+import { AirlineFilterData, SearchFlightFilters } from '@/types'
 import { useSearchFlights } from '@/services'
 import { SearchFlightsFilters, FlightDateAlternatives, SearchResults } from '@/components'
 import { useFlightsContext } from '@/contexts'
@@ -39,12 +39,33 @@ export const SearchFlights = () => {
 
     return true
   })
+
+  const getAirlines = () => {
+    const airlines: AirlineFilterData[] = []
+    filteredData?.forEach((solution) => {
+      const indexAirline = airlines.findIndex((current) =>
+        solution.routes.map((route) => route.carrier).includes(current.carrier),
+      )
+      if (indexAirline === -1) {
+        airlines.push({
+          carrier: solution.routes[0].carrier,
+          price: solution.priceInfo.total,
+          currencySymbol: solution.priceInfo.currencySymbol,
+        })
+      } else {
+        if (solution.priceInfo.total < airlines[indexAirline].price) {
+          airlines[indexAirline].price = solution.priceInfo.total
+        }
+      }
+    })
+    return airlines.sort((a, b) => a.price - b.price)
+  }
   return (
     <>
       {response && (
         <SearchFlightsFilters
           filterData={response.searchFilters}
-          filteredData={filteredData}
+          airlines={getAirlines()}
           departure={response.solutions[0]?.routes[0]?.segments[0]?.departure}
           arrival={
             response.solutions[0]?.routes[0]?.segments[
