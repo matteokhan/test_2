@@ -28,6 +28,7 @@ declare module '@mui/material/IconButton' {
 }
 declare module '@mui/material/styles' {
   interface TypographyVariants {
+    headlineMd: React.CSSProperties
     headlineSm: React.CSSProperties
     titleLg: React.CSSProperties
     titleMd: React.CSSProperties
@@ -40,6 +41,7 @@ declare module '@mui/material/styles' {
   }
 
   interface TypographyVariantsOptions {
+    headlineMd?: React.CSSProperties
     headlineSm?: React.CSSProperties
     titleLg?: React.CSSProperties
     titleMd?: React.CSSProperties
@@ -53,6 +55,7 @@ declare module '@mui/material/styles' {
 }
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
+    headlineMd: true
     headlineSm: true
     titleLg: true
     titleMd: true
@@ -138,7 +141,7 @@ let theme = createTheme({
         }),
         sizeLarge: ({ theme }) => ({
           height: theme.spacing(7),
-          padding: theme.spacing(2, 4),
+          padding: theme.spacing(2, 6),
         }),
       },
       defaultProps: {
@@ -158,6 +161,7 @@ let theme = createTheme({
     MuiTypography: {
       defaultProps: {
         variantMapping: {
+          headlineMd: 'h2',
           headlineSm: 'h2',
           titleLg: 'h2',
           titleMd: 'h3',
@@ -222,6 +226,12 @@ let theme = createTheme({
 
 theme = createTheme(theme, {
   typography: {
+    headlineMd: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(28),
+      fontWeight: 500,
+      lineHeight: 1.2,
+    },
     headlineSm: {
       fontFamily: roboto.style.fontFamily,
       fontSize: theme.typography.pxToRem(24),
@@ -360,6 +370,7 @@ theme = createTheme(theme, {
 
 theme = responsiveFontSizes(theme, {
   variants: [
+    'headlineMd',
     'headlineSm',
     'titleLg',
     'titleMd',

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/theme'
-import { FlightsProvider } from '@/contexts'
+import { FlightsProvider, PassengersProvider } from '@/contexts'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient()
@@ -12,7 +12,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
-        <FlightsProvider>{children}</FlightsProvider>
+        <FlightsProvider>
+          <PassengersProvider>{children}</PassengersProvider>
+        </FlightsProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

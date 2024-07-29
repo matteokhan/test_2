@@ -1,4 +1,4 @@
 export type ConfirmReservationRequestDto = {
-    correlationId: string;
-    reservationId: string;
+  correlationId: string
+  reservationId: string
 }

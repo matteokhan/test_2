@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Look at this to see why this is needed: https://github.com/vercel/next.js/discussions/44628 */}
         <PublicEnvScript />
       </head>
       <body className={inter.className}>
