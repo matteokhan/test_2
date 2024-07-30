@@ -1,44 +1,34 @@
+'use client'
+
 import { SearchFlightParamsDto } from '@/types'
 import React, { createContext, useState, useContext } from 'react'
 
-interface FlightsContextInterface {
+type FlightsContextType = {
   searchParams: SearchFlightParamsDto
   setSearchParams: (params: SearchFlightParamsDto) => void
 }
 
-type FlightsContextData = {
-  searchParams: SearchFlightParamsDto
-}
+const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
 
-const BASE_STATE: FlightsContextData = {
-  searchParams: {
+export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [searchParams, setSearchParams] = useState<SearchFlightParamsDto>({
     adults: 1,
     childrens: 0,
     infant: 0,
     segments: [],
-  },
+  })
+
+  return (
+    <FlightsContext.Provider value={{ searchParams, setSearchParams }}>
+      {children}
+    </FlightsContext.Provider>
+  )
 }
 
-const FlightsContext = createContext<FlightsContextInterface>({} as FlightsContextInterface)
-
-export const FlightsProvider = ({ children }: { children: React.ReactNode }) => {
-  const flights = useFlightsProvider()
-  return <FlightsContext.Provider value={flights}>{children}</FlightsContext.Provider>
-}
-
-export const useFlightsContext = () => {
-  return useContext(FlightsContext)
-}
-
-const useFlightsProvider = (): FlightsContextInterface => {
-  const [flightsState, setFlightsState] = useState<FlightsContextData>(BASE_STATE)
-
-  const setSearchParams = (params: SearchFlightParamsDto) => {
-    setFlightsState({ ...flightsState, searchParams: params })
+export const useFlights = () => {
+  const context = useContext(FlightsContext)
+  if (context === undefined) {
+    throw new Error('useFlights must be used within a FlightsProvider')
   }
-
-  return {
-    searchParams: flightsState.searchParams,
-    setSearchParams,
-  } as FlightsContextInterface
+  return context
 }

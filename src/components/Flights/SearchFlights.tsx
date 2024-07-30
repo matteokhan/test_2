@@ -5,13 +5,13 @@ import { Button, Stack, Typography } from '@mui/material'
 import { AirlineFilterData, SearchFlightFilters } from '@/types'
 import { useSearchFlights } from '@/services'
 import { SearchFlightsFilters, FlightDateAlternatives, SearchResults } from '@/components'
-import { useFlightsContext } from '@/contexts'
+import { useFlights } from '@/contexts'
 
 export const SearchFlights = () => {
   const RESULTS_PER_PAGE = 10
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [filters, setFilters] = React.useState({} as SearchFlightFilters)
-  const { searchParams } = useFlightsContext()
+  const { searchParams } = useFlights()
   const { data: response } = useSearchFlights({ params: searchParams })
   const filteredData = response?.solutions.filter((solution) => {
     const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
