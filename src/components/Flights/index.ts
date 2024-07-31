@@ -1,3 +1,5 @@
 export * from './FlightResult'
 export * from './FlightDetails'
 export * from './SearchFlights'
+export * from './Itinerary'
+export * from './ItineraryRoute'

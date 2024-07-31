@@ -1,41 +1,51 @@
+'use client'
+
+import { useBooking, useFlights } from '@/contexts'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
 
 export const PurchaseDetails = () => {
+  const { totalPassengers } = useFlights()
+  const { selectedFlight, totalPrice } = useBooking()
   return (
     <Paper sx={{ paddingX: 4, paddingBottom: 4, paddingTop: 3, width: '389px' }}>
       <Typography variant="titleLg" paddingBottom={2}>
         Détails du prix
       </Typography>
       <Stack pt={1} gap={1} pb={2}>
+        {/* TODO: Fix this pricing */}
         <Stack direction="row" width="100%" justifyContent="space-between">
-          <Typography variant="bodyMd">1 x passager(s) (avec réduction)</Typography>
+          <Typography variant="bodyMd">{totalPassengers} x passager(s) (avec réduction)</Typography>
           <Typography variant="bodyMd" fontWeight={500}>
-            1338€
+            {selectedFlight?.priceInfo.total} {selectedFlight?.priceInfo.currencySymbol}
           </Typography>
         </Stack>
+        {/* TODO: make this dynamic when baggages enabled */}
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd">1 x bagage(s) à main</Typography>
           <Typography variant="bodyMd" fontWeight={500}>
             Inclus
           </Typography>
         </Stack>
+        {/* TODO: make this dynamic when insurances enabled */}
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd">1 x assurance voyage</Typography>
           <Typography variant="bodyMd" fontWeight={500}>
-            75,67€
+            0€
           </Typography>
         </Stack>
+        {/* TODO: make this dynamic when options enabled */}
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd">1 x offre(s) de service Premium</Typography>
           <Typography variant="bodyMd" fontWeight={500}>
-            5,67€
+            0€
           </Typography>
         </Stack>
+        {/* TODO: make this dynamic when seats enabled */}
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd">1x siège(s) (SYD - DEL)</Typography>
           <Typography variant="bodyMd" fontWeight={500}>
-            14,67€
+            0€
           </Typography>
         </Stack>
       </Stack>
@@ -50,7 +60,7 @@ export const PurchaseDetails = () => {
           alignItems="center">
           <Typography variant="titleMd">Prix total</Typography>
           <Typography variant="headlineSm" color="primary.main">
-            4338 €
+            {totalPrice} €
           </Typography>
         </Stack>
         <Stack
@@ -81,7 +91,7 @@ export const PurchaseDetails = () => {
               height: 23,
               width: 36,
             }}>
-            <Image src="/ancv_logo.png" alt="floa logo" fill />
+            <Image src="/ancv_logo.svg" alt="floa logo" fill />
           </Box>
           <Box
             sx={{
@@ -89,7 +99,7 @@ export const PurchaseDetails = () => {
               height: 23,
               width: 36,
             }}>
-            <Image src="/ob_logo.png" alt="floa logo" fill />
+            <Image src="/ob_logo.svg" alt="floa logo" fill />
           </Box>
           <Box
             sx={{
@@ -97,7 +107,7 @@ export const PurchaseDetails = () => {
               height: 23,
               width: 36,
             }}>
-            <Image src="/floa_logo_2.png" alt="floa logo" fill />
+            <Image src="/floa_logo_2.svg" alt="floa logo" fill />
           </Box>
         </Stack>
       </Stack>

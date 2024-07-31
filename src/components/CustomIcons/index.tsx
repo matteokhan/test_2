@@ -64,3 +64,80 @@ export const NoLuggageIcon = () => {
     </SvgIcon>
   )
 }
+
+export const AirplaneIcon = () => {
+  return (
+    <SvgIcon width="24px" height="24px">
+      <svg
+        width="28"
+        height="29"
+        viewBox="0 0 28 29"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_4555_14411)">
+          <rect
+            x="26"
+            y="26.5"
+            width="24"
+            height="24"
+            transform="rotate(-180 26 26.5)"
+            fill="white"
+          />
+          <path
+            d="M4 10.5V12.5L12.5 17.5V23C12.5 23.83 13.17 24.5 14 24.5C14.83 24.5 15.5 23.83 15.5 23V17.5L24 12.5V10.5L15.5 13V7.5L18 6V4.5L14 5.5L10 4.5V6L12.5 7.5V13L4 10.5Z"
+            fill="black"
+          />
+        </g>
+        <rect
+          x="27"
+          y="27.5"
+          width="26"
+          height="26"
+          transform="rotate(-180 27 27.5)"
+          stroke="white"
+          stroke-width="2"
+        />
+        <defs>
+          <clipPath id="clip0_4555_14411">
+            <rect
+              x="26"
+              y="26.5"
+              width="24"
+              height="24"
+              transform="rotate(-180 26 26.5)"
+              fill="white"
+            />
+          </clipPath>
+        </defs>
+      </svg>
+    </SvgIcon>
+  )
+}
+
+export const TrainIcon = () => {
+  return (
+    <SvgIcon width="24px" height="24px">
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 28 28"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_4555_14373)">
+          <rect x="2" y="2" width="24" height="24" fill="white" />
+          <path d="M2 2H26V26H2V2Z" fill="white" />
+          <path
+            d="M14 4C10 4 6 4.5 6 8V17.5C6 19.43 7.57 21 9.5 21L8 22.5V23H10.23L12.23 21H16L18 23H20V22.5L18.5 21C20.43 21 22 19.43 22 17.5V8C22 4.5 18.42 4 14 4ZM9.5 19C8.67 19 8 18.33 8 17.5C8 16.67 8.67 16 9.5 16C10.33 16 11 16.67 11 17.5C11 18.33 10.33 19 9.5 19ZM13 12H8V8H13V12ZM15 12V8H20V12H15ZM18.5 19C17.67 19 17 18.33 17 17.5C17 16.67 17.67 16 18.5 16C19.33 16 20 16.67 20 17.5C20 18.33 19.33 19 18.5 19Z"
+            fill="black"
+          />
+        </g>
+        <rect x="1" y="1" width="26" height="26" stroke="white" stroke-width="2" />
+        <defs>
+          <clipPath id="clip0_4555_14373">
+            <rect x="2" y="2" width="24" height="24" fill="white" />
+          </clipPath>
+        </defs>
+      </svg>
+    </SvgIcon>
+  )
+}

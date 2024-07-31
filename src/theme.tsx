@@ -38,6 +38,7 @@ declare module '@mui/material/styles' {
     bodySm: React.CSSProperties
     labelLg: React.CSSProperties
     labelMd: React.CSSProperties
+    labelSm: React.CSSProperties
   }
 
   interface TypographyVariantsOptions {
@@ -51,6 +52,7 @@ declare module '@mui/material/styles' {
     bodySm?: React.CSSProperties
     labelLg?: React.CSSProperties
     labelMd?: React.CSSProperties
+    labelSm?: React.CSSProperties
   }
 }
 declare module '@mui/material/Typography' {
@@ -65,6 +67,7 @@ declare module '@mui/material/Typography' {
     bodySm: true
     labelLg: true
     labelMd: true
+    labelSm: true
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
@@ -171,6 +174,7 @@ let theme = createTheme({
           bodySm: 'p',
           labelLg: 'label',
           labelMd: 'label',
+          labelSm: 'label',
         },
       },
     },
@@ -291,6 +295,13 @@ theme = createTheme(theme, {
       fontSize: theme.typography.pxToRem(12),
       fontWeight: 500,
       lineHeight: 1.2,
+      letterSpacing: '0.5px',
+    },
+    labelSm: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(11),
+      fontWeight: 500,
+      lineHeight: 1.5,
       letterSpacing: '0.5px',
     },
   },

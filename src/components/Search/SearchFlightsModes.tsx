@@ -20,9 +20,9 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
   const { setSearchParams } = useFlights()
   const handleSearch = (values: SearchFlightParams) => {
     setSearchParams({
-      adults: values.adults,
-      childrens: values.childrens,
-      infant: values.infant,
+      adults: +values.adults,
+      childrens: +values.childrens,
+      infant: +values.infant,
       segments: values.segments.map((segment) => ({
         from: segment.from,
         to: segment.to,

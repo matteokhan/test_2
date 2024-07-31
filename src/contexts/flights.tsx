@@ -1,11 +1,14 @@
 'use client'
 
-import { SearchFlightParamsDto } from '@/types'
+import { SearchFlightParamsDto, SearchFlightSegmentDto } from '@/types'
 import React, { createContext, useState, useContext } from 'react'
 
 type FlightsContextType = {
   searchParams: SearchFlightParamsDto
   setSearchParams: (params: SearchFlightParamsDto) => void
+  firstSegment: SearchFlightSegmentDto | undefined
+  lastSegment: SearchFlightSegmentDto | undefined
+  totalPassengers: number
 }
 
 const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
@@ -17,9 +20,19 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     infant: 0,
     segments: [],
   })
+  const firstSegment = searchParams.segments[0]
+  const lastSegment = searchParams.segments[searchParams.segments.length - 1]
+  const totalPassengers = searchParams.adults + searchParams.childrens + searchParams.infant
 
   return (
-    <FlightsContext.Provider value={{ searchParams, setSearchParams }}>
+    <FlightsContext.Provider
+      value={{
+        searchParams,
+        setSearchParams,
+        firstSegment,
+        lastSegment,
+        totalPassengers,
+      }}>
       {children}
     </FlightsContext.Provider>
   )

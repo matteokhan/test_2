@@ -1,10 +1,14 @@
+'use client'
+
 import { Box, Button, IconButton, Stack, Typography } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { SectionContainer } from '@/components'
 import Link from 'next/link'
+import { useFlights } from '@/contexts'
 
 export const SelectedFlightInfoTopbar = () => {
+  const { firstSegment, lastSegment, totalPassengers } = useFlights()
   return (
     <Box
       sx={{
@@ -49,18 +53,27 @@ export const SelectedFlightInfoTopbar = () => {
             <Stack direction="row" gap={1}>
               <Stack direction="row" gap={2} alignItems="center">
                 <Stack direction="row" gap={1}>
-                  <Typography variant="titleMd">Paris (PAR)</Typography>
+                  <Typography variant="titleMd">
+                    {firstSegment?.from} ({firstSegment?.from})
+                  </Typography>
                   <SwapHorizIcon />
-                  <Typography variant="titleMd">New York (JFK)</Typography>
+                  <Typography variant="titleMd">
+                    {lastSegment?.to} ({lastSegment?.to})
+                  </Typography>
                 </Stack>
                 <Stack direction="row" gap={1}>
-                  <Typography variant="bodyMd">Du 9/04 au 14/04</Typography>
+                  {/* TODO: Fix return date */}
+                  <Typography variant="bodyMd">
+                    Du {firstSegment?.date.substring(5)} au {lastSegment?.dateReturn?.substring(5)}
+                  </Typography>
                   <Typography variant="bodyMd">-</Typography>
-                  <Typography variant="bodyMd">2 voyageurs</Typography>
+                  <Typography variant="bodyMd">{totalPassengers} voyageurs</Typography>
+                  {/* TODO: Fix baggages */}
                   <Typography variant="bodyMd">-</Typography>
-                  <Typography variant="bodyMd">5 bagages</Typography>
+                  <Typography variant="bodyMd">N bagages</Typography>
                 </Stack>
               </Stack>
+              {/* TODO: Show flight details */}
               <Button>Voir le détail du vol</Button>
             </Stack>
           </Stack>
