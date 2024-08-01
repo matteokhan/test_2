@@ -12,10 +12,9 @@ import {
   Typography,
 } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-
 import { Form, Formik, FormikHelpers, useFormikContext } from 'formik'
 import * as Yup from 'yup'
-import { AirlineFilterData, SearchFlightFilters, SearchResponseFilterData, Solution } from '@/types'
+import { AirlineFilterData, SearchFlightFilters, SearchResponseFilterData } from '@/types'
 import {
   ExperienceFilterField,
   ScalesFilterField,
