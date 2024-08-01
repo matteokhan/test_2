@@ -5,13 +5,13 @@ export const ItinerarySegmentDetails = ({
   locationCode,
   scaleDuration,
   airportChange,
-  luggageWarning,
+  airportChangeTime,
 }: {
   location: string
   locationCode: string
   scaleDuration?: string
-  airportChange?: string
-  luggageWarning?: boolean
+  airportChange?: boolean
+  airportChangeTime?: string
 }) => {
   return (
     <Box flexGrow={1}>
@@ -25,10 +25,10 @@ export const ItinerarySegmentDetails = ({
           )}
           {airportChange && (
             <Typography variant="bodySm" color="leclerc.red.light">
-              changement d'aéroport ({airportChange})
+              changement d'aéroport {airportChangeTime && <span>({airportChangeTime})</span>}
             </Typography>
           )}
-          {luggageWarning && (
+          {airportChange && (
             <Box pt={1}>
               <Alert severity="warning">Vous devez récupérer et réenregistrer vos bagages</Alert>
             </Box>

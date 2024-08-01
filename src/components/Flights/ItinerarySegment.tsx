@@ -7,58 +7,77 @@ import {
   TrainIcon,
 } from '@/components'
 import { RouteSegment } from '@/types'
+import { transformDuration } from '@/utils/date'
 
 export const ItinerarySegment = ({
   segment,
+  indexSegment,
+  allSegments,
   isLastSegment = false,
 }: {
-  segment: RouteSegment
+  segment: RouteSegment,
+  indexSegment: number,
+  allSegments: RouteSegment[],
   isLastSegment?: boolean
 }) => {
+  let nextSegment = undefined
+  let scaleTime = undefined
+  let airportChange = false
+  if(!isLastSegment) {
+    nextSegment = allSegments[indexSegment + 1]
+    scaleTime = nextSegment.timeBeforeSegment
+    airportChange = nextSegment.departureCityCode != segment.arrivalCityCode
+  }
+
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    month: 'long',
+    day: 'numeric'
+  };
+
+  const getSegmentIcon = () => {
+    if (segment.equipment == 'TRN') {
+      return (<TrainIcon />)
+    } else {
+      return (<AirplaneIcon />)
+    }
+  }
+
   return (
     <Stack gap={2} key={segment.id}>
       <Stack direction="row" gap={1}>
-        {/* TODO: display month's name, not number */}
         <ItinerarySegmentDatetime
           time={segment.departureDateTime.split('T')[1].slice(0, 5)}
-          date={segment.departureDateTime.split('T')[0].slice(5, 10)}
+          date={(new Date(segment.departureDateTime)).toLocaleDateString(undefined, dateOptions)}
         />
         <ItineraryTimeline />
-        {/* TODO: hardcoded data here */}
         <ItinerarySegmentDetails
-          location={'Paris Gare de Massy'}
-          locationCode={segment.departure}
+          location={segment.departure}
+          locationCode={segment.departureCityCode}
         />
       </Stack>
       <Stack direction="row" gap={1}>
         <Stack width="48px" minWidth="48px" alignItems="flex-end" justifyContent="center">
-          {/* TODO: hardcoded data here */}
           <Typography variant="bodySm" position="relative" top="5px">
-            2h03mn
+            {transformDuration(segment.duration, true)}
           </Typography>
         </Stack>
-        {/* TODO: set the right icon */}
-        {/* <ItineraryTimeline icon={<TrainIcon />} /> */}
-        <ItineraryTimeline icon={<AirplaneIcon />} />
+        <ItineraryTimeline icon={getSegmentIcon()} />
         <Stack flexGrow={1} justifyContent="flex-end">
           {/* TODO: hardcoded data here */}
-          <Typography variant="bodySm">CORSAIR - 6168 - ALX6BPRT</Typography>
+          <Typography variant="bodySm">{segment.carrier} - {segment.flightNumber} - ALX6BPRT</Typography>
         </Stack>
       </Stack>
       <Stack direction="row" gap={1}>
-        {/* TODO: display month's name, not number */}
         <ItinerarySegmentDatetime
           time={segment.arrivalDateTime.split('T')[1].slice(0, 5)}
-          date={segment.arrivalDateTime.split('T')[0].slice(5, 10)}
+          date={(new Date(segment.arrivalDateTime)).toLocaleDateString(undefined, dateOptions)}
         />
         <ItineraryTimeline noLine={isLastSegment} dotted={!isLastSegment} />
-        {/* TODO: hardcoded data here */}
         <ItinerarySegmentDetails
-          location={'Madrid ala madrid'}
-          locationCode={segment.arrival}
-          scaleDuration="3h42 mn"
-          airportChange="3h40"
-          luggageWarning={true}
+          location={segment.arrival}
+          locationCode={segment.arrivalCityCode}
+          scaleDuration={transformDuration(scaleTime)}
+          airportChange={airportChange}
         />
       </Stack>
     </Stack>
