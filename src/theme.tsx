@@ -346,37 +346,6 @@ theme = createTheme(theme, {
         },
       },
     },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiFilledInput-root': {
-            overflow: 'hidden',
-            borderRadius: 4,
-            backgroundColor: 'transparent',
-            border: '1px solid',
-            borderColor: theme.palette.grey[500],
-            transition: theme.transitions.create([
-              'border-color',
-              'background-color',
-              'box-shadow',
-            ]),
-            '&:hover': {
-              backgroundColor: 'transparent',
-            },
-            '&.Mui-focused': {
-              backgroundColor: 'transparent',
-              // boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
-              // borderColor: theme.palette.primary.main,
-            },
-          },
-        },
-      },
-      defaultProps: {
-        InputProps: {
-          disableUnderline: true,
-        },
-      },
-    },
   },
 })
 
