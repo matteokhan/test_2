@@ -52,7 +52,7 @@ export type RouteSegment = {
   cabinClass: number
   cabinClassName: string
   equipment: string
-  timeBeforeSegment: number
+  timeBeforeSegment: string
 }
 
 type PriceInfo = {

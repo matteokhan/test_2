@@ -2,6 +2,7 @@ import { Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
+import { transformDuration } from '@/utils'
 
 export const FlightDetails = ({ route }: { route: Route; airline: string }) => {
   const { segments, travelTime } = route
@@ -42,12 +43,6 @@ export const FlightDetails = ({ route }: { route: Route; airline: string }) => {
     if (route.stopNumber >= 2) {
       return route.stopNumber + ' escales (' + transformDuration(route.totalStopDuration) + ')'
     }
-  }
-
-  const transformDuration = (duration: string, addMinutesSuffix: boolean = false): string => {
-    const [hours, minutes] = duration.split(':').map(Number)
-    const formattedDuration = `${hours}h${minutes.toString().padStart(2, '0')}`
-    return addMinutesSuffix ? `${formattedDuration}mn` : formattedDuration
   }
 
   return (
