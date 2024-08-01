@@ -4,18 +4,18 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile
+RUN npm install -g pnpm
+COPY package.json ./
+RUN pnpm i 
 
 
-FROM base AS builder
+FROM deps AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN corepack enable pnpm && pnpm run build
+COPY . .
+RUN pnpm run build
 
 
 FROM base AS runner
@@ -43,7 +43,8 @@ USER nextjs
 EXPOSE 8080
 
 ENV PORT 8080
+ENV HOSTNAME 0.0.0.0
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD node server.js port=$PORT
