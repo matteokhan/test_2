@@ -33,6 +33,7 @@ export const ItineraryRoute = ({ route }: { route: Route }) => {
       <Stack p={2} gap={2}>
         {route.segments.map((segment, index) => (
           <ItinerarySegment
+            key={segment.id}
             segment={segment}
             indexSegment={index}
             allSegments={route.segments}
