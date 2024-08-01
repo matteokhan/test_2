@@ -89,6 +89,7 @@ let theme = createTheme({
       red: palette.augmentColor({
         color: {
           main: '#BE003C',
+          light: '#BD4B6F',
         },
       }),
       blueLabel: palette.augmentColor({
