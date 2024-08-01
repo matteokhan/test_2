@@ -2,12 +2,13 @@
 
 import React from 'react'
 import * as Yup from 'yup'
-import { TextField, Button, Stack, IconButton, Typography } from '@mui/material'
+import { Button, Stack, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Form, Formik, FormikHelpers, Field, FieldArray } from 'formik'
 import { SearchFlightParams } from '@/types'
+import { CustomTextField } from '@/components'
 
 const DEFAULT_PARAMS = {
   segments: [
@@ -68,14 +69,14 @@ export const SearchFlightsForm = ({
                       <React.Fragment key={index}>
                         <Stack gap={1} direction="row">
                           <Field
-                            as={TextField}
+                            as={CustomTextField}
                             name={`segments.${index}.from`}
                             label="Vol au départ de"
                             variant="filled"
                             sx={{ flexGrow: 1 }}
                           />
                           <Field
-                            as={TextField}
+                            as={CustomTextField}
                             name={`segments.${index}.to`}
                             label="Vol à destination de"
                             variant="filled"
@@ -123,7 +124,7 @@ export const SearchFlightsForm = ({
                 </Stack>
               )}
             </FieldArray>
-            <Field name="adults" as={TextField} label="Voyageurs" variant="filled" />
+            <Field name="adults" as={CustomTextField} label="Voyageurs" variant="filled" />
             <Button type="submit" variant="contained" size="large">
               Rechercher
             </Button>

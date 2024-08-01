@@ -1,6 +1,6 @@
 export * from './Header'
 export * from './Search'
-export * from './SectionContainer'
+export * from './Design'
 export * from './Flights'
 export * from './CustomIcons'
 export * from './Providers'

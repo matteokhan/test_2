@@ -1,9 +1,10 @@
 export type BookingStep = {
   name: string
-  isActive: boolean
+  url: string
 }
 
 export type SalutationOption = 'Mr' | 'Mme' | null
+
 export type PassengerData = {
   salutation: SalutationOption
   firstName: string
@@ -11,4 +12,17 @@ export type PassengerData = {
   isPayer: boolean
   dateOfBirth: string
   phoneNumber: string
+}
+
+export type PayerData = {
+  salutation: SalutationOption
+  firstName: string
+  lastName: string
+  dateOfBirth: string
+  phoneNumber: string
+  email: string
+  address: string
+  postalCode: string
+  city: string
+  country: string
 }

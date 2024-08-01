@@ -3,11 +3,11 @@
 import React from 'react'
 import { Header, SearchFlightsModes, SectionContainer, SearchFlights } from '@/components'
 import { Box, Stack } from '@mui/material'
-import { useFlightsContext } from '@/contexts'
+import { useFlights } from '@/contexts'
 
 export default function FlighsPage() {
   // TODO: Try to remove this dependency and render SearchFlights always
-  const { searchParams } = useFlightsContext()
+  const { searchParams } = useFlights()
   return (
     <>
       <Header />

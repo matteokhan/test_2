@@ -36,7 +36,7 @@ export type Route = {
   baggages?: number
 }
 
-type RouteSegment = {
+export type RouteSegment = {
   id: string
   departure: string
   departureCityCode: string

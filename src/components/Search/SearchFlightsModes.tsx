@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { Box, Paper, SxProps, Tab, Tabs } from '@mui/material'
 import { SearchFlightsForm } from '@/components'
-import { useFlightsContext } from '@/contexts'
+import { useFlights } from '@/contexts'
 import { SearchFlightParams } from '@/types'
 
 type SearchFlightsModesProps = {
@@ -17,12 +17,12 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
   }
-  const { setSearchParams } = useFlightsContext()
+  const { setSearchParams } = useFlights()
   const handleSearch = (values: SearchFlightParams) => {
     setSearchParams({
-      adults: values.adults,
-      childrens: values.childrens,
-      infant: values.infant,
+      adults: +values.adults,
+      childrens: +values.childrens,
+      infant: +values.infant,
       segments: values.segments.map((segment) => ({
         from: segment.from,
         to: segment.to,

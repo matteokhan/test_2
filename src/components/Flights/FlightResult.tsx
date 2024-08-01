@@ -1,9 +1,19 @@
+'use client'
+
 import React from 'react'
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
 import { FlightDetails } from '@/components'
 import { Solution } from '@/types'
+import { useBooking } from '@/contexts'
+import { useRouter } from 'next/navigation'
 
 export const FlightResult = ({ result }: { result: Solution }) => {
+  const router = useRouter()
+  const { steps, setSelectedFlight } = useBooking()
+  const selectFlight = () => {
+    setSelectedFlight(result)
+    router.push(steps[0].url)
+  }
   return (
     <Paper sx={{ padding: 2 }}>
       <Stack gap={5.5} direction="row">
@@ -56,7 +66,10 @@ export const FlightResult = ({ result }: { result: Solution }) => {
               </Typography>
             )}
           </Stack>
-          <Button variant="outlined" sx={{ width: 'fit-content', paddingX: 3 }}>
+          <Button
+            variant="outlined"
+            sx={{ width: 'fit-content', paddingX: 3 }}
+            onClick={selectFlight}>
             Voir le détail
           </Button>
         </Stack>

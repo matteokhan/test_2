@@ -38,6 +38,7 @@ declare module '@mui/material/styles' {
     bodySm: React.CSSProperties
     labelLg: React.CSSProperties
     labelMd: React.CSSProperties
+    labelSm: React.CSSProperties
   }
 
   interface TypographyVariantsOptions {
@@ -51,6 +52,7 @@ declare module '@mui/material/styles' {
     bodySm?: React.CSSProperties
     labelLg?: React.CSSProperties
     labelMd?: React.CSSProperties
+    labelSm?: React.CSSProperties
   }
 }
 declare module '@mui/material/Typography' {
@@ -65,6 +67,7 @@ declare module '@mui/material/Typography' {
     bodySm: true
     labelLg: true
     labelMd: true
+    labelSm: true
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
@@ -86,6 +89,7 @@ let theme = createTheme({
       red: palette.augmentColor({
         color: {
           main: '#BE003C',
+          light: '#BD4B6F',
         },
       }),
       blueLabel: palette.augmentColor({
@@ -171,6 +175,7 @@ let theme = createTheme({
           bodySm: 'p',
           labelLg: 'label',
           labelMd: 'label',
+          labelSm: 'label',
         },
       },
     },
@@ -293,6 +298,13 @@ theme = createTheme(theme, {
       lineHeight: 1.2,
       letterSpacing: '0.5px',
     },
+    labelSm: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(11),
+      fontWeight: 500,
+      lineHeight: 1.5,
+      letterSpacing: '0.5px',
+    },
   },
 })
 
@@ -331,37 +343,6 @@ theme = createTheme(theme, {
         },
         flexContainer: {
           gap: theme.spacing(4),
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiFilledInput-root': {
-            overflow: 'hidden',
-            borderRadius: 4,
-            backgroundColor: 'transparent',
-            border: '1px solid',
-            borderColor: theme.palette.grey[500],
-            transition: theme.transitions.create([
-              'border-color',
-              'background-color',
-              'box-shadow',
-            ]),
-            '&:hover': {
-              backgroundColor: 'transparent',
-            },
-            '&.Mui-focused': {
-              backgroundColor: 'transparent',
-              // boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
-              // borderColor: theme.palette.primary.main,
-            },
-          },
-        },
-      },
-      defaultProps: {
-        InputProps: {
-          disableUnderline: true,
         },
       },
     },

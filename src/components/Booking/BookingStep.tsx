@@ -1,16 +1,16 @@
 import { BookingStep as BookingStepType } from '@/types'
 import { Box, Typography } from '@mui/material'
 
-export const BookingStep = ({ step }: { step: BookingStepType }) => {
+export const BookingStep = ({ step, isActive }: { step: BookingStepType; isActive: boolean }) => {
   return (
     <Box
       width="9px"
       height="9px"
       borderRadius="10px"
       position="relative"
-      sx={{ bgcolor: step.isActive ? 'primary.main' : 'grey.500' }}>
+      sx={{ bgcolor: isActive ? 'primary.main' : 'grey.500' }}>
       <Typography
-        sx={{ color: step.isActive ? 'primary.main' : 'grey.600' }}
+        sx={{ color: isActive ? 'primary.main' : 'grey.600' }}
         variant="labelMd"
         left="-75px"
         textAlign="center"
