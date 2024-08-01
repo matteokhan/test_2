@@ -74,7 +74,7 @@ export const AirplaneIcon = () => {
         viewBox="0 0 28 29"
         fill="none"
         xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#clip0_4555_14411)">
+        <g clipPath="url(#clip0_4555_14411)">
           <rect
             x="26"
             y="26.5"
@@ -95,7 +95,7 @@ export const AirplaneIcon = () => {
           height="26"
           transform="rotate(-180 27 27.5)"
           stroke="white"
-          stroke-width="2"
+          strokeWidth="2"
         />
         <defs>
           <clipPath id="clip0_4555_14411">
@@ -123,7 +123,7 @@ export const TrainIcon = () => {
         viewBox="0 0 28 28"
         fill="none"
         xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#clip0_4555_14373)">
+        <g clipPath="url(#clip0_4555_14373)">
           <rect x="2" y="2" width="24" height="24" fill="white" />
           <path d="M2 2H26V26H2V2Z" fill="white" />
           <path
@@ -131,7 +131,7 @@ export const TrainIcon = () => {
             fill="black"
           />
         </g>
-        <rect x="1" y="1" width="26" height="26" stroke="white" stroke-width="2" />
+        <rect x="1" y="1" width="26" height="26" stroke="white" strokeWidth="2" />
         <defs>
           <clipPath id="clip0_4555_14373">
             <rect x="2" y="2" width="24" height="24" fill="white" />

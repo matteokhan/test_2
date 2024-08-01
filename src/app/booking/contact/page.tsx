@@ -11,7 +11,7 @@ import { PayerData } from '@/types'
 export default function ContactInfoPage() {
   const router = useRouter()
   const formRef = useRef<FormikProps<PayerData> | null>(null)
-  const { goNextStep, setPayer } = useBooking()
+  const { goNextStep, setPayer, passengers, payerIndex } = useBooking()
 
   const handleSubmit = async () => {
     if (formRef.current) {
@@ -46,7 +46,22 @@ export default function ContactInfoPage() {
       <Stack direction="row" gap={2}>
         <Box flexGrow="1">
           <SimpleContainer title="Coordonnées">
-            <PayerForm formRef={formRef} onSubmit={handlePayerSubmit} />
+            <PayerForm
+              formRef={formRef}
+              onSubmit={handlePayerSubmit}
+              initialValues={
+                payerIndex !== null
+                  ? {
+                      ...passengers[payerIndex],
+                      email: '',
+                      address: '',
+                      postalCode: '',
+                      city: '',
+                      country: '',
+                    }
+                  : undefined
+              }
+            />
           </SimpleContainer>
           <BookingStepActions onContinue={handleSubmit} onGoBack={onGoBack} />
         </Box>
