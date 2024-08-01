@@ -2,7 +2,7 @@ import { Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
-import { transformDuration } from '@/utils/date'
+import { transformDuration } from '@/utils'
 
 export const FlightDetails = ({ route }: { route: Route; airline: string }) => {
   const { segments, travelTime } = route

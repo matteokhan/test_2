@@ -15,30 +15,30 @@ export const ItinerarySegment = ({
   allSegments,
   isLastSegment = false,
 }: {
-  segment: RouteSegment,
-  indexSegment: number,
-  allSegments: RouteSegment[],
+  segment: RouteSegment
+  indexSegment: number
+  allSegments: RouteSegment[]
   isLastSegment?: boolean
 }) => {
   let nextSegment = undefined
   let scaleTime = undefined
   let airportChange = false
-  if(!isLastSegment) {
+  if (!isLastSegment) {
     nextSegment = allSegments[indexSegment + 1]
     scaleTime = nextSegment.timeBeforeSegment
     airportChange = nextSegment.departureCityCode != segment.arrivalCityCode
   }
 
   const dateOptions: Intl.DateTimeFormatOptions = {
-    month: 'long',
-    day: 'numeric'
-  };
+    month: 'short',
+    day: 'numeric',
+  }
 
   const getSegmentIcon = () => {
     if (segment.equipment == 'TRN') {
-      return (<TrainIcon />)
+      return <TrainIcon />
     } else {
-      return (<AirplaneIcon />)
+      return <AirplaneIcon />
     }
   }
 
@@ -47,7 +47,7 @@ export const ItinerarySegment = ({
       <Stack direction="row" gap={1}>
         <ItinerarySegmentDatetime
           time={segment.departureDateTime.split('T')[1].slice(0, 5)}
-          date={(new Date(segment.departureDateTime)).toLocaleDateString(undefined, dateOptions)}
+          date={new Date(segment.departureDateTime).toLocaleDateString(undefined, dateOptions)}
         />
         <ItineraryTimeline />
         <ItinerarySegmentDetails
@@ -64,13 +64,15 @@ export const ItinerarySegment = ({
         <ItineraryTimeline icon={getSegmentIcon()} />
         <Stack flexGrow={1} justifyContent="flex-end">
           {/* TODO: hardcoded data here */}
-          <Typography variant="bodySm">{segment.carrier} - {segment.flightNumber} - ALX6BPRT</Typography>
+          <Typography variant="bodySm">
+            {segment.carrier} - {segment.flightNumber} - ALX6BPRT
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" gap={1}>
         <ItinerarySegmentDatetime
           time={segment.arrivalDateTime.split('T')[1].slice(0, 5)}
-          date={(new Date(segment.arrivalDateTime)).toLocaleDateString(undefined, dateOptions)}
+          date={new Date(segment.arrivalDateTime).toLocaleDateString(undefined, dateOptions)}
         />
         <ItineraryTimeline noLine={isLastSegment} dotted={!isLastSegment} />
         <ItinerarySegmentDetails
