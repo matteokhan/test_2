@@ -6,6 +6,7 @@ import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import { CreateAccountOptInField, SalutationField } from '@/components'
 import { MutableRefObject } from 'react'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
@@ -50,7 +51,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
         validationSchema={payerSchema}
         onSubmit={onSubmit}
         enableReinitialize={false}>
-        {({ errors, touched }) => (
+        {({ errors, touched, setFieldValue }) => (
           <Form>
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
@@ -72,13 +73,17 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 error={touched.lastName && errors.lastName}
                 helperText={touched.lastName && errors.lastName}
               />
-              <Field
-                as={TextField}
+              <DatePicker
+                slotProps={{
+                  textField: {
+                    variant: 'filled',
+                    error: !!(touched.dateOfBirth && errors.dateOfBirth),
+                    helperText: touched.dateOfBirth && errors.dateOfBirth,
+                  },
+                }}
                 name="dateOfBirth"
                 label="Date de naissance"
-                variant="filled"
-                error={touched.dateOfBirth && errors.dateOfBirth}
-                helperText={touched.dateOfBirth && errors.dateOfBirth}
+                onChange={(value) => setFieldValue('dateOfBirth', value, true)}
               />
               <Field
                 as={TextField}

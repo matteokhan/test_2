@@ -5,6 +5,7 @@ import { Alert, Box, Stack, TextField } from '@mui/material'
 import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import { PassengerIsPayerField, SalutationField } from '@/components'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 const passengerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
@@ -50,7 +51,7 @@ export const PassengerForm = ({
         validationSchema={passengerSchema}
         onSubmit={onSubmit}
         enableReinitialize={false}>
-        {({ errors, touched }) => (
+        {({ errors, touched, setFieldValue }) => (
           <Form>
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
@@ -72,13 +73,17 @@ export const PassengerForm = ({
                 error={touched.lastName && errors.lastName}
                 helperText={touched.lastName && errors.lastName}
               />
-              <Field
-                as={TextField}
+              <DatePicker
+                slotProps={{
+                  textField: {
+                    variant: 'filled',
+                    error: !!(touched.dateOfBirth && errors.dateOfBirth),
+                    helperText: touched.dateOfBirth && errors.dateOfBirth,
+                  },
+                }}
                 name="dateOfBirth"
                 label="Date de naissance"
-                variant="filled"
-                error={touched.dateOfBirth && errors.dateOfBirth}
-                helperText={touched.dateOfBirth && errors.dateOfBirth}
+                onChange={(value) => setFieldValue('dateOfBirth', value, true)}
               />
               <Field
                 as={TextField}

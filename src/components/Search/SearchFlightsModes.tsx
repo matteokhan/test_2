@@ -1,8 +1,6 @@
 'use client'
 
 import React from 'react'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { Box, Paper, SxProps, Tab, Tabs } from '@mui/material'
 import { SearchFlightsForm } from '@/components'
 import { useFlights } from '@/contexts'
@@ -33,38 +31,36 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper
-        sx={{
-          backgroundColor: 'common.white',
-          paddingTop: 2,
-          paddingBottom: 3,
-          paddingX: 4,
-          ...sx,
-        }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Aller-retour" />
-          <Tab label="Aller simple" />
-          {/* Uncomment this to enable multidestinations */}
-          {/* <Tab label="Multi-destinations" /> */}
-        </Tabs>
-        {activeTab === 0 && (
-          <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-            <SearchFlightsForm onSubmit={handleSearch} isRoundtrip={true} />
-          </Box>
-        )}
-        {activeTab === 1 && (
-          <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-            <SearchFlightsForm onSubmit={handleSearch} />
-          </Box>
-        )}
+    <Paper
+      sx={{
+        backgroundColor: 'common.white',
+        paddingTop: 2,
+        paddingBottom: 3,
+        paddingX: 4,
+        ...sx,
+      }}>
+      <Tabs value={activeTab} onChange={handleTabChange}>
+        <Tab label="Aller-retour" />
+        <Tab label="Aller simple" />
         {/* Uncomment this to enable multidestinations */}
-        {/* {activeTab === 2 && (
+        {/* <Tab label="Multi-destinations" /> */}
+      </Tabs>
+      {activeTab === 0 && (
+        <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
+          <SearchFlightsForm onSubmit={handleSearch} isRoundtrip={true} />
+        </Box>
+      )}
+      {activeTab === 1 && (
+        <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
+          <SearchFlightsForm onSubmit={handleSearch} />
+        </Box>
+      )}
+      {/* Uncomment this to enable multidestinations */}
+      {/* {activeTab === 2 && (
           <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
             <SearchFlightsForm onSubmit={handleSearch} multiDestinations={true} />
           </Box>
         )} */}
-      </Paper>
-    </LocalizationProvider>
+    </Paper>
   )
 }
