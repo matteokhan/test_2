@@ -1,9 +1,9 @@
 import { Route } from '@/types'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Stack, SxProps, Typography } from '@mui/material'
 import { ItinerarySegment } from '@/components'
 import { transformDuration } from '@/utils'
 
-export const ItineraryRoute = ({ route }: { route: Route }) => {
+export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) => {
   const departure = route.segments[0].departure
   const arrival = route.segments[route.segments.length - 1].arrival
 
@@ -15,7 +15,7 @@ export const ItineraryRoute = ({ route }: { route: Route }) => {
   }
 
   return (
-    <Box maxWidth="590px" border="1px solid" borderColor="grey.400" borderRadius={1}>
+    <Box maxWidth="590px" borderRadius={1} bgcolor="white" sx={{ ...sx }}>
       <Box py={1.5} px={2}>
         <Typography variant="titleMd">
           {departure} - {arrival}

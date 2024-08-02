@@ -2,17 +2,16 @@
 
 import React from 'react'
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
-import { FlightDetails } from '@/components'
+import { FlightRouteDetails } from '@/components'
 import { Solution } from '@/types'
-import { useBooking } from '@/contexts'
-import { useRouter } from 'next/navigation'
+import { useBooking, useFlights } from '@/contexts'
 
 export const FlightResult = ({ result }: { result: Solution }) => {
-  const router = useRouter()
-  const { steps, setSelectedFlight } = useBooking()
-  const selectFlight = () => {
-    setSelectedFlight(result)
-    router.push(steps[0].url)
+  const { setPreSelectedFlight } = useBooking()
+  const { setFlightDetailsOpen } = useFlights()
+  const preSelectFlight = () => {
+    setPreSelectedFlight(result)
+    setFlightDetailsOpen(true)
   }
   return (
     <Paper sx={{ padding: 2 }}>
@@ -20,7 +19,7 @@ export const FlightResult = ({ result }: { result: Solution }) => {
         <Stack flexGrow={1}>
           {result.routes.map((route, index, routes) => (
             <React.Fragment key={route.id}>
-              <FlightDetails route={route} airline={result.platingCarrier} />
+              <FlightRouteDetails route={route} airline={result.platingCarrier} />
               {index < result.routes.length - 1 && (
                 <Stack gap={4} direction="row">
                   <Stack minWidth="25%"></Stack>
@@ -69,7 +68,7 @@ export const FlightResult = ({ result }: { result: Solution }) => {
           <Button
             variant="outlined"
             sx={{ width: 'fit-content', paddingX: 3 }}
-            onClick={selectFlight}>
+            onClick={preSelectFlight}>
             Voir le détail
           </Button>
         </Stack>

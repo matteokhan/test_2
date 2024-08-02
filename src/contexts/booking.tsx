@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 type BookingContextType = {
   selectedFlight: Solution | null
   setSelectedFlight: (flight: Solution | null) => void
+  preSelectedFlight: Solution | null
+  setPreSelectedFlight: (flight: Solution | null) => void
   steps: BookingStepType[]
   passengers: PassengerData[]
   setPassengers: React.Dispatch<React.SetStateAction<PassengerData[]>>
@@ -25,6 +27,7 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined)
 export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter()
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
+  const [preSelectedFlight, setPreSelectedFlight] = useState<Solution | null>(null)
   const steps: BookingStepType[] = [
     { name: 'Passagers et bagages', url: '/booking/passengers' },
     { name: 'Coordonnées', url: '/booking/contact' },
@@ -50,6 +53,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       value={{
         selectedFlight,
         setSelectedFlight,
+        preSelectedFlight,
+        setPreSelectedFlight,
         steps,
         passengers,
         setPassengers,

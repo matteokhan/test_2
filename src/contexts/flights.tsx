@@ -9,6 +9,8 @@ type FlightsContextType = {
   firstSegment: SearchFlightSegmentDto | undefined
   lastSegment: SearchFlightSegmentDto | undefined
   totalPassengers: number
+  flightDetailsOpen: boolean
+  setFlightDetailsOpen: (open: boolean) => void
 }
 
 const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
@@ -23,6 +25,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const firstSegment = searchParams.segments[0]
   const lastSegment = searchParams.segments[searchParams.segments.length - 1]
   const totalPassengers = searchParams.adults + searchParams.childrens + searchParams.infant
+  const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
 
   return (
     <FlightsContext.Provider
@@ -32,6 +35,8 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         firstSegment,
         lastSegment,
         totalPassengers,
+        flightDetailsOpen,
+        setFlightDetailsOpen,
       }}>
       {children}
     </FlightsContext.Provider>
