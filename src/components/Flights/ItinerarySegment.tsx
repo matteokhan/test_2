@@ -63,9 +63,8 @@ export const ItinerarySegment = ({
         </Stack>
         <ItineraryTimeline icon={getSegmentIcon()} />
         <Stack flexGrow={1} justifyContent="flex-end">
-          {/* TODO: hardcoded data here */}
           <Typography variant="bodySm">
-            {segment.carrier} - {segment.flightNumber} - ALX6BPRT
+            {segment.carrier} - {segment.flightNumber} - {segment.fare?.fareBasis}
           </Typography>
         </Stack>
       </Stack>
