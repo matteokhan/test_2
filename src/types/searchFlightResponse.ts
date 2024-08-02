@@ -53,21 +53,21 @@ export type RouteSegment = {
   cabinClassName: string
   equipment: string
   timeBeforeSegment: string
-  fare: Fare 
+  fare: Fare
 }
 
 type Fare = {
-    fareBasis: string;              
-    baggagePieces: number;          
-    brandId: string;                
-    name: string;                   
-    baggageWeight: string;          
-    options: FareOption[];          
+  fareBasis: string
+  baggagePieces: number
+  brandId: string
+  name: string
+  baggageWeight: string
+  options: FareOption[]
 }
 
 type FareOption = {
-    description: string;            
-    indicator: string;              
+  description: string
+  indicator: string
 }
 
 type PriceInfo = {
