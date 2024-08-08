@@ -36,7 +36,8 @@ export const FlightResult = ({ result }: { result: Solution }) => {
                       variant="bodySm"
                       bgcolor="common.white"
                       px="10px"
-                      color="grey.700">
+                      color="grey.700"
+                      data-testid="flightResult-nightsAt">
                       {routes[index + 1].nightsBeforeRoute} nuits à{' '}
                       {routes[index + 1].segments[0].departure}
                     </Typography>
@@ -48,19 +49,25 @@ export const FlightResult = ({ result }: { result: Solution }) => {
         </Stack>
         <Stack gap={1} maxWidth="23%" minWidth="23%" alignSelf="flex-end">
           <Stack>
-            <Typography variant="headlineSm" color="primary">
+            <Typography variant="headlineSm" color="primary" data-testid="flightResult-totalPrice">
               {result.priceInfo.total}
               {result.priceInfo.currencySymbol}
             </Typography>
             {result.priceInfo.passengerNumber > 1 && (
-              <Typography variant="bodySm" color="grey.800">
+              <Typography
+                variant="bodySm"
+                color="grey.800"
+                data-testid="flightResult-pricePerPassenger">
                 Vol pour {result.priceInfo.passengerNumber} voyageurs (
                 {result.priceInfo.total / result.priceInfo.passengerNumber}
                 {result.priceInfo.currencySymbol} par pers.)
               </Typography>
             )}
             {result.priceInfo.passengerNumber === 1 && (
-              <Typography variant="bodySm" color="grey.800">
+              <Typography
+                variant="bodySm"
+                color="grey.800"
+                data-testid="flightResult-pricePerPassenger">
                 Vol pour {result.priceInfo.passengerNumber} voyageur
               </Typography>
             )}
@@ -68,7 +75,8 @@ export const FlightResult = ({ result }: { result: Solution }) => {
           <Button
             variant="outlined"
             sx={{ width: 'fit-content', paddingX: 3 }}
-            onClick={preSelectFlight}>
+            onClick={preSelectFlight}
+            data-testid="flightResult-seeDetailsButton">
             Voir le détail
           </Button>
         </Stack>

@@ -31,7 +31,8 @@ export const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({
             width="24px"
             height="24px"
             justifyContent="center"
-            alignItems="center">
+            alignItems="center"
+            data-testid="itineraryTimeline-icon">
             {icon}
           </Stack>
         )}

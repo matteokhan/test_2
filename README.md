@@ -30,7 +30,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Make sure to set environment variables in the `.env` file according before creating the container image.
 
 ```bash
-docker build -t leclerc-website .
+docker build -t leclerc-website --platform linux/amd64 .
 docker run -p 80:3000 leclerc-website
 ```
 

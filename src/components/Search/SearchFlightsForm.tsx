@@ -59,7 +59,7 @@ export const SearchFlightsForm = ({
       onSubmit={onSubmit}
       enableReinitialize>
       {({ values, setFieldValue }) => (
-        <Form>
+        <Form data-testid="searchFlightsForm">
           <Stack direction="row" width="100%" gap={1}>
             <FieldArray name="segments">
               {({ remove, push }) => (
@@ -74,6 +74,9 @@ export const SearchFlightsForm = ({
                             label="Vol au départ de"
                             variant="filled"
                             sx={{ flexGrow: 1 }}
+                            inputProps={{
+                              'data-testid': `fromField-${index}`,
+                            }}
                           />
                           <Field
                             as={CustomTextField}
@@ -81,6 +84,9 @@ export const SearchFlightsForm = ({
                             label="Vol à destination de"
                             variant="filled"
                             sx={{ flexGrow: 1 }}
+                            inputProps={{
+                              'data-testid': `toField-${index}`,
+                            }}
                           />
                           <DatePicker
                             name={`segments.${index}.date`}
@@ -104,7 +110,7 @@ export const SearchFlightsForm = ({
                                 aria-label="delete"
                                 size="small"
                                 onClick={() => remove(index)}>
-                                <CloseIcon fontSize="small" />
+                                <CloseIcon fontSize="small" data-testid={null} />
                               </IconButton>
                             </Stack>
                           )}
@@ -116,7 +122,7 @@ export const SearchFlightsForm = ({
                       <IconButton
                         type="button"
                         onClick={() => push({ from: '', to: '', date: '' })}>
-                        <AddCircleOutlineIcon />
+                        <AddCircleOutlineIcon data-testid={null} />
                       </IconButton>
                       <Typography>Ajouter un vol</Typography>
                     </Stack>
@@ -125,7 +131,7 @@ export const SearchFlightsForm = ({
               )}
             </FieldArray>
             <Field name="adults" as={CustomTextField} label="Voyageurs" variant="filled" />
-            <Button type="submit" variant="contained" size="large">
+            <Button type="submit" variant="contained" size="large" data-testid="searchButton">
               Rechercher
             </Button>
           </Stack>

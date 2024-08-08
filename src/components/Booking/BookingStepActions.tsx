@@ -9,10 +9,18 @@ export const BookingStepActions = ({
 }) => {
   return (
     <Stack pt={2} px={4} pb={11} direction="row" justifyContent="flex-end" gap={1}>
-      <Button onClick={onGoBack} variant="text" size="large">
+      <Button
+        onClick={onGoBack}
+        variant="text"
+        size="large"
+        data-testid="bookingStepsAction-goBackButton">
         Précédent
       </Button>
-      <Button onClick={onContinue} variant="contained" size="large">
+      <Button
+        onClick={onContinue}
+        variant="contained"
+        size="large"
+        data-testid="bookingStepsAction-continueButton">
         Continuer
       </Button>
     </Stack>

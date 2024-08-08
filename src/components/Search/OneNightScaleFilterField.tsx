@@ -5,7 +5,11 @@ import { Field, FieldInputProps } from 'formik'
 
 const OneNightScaleFilter = ({ ...props }: FieldInputProps<boolean>) => {
   return (
-    <FormControlLabel {...props} control={<Checkbox />} label="Autoriser les escales d'une nuit" />
+    <FormControlLabel
+      {...props}
+      control={<Checkbox data-testid="allowNightScalesField" />}
+      label="Autoriser les escales d'une nuit"
+    />
   )
 }
 

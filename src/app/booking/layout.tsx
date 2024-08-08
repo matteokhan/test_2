@@ -1,12 +1,30 @@
+'use client'
+
+import { useEffect } from 'react'
 import {
   BookingStepsTopbar,
   Header,
   SectionContainer,
   SelectedFlightInfoTopbar,
 } from '@/components'
+import { useBooking } from '@/contexts'
 import { Box } from '@mui/material'
+import { useRouter } from 'next/navigation'
 
 export default function BookingLayout({ children }: { children: React.ReactNode }) {
+  const { preSelectedFlight } = useBooking()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!preSelectedFlight) {
+      router.push('/flights')
+    }
+  }, [preSelectedFlight, router])
+
+  if (!preSelectedFlight) {
+    return null // TODO: Add loading state
+  }
+
   return (
     <>
       <Header />

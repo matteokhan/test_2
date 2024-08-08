@@ -6,16 +6,13 @@ import CloseIcon from '@mui/icons-material/Close'
 import { ItineraryRoute } from '@/components'
 import { useBooking } from '@/contexts'
 import { MouseEventHandler } from 'react'
-import { useRouter } from 'next/navigation'
 
 export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButtonElement> }) => {
-  const { preSelectedFlight, setSelectedFlight, steps, setCurrentStep } = useBooking()
-  const router = useRouter()
+  const { preSelectedFlight, selectFlight, goToStep } = useBooking()
 
-  const selectFlight = () => {
-    setSelectedFlight(preSelectedFlight)
-    setCurrentStep(0)
-    router.push(steps[0].url)
+  const handleSelectFlight = () => {
+    selectFlight(preSelectedFlight)
+    goToStep(0)
   }
 
   return (
@@ -29,8 +26,8 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
               <SwapHorizIcon />
               <Typography variant="titleMd">HARDCODED (PAR)</Typography>
             </Stack>
-            <IconButton aria-label="close" onClick={onClose}>
-              <CloseIcon />
+            <IconButton aria-label="close" onClick={onClose} data-testid="flightDetails-close">
+              <CloseIcon data-testid={null} />
             </IconButton>
           </Stack>
         </Paper>
@@ -49,7 +46,11 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
         <Stack direction="row" justifyContent="space-between">
           <Box>
             {/* TODO: fix per person price */}
-            <Typography variant="headlineSm" color="primary.main" height="30px">
+            <Typography
+              variant="headlineSm"
+              color="primary.main"
+              height="30px"
+              data-testid="flightDetails-price">
               {preSelectedFlight?.priceInfo.total} {preSelectedFlight?.priceInfo.currencySymbol}{' '}
             </Typography>
             <Typography variant="bodySm" color="grey.800">
@@ -60,7 +61,8 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
             variant="contained"
             size="medium"
             sx={{ height: 'auto', width: '128px' }}
-            onClick={selectFlight}>
+            onClick={handleSelectFlight}
+            data-testid="flightDetails-selectFlight">
             Sélectionner
           </Button>
         </Stack>

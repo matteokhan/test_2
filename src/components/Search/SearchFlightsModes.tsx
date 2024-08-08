@@ -40,10 +40,10 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
         ...sx,
       }}>
       <Tabs value={activeTab} onChange={handleTabChange}>
-        <Tab label="Aller-retour" />
-        <Tab label="Aller simple" />
+        <Tab label="Aller-retour" data-testid="searchMode-roundtripFlightButton" />
+        <Tab label="Aller simple" data-testid="searchMode-singleFlightButton" />
         {/* Uncomment this to enable multidestinations */}
-        {/* <Tab label="Multi-destinations" /> */}
+        {/* <Tab label="Multi-destinations" data-testid="searchMode-multidestinationFlightButton"/> */}
       </Tabs>
       {activeTab === 0 && (
         <Box sx={{ mt: 1, pt: 1, pb: 2 }}>

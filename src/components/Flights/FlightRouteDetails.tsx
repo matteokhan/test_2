@@ -50,19 +50,22 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
       <Stack gap={1} minWidth="25%">
         <Stack gap={0.5}>
           <p>Logo</p>
-          <Typography variant="bodySm" color="grey.700">
+          <Typography variant="bodySm" color="grey.700" data-testid="flightRouteDetails-carrier">
             {route.carrier}
           </Typography>
         </Stack>
         {tags && (
-          <Stack direction="row">
+          <Stack direction="row" data-testid="flightRouteDetails-tags">
             <Chip label={tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
           </Stack>
         )}
       </Stack>
       <Stack flexGrow={1}>
         <Stack direction="row" justifyContent="space-between" gap={2}>
-          <Typography variant="titleLg" color="leclerc.red.main">
+          <Typography
+            variant="titleLg"
+            color="leclerc.red.main"
+            data-testid="flightRouteDetails-departureTime">
             {departureTime}
           </Typography>
           <Stack
@@ -76,49 +79,79 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
             <Box borderRadius="4px" width="7px" height="7px" bgcolor="grey.900"></Box>
           </Stack>
           {daysToArrival > 0 && (
-            <Typography variant="bodySm" color="grey.700">
+            <Typography
+              variant="bodySm"
+              color="grey.700"
+              data-testid="flightRouteDetails-daysToArrival">
               J+{daysToArrival}
             </Typography>
           )}
-          <Typography variant="titleLg" color="leclerc.red.main">
+          <Typography
+            variant="titleLg"
+            color="leclerc.red.main"
+            data-testid="flightRouteDetails-arrivalTime">
             {arrivalTime}
           </Typography>
         </Stack>
         <Stack direction="row" gap={4.5}>
           <Stack gap={0.5} width="30%">
-            <Typography variant="bodyMd">{departureAirport}</Typography>
+            <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
+              {departureAirport}
+            </Typography>
             <Stack direction="row" alignItems="center" gap={0.5}>
-              <Typography variant="labelLg">{departureCityCode}</Typography>
-              {isTrain && <TrainIcon />}
+              <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
+                {departureCityCode}
+              </Typography>
+              {isTrain && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
             </Stack>
           </Stack>
           <Stack textAlign="center" width="40%" gap="2px">
-            <Typography variant="bodySm">{transformDuration(travelTime, true)}</Typography>
-            <Typography variant="bodySm" color="grey.700">
+            <Typography variant="bodySm" data-testid="flightRouteDetails-duration">
+              {transformDuration(travelTime, true)}
+            </Typography>
+            <Typography
+              variant="bodySm"
+              color="grey.700"
+              data-testid="flightRouteDetails-scaleDetails">
               {getScaleDetails()}
             </Typography>
             {route.airportChange && (
-              <Typography variant="bodySm" color="leclerc.red.main">
+              <Typography
+                variant="bodySm"
+                color="leclerc.red.main"
+                data-testid="flightRouteDetails-changeAirportWarning">
                 Changement d’aéroport
               </Typography>
             )}
           </Stack>
           <Stack gap={0.5} textAlign="right" width="30%">
-            <Typography variant="bodyMd">{arrivalAirport}</Typography>
+            <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
+              {arrivalAirport}
+            </Typography>
             <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
-              <Typography variant="labelLg">{arrivalCityCode}</Typography>
+              <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
+                {arrivalCityCode}
+              </Typography>
             </Stack>
           </Stack>
         </Stack>
         {(carryOnLuggage || checkedLuggage || noLuggage) && (
           <Stack direction="row" justifyContent="space-between" pt={1} alignItems="center">
-            <Stack direction="row">
-              {carryOnLuggage && <CarryOnLuggageIcon />}
-              {checkedLuggage && <CheckedLuggageIcon />}
-              {noLuggage && <NoLuggageIcon />}
+            <Stack direction="row" data-testid="flightRouteDetails-luggageDetails">
+              {carryOnLuggage && (
+                <CarryOnLuggageIcon data-testid="flightRouteDetails-carryOnLuggage" />
+              )}
+              {checkedLuggage && (
+                <CheckedLuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
+              )}
+              {noLuggage && <NoLuggageIcon data-testid="flightRouteDetails-noLuggage" />}
             </Stack>
+            {/* TODO: enable carbon footprint when available */}
             {false && (
-              <Typography variant="bodySm" color="grey.700">
+              <Typography
+                variant="bodySm"
+                color="grey.700"
+                data-testid="flightRouteDetails-carbonFootprint">
                 {carbonFootprint}
               </Typography>
             )}

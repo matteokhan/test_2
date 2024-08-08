@@ -3,17 +3,13 @@
 import React, { useRef } from 'react'
 import { BookingStepActions, PassengerInfo, PurchaseDetails } from '@/components'
 import { Box, Stack, Typography } from '@mui/material'
-import { useFlights, useBooking } from '@/contexts'
+import { useBooking } from '@/contexts'
 import { PassengerData } from '@/types'
 import { FormikProps } from 'formik'
-import { useRouter } from 'next/navigation'
 
 export default function PassengersPage() {
-  const router = useRouter()
-  const { passengers, setPassengers, payerIndex, setPayerIndex, goNextStep } = useBooking()
-  const {
-    searchParams: { adults },
-  } = useFlights()
+  const { passengers, setPassengers, payerIndex, setPayerIndex, goNextStep, goPreviousStep } =
+    useBooking()
   const formRefs = useRef<(FormikProps<PassengerData> | null)[]>([])
 
   const handleSubmit = async () => {
@@ -94,29 +90,6 @@ export default function PassengersPage() {
     }
   }
 
-  const onGoBack = () => {
-    // TODO: Go to preovious step. If first step, go to flights then
-    router.back()
-  }
-
-  React.useEffect(() => {
-    // First passenger is the payer by default
-    for (let i = 0; i < adults; i++) {
-      setPassengers((prev) => [
-        ...prev,
-        {
-          salutation: null,
-          firstName: '',
-          lastName: '',
-          dateOfBirth: '',
-          phoneNumber: '',
-          isPayer: i === 0,
-        },
-      ])
-    }
-    setPayerIndex(0)
-  }, [])
-
   return (
     <>
       <Typography variant="headlineMd" py={3}>
@@ -135,7 +108,7 @@ export default function PassengersPage() {
               initialValues={passenger}
             />
           ))}
-          <BookingStepActions onContinue={handleSubmit} onGoBack={onGoBack} />
+          <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
         </Box>
         <Box>
           <PurchaseDetails />

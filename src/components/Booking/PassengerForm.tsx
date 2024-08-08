@@ -52,7 +52,7 @@ export const PassengerForm = ({
         onSubmit={onSubmit}
         enableReinitialize={false}>
         {({ errors, touched, setFieldValue }) => (
-          <Form>
+          <Form data-testid="passengerForm">
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
             </Stack>
@@ -64,6 +64,9 @@ export const PassengerForm = ({
                 variant="filled"
                 error={touched.firstName && errors.firstName}
                 helperText={touched.firstName && errors.firstName}
+                inputProps={{
+                  'data-testid': 'firstNameField',
+                }}
               />
               <Field
                 as={TextField}
@@ -72,6 +75,9 @@ export const PassengerForm = ({
                 variant="filled"
                 error={touched.lastName && errors.lastName}
                 helperText={touched.lastName && errors.lastName}
+                inputProps={{
+                  'data-testid': 'lastNameField',
+                }}
               />
               <DatePicker
                 slotProps={{
@@ -81,6 +87,7 @@ export const PassengerForm = ({
                     helperText: touched.dateOfBirth && errors.dateOfBirth,
                   },
                 }}
+                data-testid="dateOfBirthField"
                 name="dateOfBirth"
                 label="Date de naissance"
                 onChange={(value) => setFieldValue('dateOfBirth', value, true)}
@@ -92,6 +99,9 @@ export const PassengerForm = ({
                 variant="filled"
                 error={touched.phoneNumber && errors.phoneNumber}
                 helperText={touched.phoneNumber && errors.phoneNumber}
+                inputProps={{
+                  'data-testid': 'phoneNumberField',
+                }}
               />
               <PassengerIsPayerField
                 name="isPayer"

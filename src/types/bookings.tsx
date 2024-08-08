@@ -25,4 +25,5 @@ export type PayerData = {
   postalCode: string
   city: string
   country: string
+  createAccountOptIn: boolean
 }

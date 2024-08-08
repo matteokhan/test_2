@@ -17,6 +17,7 @@ const Navbar = () => {
       <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>
         <Stack gap={5} alignItems="center" direction="row">
           <Box
+            data-testid="navbar-leclercLogo"
             sx={{
               position: 'relative',
               height: 42,
@@ -25,9 +26,10 @@ const Navbar = () => {
             <Image src="/voyages_logo.svg" alt="voyages logo" fill />
           </Box>
           <Button
+            data-testid="navbar-allTripsButton"
             color="primary"
             variant="contained"
-            endIcon={<ExpandMore />}
+            endIcon={<ExpandMore data-testid={null} />}
             sx={{
               display: {
                 xs: 'none',
@@ -48,6 +50,7 @@ const Navbar = () => {
                 lg: 'flex',
               },
             }}>
+            {/* TODO: put some tests ids here */}
             <Typography color="leclerc.red.main" variant="bodyMd" fontWeight={500}>
               0 825 884 620
             </Typography>
@@ -65,22 +68,29 @@ const Navbar = () => {
                   sm: 'flex',
                 },
               }}>
-              <Button href="/newsletter" color="primary">
+              <Button href="/newsletter" color="primary" data-testid="navbar-newsletterButton">
                 Newsletter
               </Button>
-              <Button href="/help" color="primary" variant="text">
+              <Button href="/help" color="primary" variant="text" data-testid="navbar-helpButton">
                 Aide
               </Button>
-              <Button href="/agencies" color="primary" variant="text">
+              <Button
+                href="/agencies"
+                color="primary"
+                variant="text"
+                data-testid="navbar-ourAgenciesButton">
                 Nos agences
               </Button>
             </Stack>
             <Stack direction="row">
-              <IconButton aria-label="favorites" color="primary">
-                <FavoriteBorderOutlinedIcon />
+              <IconButton
+                aria-label="favorites"
+                color="primary"
+                data-testid="navbar-favoriteButton">
+                <FavoriteBorderOutlinedIcon data-testid={null} />
               </IconButton>
-              <IconButton aria-label="account" color="primary">
-                <AccountCircleOutlinedIcon />
+              <IconButton aria-label="account" color="primary" data-testid="navbar-accountButton">
+                <AccountCircleOutlinedIcon data-testid={null} />
               </IconButton>
             </Stack>
             <Stack
@@ -91,8 +101,11 @@ const Navbar = () => {
                   sm: 'none',
                 },
               }}>
-              <IconButton aria-label="account" sx={{ color: 'common.black' }}>
-                <MenuIcon />
+              <IconButton
+                aria-label="account"
+                sx={{ color: 'common.black' }}
+                data-testid="navbar-menuButton">
+                <MenuIcon data-testid={null} />
               </IconButton>
             </Stack>
           </Stack>
@@ -119,10 +132,15 @@ const NavbarLinks = () => {
           alignItems: 'center',
           gap: 0.8,
         }}>
-        <Button variant="outlined">Ventes Flash</Button>
-        <Button variant="outlined">Dernière minute</Button>
-        <Button variant="outlined">Pâques</Button>
-        <Button variant="outlined">WE de mai</Button>
+        <Button variant="outlined" data-testid="navbar-flashSalesButton">
+          Ventes Flash
+        </Button>
+        <Button variant="outlined" data-testid="navbar-lastMinuteButton">
+          Dernière minute
+        </Button>
+        <Button variant="outlined" data-testid="navbar-easterButton">
+          Pâques
+        </Button>
       </SectionContainer>
     </Box>
   )

@@ -4,14 +4,12 @@ import { useRef } from 'react'
 import { BookingStepActions, PayerForm, PurchaseDetails, SimpleContainer } from '@/components'
 import { useBooking } from '@/contexts'
 import { Box, Stack, Typography } from '@mui/material'
-import { useRouter } from 'next/navigation'
 import { FormikProps } from 'formik'
 import { PayerData } from '@/types'
 
 export default function ContactInfoPage() {
-  const router = useRouter()
   const formRef = useRef<FormikProps<PayerData> | null>(null)
-  const { goNextStep, setPayer, passengers, payerIndex } = useBooking()
+  const { goNextStep, setPayer, passengers, payerIndex, goPreviousStep } = useBooking()
 
   const handleSubmit = async () => {
     if (formRef.current) {
@@ -31,11 +29,6 @@ export default function ContactInfoPage() {
 
   const handlePayerSubmit = (values: PayerData) => {
     setPayer(values)
-  }
-
-  const onGoBack = () => {
-    // TODO: Go to preovious step.
-    router.back()
   }
 
   return (
@@ -58,12 +51,13 @@ export default function ContactInfoPage() {
                       postalCode: '',
                       city: '',
                       country: '',
+                      createAccountOptIn: false,
                     }
                   : undefined
               }
             />
           </SimpleContainer>
-          <BookingStepActions onContinue={handleSubmit} onGoBack={onGoBack} />
+          <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
         </Box>
         <Box>
           <PurchaseDetails />

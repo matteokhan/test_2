@@ -53,7 +53,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
         onSubmit={onSubmit}
         enableReinitialize={false}>
         {({ errors, touched, setFieldValue }) => (
-          <Form>
+          <Form data-testid="payerForm">
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
             </Stack>
@@ -65,6 +65,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.firstName && errors.firstName}
                 helperText={touched.firstName && errors.firstName}
+                inputProps={{
+                  'data-testid': 'firstNameField',
+                }}
               />
               <Field
                 as={TextField}
@@ -73,6 +76,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.lastName && errors.lastName}
                 helperText={touched.lastName && errors.lastName}
+                inputProps={{
+                  'data-testid': 'lastNameField',
+                }}
               />
               <DatePicker
                 slotProps={{
@@ -94,6 +100,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.phoneNumber && errors.phoneNumber}
                 helperText={touched.phoneNumber && errors.phoneNumber}
+                inputProps={{
+                  'data-testid': 'phoneNumberField',
+                }}
               />
               <Field
                 as={TextField}
@@ -102,6 +111,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.email && errors.email}
                 helperText={touched.email && errors.email}
+                inputProps={{
+                  'data-testid': 'emailField',
+                }}
               />
             </Stack>
             <Typography pt={3} pb={2} variant="titleMd">
@@ -115,6 +127,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.address && errors.address}
                 helperText={touched.address && errors.address}
+                inputProps={{
+                  'data-testid': 'addressField',
+                }}
               />
               <Field
                 as={TextField}
@@ -123,6 +138,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.postalCode && errors.postalCode}
                 helperText={touched.postalCode && errors.postalCode}
+                inputProps={{
+                  'data-testid': 'postalCodeField',
+                }}
               />
               <Field
                 as={TextField}
@@ -131,6 +149,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.city && errors.city}
                 helperText={touched.city && errors.city}
+                inputProps={{
+                  'data-testid': 'cityField',
+                }}
               />
               <Field
                 as={TextField}
@@ -139,6 +160,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 variant="filled"
                 error={touched.country && errors.country}
                 helperText={touched.country && errors.country}
+                inputProps={{
+                  'data-testid': 'countryField',
+                }}
               />
               <CreateAccountOptInField name="createAccountOptIn" />
             </Stack>

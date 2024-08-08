@@ -72,7 +72,7 @@ export const SearchFlightsFilters = ({
         onSubmit={onSubmit}
         enableReinitialize>
         {({ values }) => (
-          <Form>
+          <Form data-testid="searchFlightsFilters">
             <Stack gap={3}>
               <AutoSubmit />
               <Typography variant="titleLg">Filtrer par </Typography>
@@ -98,7 +98,9 @@ export const SearchFlightsFilters = ({
               <Box pb={1}>
                 <Stack direction="row" justifyContent="space-between" pb={1}>
                   <Typography variant="titleMd">Prix maximum</Typography>
-                  <Typography variant="bodyLg">{values.maxPrice}€</Typography>
+                  <Typography variant="bodyLg" data-testid="searchFlightsFilters-maxPriceLabel">
+                    {values.maxPrice}€
+                  </Typography>
                 </Stack>
                 <MaxPriceFilterField
                   name="maxPrice"
@@ -133,6 +135,7 @@ export const SearchFlightsFilters = ({
                 <Typography variant="titleMd" pb={1}>
                   Compagnies aériennes
                 </Typography>
+                {/* TODO: Add tests ids */}
                 <Box pl={1.5} pb={1}>
                   <FormGroup>
                     {airlines.map((airline) => (

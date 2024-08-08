@@ -13,32 +13,35 @@ export const SearchFlights = () => {
   const [filters, setFilters] = React.useState({} as SearchFlightFilters)
   const { searchParams } = useFlights()
   const { data: response } = useSearchFlights({ params: searchParams })
-  const filteredData = response?.solutions.filter((solution) => {
-    const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
-    if (
-      filters.maxPriceType == 'total' &&
-      filters?.maxPrice &&
-      solution.priceInfo.total > filters.maxPrice
-    )
-      return false
-    if (
-      filters.maxPriceType == 'per-person' &&
-      filters?.maxPrice &&
-      solution.adults.pricePerPerson > filters.maxPrice
-    )
-      return false
-    if (filters?.scales === 'direct' && totalStops > 0) return false
-    if (filters?.scales === '1-scale' && totalStops > 1) return false
-    if (filters?.scales === '2-scale' && totalStops > 2) return false
+  const filteredData = response?.solutions
+    .filter((solution) => {
+      const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
+      if (
+        filters.maxPriceType == 'total' &&
+        filters?.maxPrice &&
+        solution.priceInfo.total > filters.maxPrice
+      )
+        return false
+      if (
+        filters.maxPriceType == 'per-person' &&
+        filters?.maxPrice &&
+        solution.adults.pricePerPerson > filters.maxPrice
+      )
+        return false
+      if (filters?.scales === 'direct' && totalStops > 0) return false
+      if (filters?.scales === '1-scale' && totalStops > 1) return false
+      if (filters?.scales === '2-scale' && totalStops > 2) return false
 
-    const flightStartAt = new Date(solution.routes[0].segments[0].departureDateTime).getUTCHours()
-    if (filters?.flightTime === '0-6' && flightStartAt >= 6) return false
-    if (filters?.flightTime === '6-12' && (flightStartAt < 6 || flightStartAt >= 12)) return false
-    if (filters?.flightTime === '12-18' && (flightStartAt < 12 || flightStartAt >= 18)) return false
-    if (filters?.flightTime === '18-24' && flightStartAt < 18) return false
+      const flightStartAt = new Date(solution.routes[0].segments[0].departureDateTime).getUTCHours()
+      if (filters?.flightTime === '0-6' && flightStartAt >= 6) return false
+      if (filters?.flightTime === '6-12' && (flightStartAt < 6 || flightStartAt >= 12)) return false
+      if (filters?.flightTime === '12-18' && (flightStartAt < 12 || flightStartAt >= 18))
+        return false
+      if (filters?.flightTime === '18-24' && flightStartAt < 18) return false
 
-    return true
-  })
+      return true
+    })
+    .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
 
   const getAirlines = () => {
     const airlines: AirlineFilterData[] = []
@@ -60,6 +63,7 @@ export const SearchFlights = () => {
     })
     return airlines.sort((a, b) => a.price - b.price)
   }
+
   return (
     <>
       {response && (
@@ -90,7 +94,9 @@ export const SearchFlights = () => {
         {response && (
           <>
             <SearchResults results={filteredData?.slice(0, resultsNumber)} />
-            <Button onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}>
+            <Button
+              onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
+              data-testid="searchFlights-viewMoreResultsButton">
               Voir plus
             </Button>
           </>

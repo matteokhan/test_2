@@ -57,13 +57,17 @@ export const ItinerarySegment = ({
       </Stack>
       <Stack direction="row" gap={1}>
         <Stack width="48px" minWidth="48px" alignItems="flex-end" justifyContent="center">
-          <Typography variant="bodySm" position="relative" top="5px">
+          <Typography
+            variant="bodySm"
+            position="relative"
+            top="5px"
+            data-testid="itinerarySegment-duration">
             {transformDuration(segment.duration, true)}
           </Typography>
         </Stack>
         <ItineraryTimeline icon={getSegmentIcon()} />
         <Stack flexGrow={1} justifyContent="flex-end">
-          <Typography variant="bodySm">
+          <Typography variant="bodySm" data-testid="itinerarySegment-carrierInfo">
             {segment.carrier} - {segment.flightNumber} - {segment.fare?.fareBasis}
           </Typography>
         </Stack>

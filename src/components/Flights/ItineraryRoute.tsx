@@ -17,10 +17,10 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
   return (
     <Box maxWidth="590px" borderRadius={1} bgcolor="white" sx={{ ...sx }}>
       <Box py={1.5} px={2}>
-        <Typography variant="titleMd">
+        <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
           {departure} - {arrival}
         </Typography>
-        <Typography variant="bodyMd" color="grey.800">
+        <Typography variant="bodyMd" color="grey.800" data-testid="itineraryRoute-durationDetails">
           {departureDate.toLocaleDateString(undefined, dateOptions)} - durée{' '}
           {transformDuration(route.travelTime, true)}{' '}
           {route.stopNumber > 0 && (

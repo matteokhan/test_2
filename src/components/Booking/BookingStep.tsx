@@ -8,7 +8,8 @@ export const BookingStep = ({ step, isActive }: { step: BookingStepType; isActiv
       height="9px"
       borderRadius="10px"
       position="relative"
-      sx={{ bgcolor: isActive ? 'primary.main' : 'grey.500' }}>
+      sx={{ bgcolor: isActive ? 'primary.main' : 'grey.500' }}
+      data-testid="bookingStep">
       <Typography
         sx={{ color: isActive ? 'primary.main' : 'grey.600' }}
         variant="labelMd"

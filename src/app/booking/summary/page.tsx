@@ -1,9 +1,11 @@
 'use client'
 
 import { BookingStepActions, Itinerary, PurchaseDetails, SimpleContainer } from '@/components'
+import { useBooking } from '@/contexts'
 import { Box, Stack, Typography } from '@mui/material'
 
 export default function BookingSummaryPage() {
+  const { goPreviousStep } = useBooking()
   const handleSubmit = async () => {
     // if (formRef.current) {
     //   const errors = await formRef.current.validateForm()
@@ -20,10 +22,6 @@ export default function BookingSummaryPage() {
     // }
   }
 
-  const onGoBack = () => {
-    // TODO: Go to preovious step.
-    // router.back()
-  }
   return (
     <>
       <Typography variant="headlineMd" py={3}>
@@ -34,7 +32,7 @@ export default function BookingSummaryPage() {
           <SimpleContainer title="Itinéraire">
             <Itinerary />
           </SimpleContainer>
-          <BookingStepActions onContinue={handleSubmit} onGoBack={onGoBack} />
+          <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
         </Box>
         <Box>
           <PurchaseDetails />

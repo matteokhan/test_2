@@ -4,7 +4,13 @@ import { Box, Checkbox, FormControlLabel, Stack, Typography } from '@mui/materia
 import { Field, FieldInputProps } from 'formik'
 
 const CreateAccountOptIn = ({ ...props }: FieldInputProps<boolean>) => {
-  return <FormControlLabel {...props} control={<Checkbox />} label />
+  return (
+    <FormControlLabel
+      {...props}
+      control={<Checkbox data-testid="createAccountOptInField" />}
+      label
+    />
+  )
 }
 
 export const CreateAccountOptInField = ({ name }: { name: string }) => {

@@ -10,7 +10,16 @@ type MaxFilterProps = FieldInputProps<number | number[]> & {
 }
 
 export const MaxPriceFilter = ({ highestPrice, lowestPrice, ...props }: MaxFilterProps) => {
-  return <Slider {...props} size="small" min={lowestPrice} max={highestPrice} step={100} />
+  return (
+    <Slider
+      {...props}
+      size="small"
+      min={lowestPrice}
+      max={highestPrice}
+      step={100}
+      data-testid="maxPriceSliderField"
+    />
+  )
 }
 
 export const MaxPriceFilterField = ({

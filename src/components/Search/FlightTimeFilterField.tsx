@@ -34,11 +34,36 @@ const FlightTimeOptionItem = styled(Stack)<{
   },
 }))
 
-const options: { value: FlightTimeFilterOption; label: string; icon: ReactElement }[] = [
-  { value: '0-6', label: '0h - 6h', icon: <WbSunnyIcon /> },
-  { value: '6-12', label: '6h - 12h', icon: <WbSunnyIcon /> },
-  { value: '12-18', label: '12h - 18h', icon: <WbTwilightIcon /> },
-  { value: '18-24', label: '18h - 24h', icon: <NightlightRoundIcon /> },
+const options: {
+  value: FlightTimeFilterOption
+  label: string
+  icon: ReactElement
+  testId: string
+}[] = [
+  {
+    value: '0-6',
+    label: '0h - 6h',
+    icon: <WbSunnyIcon />,
+    testId: 'flightTime-0-6',
+  },
+  {
+    value: '6-12',
+    label: '6h - 12h',
+    icon: <WbSunnyIcon />,
+    testId: 'flightTime-6-12',
+  },
+  {
+    value: '12-18',
+    label: '12h - 18h',
+    icon: <WbTwilightIcon />,
+    testId: 'flightTime-12-18',
+  },
+  {
+    value: '18-24',
+    label: '18h - 24h',
+    icon: <NightlightRoundIcon />,
+    testId: 'flightTime-18-24',
+  },
 ]
 
 export const FlightTimeFilterField = ({ ...props }: FieldHookConfig<FlightTimeFilterOption>) => {
@@ -53,12 +78,13 @@ export const FlightTimeFilterField = ({ ...props }: FieldHookConfig<FlightTimeFi
   }
 
   return (
-    <Stack direction="row" gap={0.5} mt={0.5}>
+    <Stack direction="row" gap={0.5} mt={0.5} data-testid="flightTimeField">
       {options.map((option) => (
         <FlightTimeOptionItem
           selected={option.value === value}
           onClick={() => handleChange(option.value)}
-          key={option.value}>
+          key={option.value}
+          data-testid={option.testId}>
           {option.icon}
           <Typography variant="labelMd" noWrap>
             {option.label}

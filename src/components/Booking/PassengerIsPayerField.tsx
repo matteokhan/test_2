@@ -8,7 +8,7 @@ const PassengerIsPayer = ({ checked, ...props }: FieldInputProps<boolean>) => {
     <FormControlLabel
       {...props}
       checked={checked}
-      control={<Checkbox />}
+      control={<Checkbox data-testid="passengerIsPayerField" />}
       label="Ce passager règle la commande"
     />
   )
