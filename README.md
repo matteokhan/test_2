@@ -42,12 +42,3 @@ gcloud auth configure-docker europe-west9-docker.pkg.dev
 docker tag leclerc-website europe-west9-docker.pkg.dev/lec-lvo-refonteb2c-qua/leclerc-website/website:VERSION
 docker push europe-west9-docker.pkg.dev/lec-lvo-refonteb2c-qua/leclerc-website/website:VERSION
 ```
-
-## Run in GCP's Cloud Run
-
-For now, we are deploying to Cloud Run using `gcloud` in the terminal. This method creates their own container
-images, but the idea is to create the images by our own and use terraform to deploy them. This is more so we don't forget how to do it with `gcloud` utility.
-
-```bash
-gcloud run deploy --set-env-vars "NEXT_PUBLIC_FLIGHTS_API_URL=flights_api_url,NEXT_PUBLIC_FLIGHTS_API_TOKEN=Bearer token"
-```

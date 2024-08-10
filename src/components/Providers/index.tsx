@@ -7,17 +7,22 @@ import theme from '@/theme'
 import { FlightsProvider, BookingProvider } from '@/contexts'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { APIProvider as GMapsProvider } from '@vis.gl/react-google-maps'
+import { env } from 'next-runtime-env'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient()
+  const NEXT_PUBLIC_MAPS_API_KEY = env('NEXT_PUBLIC_MAPS_API_KEY') || ''
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <FlightsProvider>
-            <BookingProvider>{children}</BookingProvider>
-          </FlightsProvider>
+          <GMapsProvider apiKey={NEXT_PUBLIC_MAPS_API_KEY}>
+            <FlightsProvider>
+              <BookingProvider>{children}</BookingProvider>
+            </FlightsProvider>
+          </GMapsProvider>
         </LocalizationProvider>
       </QueryClientProvider>
     </ThemeProvider>

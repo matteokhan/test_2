@@ -23,7 +23,7 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
             <Stack direction="row" gap={1} alignItems="center">
               {/* TODO: hardcoded data */}
               <Typography variant="titleMd">HARDCODED (PAR)</Typography>
-              <SwapHorizIcon />
+              <SwapHorizIcon data-testid={null} />
               <Typography variant="titleMd">HARDCODED (PAR)</Typography>
             </Stack>
             <IconButton aria-label="close" onClick={onClose} data-testid="flightDetails-close">

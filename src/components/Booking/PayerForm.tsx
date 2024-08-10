@@ -31,7 +31,7 @@ type PayerFormProps = {
 
 export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) => {
   return (
-    <Box maxWidth="590px">
+    <Box maxWidth="590px" pt={2}>
       <Formik
         innerRef={formRef}
         initialValues={
@@ -91,7 +91,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 value={initialValues?.dateOfBirth ? dayjs(initialValues.dateOfBirth) : null}
                 name="dateOfBirth"
                 label="Date de naissance"
-                onChange={(value) => setFieldValue('dateOfBirth', value, true)}
+                onChange={(value) =>
+                  setFieldValue('dateOfBirth', value?.toISOString().split('T')[0], true)
+                }
               />
               <Field
                 as={TextField}

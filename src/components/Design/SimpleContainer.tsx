@@ -1,22 +1,52 @@
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Button, Paper, Stack, SxProps, Typography } from '@mui/material'
+
+type BaseSimpleContainerProps = {
+  children: React.ReactNode
+  title?: string
+  sx?: SxProps
+}
+
+type SimpleContainerWithoutAction = BaseSimpleContainerProps & {
+  action?: never
+  onAction?: never
+}
+
+type SimpleContainerWithAction = BaseSimpleContainerProps & {
+  action: string
+  onAction: () => void
+}
+
+type SimpleContainerProps = SimpleContainerWithoutAction | SimpleContainerWithAction
 
 export const SimpleContainer = ({
   children,
   title,
-}: {
-  children: React.ReactNode
-  title?: string
-}) => {
+  sx,
+  action,
+  onAction,
+}: SimpleContainerProps) => {
   return (
-    <Paper sx={{ pb: 4, mb: 2 }}>
+    <Paper sx={{ pb: 4, mb: 2, ...sx }}>
       {title && (
-        <Box pt={3} pb={2} pl={4} width="100%" borderBottom="1px solid" borderColor="grey.400">
+        <Stack
+          alignItems="center"
+          pb={2}
+          px={4}
+          width="100%"
+          borderBottom="1px solid"
+          borderColor="grey.400"
+          direction="row"
+          justifyContent="space-between"
+          sx={{ pt: action ? 2 : 3 }}>
           <Typography variant="titleLg">{title}</Typography>
-        </Box>
+          {action && (
+            <Button onClick={onAction} variant="outlined" sx={{ px: 3 }}>
+              {action}
+            </Button>
+          )}
+        </Stack>
       )}
-      <Box px={4} pt={2}>
-        {children}
-      </Box>
+      <Box px={4}>{children}</Box>
     </Paper>
   )
 }

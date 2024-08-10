@@ -8,7 +8,9 @@ export const PurchaseDetails = () => {
   const { totalPassengers } = useFlights()
   const { selectedFlight, totalPrice } = useBooking()
   return (
-    <Paper sx={{ paddingX: 4, paddingBottom: 4, paddingTop: 3, width: '389px' }}>
+    <Paper
+      sx={{ paddingX: 4, paddingBottom: 4, paddingTop: 3, width: '389px' }}
+      data-testid="purchaseDetails">
       <Typography variant="titleLg" paddingBottom={2}>
         Détails du prix
       </Typography>

@@ -14,7 +14,7 @@ export const FlightResult = ({ result }: { result: Solution }) => {
     setFlightDetailsOpen(true)
   }
   return (
-    <Paper sx={{ padding: 2 }}>
+    <Paper sx={{ padding: 2 }} data-testid="flightResult">
       <Stack gap={5.5} direction="row">
         <Stack flexGrow={1}>
           {result.routes.map((route, index, routes) => (

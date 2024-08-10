@@ -43,25 +43,25 @@ const options: {
   {
     value: '0-6',
     label: '0h - 6h',
-    icon: <WbSunnyIcon />,
+    icon: <WbSunnyIcon data-testid={null} />,
     testId: 'flightTime-0-6',
   },
   {
     value: '6-12',
     label: '6h - 12h',
-    icon: <WbSunnyIcon />,
+    icon: <WbSunnyIcon data-testid={null} />,
     testId: 'flightTime-6-12',
   },
   {
     value: '12-18',
     label: '12h - 18h',
-    icon: <WbTwilightIcon />,
+    icon: <WbTwilightIcon data-testid={null} />,
     testId: 'flightTime-12-18',
   },
   {
     value: '18-24',
     label: '18h - 24h',
-    icon: <NightlightRoundIcon />,
+    icon: <NightlightRoundIcon data-testid={null} />,
     testId: 'flightTime-18-24',
   },
 ]

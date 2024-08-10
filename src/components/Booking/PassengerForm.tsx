@@ -32,7 +32,7 @@ export const PassengerForm = ({
   initialValues,
 }: PassengerFormProps) => {
   return (
-    <Box maxWidth="590px">
+    <Box maxWidth="590px" pt={2}>
       <Alert severity="info">
         Les noms des voyageurs doivent être identiques à ceux indiqués sur les pièces d'identité
       </Alert>
@@ -90,7 +90,9 @@ export const PassengerForm = ({
                 data-testid="dateOfBirthField"
                 name="dateOfBirth"
                 label="Date de naissance"
-                onChange={(value) => setFieldValue('dateOfBirth', value, true)}
+                onChange={(value) =>
+                  setFieldValue('dateOfBirth', value?.toISOString().split('T')[0], true)
+                }
               />
               <Field
                 as={TextField}

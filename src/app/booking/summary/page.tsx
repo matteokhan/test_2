@@ -1,11 +1,18 @@
 'use client'
 
-import { BookingStepActions, Itinerary, PurchaseDetails, SimpleContainer } from '@/components'
+import {
+  BookingStepActions,
+  Itinerary,
+  PassengersSummary,
+  PayerSummary,
+  PurchaseDetails,
+  SimpleContainer,
+} from '@/components'
 import { useBooking } from '@/contexts'
 import { Box, Stack, Typography } from '@mui/material'
 
 export default function BookingSummaryPage() {
-  const { goPreviousStep } = useBooking()
+  const { goPreviousStep, goToStep } = useBooking()
   const handleSubmit = async () => {
     // if (formRef.current) {
     //   const errors = await formRef.current.validateForm()
@@ -31,6 +38,20 @@ export default function BookingSummaryPage() {
         <Box flexGrow="1">
           <SimpleContainer title="Itinéraire">
             <Itinerary />
+          </SimpleContainer>
+          <SimpleContainer
+            title="Passagers"
+            sx={{ pb: 3 }}
+            action="Modifier"
+            onAction={() => goToStep(0)}>
+            <PassengersSummary />
+          </SimpleContainer>
+          <SimpleContainer
+            title="Coordonnées de facturation"
+            sx={{ pb: 3 }}
+            action="Modifier"
+            onAction={() => goToStep(1)}>
+            <PayerSummary />
           </SimpleContainer>
           <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
         </Box>

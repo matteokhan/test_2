@@ -122,7 +122,7 @@ export const SearchFlightsFilters = ({
                     <Typography variant="titleSm">
                       Ville de {departure} ({departure})
                     </Typography>
-                    <ArrowForwardIcon />
+                    <ArrowForwardIcon data-testid={null} />
                     <Typography variant="titleSm">
                       Ville de {arrival} ({arrival})
                     </Typography>

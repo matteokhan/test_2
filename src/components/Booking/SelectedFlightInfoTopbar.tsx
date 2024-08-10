@@ -59,7 +59,7 @@ export const SelectedFlightInfoTopbar = () => {
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-from">
                     {firstSegment?.from} ({firstSegment?.from})
                   </Typography>
-                  <SwapHorizIcon />
+                  <SwapHorizIcon data-testid={null} />
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-to">
                     {lastSegment?.to} ({lastSegment?.to})
                   </Typography>
