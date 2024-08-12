@@ -73,7 +73,7 @@ export default function ContactInfoPage() {
             />
           </SimpleContainer>
           <SimpleContainer title="Sélectionner votre agence Leclerc Voyages">
-            <Stack gap={2} py={3}>
+            <Stack gap={2} py={3} data-testid="contactInfoPage-selectAgency">
               <Box pb={1}>
                 <Typography pb={2} variant="bodyMd" color="grey.900" maxWidth="535px">
                   Veuillez sélectionner une agence Leclerc Voyages qui suivra votre réservation sur

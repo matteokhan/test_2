@@ -15,7 +15,12 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
   }
 
   return (
-    <Box maxWidth="590px" borderRadius={1} bgcolor="white" sx={{ ...sx }}>
+    <Box
+      maxWidth="590px"
+      borderRadius={1}
+      bgcolor="white"
+      sx={{ ...sx }}
+      data-testid="itineraryRoute">
       <Box py={1.5} px={2}>
         <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
           {departure} - {arrival}
