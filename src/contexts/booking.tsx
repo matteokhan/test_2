@@ -24,6 +24,7 @@ type BookingContextType = {
   payer: PayerData | null
   setPayer: React.Dispatch<React.SetStateAction<PayerData | null>>
   totalPrice: number
+  getStepIndexByPath: (pathname: string) => number
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -91,6 +92,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setPayerIndex(0)
   }
 
+  const getStepIndexByPath = (pathname: string) => {
+    return steps.findIndex((s) => s.url.includes(pathname))
+  }
+
   return (
     <BookingContext.Provider
       value={{
@@ -112,6 +117,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         payer,
         setPayer,
         totalPrice,
+        getStepIndexByPath,
       }}>
       {children}
     </BookingContext.Provider>

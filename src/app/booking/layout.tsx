@@ -9,17 +9,28 @@ import {
 } from '@/components'
 import { useBooking } from '@/contexts'
 import { Box } from '@mui/material'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function BookingLayout({ children }: { children: React.ReactNode }) {
-  const { preSelectedFlight } = useBooking()
+  const { preSelectedFlight, getStepIndexByPath, setCurrentStep } = useBooking()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!preSelectedFlight) {
       router.push('/flights')
     }
   }, [preSelectedFlight, router])
+
+  // Check url, set the step accordingly
+  useEffect(() => {
+    if (pathname) {
+      const stepIndex = getStepIndexByPath(pathname)
+      if (stepIndex !== -1) {
+        setCurrentStep(stepIndex)
+      }
+    }
+  }, [pathname])
 
   if (!preSelectedFlight) {
     return null // TODO: Add loading state
