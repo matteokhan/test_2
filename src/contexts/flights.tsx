@@ -5,9 +5,9 @@ import { searchParamsToDto } from '@/utils'
 import React, { createContext, useState, useContext } from 'react'
 
 type FlightsContextType = {
-  searchParams: SearchFlightsParams | undefined
   setSearchParams: (params: SearchFlightsParams) => void
   searchParamsDto: SearchFlightsParamsDto | undefined
+  setSearchParamsDto: (params: SearchFlightsParamsDto) => void
   firstSegment: SearchFlightSegment | undefined
   lastSegment: SearchFlightSegment | undefined
   totalPassengers: number
@@ -18,20 +18,26 @@ type FlightsContextType = {
 const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
 
 export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [searchParams, setSearchParams] = useState<SearchFlightsParams | undefined>()
-  const searchParamsDto = searchParamsToDto(searchParams)
+  const [searchParamsDto, setSearchParamsDto] = useState<SearchFlightsParamsDto | undefined>()
   const firstSegment = searchParamsDto?.segments[0]
   const lastSegment = searchParamsDto?.segments[searchParamsDto.segments.length - 1]
   const totalPassengers =
-    (searchParams?.adults || 0) + (searchParams?.childrens || 0) + (searchParams?.infant || 0)
+    (searchParamsDto?.adults || 0) +
+    (searchParamsDto?.childrens || 0) +
+    (searchParamsDto?.infant || 0)
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
+
+  const setSearchParams = (params: SearchFlightsParams) => {
+    const searchParamsDto = searchParamsToDto(params)
+    setSearchParamsDto(searchParamsDto)
+  }
 
   return (
     <FlightsContext.Provider
       value={{
-        searchParams,
         setSearchParams,
         searchParamsDto,
+        setSearchParamsDto,
         firstSegment,
         lastSegment,
         totalPassengers,

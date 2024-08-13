@@ -7,8 +7,7 @@ import {
   SearchRoundTripFlightsForm,
   SearchMultiDestFlightsForm,
 } from '@/components'
-import { OneWayFlightSearchParams, SearchFlightsParams } from '@/types'
-import { useFlights } from '@/contexts'
+import { SearchFlightsParams } from '@/types'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
@@ -37,7 +36,6 @@ export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) =>
       <Tabs value={activeTab} onChange={handleTabChange}>
         <Tab label="Aller-retour" data-testid="searchMode-roundtripFlightButton" />
         <Tab label="Aller simple" data-testid="searchMode-singleFlightButton" />
-        {/* Uncomment this to enable multidestinations */}
         <Tab label="Multi-destinations" data-testid="searchMode-multidestinationFlightButton" />
       </Tabs>
       <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
@@ -45,12 +43,6 @@ export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) =>
         {activeTab === 1 && <SearchOneWayFlightsForm onSubmit={handleSearch} />}
         {activeTab === 2 && <SearchMultiDestFlightsForm onSubmit={handleSearch} />}
       </Box>
-      {/* Uncomment this to enable multidestinations */}
-      {/* {activeTab === 2 && (
-          <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-            <SearchFlightsForm onSubmit={handleSearch} multiDestinations={true} />
-          </Box>
-        )} */}
     </Paper>
   )
 }
