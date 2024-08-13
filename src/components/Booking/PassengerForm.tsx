@@ -91,7 +91,7 @@ export const PassengerForm = ({
                 name="dateOfBirth"
                 label="Date de naissance"
                 onChange={(value) =>
-                  setFieldValue('dateOfBirth', value?.toISOString().split('T')[0], true)
+                  setFieldValue('dateOfBirth', value?.format('YYYY-MM-DD'), true)
                 }
               />
               <Field

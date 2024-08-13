@@ -8,6 +8,7 @@ type FlightsContextType = {
   setSearchParams: (params: SearchFlightsParams) => void
   searchParamsDto: SearchFlightsParamsDto | undefined
   setSearchParamsDto: (params: SearchFlightsParamsDto) => void
+  searchParamsCache: SearchFlightsParams | undefined
   firstSegment: SearchFlightSegment | undefined
   lastSegment: SearchFlightSegment | undefined
   totalPassengers: number
@@ -19,6 +20,7 @@ const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
 
 export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [searchParamsDto, setSearchParamsDto] = useState<SearchFlightsParamsDto | undefined>()
+  const [searchParamsCache, setSearchParamsCache] = useState<SearchFlightsParams | undefined>()
   const firstSegment = searchParamsDto?.segments[0]
   const lastSegment = searchParamsDto?.segments[searchParamsDto.segments.length - 1]
   const totalPassengers =
@@ -30,6 +32,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const setSearchParams = (params: SearchFlightsParams) => {
     const searchParamsDto = searchParamsToDto(params)
     setSearchParamsDto(searchParamsDto)
+    setSearchParamsCache(params)
   }
 
   return (
@@ -38,6 +41,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSearchParams,
         searchParamsDto,
         setSearchParamsDto,
+        searchParamsCache,
         firstSegment,
         lastSegment,
         totalPassengers,

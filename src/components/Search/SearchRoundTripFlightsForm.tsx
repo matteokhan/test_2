@@ -7,6 +7,7 @@ import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-
 import { Form, Formik, FormikHelpers, Field } from 'formik'
 import { RoundTripFlightSearchParams } from '@/types'
 import { CustomTextField } from '@/components'
+import dayjs from 'dayjs'
 
 const DEFAULT_VALUES = {
   adults: 1,
@@ -14,8 +15,8 @@ const DEFAULT_VALUES = {
   infant: 0,
   from: '',
   to: '',
-  departure: '',
-  return: '',
+  departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
+  return: dayjs().add(3, 'day').format('YYYY-MM-DD'),
   _type: 'roundTrip',
 } as RoundTripFlightSearchParams
 
@@ -25,8 +26,8 @@ const searchParamsSchema = Yup.object().shape({
   infant: Yup.number().min(0).required('Required'),
   from: Yup.string().required('Required'),
   to: Yup.string().required('Required'),
-  departure: Yup.string().required('Required'),
-  return: Yup.string().required('Required'),
+  departure: Yup.date().typeError('Invalid date').required('Required'),
+  return: Yup.date().typeError('Invalid date').required('Required'),
 })
 
 type SearchRoundTripFlightsFormProps = {
@@ -47,7 +48,7 @@ export const SearchRoundTripFlightsForm = ({
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
       enableReinitialize>
-      {({ values, setFieldValue }) => (
+      {({ values, setFieldValue, touched, errors }) => (
         <Form data-testid="searchRoundTripFlightsForm">
           <Stack direction="row" width="100%" gap={1}>
             <Stack gap={1} direction="row" flexGrow={1}>
@@ -57,6 +58,8 @@ export const SearchRoundTripFlightsForm = ({
                 label="Vol au départ de"
                 variant="filled"
                 sx={{ flexGrow: 1 }}
+                error={touched.from && errors.from}
+                helperText={touched.from && errors.from}
                 inputProps={{
                   'data-testid': 'fromField',
                 }}
@@ -67,6 +70,8 @@ export const SearchRoundTripFlightsForm = ({
                 label="Vol à destination de"
                 variant="filled"
                 sx={{ flexGrow: 1 }}
+                error={touched.to && errors.to}
+                helperText={touched.to && errors.to}
                 inputProps={{
                   'data-testid': 'toField',
                 }}
@@ -75,9 +80,16 @@ export const SearchRoundTripFlightsForm = ({
                 slots={{ field: SingleInputDateRangeField }}
                 data-testid="datesField"
                 label="Dates"
+                value={[dayjs(values.departure), dayjs(values.return)]}
+                slotProps={{
+                  textField: {
+                    helperText:
+                      (touched.departure && errors.departure) || (touched.return && errors.return),
+                  },
+                }}
                 onChange={(value) => {
-                  setFieldValue('departure', value[0]?.toISOString().split('T')[0], true)
-                  setFieldValue('return', value[1]?.toISOString().split('T')[0], true)
+                  setFieldValue('departure', value[0]?.format('YYYY-MM-DD'), true)
+                  setFieldValue('return', value[1]?.format('YYYY-MM-DD'), true)
                 }}
               />
               <Field name="adults" as={CustomTextField} label="Voyageurs" variant="filled" />

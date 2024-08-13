@@ -9,6 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { APIProvider as GMapsProvider } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
+import 'dayjs/locale/fr'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient()
@@ -17,7 +18,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
           <GMapsProvider apiKey={NEXT_PUBLIC_MAPS_API_KEY}>
             <FlightsProvider>
               <BookingProvider>{children}</BookingProvider>

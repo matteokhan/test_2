@@ -9,19 +9,44 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Form, Formik, FormikHelpers, Field, FieldArray } from 'formik'
 import { MultiDestinationsFlightSearchParams } from '@/types'
 import { CustomTextField } from '@/components'
+import dayjs from 'dayjs'
 
 const DEFAULT_VALUES = {
   adults: 1,
   childrens: 0,
   infant: 0,
-  destinations: [{ from: '', to: '', departure: '' }],
+  destinations: [{ from: '', to: '', departure: dayjs().add(2, 'day').format('YYYY-MM-DD') }],
   _type: 'multiDestinations',
 } as MultiDestinationsFlightSearchParams
+
+type DestinationErrors = {
+  from?: string
+  to?: string
+  departure?: string
+}
+
+type FormErrors = {
+  adults?: string
+  childrens?: string
+  infant?: string
+  destinations?: DestinationErrors[]
+}
+
+type FormTouched = {
+  adults?: boolean
+  childrens?: boolean
+  infant?: boolean
+  destinations?: {
+    from?: boolean
+    to?: boolean
+    departure?: boolean
+  }[]
+}
 
 const searchFlightSegmentSchema = Yup.object().shape({
   from: Yup.string().required('Required'),
   to: Yup.string().required('Required'),
-  departure: Yup.string().required('Required'),
+  departure: Yup.date().typeError('Invalid date').required('Required'),
 })
 
 const searchParamsSchema = Yup.object().shape({
@@ -51,7 +76,7 @@ export const SearchMultiDestFlightsForm = ({
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
       enableReinitialize>
-      {({ values, setFieldValue }) => (
+      {({ values, setFieldValue, touched, errors }) => (
         <Form data-testid="searchFlightsForm">
           <Stack direction="row" width="100%" gap={1}>
             <FieldArray name="destinations">
@@ -67,6 +92,16 @@ export const SearchMultiDestFlightsForm = ({
                             label="Vol au départ de"
                             variant="filled"
                             sx={{ flexGrow: 1 }}
+                            error={
+                              !!(touched.destinations as FormTouched['destinations'])?.[index]
+                                ?.from &&
+                              (errors.destinations as FormErrors['destinations'])?.[index]?.from
+                            }
+                            helperText={
+                              (touched.destinations as FormTouched['destinations'])?.[index]
+                                ?.from &&
+                              (errors.destinations as FormErrors['destinations'])?.[index]?.from
+                            }
                             inputProps={{
                               'data-testid': `fromField-${index}`,
                             }}
@@ -77,24 +112,45 @@ export const SearchMultiDestFlightsForm = ({
                             label="Vol à destination de"
                             variant="filled"
                             sx={{ flexGrow: 1 }}
+                            error={
+                              !!(touched.destinations as FormTouched['destinations'])?.[index]
+                                ?.to &&
+                              (errors.destinations as FormErrors['destinations'])?.[index]?.to
+                            }
+                            helperText={
+                              (touched.destinations as FormTouched['destinations'])?.[index]?.to &&
+                              (errors.destinations as FormErrors['destinations'])?.[index]?.to
+                            }
                             inputProps={{
                               'data-testid': `toField-${index}`,
                             }}
                           />
                           <DatePicker
                             label="Dates"
+                            value={dayjs(values.destinations[index].departure)}
+                            data-testid={`departureField-${index}`}
                             onChange={(value) =>
                               setFieldValue(
                                 `destinations.${index}.departure`,
-                                value?.toISOString().split('T')[0],
+                                value?.format('YYYY-MM-DD'),
                                 true,
                               )
                             }
+                            slotProps={{
+                              textField: {
+                                helperText:
+                                  (touched.destinations as FormTouched['destinations'])?.[index]
+                                    ?.departure &&
+                                  (errors.destinations as FormErrors['destinations'])?.[index]
+                                    ?.departure,
+                              },
+                            }}
                           />
-                          <Stack justifyContent="center">
+                          <Stack justifyContent="flex-start" mt="14px">
                             <IconButton
                               aria-label="delete"
                               size="small"
+                              disabled={values.destinations.length === 1}
                               onClick={() => remove(index)}>
                               <CloseIcon fontSize="small" data-testid={null} />
                             </IconButton>
@@ -103,7 +159,15 @@ export const SearchMultiDestFlightsForm = ({
                       </React.Fragment>
                     ))}
                   <Stack direction="row" alignItems="center">
-                    <IconButton type="button" onClick={() => push({ from: '', to: '', date: '' })}>
+                    <IconButton
+                      type="button"
+                      onClick={() =>
+                        push({
+                          from: '',
+                          to: '',
+                          departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
+                        })
+                      }>
                       <AddCircleOutlineIcon data-testid={null} />
                     </IconButton>
                     <Typography>Ajouter un vol</Typography>

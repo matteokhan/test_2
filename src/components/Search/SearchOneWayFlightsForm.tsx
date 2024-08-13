@@ -7,6 +7,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Form, Formik, FormikHelpers, Field } from 'formik'
 import { OneWayFlightSearchParams } from '@/types'
 import { CustomTextField } from '@/components'
+import dayjs from 'dayjs'
 
 const DEFAULT_VALUES = {
   adults: 1,
@@ -14,7 +15,7 @@ const DEFAULT_VALUES = {
   infant: 0,
   from: '',
   to: '',
-  departure: '',
+  departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   _type: 'oneWay',
 } as OneWayFlightSearchParams
 
@@ -24,7 +25,7 @@ const searchParamsSchema = Yup.object().shape({
   infant: Yup.number().min(0).required('Required'),
   from: Yup.string().required('Required'),
   to: Yup.string().required('Required'),
-  departure: Yup.string().required('Required'),
+  departure: Yup.date().typeError('Invalid date').required('Required'),
 })
 
 type SearchOneWayFlightsFormProps = {
@@ -45,7 +46,7 @@ export const SearchOneWayFlightsForm = ({
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
       enableReinitialize>
-      {({ values, setFieldValue }) => (
+      {({ values, setFieldValue, touched, errors }) => (
         <Form data-testid="searchOneWayFlightsForm">
           <Stack direction="row" width="100%" gap={1}>
             <Stack gap={1} direction="row" flexGrow={1}>
@@ -55,6 +56,8 @@ export const SearchOneWayFlightsForm = ({
                 label="Vol au départ de"
                 variant="filled"
                 sx={{ flexGrow: 1 }}
+                error={touched.from && errors.from}
+                helperText={touched.from && errors.from}
                 inputProps={{
                   'data-testid': 'fromField',
                 }}
@@ -65,6 +68,8 @@ export const SearchOneWayFlightsForm = ({
                 label="Vol à destination de"
                 variant="filled"
                 sx={{ flexGrow: 1 }}
+                error={touched.to && errors.to}
+                helperText={touched.to && errors.to}
                 inputProps={{
                   'data-testid': 'toField',
                 }}
@@ -72,9 +77,13 @@ export const SearchOneWayFlightsForm = ({
               <DatePicker
                 data-testid="departureField"
                 label="Dates"
-                onChange={(value) =>
-                  setFieldValue('departure', value?.toISOString().split('T')[0], true)
-                }
+                value={dayjs(values.departure)}
+                slotProps={{
+                  textField: {
+                    helperText: touched.departure && errors.departure,
+                  },
+                }}
+                onChange={(value) => setFieldValue('departure', value?.format('YYYY-MM-DD'), true)}
               />
               <Field name="adults" as={CustomTextField} label="Voyageurs" variant="filled" />
             </Stack>
