@@ -69,7 +69,7 @@ export const SelectedFlightInfoTopbar = () => {
                   <Typography
                     variant="bodyMd"
                     data-testid="selectedFlightInfoTopbar-depatureArrivalDates">
-                    Du {firstSegment?.date.substring(5)} au {lastSegment?.dateReturn?.substring(5)}
+                    Du {firstSegment?.date.substring(5)} au {lastSegment?.date?.substring(5)}
                   </Typography>
                   <Typography variant="bodyMd">-</Typography>
                   <Typography

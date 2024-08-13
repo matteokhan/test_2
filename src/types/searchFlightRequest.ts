@@ -1,14 +1,14 @@
 export type SearchFlightSegment = {
   from: string
   to: string
-  date: Date
+  date: string
 }
 
 export type OneWayFlightSearchParams = {
   _type: 'oneWay'
   from: string
   to: string
-  departure: Date
+  departure: string
   adults: number
   childrens: number
   infant: number
@@ -18,8 +18,8 @@ export type RoundTripFlightSearchParams = {
   _type: 'roundTrip'
   from: string
   to: string
-  departure: Date
-  return: Date
+  departure: string
+  return: string
   adults: number
   childrens: number
   infant: number
@@ -30,7 +30,7 @@ export type MultiDestinationsFlightSearchParams = {
   destinations: {
     from: string
     to: string
-    departure: Date
+    departure: string
   }[]
   adults: number
   childrens: number

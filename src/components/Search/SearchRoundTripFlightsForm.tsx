@@ -14,8 +14,8 @@ const DEFAULT_VALUES = {
   infant: 0,
   from: '',
   to: '',
-  departure: new Date(),
-  return: new Date(),
+  departure: '',
+  return: '',
   _type: 'roundTrip',
 } as RoundTripFlightSearchParams
 
@@ -25,8 +25,8 @@ const searchParamsSchema = Yup.object().shape({
   infant: Yup.number().min(0).required('Required'),
   from: Yup.string().required('Required'),
   to: Yup.string().required('Required'),
-  departure: Yup.date().required('Required'),
-  return: Yup.date().required('Required'),
+  departure: Yup.string().required('Required'),
+  return: Yup.string().required('Required'),
 })
 
 type SearchRoundTripFlightsFormProps = {

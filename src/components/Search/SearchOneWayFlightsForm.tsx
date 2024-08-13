@@ -14,7 +14,7 @@ const DEFAULT_VALUES = {
   infant: 0,
   from: '',
   to: '',
-  departure: new Date(),
+  departure: '',
   _type: 'oneWay',
 } as OneWayFlightSearchParams
 
@@ -24,7 +24,7 @@ const searchParamsSchema = Yup.object().shape({
   infant: Yup.number().min(0).required('Required'),
   from: Yup.string().required('Required'),
   to: Yup.string().required('Required'),
-  departure: Yup.date().required('Required'),
+  departure: Yup.string().required('Required'),
 })
 
 type SearchOneWayFlightsFormProps = {

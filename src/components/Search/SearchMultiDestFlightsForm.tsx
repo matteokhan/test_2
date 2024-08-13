@@ -14,14 +14,14 @@ const DEFAULT_VALUES = {
   adults: 1,
   childrens: 0,
   infant: 0,
-  destinations: [{ from: '', to: '', departure: new Date() }],
+  destinations: [{ from: '', to: '', departure: '' }],
   _type: 'multiDestinations',
 } as MultiDestinationsFlightSearchParams
 
 const searchFlightSegmentSchema = Yup.object().shape({
   from: Yup.string().required('Required'),
   to: Yup.string().required('Required'),
-  departure: Yup.date().required('Required'),
+  departure: Yup.string().required('Required'),
 })
 
 const searchParamsSchema = Yup.object().shape({
