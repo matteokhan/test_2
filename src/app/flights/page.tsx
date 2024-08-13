@@ -8,13 +8,15 @@ import {
   SearchFlights,
   FlightDetails,
 } from '@/components'
-import { Box, Drawer, Stack } from '@mui/material'
+import { Box, Drawer } from '@mui/material'
 import { useFlights } from '@/contexts'
+import { SearchFlightsParams } from '@/types'
 
 export default function FlighsPage() {
-  // TODO: Try to remove this dependency and render SearchFlights always
-  const { searchParams, flightDetailsOpen, setFlightDetailsOpen } = useFlights()
-
+  const { flightDetailsOpen, setFlightDetailsOpen, setSearchParams } = useFlights()
+  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
+    setSearchParams(searchParams)
+  }
   return (
     <>
       <Header />
@@ -24,10 +26,8 @@ export default function FlighsPage() {
         }}>
         <SectionContainer
           sx={{ justifyContent: 'space-between', paddingY: 3, flexDirection: 'column' }}>
-          <SearchFlightsModes />
-          <Stack direction="row" spacing={2} mt={2}>
-            {searchParams.segments.length > 0 && <SearchFlights />}
-          </Stack>
+          <SearchFlightsModes onSearch={onSearch} />
+          <SearchFlights />
           <Drawer
             open={flightDetailsOpen}
             onClose={() => setFlightDetailsOpen(false)}

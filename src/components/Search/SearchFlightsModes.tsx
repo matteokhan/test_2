@@ -2,32 +2,27 @@
 
 import React from 'react'
 import { Box, Paper, SxProps, Tab, Tabs } from '@mui/material'
-import { SearchFlightsForm } from '@/components'
+import {
+  SearchOneWayFlightsForm,
+  SearchRoundTripFlightsForm,
+  SearchMultiDestFlightsForm,
+} from '@/components'
+import { OneWayFlightSearchParams, SearchFlightsParams } from '@/types'
 import { useFlights } from '@/contexts'
-import { SearchFlightParams } from '@/types'
 
 type SearchFlightsModesProps = {
+  onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
   sx?: SxProps
 }
 
-export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
+export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
+
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
   }
-  const { setSearchParams } = useFlights()
-  const handleSearch = (values: SearchFlightParams) => {
-    setSearchParams({
-      adults: +values.adults,
-      childrens: +values.childrens,
-      infant: +values.infant,
-      segments: values.segments.map((segment) => ({
-        from: segment.from,
-        to: segment.to,
-        date: segment.date.toISOString().split('T')[0],
-        dateReturn: segment.dateReturn ? segment.dateReturn.toISOString().split('T')[0] : undefined,
-      })),
-    })
+  const handleSearch = (values: SearchFlightsParams) => {
+    onSearch({ searchParams: values })
   }
 
   return (
@@ -43,18 +38,13 @@ export const SearchFlightsModes = ({ sx }: SearchFlightsModesProps) => {
         <Tab label="Aller-retour" data-testid="searchMode-roundtripFlightButton" />
         <Tab label="Aller simple" data-testid="searchMode-singleFlightButton" />
         {/* Uncomment this to enable multidestinations */}
-        {/* <Tab label="Multi-destinations" data-testid="searchMode-multidestinationFlightButton"/> */}
+        <Tab label="Multi-destinations" data-testid="searchMode-multidestinationFlightButton" />
       </Tabs>
-      {activeTab === 0 && (
-        <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-          <SearchFlightsForm onSubmit={handleSearch} isRoundtrip={true} />
-        </Box>
-      )}
-      {activeTab === 1 && (
-        <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
-          <SearchFlightsForm onSubmit={handleSearch} />
-        </Box>
-      )}
+      <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
+        {activeTab === 0 && <SearchRoundTripFlightsForm onSubmit={handleSearch} />}
+        {activeTab === 1 && <SearchOneWayFlightsForm onSubmit={handleSearch} />}
+        {activeTab === 2 && <SearchMultiDestFlightsForm onSubmit={handleSearch} />}
+      </Box>
       {/* Uncomment this to enable multidestinations */}
       {/* {activeTab === 2 && (
           <Box sx={{ mt: 1, pt: 1, pb: 2 }}>

@@ -2,30 +2,49 @@ export type SearchFlightSegment = {
   from: string
   to: string
   date: Date
-  dateReturn?: Date
 }
 
-export type SearchFlightParams = {
-  adults: number
-  childrens: number
-  infant: number
-  directFlight: boolean
-  nonStopFlight: boolean
-  segments: SearchFlightSegment[]
-}
-
-export type SearchFlightSegmentDto = {
+export type OneWayFlightSearchParams = {
+  _type: 'oneWay'
   from: string
   to: string
-  date: string
-  dateReturn?: string
-}
-
-export type SearchFlightParamsDto = {
+  departure: Date
   adults: number
   childrens: number
   infant: number
-  // directFlight: boolean
-  // nonStopFlight: boolean
-  segments: SearchFlightSegmentDto[]
+}
+
+export type RoundTripFlightSearchParams = {
+  _type: 'roundTrip'
+  from: string
+  to: string
+  departure: Date
+  return: Date
+  adults: number
+  childrens: number
+  infant: number
+}
+
+export type MultiDestinationsFlightSearchParams = {
+  _type: 'multiDestinations'
+  destinations: {
+    from: string
+    to: string
+    departure: Date
+  }[]
+  adults: number
+  childrens: number
+  infant: number
+}
+
+export type SearchFlightsParams =
+  | OneWayFlightSearchParams
+  | RoundTripFlightSearchParams
+  | MultiDestinationsFlightSearchParams
+
+export type SearchFlightsParamsDto = {
+  adults: number
+  childrens: number
+  infant: number
+  segments: SearchFlightSegment[]
 }

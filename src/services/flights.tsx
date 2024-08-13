@@ -1,10 +1,10 @@
 'use client'
 
-import { SearchFlightParamsDto, SearchResponseDto } from '@/types'
+import { SearchFlightsParamsDto, SearchResponseDto } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
-export const searchFlights = async ({ params }: { params: SearchFlightParamsDto }) => {
+export const searchFlights = async ({ params }: { params?: SearchFlightsParamsDto }) => {
   const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
   const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
   const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/search', {
@@ -21,11 +21,12 @@ export const searchFlights = async ({ params }: { params: SearchFlightParamsDto 
   throw new Error('Failed to fetch flights')
 }
 
-export const useSearchFlights = ({ params }: { params: SearchFlightParamsDto }) => {
+export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | undefined }) => {
   return useQuery<SearchResponseDto>({
     // TODO: use a better key
     queryKey: ['searchFlightsResults', JSON.stringify(params)],
-    queryFn: async () => searchFlights({ params }),
+    queryFn: async () => searchFlights({ params: params }),
     refetchOnWindowFocus: false,
+    enabled: !!params,
   })
 }

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'
 import CssBaseline from '@mui/material/CssBaseline'
-import { Providers } from '@/components'
+import { Providers, MuiXLicense } from '@/components'
 import { PublicEnvScript } from 'next-runtime-env'
 import './globals.css'
 
@@ -27,6 +27,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <CssBaseline />
+        <MuiXLicense />
         <AppRouterCacheProvider>
           <Providers>{children}</Providers>
         </AppRouterCacheProvider>

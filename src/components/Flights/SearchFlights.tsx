@@ -11,8 +11,10 @@ export const SearchFlights = () => {
   const RESULTS_PER_PAGE = 10
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [filters, setFilters] = React.useState({} as SearchFlightFilters)
-  const { searchParams } = useFlights()
-  const { data: response } = useSearchFlights({ params: searchParams })
+  const { searchParamsDto } = useFlights()
+  const { data: response, isSuccess } = useSearchFlights({
+    params: searchParamsDto,
+  })
   const filteredData = response?.solutions
     .filter((solution) => {
       const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
@@ -65,7 +67,7 @@ export const SearchFlights = () => {
   }
 
   return (
-    <>
+    <Stack direction="row" spacing={2} mt={2}>
       {response && (
         <SearchFlightsFilters
           filterData={response.searchFilters}
@@ -91,7 +93,7 @@ export const SearchFlights = () => {
           additional fees <br />
           before checkout. Prices are not final until you complete your purchase.
         </Typography>
-        {response && (
+        {isSuccess && (
           <>
             <SearchResults results={filteredData?.slice(0, resultsNumber)} />
             <Button
@@ -102,6 +104,6 @@ export const SearchFlights = () => {
           </>
         )}
       </Stack>
-    </>
+    </Stack>
   )
 }

@@ -1,13 +1,15 @@
 'use client'
 
-import { SearchFlightParamsDto, SearchFlightSegmentDto } from '@/types'
+import { SearchFlightsParams, SearchFlightSegment, SearchFlightsParamsDto } from '@/types'
+import { searchParamsToDto } from '@/utils'
 import React, { createContext, useState, useContext } from 'react'
 
 type FlightsContextType = {
-  searchParams: SearchFlightParamsDto
-  setSearchParams: (params: SearchFlightParamsDto) => void
-  firstSegment: SearchFlightSegmentDto | undefined
-  lastSegment: SearchFlightSegmentDto | undefined
+  searchParams: SearchFlightsParams | undefined
+  setSearchParams: (params: SearchFlightsParams) => void
+  searchParamsDto: SearchFlightsParamsDto | undefined
+  firstSegment: SearchFlightSegment | undefined
+  lastSegment: SearchFlightSegment | undefined
   totalPassengers: number
   flightDetailsOpen: boolean
   setFlightDetailsOpen: (open: boolean) => void
@@ -16,15 +18,12 @@ type FlightsContextType = {
 const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
 
 export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [searchParams, setSearchParams] = useState<SearchFlightParamsDto>({
-    adults: 1,
-    childrens: 0,
-    infant: 0,
-    segments: [],
-  })
-  const firstSegment = searchParams.segments[0]
-  const lastSegment = searchParams.segments[searchParams.segments.length - 1]
-  const totalPassengers = searchParams.adults + searchParams.childrens + searchParams.infant
+  const [searchParams, setSearchParams] = useState<SearchFlightsParams | undefined>()
+  const searchParamsDto = searchParamsToDto(searchParams)
+  const firstSegment = searchParamsDto?.segments[0]
+  const lastSegment = searchParamsDto?.segments[searchParamsDto.segments.length - 1]
+  const totalPassengers =
+    (searchParams?.adults || 0) + (searchParams?.childrens || 0) + (searchParams?.infant || 0)
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
 
   return (
@@ -32,6 +31,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       value={{
         searchParams,
         setSearchParams,
+        searchParamsDto,
         firstSegment,
         lastSegment,
         totalPassengers,
