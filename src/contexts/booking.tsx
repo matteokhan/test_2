@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState } from 'react'
-import { PassengerData, BookingStep as BookingStepType, PayerData, Solution } from '@/types'
+import { PassengerData, BookingStep as BookingStepType, PayerData, Solution, Fare } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
 
@@ -25,6 +25,11 @@ type BookingContextType = {
   setPayer: React.Dispatch<React.SetStateAction<PayerData | null>>
   totalPrice: number
   getStepIndexByPath: (pathname: string) => number
+  mapIsOpen: boolean
+  setMapIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  currentStepTitle: string
+  selectedFare: Fare | null
+  setSelectedFare: React.Dispatch<React.SetStateAction<Fare | null>>
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -35,17 +40,27 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
   const [preSelectedFlight, setPreSelectedFlight] = useState<Solution | null>(null)
   const steps: BookingStepType[] = [
-    { name: 'Passagers et bagages', url: '/booking/passengers' },
-    { name: 'Coordonnées', url: '/booking/contact' },
-    { name: 'Récapitulatif et paiement', url: '/booking/summary' },
-    // { name: 'Choix des options', url: '/booking/options' },
-    // { name: 'Choix des sièges', url: '/booking/seats' },
+    { name: 'Terif billet', url: '/booking/fares', title: 'Selectionnez votre tarif' },
+    { name: 'Passagers et bagages', url: '/booking/passengers', title: 'Qui sont les passagers ?' },
+    {
+      name: 'Coordonnées',
+      url: '/booking/contact',
+      title: 'Informations et création de votre dossier',
+    },
+    {
+      name: 'Récapitulatif et paiement',
+      url: '/booking/summary',
+      title: 'Récapitulatif et paiement',
+    },
   ]
   const [currentStep, setCurrentStep] = useState(0)
+  const currentStepTitle = steps[currentStep].title
   const [passengers, setPassengers] = useState<PassengerData[]>([])
   const [payerIndex, setPayerIndex] = useState<number | null>(null) // Index of the payer in the passengers array
   const [payer, setPayer] = useState<PayerData | null>(null)
   const totalPrice = selectedFlight?.priceInfo?.total || 0
+  const [mapIsOpen, setMapIsOpen] = React.useState(false)
+  const [selectedFare, setSelectedFare] = React.useState<Fare | null>(null)
 
   const goNextStep = () => {
     const nextStep = currentStep + 1
@@ -118,6 +133,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPayer,
         totalPrice,
         getStepIndexByPath,
+        mapIsOpen,
+        setMapIsOpen,
+        currentStepTitle,
+        selectedFare,
+        setSelectedFare,
       }}>
       {children}
     </BookingContext.Provider>

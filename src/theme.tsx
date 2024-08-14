@@ -30,6 +30,7 @@ declare module '@mui/material/styles' {
   interface TypographyVariants {
     headlineMd: React.CSSProperties
     headlineSm: React.CSSProperties
+    headlineXs: React.CSSProperties
     titleLg: React.CSSProperties
     titleMd: React.CSSProperties
     titleSm: React.CSSProperties
@@ -44,6 +45,7 @@ declare module '@mui/material/styles' {
   interface TypographyVariantsOptions {
     headlineMd?: React.CSSProperties
     headlineSm?: React.CSSProperties
+    headlineXs?: React.CSSProperties
     titleLg?: React.CSSProperties
     titleMd?: React.CSSProperties
     titleSm?: React.CSSProperties
@@ -59,6 +61,7 @@ declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     headlineMd: true
     headlineSm: true
+    headlineXs: true
     titleLg: true
     titleMd: true
     titleSm: true
@@ -167,6 +170,7 @@ let theme = createTheme({
         variantMapping: {
           headlineMd: 'h2',
           headlineSm: 'h2',
+          headlineXs: 'h3',
           titleLg: 'h2',
           titleMd: 'h3',
           titleSm: 'h4',
@@ -242,6 +246,12 @@ theme = createTheme(theme, {
       fontSize: theme.typography.pxToRem(24),
       fontWeight: 500,
       lineHeight: 1.5,
+    },
+    headlineXs: {
+      fontFamily: roboto.style.fontFamily,
+      fontSize: theme.typography.pxToRem(20),
+      fontWeight: 500,
+      lineHeight: 1.2,
     },
     titleLg: {
       fontFamily: roboto.style.fontFamily,
@@ -353,6 +363,7 @@ theme = responsiveFontSizes(theme, {
   variants: [
     'headlineMd',
     'headlineSm',
+    'headlineXs',
     'titleLg',
     'titleMd',
     'titleSm',

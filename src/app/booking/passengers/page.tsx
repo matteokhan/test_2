@@ -1,8 +1,7 @@
 'use client'
 
 import React, { useRef } from 'react'
-import { BookingStepActions, PassengerInfo, PurchaseDetails } from '@/components'
-import { Box, Stack, Typography } from '@mui/material'
+import { BookingStepActions, PassengerInfo } from '@/components'
 import { useBooking } from '@/contexts'
 import { PassengerData } from '@/types'
 import { FormikProps } from 'formik'
@@ -92,28 +91,18 @@ export default function PassengersPage() {
 
   return (
     <>
-      <Typography variant="headlineMd" py={3}>
-        Qui sont les passagers ?
-      </Typography>
-      <Stack direction="row" gap={2}>
-        <Box flexGrow="1">
-          {passengers.map((passenger, index) => (
-            <PassengerInfo
-              key={index}
-              formRef={(el) => (formRefs.current[index] = el)}
-              onSubmit={(values) => handlePassengerSubmit(values, index)}
-              passengerNumber={index + 1}
-              isPayer={index === payerIndex}
-              onPayerChange={(isPayer) => handlePayerChange(index, isPayer)}
-              initialValues={passenger}
-            />
-          ))}
-          <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
-        </Box>
-        <Box>
-          <PurchaseDetails />
-        </Box>
-      </Stack>
+      {passengers.map((passenger, index) => (
+        <PassengerInfo
+          key={index}
+          formRef={(el) => (formRefs.current[index] = el)}
+          onSubmit={(values) => handlePassengerSubmit(values, index)}
+          passengerNumber={index + 1}
+          isPayer={index === payerIndex}
+          onPayerChange={(isPayer) => handlePayerChange(index, isPayer)}
+          initialValues={passenger}
+        />
+      ))}
+      <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
     </>
   )
 }

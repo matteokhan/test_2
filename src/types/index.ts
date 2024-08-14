@@ -1,4 +1,4 @@
-export * from './domain'
+export * from './searchFilters'
 export * from './searchFlightRequest'
 export * from './searchFlightResponse'
 export * from './createReservationRequest'
