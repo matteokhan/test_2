@@ -3,8 +3,11 @@ import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
 import { transformDuration } from '@/utils'
+import { useFlights } from '@/contexts'
+import Image from 'next/image'
 
 export const FlightRouteDetails = ({ route }: { route: Route; airline: string }) => {
+  const { airlinesData, airportsData } = useFlights()
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
@@ -47,11 +50,27 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
 
   return (
     <Stack gap={4} direction="row">
-      <Stack gap={1} minWidth="25%">
+      <Stack gap={1} minWidth="25%" maxWidth="25%">
         <Stack gap={0.5}>
-          <p>Logo</p>
+          {/* TODO: default image */}
+          <Stack
+            width="32px"
+            height="32px"
+            borderRadius="32px"
+            border="1px solid"
+            borderColor="grey.400"
+            alignItems="center"
+            justifyContent="center">
+            <Image
+              src={airlinesData ? airlinesData[route.carrier]?.logo_small_path || '' : ''}
+              alt="Airline logo"
+              width={21}
+              height={21}
+              unoptimized={true}
+            />
+          </Stack>
           <Typography variant="bodySm" color="grey.700" data-testid="flightRouteDetails-carrier">
-            {route.carrier}
+            {airlinesData ? airlinesData[route.carrier]?.name : ''}
           </Typography>
         </Stack>
         {tags && (
@@ -96,7 +115,7 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
         <Stack direction="row" gap={4.5}>
           <Stack gap={0.5} width="30%">
             <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
-              {departureAirport}
+              {airportsData ? airportsData[departureAirport].name : ''}
             </Typography>
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
@@ -126,7 +145,7 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
           </Stack>
           <Stack gap={0.5} textAlign="right" width="30%">
             <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
-              {arrivalAirport}
+              {airportsData ? airportsData[arrivalAirport].name : ''}
             </Typography>
             <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
               <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
