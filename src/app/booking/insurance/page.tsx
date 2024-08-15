@@ -21,7 +21,7 @@ export default function InsurancesPage() {
             Pour votre confort, nous vous recommandons de sélectionner une des assurances proposées.
             Il ne sera plus possible d’y souscrire après votre réservation.
           </Alert>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} data-testid="insurancesPage-options">
             {isSuccess &&
               insuranceOptions.map((insurance) => (
                 <InsuranceOption

@@ -32,29 +32,34 @@ export const InsuranceOption = ({
   const perPersonInsurancePrice = getInsurancePrice(totalPrice, insurance, totalPassengers)
 
   return (
-    <Grid item xs={12} sm={6} style={{ display: 'flex' }}>
+    <Grid item xs={12} sm={6} style={{ display: 'flex' }} data-testid="insuranceOption">
       <Stack border="1px solid" borderColor="grey.400" borderRadius="6px" flexGrow={1} width="100%">
         {/* TODO: add image */}
         <Box height="200px" borderBottom="1px solid red" flexShrink={0}>
           Image
         </Box>
         <Stack p={3} flexGrow={1}>
-          <Typography variant="headlineXs" pb={1}>
+          <Typography variant="headlineXs" pb={1} data-testid="insuranceOption-title">
             {insurance.title}
           </Typography>
           {/* TODO: hardcoded data. This info is not part of the server response */}
-          <Typography variant="bodyMd" pb={1}>
+          <Typography variant="bodyMd" pb={1} data-testid="insuranceOption-subtitle">
             <b>(HARDCODED)</b> Nous gérons votre enregistrement et l’envoi des cartes d’embarquement
             par e-mail est automatique
           </Typography>
           {/* TODO: which option should we use? 
           First option is using insurance.description and dompurify
           Second option is converting the same info to JSON and put the styles */}
-          <Box border="1px solid green">
+          <Box border="1px solid green" data-testid="insuranceOption-description">
             <div
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(insurance.description) }}></div>
           </Box>
-          <Stack gap={1} py={0.5} flexGrow={1} border="1px solid blue">
+          <Stack
+            gap={1}
+            py={0.5}
+            flexGrow={1}
+            border="1px solid blue"
+            data-testid="insuranceOption-description">
             <Stack direction="row">
               <CheckIcon color="primary" />
               <Typography sx={{ ml: 1 }} variant="bodyMd">
@@ -87,7 +92,7 @@ export const InsuranceOption = ({
           gap={2}
           flexShrink={0}>
           <Box>
-            <Typography variant="titleLg" color="primary">
+            <Typography variant="titleLg" color="primary" data-testid="insuranceOption-price">
               +{perPersonInsurancePrice}€
             </Typography>
             <Typography variant="bodySm" noWrap>
@@ -95,6 +100,7 @@ export const InsuranceOption = ({
             </Typography>
           </Box>
           <Button
+            data-testid="insuranceOption-selectButton"
             sx={{ px: 3 }}
             variant={isSelected ? 'contained' : 'outlined'}
             onClick={() =>

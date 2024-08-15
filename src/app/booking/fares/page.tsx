@@ -51,7 +51,7 @@ export default function FaresPage() {
   return (
     <>
       <SimpleContainer>
-        <Stack gap={2} pt={4}>
+        <Stack gap={2} pt={4} data-testid="faresPage-options">
           {fareOptions.map((fare) => (
             <FareOption
               key={fare.id}

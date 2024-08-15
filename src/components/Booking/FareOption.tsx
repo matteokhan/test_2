@@ -12,19 +12,25 @@ export const FareOption = ({
   isSelected: boolean
 }) => {
   return (
-    <Box border="1px solid" borderColor="grey.400" borderRadius="6px">
+    <Box border="1px solid" borderColor="grey.400" borderRadius="6px" data-testid="fareOption">
       <Stack direction="row" gap={4} p={3}>
         <Box width="50%">
-          <Typography variant="headlineXs" pb={1}>
+          <Typography variant="headlineXs" pb={1} data-testid="fareOption-name">
             {fare.name}
           </Typography>
-          <Typography variant="bodyMd">{fare.description}</Typography>
+          <Typography variant="bodyMd" data-testid="fareOption-description">
+            {fare.description}
+          </Typography>
         </Box>
-        <Stack gap={1} width="50%" py={0.5}>
+        <Stack gap={1} width="50%" py={0.5} data-testid="fareOption-services">
           {fare.services.map((service) => (
-            <Stack key={service.name} direction="row" alignItems="center">
+            <Stack
+              key={service.name}
+              direction="row"
+              alignItems="center"
+              data-testid="fareOption-service">
               {service.icon}
-              <Typography sx={{ ml: 1 }} variant="bodyMd">
+              <Typography sx={{ ml: 1 }} variant="bodyMd" data-testid="fareOption-serviceName">
                 {service.name}
               </Typography>
             </Stack>
@@ -41,12 +47,13 @@ export const FareOption = ({
         alignItems="center"
         gap={1.5}>
         <Box>
-          <Typography variant="titleLg" color="primary">
-            {fare.price}€
+          <Typography variant="titleLg" color="primary" data-testid="fareOption-price">
+            +{fare.price}€
           </Typography>
           <Typography variant="bodySm">par personne</Typography>
         </Box>
         <Button
+          data-testid="fareOption-selectButton"
           sx={{ px: 3 }}
           variant={isSelected ? 'contained' : 'outlined'}
           onClick={() => onSelect(fare)}
