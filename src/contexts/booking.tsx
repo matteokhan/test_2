@@ -1,7 +1,14 @@
 'use client'
 
 import React, { createContext, useContext, useState } from 'react'
-import { PassengerData, BookingStep as BookingStepType, PayerData, Solution, Fare } from '@/types'
+import {
+  PassengerData,
+  BookingStep as BookingStepType,
+  PayerData,
+  Solution,
+  Fare,
+  Insurance,
+} from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
 
@@ -30,6 +37,8 @@ type BookingContextType = {
   currentStepTitle: string
   selectedFare: Fare | null
   setSelectedFare: React.Dispatch<React.SetStateAction<Fare | null>>
+  selectedInsurance: Insurance | null
+  setSelectedInsurance: React.Dispatch<React.SetStateAction<Insurance | null>>
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -48,6 +57,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       title: 'Informations et création de votre dossier',
     },
     {
+      name: 'Assurez votre voyage',
+      url: '/booking/insurance',
+      title: 'Assurez votre voyage',
+    },
+    {
       name: 'Récapitulatif et paiement',
       url: '/booking/summary',
       title: 'Récapitulatif et paiement',
@@ -61,6 +75,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const totalPrice = selectedFlight?.priceInfo?.total || 0
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
   const [selectedFare, setSelectedFare] = React.useState<Fare | null>(null)
+  const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
 
   const goNextStep = () => {
     const nextStep = currentStep + 1
@@ -138,6 +153,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         currentStepTitle,
         selectedFare,
         setSelectedFare,
+        selectedInsurance,
+        setSelectedInsurance,
       }}>
       {children}
     </BookingContext.Provider>

@@ -87,6 +87,15 @@ const LinkBehavior = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props
 
 const { palette } = createTheme()
 let theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1280, // Changed from 1200
+      xl: 1536,
+    },
+  },
   palette: {
     leclerc: {
       red: palette.augmentColor({

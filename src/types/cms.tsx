@@ -17,12 +17,12 @@ export type WagtailImageMetadata = {
 export type WagtailPageMetadata = {
   type: PagesTypes
   detail_url: string
-  html_url: null
+  html_url: string | null
   slug: string
   show_in_menus: boolean
   seo_title: string
   search_description: string
-  first_published_at: Date
-  alias_of: null
+  first_published_at: string
+  alias_of: string | null
   locale: string
 }

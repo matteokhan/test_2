@@ -20,7 +20,7 @@ export const FareOption = ({
           </Typography>
           <Typography variant="bodyMd">{fare.description}</Typography>
         </Box>
-        <Stack gap={1} width="50%">
+        <Stack gap={1} width="50%" py={0.5}>
           {fare.services.map((service) => (
             <Stack key={service.name} direction="row" alignItems="center">
               {service.icon}
@@ -38,7 +38,8 @@ export const FareOption = ({
         py={2}
         direction="row"
         justifyContent="space-between"
-        alignItems="center">
+        alignItems="center"
+        gap={1.5}>
         <Box>
           <Typography variant="titleLg" color="primary">
             {fare.price}€
