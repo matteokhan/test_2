@@ -3,6 +3,10 @@
 import { SearchFlightsParamsDto, SearchResponseDto } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
+import { getAirlinesData } from './cms'
+import { QueryClient } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export const searchFlights = async ({ params }: { params?: SearchFlightsParamsDto }) => {
   const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
@@ -24,8 +28,16 @@ export const searchFlights = async ({ params }: { params?: SearchFlightsParamsDt
 export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | undefined }) => {
   return useQuery<SearchResponseDto>({
     // TODO: use a better key
+    // TODO: prefetching is not working as expected
     queryKey: ['searchFlightsResults', JSON.stringify(params)],
-    queryFn: async () => searchFlights({ params: params }),
+    queryFn: async () => {
+      queryClient.prefetchQuery({
+        queryKey: ['airlinesData'],
+        queryFn: getAirlinesData,
+        staleTime: Infinity,
+      })
+      return searchFlights({ params: params })
+    },
     refetchOnWindowFocus: false,
     enabled: !!params,
   })

@@ -1,13 +1,6 @@
 'use client'
 
-import { useAirlinesData, useAirportsData } from '@/services'
-import {
-  SearchFlightsParams,
-  SearchFlightSegment,
-  SearchFlightsParamsDto,
-  Airlines,
-  Airports,
-} from '@/types'
+import { SearchFlightsParams, SearchFlightSegment, SearchFlightsParamsDto } from '@/types'
 import { searchParamsToDto } from '@/utils'
 import React, { createContext, useState, useContext } from 'react'
 
@@ -21,8 +14,6 @@ type FlightsContextType = {
   totalPassengers: number
   flightDetailsOpen: boolean
   setFlightDetailsOpen: (open: boolean) => void
-  airlinesData: Airlines | undefined
-  airportsData: Airports | undefined
 }
 
 const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
@@ -37,8 +28,6 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     (searchParamsDto?.childrens || 0) +
     (searchParamsDto?.infant || 0)
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
-  const { data: airlinesData } = useAirlinesData()
-  const { data: airportsData } = useAirportsData()
 
   const setSearchParams = (params: SearchFlightsParams) => {
     const searchParamsDto = searchParamsToDto(params)
@@ -58,8 +47,6 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         totalPassengers,
         flightDetailsOpen,
         setFlightDetailsOpen,
-        airlinesData,
-        airportsData,
       }}>
       {children}
     </FlightsContext.Provider>

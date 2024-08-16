@@ -1,6 +1,6 @@
 'use client'
 
-import { Agency, Airlines, Airports, InsuranceWithSteps, PagesAPIBaseParams } from '@/types'
+import { Agency, Airlines, AirportData, InsuranceWithSteps, PagesAPIBaseParams } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
@@ -77,7 +77,7 @@ export const useInsurances = () => {
   })
 }
 
-export const getAirlinesData = async (): Promise<Airlines> => {
+export const getAirlinesData = async () => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
   let allResults: Airlines = {}
 
@@ -109,48 +109,47 @@ export const getAirlinesData = async (): Promise<Airlines> => {
 }
 
 export const useAirlinesData = () => {
+  // TODO: prefetching is not working as expected. Look at the useSearchFlights hook
   return useQuery<Airlines>({
     queryKey: ['airlinesData'],
     queryFn: getAirlinesData,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   })
 }
 
-export const getAirportsData = async (): Promise<Airports> => {
+export const getAirportData = async ({ airportCode }: { airportCode: string }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
-  let allResults: Airports = {}
-
-  const fetchPage = async (pageNumber: number): Promise<void> => {
-    const response = await fetch(
-      `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-airport-dict/?page_size=500&page=${pageNumber}`,
-      {
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json',
-        },
-      },
-    )
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch airports data')
-    }
-
-    const data = await response.json()
-    allResults = { ...allResults, ...data.results }
-
-    if (data.next) {
-      await fetchPage(pageNumber + 1)
-    }
+  const params = {
+    code: airportCode,
   }
 
-  await fetchPage(1)
-  return allResults
+  const queryParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    queryParams.append(key, value as string)
+  })
+
+  const response = await fetch(
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-airport-dict/?${queryParams.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch airport data')
+  }
+
+  return (await response.json()).results[airportCode]
 }
 
-export const useAirportsData = () => {
-  return useQuery<Airports>({
-    queryKey: ['airportsData'],
-    queryFn: getAirportsData,
+export const useAirportData = ({ airportCode }: { airportCode: string }) => {
+  return useQuery<AirportData>({
+    queryKey: ['airportData', airportCode],
+    queryFn: () => getAirportData({ airportCode }),
     refetchOnWindowFocus: false,
   })
 }

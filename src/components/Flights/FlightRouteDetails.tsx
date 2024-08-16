@@ -3,11 +3,11 @@ import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
 import { transformDuration } from '@/utils'
-import { useFlights } from '@/contexts'
 import Image from 'next/image'
+import { useAirlinesData, useAirportData } from '@/services'
 
-export const FlightRouteDetails = ({ route }: { route: Route; airline: string }) => {
-  const { airlinesData, airportsData } = useFlights()
+export const FlightRouteDetails = ({ route }: { route: Route }) => {
+  const { data: airlinesData } = useAirlinesData()
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
@@ -32,6 +32,8 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
   const carryOnLuggage = false
   const checkedLuggage = false
   const noLuggage = route.baggages === 0
+  const { data: departureAirportData } = useAirportData({ airportCode: departureAirport })
+  const { data: arrivalAirportData } = useAirportData({ airportCode: arrivalAirport })
 
   const getScaleDetails = () => {
     if (!route.totalStopDuration) {
@@ -115,7 +117,7 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
         <Stack direction="row" gap={4.5}>
           <Stack gap={0.5} width="30%">
             <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
-              {airportsData ? airportsData[departureAirport].name : ''}
+              {departureAirportData ? departureAirportData.name : ''}
             </Typography>
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
@@ -145,7 +147,7 @@ export const FlightRouteDetails = ({ route }: { route: Route; airline: string })
           </Stack>
           <Stack gap={0.5} textAlign="right" width="30%">
             <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
-              {airportsData ? airportsData[arrivalAirport].name : ''}
+              {arrivalAirportData ? arrivalAirportData.name : ''}
             </Typography>
             <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
               <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">

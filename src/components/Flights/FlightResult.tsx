@@ -19,7 +19,7 @@ export const FlightResult = ({ result }: { result: Solution }) => {
         <Stack flexGrow={1}>
           {result.routes.map((route, index, routes) => (
             <React.Fragment key={route.id}>
-              <FlightRouteDetails route={route} airline={result.platingCarrier} />
+              <FlightRouteDetails route={route} />
               {index < result.routes.length - 1 && (
                 <Stack gap={4} direction="row">
                   <Stack minWidth="25%"></Stack>
