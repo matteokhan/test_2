@@ -26,7 +26,7 @@ export default function FlighsPage() {
         }}>
         <SectionContainer
           sx={{ justifyContent: 'space-between', paddingY: 3, flexDirection: 'column' }}>
-          <SearchFlightsModes onSearch={onSearch} />
+          <SearchFlightsModes onSearch={onSearch} sx={{ mb: 3 }} />
           <SearchFlights />
           <Drawer
             open={flightDetailsOpen}

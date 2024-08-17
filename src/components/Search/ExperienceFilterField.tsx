@@ -17,7 +17,10 @@ const options: { value: ExperienceFilterOption; label: string; testId: string }[
   },
 ]
 
-const ExperienceFilter = ({ ...props }: FieldInputProps<ExperienceFilterOption>) => {
+const ExperienceFilter = ({
+  disabled,
+  ...props
+}: FieldInputProps<ExperienceFilterOption> & { disabled?: boolean }) => {
   return (
     <RadioGroup {...props}>
       {options.map((option) => (
@@ -26,12 +29,15 @@ const ExperienceFilter = ({ ...props }: FieldInputProps<ExperienceFilterOption>)
           value={option.value}
           control={<Radio data-testid={option.testId} />}
           label={option.label}
+          disabled={disabled}
         />
       ))}
     </RadioGroup>
   )
 }
 
-export const ExperienceFilterField = ({ name }: { name: string }) => {
-  return <Field name={name} as={ExperienceFilter} data-testid="experienceField" />
+export const ExperienceFilterField = ({ name, disabled }: { name: string; disabled?: boolean }) => {
+  return (
+    <Field name={name} as={ExperienceFilter} data-testid="experienceField" disabled={disabled} />
+  )
 }

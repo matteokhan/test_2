@@ -46,7 +46,15 @@ export const SearchRoundTripFlightsForm = ({
     <Formik
       initialValues={initialValues || DEFAULT_VALUES}
       validationSchema={searchParamsSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, actions) =>
+        onSubmit(
+          {
+            ...values,
+            adults: +values.adults,
+          },
+          actions,
+        )
+      }
       enableReinitialize>
       {({ values, setFieldValue, touched, errors }) => (
         <Form data-testid="searchRoundTripFlightsForm">

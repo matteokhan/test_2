@@ -19,7 +19,10 @@ const options: { value: ScalesFilterOption; label: string; testId: string }[] = 
   },
 ]
 
-const ScalesFilter = ({ ...props }: FieldInputProps<ScalesFilterOption>) => {
+const ScalesFilter = ({
+  disabled,
+  ...props
+}: FieldInputProps<ScalesFilterOption> & { disabled?: boolean }) => {
   return (
     <RadioGroup {...props}>
       {options.map((option) => (
@@ -28,12 +31,13 @@ const ScalesFilter = ({ ...props }: FieldInputProps<ScalesFilterOption>) => {
           value={option.value}
           control={<Radio data-testid={option.testId} />}
           label={option.label}
+          disabled={disabled}
         />
       ))}
     </RadioGroup>
   )
 }
 
-export const ScalesFilterField = ({ name }: { name: string }) => {
-  return <Field name={name} as={ScalesFilter} data-testid="scalesField" />
+export const ScalesFilterField = ({ name, disabled }: { name: string; disabled?: boolean }) => {
+  return <Field name={name} as={ScalesFilter} data-testid="scalesField" disabled={disabled} />
 }

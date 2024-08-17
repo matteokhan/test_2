@@ -13,9 +13,12 @@ const options: { value: MaxPriceTypeFilterOption; label: string; testId: string 
   { value: 'total', label: 'Prix total', testId: 'maxPriceTypeField-total' },
 ]
 
-const MaxPriceTypeFilter = ({ ...props }: FieldInputProps<MaxPriceTypeFilterOption>) => {
+const MaxPriceTypeFilter = ({
+  disabled,
+  ...props
+}: FieldInputProps<MaxPriceTypeFilterOption> & { disabled: boolean }) => {
   return (
-    <Select {...props}>
+    <Select {...props} disabled={disabled}>
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>
           {option.label}
@@ -25,6 +28,19 @@ const MaxPriceTypeFilter = ({ ...props }: FieldInputProps<MaxPriceTypeFilterOpti
   )
 }
 
-export const MaxPriceTypeFilterField = ({ name }: { name: string }) => {
-  return <Field name={name} as={MaxPriceTypeFilter} data-testid="maxPriceTypeField" />
+export const MaxPriceTypeFilterField = ({
+  name,
+  disabled,
+}: {
+  name: string
+  disabled?: boolean
+}) => {
+  return (
+    <Field
+      name={name}
+      as={MaxPriceTypeFilter}
+      data-testid="maxPriceTypeField"
+      disabled={disabled}
+    />
+  )
 }

@@ -43,10 +43,10 @@ const filtersSchema = Yup.object().shape({
 
 type SearchFlightsFiltersProps = {
   onSubmit: (values: SearchFlightFilters, actions: FormikHelpers<SearchFlightFilters>) => void
-  filterData: SearchResponseFilterData
-  airlines: AirlineFilterData[]
-  departure: string
-  arrival: string
+  filterData?: SearchResponseFilterData
+  airlines?: AirlineFilterData[]
+  departure?: string
+  arrival?: string
 }
 
 export const SearchFlightsFilters = ({
@@ -60,7 +60,9 @@ export const SearchFlightsFilters = ({
     scales: 'all',
     oneNightScale: false,
     experience: null,
-    maxPrice: Math.trunc((filterData.maxPrice - filterData.minPrice) / 2 + filterData.minPrice),
+    maxPrice: Math.trunc(
+      ((filterData?.maxPrice || 0) - (filterData?.minPrice || 0)) / 2 + (filterData?.minPrice || 0),
+    ),
     maxPriceType: 'per-person',
     flightTime: null,
   } as SearchFlightFilters
@@ -81,9 +83,12 @@ export const SearchFlightsFilters = ({
                   Escales
                 </Typography>
                 <Box pl={1.5}>
-                  <ScalesFilterField name="scales" />
+                  <ScalesFilterField name="scales" disabled={filterData === undefined} />
                   <Box sx={{ paddingTop: 1 }}>
-                    <OneNightScaleFilterField name="oneNightScale" />
+                    <OneNightScaleFilterField
+                      name="oneNightScale"
+                      disabled={filterData === undefined}
+                    />
                   </Box>
                 </Box>
               </Box>
@@ -92,7 +97,7 @@ export const SearchFlightsFilters = ({
                   Expérience de vol
                 </Typography>
                 <Box pl={1.5}>
-                  <ExperienceFilterField name="experience" />
+                  <ExperienceFilterField name="experience" disabled={filterData === undefined} />
                 </Box>
               </Box>
               <Box pb={1}>
@@ -104,11 +109,15 @@ export const SearchFlightsFilters = ({
                 </Stack>
                 <MaxPriceFilterField
                   name="maxPrice"
-                  highestPrice={filterData.maxPrice}
-                  lowestPrice={filterData.minPrice}
+                  highestPrice={filterData?.maxPrice}
+                  lowestPrice={filterData?.minPrice}
+                  disabled={filterData === undefined}
                 />
                 <FormControl sx={{ m: 1, minWidth: 120, width: '100%', margin: 0 }}>
-                  <MaxPriceTypeFilterField name="maxPriceType" />
+                  <MaxPriceTypeFilterField
+                    name="maxPriceType"
+                    disabled={filterData === undefined}
+                  />
                 </FormControl>
               </Box>
 
@@ -129,7 +138,7 @@ export const SearchFlightsFilters = ({
                   </Stack>
                   <Typography variant="bodySm">Départ de aeroport {departure}</Typography>
                 </Box>
-                <FlightTimeFilterField name="flightTime" />
+                <FlightTimeFilterField name="flightTime" disabled={filterData === undefined} />
               </Box>
               <Box>
                 <Typography variant="titleMd" pb={1}>
@@ -138,7 +147,7 @@ export const SearchFlightsFilters = ({
                 {/* TODO: Add tests ids */}
                 <Box pl={1.5} pb={1}>
                   <FormGroup>
-                    {airlines.map((airline) => (
+                    {airlines?.map((airline) => (
                       <Stack
                         key={airline.carrier}
                         justifyContent="space-between"

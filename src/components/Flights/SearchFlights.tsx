@@ -1,10 +1,15 @@
 'use client'
 
 import React from 'react'
-import { Button, Stack, Typography } from '@mui/material'
+import { Box, Button, Collapse, Fade, Grow, Stack, Typography } from '@mui/material'
 import { AirlineFilterData, SearchFlightFilters } from '@/types'
 import { useSearchFlights } from '@/services'
-import { SearchFlightsFilters, FlightDateAlternatives, SearchResults } from '@/components'
+import {
+  FlightResultSkeleton,
+  FlightsLoader,
+  SearchFlightsFilters,
+  SearchResults,
+} from '@/components'
 import { useFlights } from '@/contexts'
 
 export const SearchFlights = () => {
@@ -12,7 +17,11 @@ export const SearchFlights = () => {
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [filters, setFilters] = React.useState({} as SearchFlightFilters)
   const { searchParamsDto } = useFlights()
-  const { data: response, isSuccess } = useSearchFlights({
+  const {
+    data: response,
+    isSuccess,
+    isLoading,
+  } = useSearchFlights({
     params: searchParamsDto,
   })
   const filteredData = response?.solutions
@@ -67,43 +76,67 @@ export const SearchFlights = () => {
   }
 
   return (
-    <Stack direction="row" spacing={2} mt={2}>
-      {response && (
+    <>
+      {isLoading && (
+        <Grow in={isLoading}>
+          <Stack mt={2} mb={5} alignItems="center">
+            <Stack maxWidth="516px" direction="row" gap={3}>
+              <FlightsLoader />
+              <Box>
+                <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                <Typography variant="bodyMd" pt={1.5}>
+                  Merci de patienter quelques secondes le temps que nous trouvions les meilleures
+                  offres du moment !
+                </Typography>
+              </Box>
+            </Stack>
+          </Stack>
+        </Grow>
+      )}
+      <Stack direction="row" spacing={2}>
         <SearchFlightsFilters
-          filterData={response.searchFilters}
+          filterData={response?.searchFilters}
           airlines={getAirlines()}
-          departure={response.solutions[0]?.routes[0]?.segments[0]?.departure}
+          departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
           arrival={
-            response.solutions[0]?.routes[0]?.segments[
+            response?.solutions[0]?.routes[0]?.segments[
               response.solutions[0]?.routes[0]?.segments?.length - 1
             ]?.arrival
           }
           onSubmit={(values) => setFilters(values)}
         />
-      )}
-      <Stack gap={2} flexGrow={1}>
-        <Stack gap={1}>
-          <Typography variant="titleMd" pb={1}>
-            Ajustez la date de votre départ
+        <Stack gap={2} flexGrow={1}>
+          <Stack gap={1}>
+            <Typography variant="titleMd" pb={1}>
+              Ajustez la date de votre départ
+            </Typography>
+            {/* TODO: Implement date alternatives */}
+            {/* <FlightDateAlternatives /> */}
+          </Stack>
+          <Typography variant="bodySm" color="grey.600">
+            Prices displayed include taxes and may change based on availability. You can review any
+            additional fees <br />
+            before checkout. Prices are not final until you complete your purchase.
           </Typography>
-          <FlightDateAlternatives />
+          {isLoading && (
+            <>
+              <FlightResultSkeleton />
+              <FlightResultSkeleton />
+              <FlightResultSkeleton />
+            </>
+          )}
+          {isSuccess && (
+            <>
+              <SearchResults results={filteredData?.slice(0, resultsNumber)} />
+              <Button
+                onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
+                data-testid="searchFlights-viewMoreResultsButton">
+                Voir plus
+              </Button>
+            </>
+          )}
         </Stack>
-        <Typography variant="bodySm" color="grey.600">
-          Prices displayed include taxes and may change based on availability. You can review any
-          additional fees <br />
-          before checkout. Prices are not final until you complete your purchase.
-        </Typography>
-        {isSuccess && (
-          <>
-            <SearchResults results={filteredData?.slice(0, resultsNumber)} />
-            <Button
-              onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
-              data-testid="searchFlights-viewMoreResultsButton">
-              Voir plus
-            </Button>
-          </>
-        )}
       </Stack>
-    </Stack>
+    </>
   )
 }

@@ -11,7 +11,8 @@ import { styled } from '@mui/material/styles'
 
 const FlightTimeOptionItem = styled(Stack)<{
   selected?: boolean
-}>(({ theme, selected }) => ({
+  disabled?: boolean
+}>(({ theme, selected, disabled }) => ({
   borderRadius: '4px',
   gap: theme.spacing(1),
   alignItems: 'center',
@@ -27,41 +28,45 @@ const FlightTimeOptionItem = styled(Stack)<{
   boxSizing: 'border-box',
   '&:hover': {
     cursor: 'pointer',
-    backgroundColor: theme.palette.leclerc.blueNotif.main,
+    backgroundColor: disabled ? theme.palette.grey[100] : theme.palette.leclerc.blueNotif.main,
   },
   '& label:hover': {
     cursor: 'pointer',
   },
 }))
 
-const options: {
+const options = ({
+  disabled,
+}: {
+  disabled?: boolean
+}): {
   value: FlightTimeFilterOption
   label: string
   icon: ReactElement
   testId: string
-}[] = [
+}[] => [
   {
     value: '0-6',
     label: '0h - 6h',
-    icon: <WbSunnyIcon data-testid={null} />,
+    icon: <WbSunnyIcon data-testid={null} color={disabled ? 'disabled' : 'inherit'} />,
     testId: 'flightTime-0-6',
   },
   {
     value: '6-12',
     label: '6h - 12h',
-    icon: <WbSunnyIcon data-testid={null} />,
+    icon: <WbSunnyIcon data-testid={null} color={disabled ? 'disabled' : 'inherit'} />,
     testId: 'flightTime-6-12',
   },
   {
     value: '12-18',
     label: '12h - 18h',
-    icon: <WbTwilightIcon data-testid={null} />,
+    icon: <WbTwilightIcon data-testid={null} color={disabled ? 'disabled' : 'inherit'} />,
     testId: 'flightTime-12-18',
   },
   {
     value: '18-24',
     label: '18h - 24h',
-    icon: <NightlightRoundIcon data-testid={null} />,
+    icon: <NightlightRoundIcon data-testid={null} color={disabled ? 'disabled' : 'inherit'} />,
     testId: 'flightTime-18-24',
   },
 ]
@@ -79,10 +84,13 @@ export const FlightTimeFilterField = ({ ...props }: FieldHookConfig<FlightTimeFi
 
   return (
     <Stack direction="row" gap={0.5} mt={0.5} data-testid="flightTimeField">
-      {options.map((option) => (
+      {options({ disabled: props.disabled }).map((option) => (
         <FlightTimeOptionItem
+          disabled={props.disabled}
           selected={option.value === value}
-          onClick={() => handleChange(option.value)}
+          onClick={() => {
+            if (props.disabled === false) handleChange(option.value)
+          }}
           key={option.value}
           data-testid={option.testId}>
           {option.icon}

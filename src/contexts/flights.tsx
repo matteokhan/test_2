@@ -23,10 +23,11 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [searchParamsCache, setSearchParamsCache] = useState<SearchFlightsParams | undefined>()
   const firstSegment = searchParamsDto?.segments[0]
   const lastSegment = searchParamsDto?.segments[searchParamsDto.segments.length - 1]
-  const totalPassengers =
+  const totalPassengers: number = +(
     (searchParamsDto?.adults || 0) +
     (searchParamsDto?.childrens || 0) +
     (searchParamsDto?.infant || 0)
+  )
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
 
   const setSearchParams = (params: SearchFlightsParams) => {

@@ -1,4 +1,4 @@
-import { Box, Chip, Stack, Typography } from '@mui/material'
+import { Box, Chip, Skeleton, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
@@ -63,13 +63,17 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
             borderColor="grey.400"
             alignItems="center"
             justifyContent="center">
-            <Image
-              src={airlinesData ? airlinesData[route.carrier]?.logo_small_path || '' : ''}
-              alt="Airline logo"
-              width={21}
-              height={21}
-              unoptimized={true}
-            />
+            {airlinesData ? (
+              <Image
+                src={airlinesData[route.carrier]?.logo_small_path || ''}
+                alt="Airline logo"
+                width={21}
+                height={21}
+                unoptimized={true}
+              />
+            ) : (
+              <Skeleton variant="circular" width={32} height={32} />
+            )}
           </Stack>
           <Typography variant="bodySm" color="grey.700" data-testid="flightRouteDetails-carrier">
             {airlinesData ? airlinesData[route.carrier]?.name : ''}
