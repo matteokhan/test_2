@@ -23,6 +23,8 @@ import {
   MaxPriceTypeFilterField,
   FlightTimeFilterField,
 } from '@/components'
+import { useAirlinesData, useAirportData } from '@/services'
+import { airportName } from '@/utils'
 
 const AutoSubmit = () => {
   const { values, submitForm } = useFormikContext()
@@ -39,6 +41,7 @@ const filtersSchema = Yup.object().shape({
   maxPrice: Yup.number(),
   maxPriceType: Yup.string(),
   flightTime: Yup.string().nullable(),
+  airlineSelected: Yup.array().of(Yup.string()),
 })
 
 type SearchFlightsFiltersProps = {
@@ -60,12 +63,16 @@ export const SearchFlightsFilters = ({
     scales: 'all',
     oneNightScale: false,
     experience: null,
-    maxPrice: Math.trunc(
-      ((filterData?.maxPrice || 0) - (filterData?.minPrice || 0)) / 2 + (filterData?.minPrice || 0),
-    ),
+    maxPrice: filterData?.maxPrice,
     maxPriceType: 'per-person',
     flightTime: null,
+    airlinesSelected: [],
   } as SearchFlightFilters
+
+  const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
+  const { data: arrivalAirportData } = useAirportData({ airportCode: arrival ? arrival : '' })
+  const { data: airlinesData } = useAirlinesData()
+
   return (
     <Paper sx={{ paddingX: 2, paddingY: 4, height: 'fit-content' }}>
       <Formik
@@ -73,7 +80,7 @@ export const SearchFlightsFilters = ({
         validationSchema={filtersSchema}
         onSubmit={onSubmit}
         enableReinitialize>
-        {({ values }) => (
+        {({ values, handleChange }) => (
           <Form data-testid="searchFlightsFilters">
             <Stack gap={3}>
               <AutoSubmit />
@@ -129,14 +136,17 @@ export const SearchFlightsFilters = ({
                 <Box pb={1}>
                   <Stack direction="row" gap={1} alignItems="center">
                     <Typography variant="titleSm">
-                      Ville de {departure} ({departure})
+                      {airportName(departureAirportData)} ({departure})
                     </Typography>
                     <ArrowForwardIcon data-testid={null} />
                     <Typography variant="titleSm">
-                      Ville de {arrival} ({arrival})
+                      {airportName(arrivalAirportData)} ({arrival})
                     </Typography>
                   </Stack>
-                  <Typography variant="bodySm">Départ de aeroport {departure}</Typography>
+                  <Typography variant="bodySm">
+                    Départ de aeroport{' '}
+                    {departureAirportData ? departureAirportData.extension : departure}
+                  </Typography>
                 </Box>
                 <FlightTimeFilterField name="flightTime" disabled={filterData === undefined} />
               </Box>
@@ -147,24 +157,32 @@ export const SearchFlightsFilters = ({
                 {/* TODO: Add tests ids */}
                 <Box pl={1.5} pb={1}>
                   <FormGroup>
-                    {airlines?.map((airline) => (
-                      <Stack
-                        key={airline.carrier}
-                        justifyContent="space-between"
-                        direction="row"
-                        alignItems="center">
-                        <FormControlLabel
-                          value={airline.carrier}
-                          control={<Checkbox />}
-                          name="airlines"
-                          label={airline.carrier}
-                        />
-                        <Typography variant="bodyMd">
-                          {airline.price}
-                          {airline.currencySymbol}
-                        </Typography>
-                      </Stack>
-                    ))}
+                    {airlines?.map((airline) => {
+                      const airlineName =
+                        (airlinesData ? airlinesData[airline.carrier]?.name : '') +
+                        ' (' +
+                        airline.carrier +
+                        ')'
+                      return (
+                        <Stack
+                          key={airline.carrier}
+                          justifyContent="space-between"
+                          direction="row"
+                          alignItems="center">
+                          <FormControlLabel
+                            value={airline.carrier}
+                            control={<Checkbox />}
+                            name="airlinesSelected"
+                            label={airlineName}
+                            onChange={handleChange}
+                          />
+                          <Typography variant="bodyMd">
+                            {airline.price}
+                            {airline.currencySymbol}
+                          </Typography>
+                        </Stack>
+                      )
+                    })}
                   </FormGroup>
                 </Box>
               </Box>

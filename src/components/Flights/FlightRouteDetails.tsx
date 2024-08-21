@@ -2,7 +2,7 @@ import { Box, Chip, Skeleton, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
-import { transformDuration } from '@/utils'
+import { airportNameExtension, transformDuration } from '@/utils'
 import Image from 'next/image'
 import { useAirlinesData, useAirportData } from '@/services'
 
@@ -121,7 +121,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
         <Stack direction="row" gap={4.5}>
           <Stack gap={0.5} width="30%">
             <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
-              {departureAirportData ? departureAirportData.name : ''}
+              {airportNameExtension(departureAirportData)}
             </Typography>
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
@@ -151,7 +151,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
           </Stack>
           <Stack gap={0.5} textAlign="right" width="30%">
             <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
-              {arrivalAirportData ? arrivalAirportData.name : ''}
+              {airportNameExtension(arrivalAirportData)}
             </Typography>
             <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
               <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">

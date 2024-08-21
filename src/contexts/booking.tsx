@@ -11,10 +11,15 @@ import {
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
+import { confirmReservation, createReservation, useCreateReservation } from '@/services'
 
 type BookingContextType = {
   selectedFlight: Solution | null
   setSelectedFlight: (flight: Solution | null) => void
+  correlationId: string | null
+  setCorrelationId: React.Dispatch<React.SetStateAction<string | null>>
+  reservationId: string | null
+  setReservationId: React.Dispatch<React.SetStateAction<string | null>>
   preSelectedFlight: Solution | null
   setPreSelectedFlight: (flight: Solution | null) => void
   selectFlight: (flight: Solution | null) => void
@@ -39,6 +44,12 @@ type BookingContextType = {
   setSelectedFare: React.Dispatch<React.SetStateAction<Fare | null>>
   selectedInsurance: Insurance | null
   setSelectedInsurance: React.Dispatch<React.SetStateAction<Insurance | null>>
+  setCreateReservation: () => void
+  pnr: string | null
+  setPnr: React.Dispatch<React.SetStateAction<string | null>>
+  setConfirmReservation: () => void
+  errorMessageApi: string | null
+  setErrorMessageApi: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -76,6 +87,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
   const [selectedFare, setSelectedFare] = React.useState<Fare | null>(null)
   const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
+  const [correlationId, setCorrelationId] = useState<string | null>(null)
+  const [reservationId, setReservationId] = useState<string | null>(null)
+  const [pnr, setPnr] = useState<string | null>(null)
+  const [errorMessageApi, setErrorMessageApi] = useState<string | null>(null)
 
   const goNextStep = () => {
     const nextStep = currentStep + 1
@@ -126,11 +141,93 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return steps.findIndex((s) => s.url.includes(pathname))
   }
 
+  const setCreateReservation = async () => {
+    if (!selectedFlight || !correlationId) {
+      console.log('Missing flight or correlationId')
+      return
+    }
+    const params = {
+      correlationId: correlationId,
+      ticket: selectedFlight.ticket,
+      routes: [
+        {
+          solutionId: selectedFlight.id,
+          routeIds: selectedFlight.routes.map((route) => route.id),
+        },
+      ],
+      passengers: passengers.map((passenger) => ({
+        title: passenger.salutation || '',
+        firstName: passenger.firstName,
+        lastName: passenger.lastName,
+        dateOfBirth: passenger.dateOfBirth,
+        type: 'ADT',
+      })),
+      booker: {
+        firstName: payer?.firstName || '',
+        lastName: payer?.lastName || '',
+        email: payer?.email || '',
+        phone: payer?.phoneNumber || '',
+        phoneCountry: '0033',
+        sex: payer?.salutation === 'Mr' ? 'M' : 'F' || '',
+        address: {
+          street: payer?.address || '',
+          city: payer?.city || '',
+          country: payer?.country || '',
+          zipCode: payer?.postalCode || '',
+          number: '1',
+        },
+      },
+    }
+    const result = await createReservation({ params })
+    if (result.ReservationId) {
+      setReservationId(result.ReservationId)
+      goNextStep()
+    } else {
+      console.log('Failed to create reservation')
+      console.log(result)
+    }
+  }
+
+  const setConfirmReservation = async () => {
+    if (!reservationId) {
+      console.log('Missing reservationId')
+      return
+    }
+    if (!correlationId) {
+      console.log('Missing correlationId')
+      return
+    }
+    const result = await confirmReservation({
+      params: { correlationId: correlationId, reservationId: reservationId },
+    })
+    console.log(result)
+    if (
+      result.ReservationItems?.length > 0 &&
+      result.ReservationItems[0].AirlinePassengerNameRecord
+    ) {
+      const passengerNameRecord = result.ReservationItems[0].AirlinePassengerNameRecord
+      setPnr(passengerNameRecord)
+    } else {
+      console.log('Failed to confirm reservation')
+      console.log(result)
+      if (result.ReservationItems?.length > 0 && result.ReservationItems[0].ErrorMessage) {
+        setErrorMessageApi(
+          'Erreur lors de la confirmation de la réservation : ' +
+            result.ReservationItems[0].ErrorMessage,
+        )
+      } else {
+        setErrorMessageApi('Erreur lors de la confirmation de la réservation')
+      }
+    }
+  }
+
   return (
     <BookingContext.Provider
       value={{
         selectedFlight,
         setSelectedFlight,
+        correlationId,
+        setCorrelationId,
         preSelectedFlight,
         setPreSelectedFlight,
         selectFlight,
@@ -155,6 +252,14 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSelectedFare,
         selectedInsurance,
         setSelectedInsurance,
+        setCreateReservation,
+        reservationId,
+        setReservationId,
+        pnr,
+        setPnr,
+        setConfirmReservation,
+        errorMessageApi,
+        setErrorMessageApi,
       }}>
       {children}
     </BookingContext.Provider>

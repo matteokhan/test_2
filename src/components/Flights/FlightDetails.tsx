@@ -6,6 +6,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import { ItineraryRoute } from '@/components'
 import { useBooking } from '@/contexts'
 import { MouseEventHandler } from 'react'
+import { useAirportData } from '@/services'
+import { airportName } from '@/utils'
 
 export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButtonElement> }) => {
   const { preSelectedFlight, selectFlight, goToStep } = useBooking()
@@ -15,6 +17,14 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
     goToStep(0)
   }
 
+  const departure = preSelectedFlight?.routes[0]?.segments[0]?.departure
+  const arrival =
+    preSelectedFlight?.routes[0]?.segments[preSelectedFlight?.routes[0]?.segments?.length - 1]
+      ?.arrival
+
+  const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
+  const { data: arrivalAirportData } = useAirportData({ airportCode: arrival ? arrival : '' })
+
   return (
     <Stack width="444px" bgcolor="grey.200" height="100%" justifyContent="space-between">
       <Stack overflow="hidden">
@@ -22,9 +32,13 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="row" gap={1} alignItems="center">
               {/* TODO: hardcoded data */}
-              <Typography variant="titleMd">HARDCODED (PAR)</Typography>
+              <Typography variant="titleMd">
+                {airportName(departureAirportData)} ({departure})
+              </Typography>
               <SwapHorizIcon data-testid={null} />
-              <Typography variant="titleMd">HARDCODED (PAR)</Typography>
+              <Typography variant="titleMd">
+                {airportName(arrivalAirportData)} ({arrival})
+              </Typography>
             </Stack>
             <IconButton aria-label="close" onClick={onClose} data-testid="flightDetails-close">
               <CloseIcon data-testid={null} />

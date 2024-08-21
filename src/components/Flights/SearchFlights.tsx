@@ -24,7 +24,7 @@ export const SearchFlights = () => {
   } = useSearchFlights({
     params: searchParamsDto,
   })
-  const filteredData = response?.solutions
+  const filteredDataOne = response?.solutions
     .filter((solution) => {
       const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
       if (
@@ -54,9 +54,18 @@ export const SearchFlights = () => {
     })
     .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
 
+  const filteredData = filteredDataOne?.filter((solution) => {
+    console.log(filters)
+    if (filters?.airlinesSelected && filters?.airlinesSelected.length > 0) {
+      const airlines = solution.routes.map((route) => route.carrier)
+      if (!filters.airlinesSelected.some((airline) => airlines.includes(airline))) return false
+    }
+    return true
+  })
+
   const getAirlines = () => {
     const airlines: AirlineFilterData[] = []
-    filteredData?.forEach((solution) => {
+    filteredDataOne?.forEach((solution) => {
       const indexAirline = airlines.findIndex((current) =>
         solution.routes.map((route) => route.carrier).includes(current.carrier),
       )
@@ -127,7 +136,10 @@ export const SearchFlights = () => {
           )}
           {isSuccess && (
             <>
-              <SearchResults results={filteredData?.slice(0, resultsNumber)} />
+              <SearchResults
+                results={filteredData?.slice(0, resultsNumber)}
+                correlationId={response.correlationId}
+              />
               <Button
                 onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
                 data-testid="searchFlights-viewMoreResultsButton">

@@ -6,9 +6,19 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { SectionContainer } from '@/components'
 import Link from 'next/link'
 import { useFlights } from '@/contexts'
+import { useAirportData } from '@/services'
+import { airportName } from '@/utils'
 
 export const SelectedFlightInfoTopbar = () => {
   const { firstSegment, lastSegment, totalPassengers } = useFlights()
+
+  const { data: departureAirportData } = useAirportData({
+    airportCode: firstSegment?.from ? firstSegment.from : '',
+  })
+  const { data: arrivalAirportData } = useAirportData({
+    airportCode: firstSegment?.to ? firstSegment.to : '',
+  })
+
   return (
     <Box
       sx={{
@@ -57,11 +67,11 @@ export const SelectedFlightInfoTopbar = () => {
               <Stack direction="row" gap={2} alignItems="center">
                 <Stack direction="row" gap={1}>
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-from">
-                    {firstSegment?.from} ({firstSegment?.from})
+                    {airportName(departureAirportData)} ({firstSegment?.from})
                   </Typography>
                   <SwapHorizIcon data-testid={null} />
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-to">
-                    {lastSegment?.to} ({lastSegment?.to})
+                    {airportName(arrivalAirportData)} ({firstSegment?.to})
                   </Typography>
                 </Stack>
                 <Stack direction="row" gap={1}>

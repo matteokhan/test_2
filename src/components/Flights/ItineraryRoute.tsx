@@ -1,7 +1,8 @@
 import { Route } from '@/types'
 import { Box, Stack, SxProps, Typography } from '@mui/material'
 import { ItinerarySegment } from '@/components'
-import { transformDuration } from '@/utils'
+import { airportName, transformDuration } from '@/utils'
+import { useAirportData } from '@/services'
 
 export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) => {
   const departure = route.segments[0].departure
@@ -14,6 +15,9 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
     day: 'numeric',
   }
 
+  const { data: departureAirportData } = useAirportData({ airportCode: departure })
+  const { data: arrivalAirportData } = useAirportData({ airportCode: arrival })
+
   return (
     <Box
       maxWidth="590px"
@@ -23,7 +27,7 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
       data-testid="itineraryRoute">
       <Box py={1.5} px={2}>
         <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
-          {departure} - {arrival}
+          {airportName(departureAirportData)} - {airportName(arrivalAirportData)}
         </Typography>
         <Typography variant="bodyMd" color="grey.800" data-testid="itineraryRoute-durationDetails">
           {departureDate.toLocaleDateString(undefined, dateOptions)} - durée{' '}

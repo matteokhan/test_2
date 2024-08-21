@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   BookingStepActions,
   PayerForm,
@@ -18,15 +18,25 @@ export default function ContactInfoPage() {
   // TODO: search agencies by nearest position
   const { data: agencies } = useSearchAgencies({})
   const formRef = useRef<FormikProps<PayerData> | null>(null)
-  const { goNextStep, setPayer, passengers, payerIndex, goPreviousStep, mapIsOpen, setMapIsOpen } =
-    useBooking()
+  const {
+    goNextStep,
+    setPayer,
+    passengers,
+    payerIndex,
+    goPreviousStep,
+    mapIsOpen,
+    setMapIsOpen,
+    selectedFlight,
+    payer,
+    setCreateReservation,
+    reservationId,
+  } = useBooking()
 
   const handleSubmit = async () => {
     if (formRef.current) {
       const errors = await formRef.current.validateForm()
       if (Object.keys(errors).length === 0) {
         formRef.current.handleSubmit()
-        goNextStep()
       } else {
         formRef.current.setTouched(
           Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
@@ -36,6 +46,12 @@ export default function ContactInfoPage() {
       // TODO: log this somewhere
     }
   }
+
+  useEffect(() => {
+    if (selectedFlight && payer && !reservationId) {
+      setCreateReservation()
+    }
+  })
 
   const handlePayerSubmit = (values: PayerData) => {
     setPayer(values)

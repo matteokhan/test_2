@@ -8,10 +8,16 @@ import {
   SimpleContainer,
 } from '@/components'
 import { useBooking } from '@/contexts'
+import { useState } from 'react'
 
 export default function BookingSummaryPage() {
-  const { goPreviousStep, goToStep } = useBooking()
+  const { goPreviousStep, goToStep, reservationId, pnr, setConfirmReservation, errorMessageApi } =
+    useBooking()
+  const [loading, setLoading] = useState(false)
   const handleSubmit = async () => {
+    setLoading(true)
+    await setConfirmReservation()
+    setLoading(false)
     // if (formRef.current) {
     //   const errors = await formRef.current.validateForm()
     //   if (Object.keys(errors).length === 0) {
@@ -46,6 +52,9 @@ export default function BookingSummaryPage() {
         onAction={() => goToStep(1)}>
         <PayerSummary />
       </SimpleContainer>
+      {pnr && <div>Réservation confirmé, numéro de PNR : {pnr}</div>}
+      {errorMessageApi && <div>{errorMessageApi}</div>}
+      {loading && <div>Confirmation de la réservation en cours...</div>}
       <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
     </>
   )

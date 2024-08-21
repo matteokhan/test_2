@@ -6,11 +6,18 @@ import { FlightRouteDetails } from '@/components'
 import { Solution } from '@/types'
 import { useBooking, useFlights } from '@/contexts'
 
-export const FlightResult = ({ result }: { result: Solution }) => {
-  const { setPreSelectedFlight } = useBooking()
+export const FlightResult = ({
+  result,
+  correlationId,
+}: {
+  result: Solution
+  correlationId: string
+}) => {
+  const { setPreSelectedFlight, setCorrelationId } = useBooking()
   const { setFlightDetailsOpen } = useFlights()
   const preSelectFlight = () => {
     setPreSelectedFlight(result)
+    setCorrelationId(correlationId)
     setFlightDetailsOpen(true)
   }
   return (

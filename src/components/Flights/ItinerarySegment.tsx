@@ -8,6 +8,8 @@ import {
 } from '@/components'
 import { RouteSegment } from '@/types'
 import { transformDuration } from '@/utils/date'
+import { useAirportData } from '@/services'
+import { airportNameExtension } from '@/utils'
 
 export const ItinerarySegment = ({
   segment,
@@ -34,6 +36,9 @@ export const ItinerarySegment = ({
     day: 'numeric',
   }
 
+  const { data: departureAirportData } = useAirportData({ airportCode: segment.departureCityCode })
+  const { data: arrivalAirportData } = useAirportData({ airportCode: segment.arrivalCityCode })
+
   const getSegmentIcon = () => {
     if (segment.equipment == 'TRN') {
       return <TrainIcon />
@@ -51,7 +56,7 @@ export const ItinerarySegment = ({
         />
         <ItineraryTimeline />
         <ItinerarySegmentDetails
-          location={segment.departure}
+          location={airportNameExtension(departureAirportData)}
           locationCode={segment.departureCityCode}
         />
       </Stack>
@@ -79,7 +84,7 @@ export const ItinerarySegment = ({
         />
         <ItineraryTimeline noLine={isLastSegment} dotted={!isLastSegment} />
         <ItinerarySegmentDetails
-          location={segment.arrival}
+          location={airportNameExtension(arrivalAirportData)}
           locationCode={segment.arrivalCityCode}
           scaleDuration={transformDuration(scaleTime)}
           airportChange={airportChange}
