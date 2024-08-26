@@ -9,13 +9,19 @@ import {
   FlightDetails,
 } from '@/components'
 import { Box, Drawer } from '@mui/material'
-import { useFlights } from '@/contexts'
-import { SearchFlightsParams } from '@/types'
+import { useBooking, useFlights } from '@/contexts'
+import { SearchFlightsParams, Solution } from '@/types'
 
 export default function FlighsPage() {
   const { flightDetailsOpen, setFlightDetailsOpen, setSearchParams } = useFlights()
+  const { selectFlight, goToStep } = useBooking()
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setSearchParams(searchParams)
+  }
+  const handleSelectFlight = ({ flight }: { flight: Solution | null }) => {
+    setFlightDetailsOpen(false)
+    selectFlight(flight)
+    goToStep(0)
   }
   return (
     <>
@@ -37,7 +43,10 @@ export default function FlighsPage() {
                 borderRadius: 0,
               },
             }}>
-            <FlightDetails onClose={() => setFlightDetailsOpen(false)} />
+            <FlightDetails
+              onClose={() => setFlightDetailsOpen(false)}
+              onSelectFlight={handleSelectFlight}
+            />
           </Drawer>
         </SectionContainer>
       </Box>

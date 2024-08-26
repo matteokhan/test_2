@@ -10,7 +10,7 @@ import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
 
 export const SelectedFlightInfoTopbar = () => {
-  const { firstSegment, lastSegment, totalPassengers } = useFlights()
+  const { firstSegment, lastSegment, totalPassengers, setFlightDetailsOpen } = useFlights()
 
   const { data: departureAirportData } = useAirportData({
     airportCode: firstSegment?.from ? firstSegment.from : '',
@@ -94,8 +94,7 @@ export const SelectedFlightInfoTopbar = () => {
                   </Typography>
                 </Stack>
               </Stack>
-              {/* TODO: Show flight details */}
-              <Button>Voir le détail du vol</Button>
+              <Button onClick={() => setFlightDetailsOpen(true)}>Voir le détail du vol</Button>
             </Stack>
           </Stack>
         </Stack>

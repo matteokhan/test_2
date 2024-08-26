@@ -8,14 +8,31 @@ import { useBooking } from '@/contexts'
 import { MouseEventHandler } from 'react'
 import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
+import { Solution } from '@/types'
 
-export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButtonElement> }) => {
-  const { preSelectedFlight, selectFlight, goToStep } = useBooking()
+type BaseFlightDetailsProps = {
+  onClose: MouseEventHandler<HTMLButtonElement>
+  withControls?: boolean
+}
 
-  const handleSelectFlight = () => {
-    selectFlight(preSelectedFlight)
-    goToStep(0)
-  }
+type FlightDetailsWithControls = BaseFlightDetailsProps & {
+  withControls?: true
+  onSelectFlight: ({ flight }: { flight: Solution | null }) => void
+}
+
+type FlightDetailsWithoutControls = BaseFlightDetailsProps & {
+  withControls?: false
+  onSelectFlight?: never
+}
+
+type FlightDetailsProps = FlightDetailsWithControls | FlightDetailsWithoutControls
+
+export const FlightDetails = ({
+  onClose,
+  onSelectFlight,
+  withControls = true,
+}: FlightDetailsProps) => {
+  const { preSelectedFlight } = useBooking()
 
   const departure = preSelectedFlight?.routes[0]?.segments[0]?.departure
   const arrival =
@@ -56,31 +73,33 @@ export const FlightDetails = ({ onClose }: { onClose: MouseEventHandler<HTMLButt
           </Stack>
         </Stack>
       </Stack>
-      <Paper elevation={2} sx={{ borderRadius: 0, p: 2 }}>
-        <Stack direction="row" justifyContent="space-between">
-          <Box>
-            {/* TODO: fix per person price */}
-            <Typography
-              variant="headlineSm"
-              color="primary.main"
-              height="30px"
-              data-testid="flightDetails-price">
-              {preSelectedFlight?.priceInfo.total} {preSelectedFlight?.priceInfo.currencySymbol}{' '}
-            </Typography>
-            <Typography variant="bodySm" color="grey.800">
-              Par personne
-            </Typography>
-          </Box>
-          <Button
-            variant="contained"
-            size="medium"
-            sx={{ height: 'auto', width: '128px' }}
-            onClick={handleSelectFlight}
-            data-testid="flightDetails-selectFlight">
-            Sélectionner
-          </Button>
-        </Stack>
-      </Paper>
+      {withControls && onSelectFlight && (
+        <Paper elevation={2} sx={{ borderRadius: 0, p: 2 }}>
+          <Stack direction="row" justifyContent="space-between">
+            <Box>
+              {/* TODO: fix per person price */}
+              <Typography
+                variant="headlineSm"
+                color="primary.main"
+                height="30px"
+                data-testid="flightDetails-price">
+                {preSelectedFlight?.priceInfo.total} {preSelectedFlight?.priceInfo.currencySymbol}{' '}
+              </Typography>
+              <Typography variant="bodySm" color="grey.800">
+                Par personne
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              size="medium"
+              sx={{ height: 'auto', width: '128px' }}
+              onClick={() => onSelectFlight({ flight: preSelectedFlight })}
+              data-testid="flightDetails-selectFlight">
+              Sélectionner
+            </Button>
+          </Stack>
+        </Paper>
+      )}
     </Stack>
   )
 }
