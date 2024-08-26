@@ -153,3 +153,33 @@ export const useAirportData = ({ airportCode }: { airportCode: string }) => {
     refetchOnWindowFocus: false,
   })
 }
+
+export const getArroundAgency = async ({ lat, lng }: { lat: any; lng: any }) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const params = {
+    lat: lat,
+    lng: lng,
+    fields: '*',
+  }
+
+  const queryParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    queryParams.append(key, value as string)
+  })
+
+  const response = await fetch(
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-agency/?${queryParams.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch arround agency')
+  }
+
+  return await response.json()
+}

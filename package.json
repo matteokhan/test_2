@@ -29,6 +29,7 @@
     "next-runtime-env": "3.x",
     "react": "^18",
     "react-dom": "^18",
+    "react-geocode": "1.0.0-alpha.1",
     "yup": "^1.4.0"
   },
   "devDependencies": {

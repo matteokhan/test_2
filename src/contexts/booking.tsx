@@ -8,6 +8,7 @@ import {
   Solution,
   Fare,
   Insurance,
+  Agency,
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
@@ -50,6 +51,8 @@ type BookingContextType = {
   setConfirmReservation: () => void
   errorMessageApi: string | null
   setErrorMessageApi: React.Dispatch<React.SetStateAction<string | null>>
+  agency: Agency | null
+  setAgency: React.Dispatch<React.SetStateAction<Agency | null>>
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -91,6 +94,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [reservationId, setReservationId] = useState<string | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
   const [errorMessageApi, setErrorMessageApi] = useState<string | null>(null)
+  const [agency, setAgency] = useState<Agency | null>(null)
 
   const goNextStep = () => {
     const nextStep = currentStep + 1
@@ -130,6 +134,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: '',
           phoneNumber: '',
+          type: 'ADT',
           isPayer: i === 0,
         },
       ])
@@ -200,7 +205,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const result = await confirmReservation({
       params: { correlationId: correlationId, reservationId: reservationId },
     })
-    console.log(result)
     if (
       result.ReservationItems?.length > 0 &&
       result.ReservationItems[0].AirlinePassengerNameRecord
@@ -260,6 +264,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setConfirmReservation,
         errorMessageApi,
         setErrorMessageApi,
+        agency,
+        setAgency,
       }}>
       {children}
     </BookingContext.Provider>

@@ -5,6 +5,7 @@ export type BookingStep = {
 }
 
 export type SalutationOption = 'Mr' | 'Mme' | null
+export type PassengerType = 'ADT' | 'CHD' | 'INF'
 
 export type PassengerData = {
   salutation: SalutationOption
@@ -13,6 +14,7 @@ export type PassengerData = {
   isPayer: boolean
   dateOfBirth: string
   phoneNumber: string
+  type: PassengerType
 }
 
 export type PayerData = {

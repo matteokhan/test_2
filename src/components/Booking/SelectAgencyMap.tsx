@@ -14,7 +14,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import GpsOff from '@mui/icons-material/GpsOff'
-import { useSearchAgencies } from '@/services'
+import { getArroundAgency, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import { CustomTextField } from '@/components'
@@ -36,14 +36,53 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
     () => agencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude) || [],
     [agencies],
   )
+
   // TODO: enable geolocation
   const canAccessPosition = 'geolocation' in navigator
   const map = useMap()
+  const [userLocation, setUserLocation] = React.useState<{
+    latitude: number
+    longitude: number
+  } | null>(null)
+  const [agenciesFound, setAgenciesFound] = React.useState<Agency[] | null>(null)
 
   const getAgencyPosition = (agency: Agency) => ({
     lat: agency.gps_latitude,
     lng: agency.gps_longitude,
   })
+
+  const setLocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+        fetchArroundAgencies()
+        map?.setCenter({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        })
+      })
+    }
+  }
+
+  const fetchArroundAgencies = async () => {
+    if (userLocation) {
+      const response = await getArroundAgency({
+        lat: userLocation.latitude,
+        lng: userLocation.longitude,
+      })
+      if (response && response.items) {
+        setAgenciesFound(response.items)
+      }
+    }
+  }
+
+  const getAgencies = () => {
+    if (!agenciesFound) return agencies
+    return agenciesFound
+  }
 
   useEffect(() => {
     if (geolocatedAgencies?.length) {
@@ -130,6 +169,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                 size="medium"
                 color="primary"
                 aria-label="Géolocalisation"
+                onClick={setLocation}
                 sx={{ boxShadow: 'none' }}>
                 {canAccessPosition ? (
                   <LocationSearchingIcon data-testid={null} />
@@ -140,7 +180,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             </Stack>
           </Stack>
           <Stack overflow="scroll" data-testid="selectAgencyMap-agenciesList">
-            {agencies?.map((agency) => (
+            {getAgencies()?.map((agency) => (
               <Box
                 p={2}
                 borderBottom="1px solid"
