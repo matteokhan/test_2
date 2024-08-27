@@ -86,7 +86,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [passengers, setPassengers] = useState<PassengerData[]>([])
   const [payerIndex, setPayerIndex] = useState<number | null>(null) // Index of the payer in the passengers array
   const [payer, setPayer] = useState<PayerData | null>(null)
-  const totalPrice = selectedFlight?.priceInfo?.total || 0
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
   const [selectedFare, setSelectedFare] = React.useState<Fare | null>(null)
   const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
@@ -95,6 +94,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [pnr, setPnr] = useState<string | null>(null)
   const [errorMessageApi, setErrorMessageApi] = useState<string | null>(null)
   const [agency, setAgency] = useState<Agency | null>(null)
+  const totalPrice =
+    (selectedFlight?.priceInfo?.total || 0) + (selectedInsurance?.amount || 0) * totalPassengers
 
   const goNextStep = () => {
     const nextStep = currentStep + 1

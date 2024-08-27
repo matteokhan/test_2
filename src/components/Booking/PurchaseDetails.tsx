@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 export const PurchaseDetails = () => {
   const { totalPassengers } = useFlights()
-  const { selectedFlight, totalPrice } = useBooking()
+  const { selectedFlight, totalPrice, selectedInsurance } = useBooking()
   return (
     <Paper
       sx={{ paddingX: 4, paddingBottom: 4, paddingTop: 3, width: '389px' }}
@@ -15,7 +15,6 @@ export const PurchaseDetails = () => {
         Détails du prix
       </Typography>
       <Stack pt={1} gap={1} pb={2}>
-        {/* TODO: Fix this pricing */}
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd" data-testid="purchaseDetails-totalPassengers">
             {totalPassengers} x passager(s) (avec réduction)
@@ -28,44 +27,46 @@ export const PurchaseDetails = () => {
           </Typography>
         </Stack>
         {/* TODO: make this dynamic when baggages enabled */}
-        <Stack direction="row" width="100%" justifyContent="space-between">
+        {/* <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd" data-testid="purchaseDetails-baggages">
             1 x bagage(s) à main
           </Typography>
           <Typography variant="bodyMd" fontWeight={500} data-testid="purchaseDetails-baggagesPrice">
             Inclus
           </Typography>
-        </Stack>
+        </Stack> */}
         {/* TODO: make this dynamic when insurances enabled */}
-        <Stack direction="row" width="100%" justifyContent="space-between">
-          <Typography variant="bodyMd" data-testid="purchaseDetails-insurances">
-            1 x assurance voyage
-          </Typography>
-          <Typography
-            variant="bodyMd"
-            fontWeight={500}
-            data-testid="purchaseDetails-insurancesPrice">
-            0€
-          </Typography>
-        </Stack>
+        {selectedInsurance && (
+          <Stack direction="row" width="100%" justifyContent="space-between">
+            <Typography variant="bodyMd" data-testid="purchaseDetails-insurances">
+              1 x assurance voyage
+            </Typography>
+            <Typography
+              variant="bodyMd"
+              fontWeight={500}
+              data-testid="purchaseDetails-insurancesPrice">
+              {selectedInsurance.amount * totalPassengers}€
+            </Typography>
+          </Stack>
+        )}
         {/* TODO: make this dynamic when options enabled */}
-        <Stack direction="row" width="100%" justifyContent="space-between">
+        {/* <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd" data-testid="purchaseDetails-options">
             1 x offre(s) de service Premium
           </Typography>
           <Typography variant="bodyMd" fontWeight={500} data-testid="purchaseDetails-optionsPrice">
             0€
           </Typography>
-        </Stack>
+        </Stack> */}
         {/* TODO: make this dynamic when seats enabled */}
-        <Stack direction="row" width="100%" justifyContent="space-between">
+        {/* <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd" data-testid="purchaseDetails-seats">
             1x siège(s) (SYD - DEL)
           </Typography>
           <Typography variant="bodyMd" fontWeight={500} data-testid="purchaseDetails-seatsPrice">
             0€
           </Typography>
-        </Stack>
+        </Stack> */}
       </Stack>
       <Stack pt={1} gap={1.25}>
         <Stack

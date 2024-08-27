@@ -44,6 +44,6 @@ export type Insurance = {
   id: number
   title: string
   code: string
-  amount: string
+  amount: number
   currency: Currency
 }

@@ -1,5 +1,5 @@
 import { useBooking } from '@/contexts'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 export const PayerSummary = () => {
   const { payer } = useBooking()

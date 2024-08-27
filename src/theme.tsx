@@ -96,6 +96,10 @@ let theme = createTheme({
       xl: 1536,
     },
   },
+  zIndex: {
+    appBar: 10,
+    drawer: 20,
+  },
   palette: {
     leclerc: {
       red: palette.augmentColor({

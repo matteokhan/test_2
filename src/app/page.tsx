@@ -1,11 +1,13 @@
 'use client'
 
-import { Header, SearchFlightsBanner } from '@/components'
+import { Navbar, SearchFlightsBanner, TopBar } from '@/components'
 
 export default function Home() {
   return (
     <>
-      <Header withLinks />
+      <TopBar height={60}>
+        <Navbar />
+      </TopBar>
       <SearchFlightsBanner />
     </>
   )

@@ -2,11 +2,12 @@
 
 import React from 'react'
 import {
-  Header,
+  Navbar,
   SearchFlightsModes,
   SectionContainer,
   SearchFlights,
   FlightDetails,
+  TopBar,
 } from '@/components'
 import { Box, Drawer } from '@mui/material'
 import { useBooking, useFlights } from '@/contexts'
@@ -25,7 +26,9 @@ export default function FlighsPage() {
   }
   return (
     <>
-      <Header />
+      <TopBar height={60}>
+        <Navbar />
+      </TopBar>
       <Box
         sx={{
           backgroundColor: 'grey.200',

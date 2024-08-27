@@ -4,10 +4,11 @@ import { useEffect } from 'react'
 import {
   BookingStepsTopbar,
   FlightDetails,
-  Header,
+  Navbar,
   PurchaseDetails,
   SectionContainer,
   SelectedFlightInfoTopbar,
+  TopBar,
 } from '@/components'
 import { useBooking, useFlights } from '@/contexts'
 import { Box, Drawer, Stack, Typography } from '@mui/material'
@@ -42,8 +43,10 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <Header />
-      <SelectedFlightInfoTopbar />
+      <TopBar height={120}>
+        <Navbar />
+        <SelectedFlightInfoTopbar />
+      </TopBar>
       <Box sx={{ backgroundColor: 'grey.200' }}>
         <SectionContainer
           sx={{ justifyContent: 'space-between', paddingY: 3, flexDirection: 'column' }}>

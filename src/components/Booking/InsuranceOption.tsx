@@ -11,7 +11,7 @@ export const InsuranceOption = ({
 }: {
   insurance: InsuranceWithSteps
   isSelected: boolean
-  onSelect: (insurance: Insurance) => void
+  onSelect: (insurance: Insurance | null) => void
 }) => {
   const { totalPassengers } = useFlights()
   const { totalPrice } = useBooking()
@@ -103,15 +103,19 @@ export const InsuranceOption = ({
             data-testid="insuranceOption-selectButton"
             sx={{ px: 3 }}
             variant={isSelected ? 'contained' : 'outlined'}
-            onClick={() =>
+            onClick={() => {
+              if (isSelected) {
+                onSelect(null)
+                return
+              }
               onSelect({
                 id: insurance.id,
                 title: insurance.title,
                 code: insurance.code,
-                amount: perPersonInsurancePrice.toString(),
+                amount: perPersonInsurancePrice,
                 currency: 'EUR',
               })
-            }
+            }}
             startIcon={isSelected ? <CheckIcon /> : null}>
             {isSelected ? 'Sélectionné' : 'Sélectionner cette formule'}
           </Button>
