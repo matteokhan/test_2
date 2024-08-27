@@ -21,10 +21,11 @@ const CustomTextFieldRoot = styled(TextField)(({ theme }) => ({
   },
 }))
 
-export const CustomTextField: React.FC<TextFieldProps> = (props) => {
+export const CustomTextField = React.forwardRef<HTMLDivElement, TextFieldProps>((props, ref) => {
   return (
     <CustomTextFieldRoot
       {...props}
+      ref={ref}
       variant="filled"
       InputProps={{
         ...props.InputProps,
@@ -32,4 +33,6 @@ export const CustomTextField: React.FC<TextFieldProps> = (props) => {
       }}
     />
   )
-}
+})
+
+CustomTextField.displayName = 'CustomTextField'

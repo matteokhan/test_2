@@ -5,10 +5,9 @@ import * as Yup from 'yup'
 import { Button, Stack, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Form, Formik, FormikHelpers, Field, FieldArray } from 'formik'
 import { MultiDestinationsFlightSearchParams } from '@/types'
-import { CustomTextField } from '@/components'
+import { DatePicker, CustomTextField, PassengersField } from '@/components'
 import dayjs from 'dayjs'
 
 const DEFAULT_VALUES = {
@@ -126,9 +125,11 @@ export const SearchMultiDestFlightsForm = ({
                             }}
                           />
                           <DatePicker
+                            slots={{ textField: CustomTextField }}
                             label="Dates"
                             value={dayjs(values.destinations[index].departure)}
                             data-testid={`departureField-${index}`}
+                            minDate={dayjs()}
                             onChange={(value) =>
                               setFieldValue(
                                 `destinations.${index}.departure`,
@@ -143,6 +144,9 @@ export const SearchMultiDestFlightsForm = ({
                                     ?.departure &&
                                   (errors.destinations as FormErrors['destinations'])?.[index]
                                     ?.departure,
+                              },
+                              popper: {
+                                modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
                               },
                             }}
                           />
@@ -175,7 +179,7 @@ export const SearchMultiDestFlightsForm = ({
                 </Stack>
               )}
             </FieldArray>
-            <Field name="adults" as={CustomTextField} label="Voyageurs" variant="filled" />
+            <PassengersField />
             <Button type="submit" variant="contained" size="large" data-testid="searchButton">
               Rechercher
             </Button>

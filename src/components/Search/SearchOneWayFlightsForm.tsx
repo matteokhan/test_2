@@ -2,11 +2,10 @@
 
 import React from 'react'
 import * as Yup from 'yup'
-import { Button, Stack } from '@mui/material'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { Box, Button, Stack } from '@mui/material'
 import { Form, Formik, FormikHelpers, Field } from 'formik'
 import { OneWayFlightSearchParams } from '@/types'
-import { CustomTextField } from '@/components'
+import { DatePicker, CustomTextField, PassengersField } from '@/components'
 import dayjs from 'dayjs'
 
 const DEFAULT_VALUES = {
@@ -50,42 +49,56 @@ export const SearchOneWayFlightsForm = ({
         <Form data-testid="searchOneWayFlightsForm">
           <Stack direction="row" width="100%" gap={1}>
             <Stack gap={1} direction="row" flexGrow={1}>
-              <Field
-                as={CustomTextField}
-                name="from"
-                label="Vol au départ de"
-                variant="filled"
-                sx={{ flexGrow: 1 }}
-                error={touched.from && errors.from}
-                helperText={touched.from && errors.from}
-                inputProps={{
-                  'data-testid': 'fromField',
-                }}
-              />
-              <Field
-                as={CustomTextField}
-                name="to"
-                label="Vol à destination de"
-                variant="filled"
-                sx={{ flexGrow: 1 }}
-                error={touched.to && errors.to}
-                helperText={touched.to && errors.to}
-                inputProps={{
-                  'data-testid': 'toField',
-                }}
-              />
-              <DatePicker
-                data-testid="departureField"
-                label="Dates"
-                value={dayjs(values.departure)}
-                slotProps={{
-                  textField: {
-                    helperText: touched.departure && errors.departure,
-                  },
-                }}
-                onChange={(value) => setFieldValue('departure', value?.format('YYYY-MM-DD'), true)}
-              />
-              <Field name="adults" as={CustomTextField} label="Voyageurs" variant="filled" />
+              <Stack width="50%" gap={1} direction="row">
+                <Field
+                  width="50%"
+                  as={CustomTextField}
+                  name="from"
+                  label="Vol au départ de"
+                  variant="filled"
+                  sx={{ flexGrow: 1 }}
+                  error={touched.from && errors.from}
+                  helperText={touched.from && errors.from}
+                  inputProps={{
+                    'data-testid': 'fromField',
+                  }}
+                />
+                <Field
+                  width="50%"
+                  as={CustomTextField}
+                  name="to"
+                  label="Vol à destination de"
+                  variant="filled"
+                  sx={{ flexGrow: 1 }}
+                  error={touched.to && errors.to}
+                  helperText={touched.to && errors.to}
+                  inputProps={{
+                    'data-testid': 'toField',
+                  }}
+                />
+              </Stack>
+              <Box width="25%">
+                <DatePicker
+                  sx={{ width: '100%' }}
+                  slots={{ textField: CustomTextField }}
+                  data-testid="departureField"
+                  label="Dates"
+                  value={dayjs(values.departure)}
+                  slotProps={{
+                    textField: { helperText: touched.departure && errors.departure },
+                    popper: {
+                      modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
+                    },
+                  }}
+                  minDate={dayjs()}
+                  onChange={(value) => {
+                    setFieldValue('departure', value?.format('YYYY-MM-DD'), true)
+                  }}
+                />
+              </Box>
+              <Box width="25%">
+                <PassengersField sx={{ width: '100%' }} />
+              </Box>
             </Stack>
             <Button type="submit" variant="contained" size="large" data-testid="searchButton">
               Rechercher

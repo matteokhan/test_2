@@ -69,7 +69,8 @@ export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) =>
       <Tabs value={activeTab} onChange={handleTabChange}>
         <Tab label="Aller-retour" data-testid="searchMode-roundtripFlightButton" />
         <Tab label="Aller simple" data-testid="searchMode-singleFlightButton" />
-        <Tab label="Multi-destinations" data-testid="searchMode-multidestinationFlightButton" />
+        {/* TODO: enable multidestinations */}
+        {/* <Tab label="Multi-destinations" data-testid="searchMode-multidestinationFlightButton" /> */}
       </Tabs>
       <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
         {activeTab === 0 && (
@@ -81,12 +82,13 @@ export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) =>
         {activeTab === 1 && (
           <SearchOneWayFlightsForm onSubmit={handleSearch} initialValues={oneWayInitialValues} />
         )}
-        {activeTab === 2 && (
+        {/* TODO: enable multidestinations */}
+        {/* {activeTab === 2 && (
           <SearchMultiDestFlightsForm
             onSubmit={handleSearch}
             initialValues={multiDestInitialValues}
           />
-        )}
+        )} */}
       </Box>
     </Paper>
   )
