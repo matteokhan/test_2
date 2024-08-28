@@ -100,6 +100,7 @@ export const DepartureAndDestinationField = ({
     setDepartureSearchTerm(e.target.value)
   }
   const handleDepartureBlur = () => {
+    setDepartureIsOpen(false)
     if (selectedDepartureAirport) {
       setDepartureSearchTerm(selectedDepartureAirport.name)
     } else {
@@ -139,6 +140,7 @@ export const DepartureAndDestinationField = ({
     setDestinationSearchTerm(e.target.value)
   }
   const handleDestinationBlur = () => {
+    setDestinationIsOpen(false)
     if (selectedDestinationAirport) {
       setDestinationSearchTerm(selectedDestinationAirport.name)
     } else {
@@ -159,12 +161,11 @@ export const DepartureAndDestinationField = ({
     setDepartureSearchTerm(to.name + ' (' + to.code + ')')
     setDestinationSearchTerm(from.name + ' (' + from.code + ')')
   }
-
   return (
     <>
       <Stack
-        border="1px solid"
-        borderColor="grey.500"
+        border={departureIsOpen || destinationIsOpen ? '2px solid' : '1px solid'}
+        borderColor={departureIsOpen || destinationIsOpen ? 'primary.main' : 'grey.500'}
         borderRadius="4px"
         direction="row"
         alignItems="flex-start"
