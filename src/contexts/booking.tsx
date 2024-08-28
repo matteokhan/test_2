@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
 import { confirmReservation, createReservation, useCreateReservation } from '@/services'
+import dayjs from 'dayjs'
 
 type BookingContextType = {
   selectedFlight: Solution | null
@@ -59,7 +60,7 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined)
 
 export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter()
-  const { totalPassengers } = useFlights()
+  const { totalPassengers, searchParamsCache } = useFlights()
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
   const [preSelectedFlight, setPreSelectedFlight] = useState<Solution | null>(null)
   const steps: BookingStepType[] = [
@@ -126,17 +127,45 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setSelectedFlight(flight)
     setPassengers((prev) => [])
     // First passenger is the payer by default
-    for (let i = 0; i < totalPassengers; i++) {
+    for (let i = 0; i < (searchParamsCache?.adults || 0); i++) {
       setPassengers((prev) => [
         ...prev,
         {
           salutation: null,
           firstName: '',
           lastName: '',
-          dateOfBirth: '',
+          dateOfBirth: dayjs().subtract(18, 'years'),
           phoneNumber: '',
           type: 'ADT',
           isPayer: i === 0,
+        },
+      ])
+    }
+    for (let i = 0; i < (searchParamsCache?.childrens || 0); i++) {
+      setPassengers((prev) => [
+        ...prev,
+        {
+          salutation: null,
+          firstName: '',
+          lastName: '',
+          dateOfBirth: dayjs(),
+          phoneNumber: '',
+          type: 'CHD',
+          isPayer: false,
+        },
+      ])
+    }
+    for (let i = 0; i < (searchParamsCache?.infant || 0); i++) {
+      setPassengers((prev) => [
+        ...prev,
+        {
+          salutation: null,
+          firstName: '',
+          lastName: '',
+          dateOfBirth: dayjs(),
+          phoneNumber: '',
+          type: 'INF',
+          isPayer: false,
         },
       ])
     }
@@ -165,7 +194,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         title: passenger.salutation || '',
         firstName: passenger.firstName,
         lastName: passenger.lastName,
-        dateOfBirth: passenger.dateOfBirth,
+        dateOfBirth: passenger.dateOfBirth.format('YYYY-MM-DD'),
         type: 'ADT',
       })),
       booker: {
