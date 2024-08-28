@@ -27,7 +27,7 @@ export const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({
         {icon && (
           <Stack
             bgcolor="white"
-            zIndex={10}
+            zIndex={5}
             width="24px"
             height="24px"
             justifyContent="center"
