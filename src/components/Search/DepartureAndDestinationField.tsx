@@ -10,6 +10,53 @@ import { useSearchAirportsByName } from '@/services'
 import { useDebounce } from '@uidotdev/usehooks'
 import { AirportData } from '@/types'
 
+const Location = ({
+  airport,
+  noBorder,
+  onClick,
+}: {
+  airport: AirportData
+  noBorder: boolean
+  onClick: (airport: AirportData) => void
+}) => {
+  return (
+    <Stack
+      py={1.5}
+      borderBottom="1px solid"
+      borderColor={noBorder ? 'transparent' : 'grey.200'}
+      direction="row"
+      gap={2}
+      alignItems="center"
+      boxSizing="border-box"
+      sx={{ '&:hover': { cursor: 'pointer' } }}
+      onClick={() => onClick(airport)}>
+      <>
+        {airport.category == 'City' && <PinDropOutlinedIcon />}
+        {airport.category == 'Airport' && (
+          <Stack ml={2} sx={{ rotate: '180deg' }} justifyContent="center">
+            <AirplaneIcon />
+          </Stack>
+        )}
+        <Box>
+          {airport.category == 'City' && (
+            <Typography variant="titleSm">
+              {airport.name} ({airport.code} - Tous les aéroports)
+            </Typography>
+          )}
+          {airport.category == 'Airport' && (
+            <Typography variant="titleSm">
+              {airport.name} ({airport.code}) {airport.extension}
+            </Typography>
+          )}
+          <Typography variant="bodyMd" color="#49454F">
+            {airport.name}, {airport.country_name}
+          </Typography>
+        </Box>
+      </>
+    </Stack>
+  )
+}
+
 export const DepartureAndDestinationField = ({
   labels,
   sx,
@@ -99,6 +146,20 @@ export const DepartureAndDestinationField = ({
     }
   }
 
+  const swapAirports = () => {
+    if (!selectedDepartureAirport || !selectedDestinationAirport) {
+      return
+    }
+    const from = selectedDepartureAirport
+    const to = selectedDestinationAirport
+    setSelectedDepartureAirport(to)
+    setSelectedDestinationAirport(from)
+    setFieldValue('from', to.code)
+    setFieldValue('to', from.code)
+    setDepartureSearchTerm(to.name + ' (' + to.code + ')')
+    setDestinationSearchTerm(from.name + ' (' + from.code + ')')
+  }
+
   return (
     <>
       <Stack
@@ -126,9 +187,17 @@ export const DepartureAndDestinationField = ({
           value={departureSearchTerm}
         />
         <Button
+          disabled={!selectedDepartureAirport || !selectedDestinationAirport}
+          onClick={swapAirports}
           variant="outlined"
           sx={{ width: 32, height: 32, padding: 0, minWidth: 32, alignSelf: 'center' }}>
-          <SwapHorizIcon sx={{ width: 24, height: 24, color: 'black' }} />
+          <SwapHorizIcon
+            sx={{
+              width: 24,
+              height: 24,
+              color: !selectedDepartureAirport || !selectedDestinationAirport ? 'grey' : 'black',
+            }}
+          />
         </Button>
         <Field
           onClick={handleDestinationFocus}
@@ -163,41 +232,12 @@ export const DepartureAndDestinationField = ({
             departureAirportsCodes.map((airportCode, index, array) => {
               const airport = departureAirports[airportCode]
               return (
-                <Stack
+                <Location
                   key={airportCode}
-                  py={1.5}
-                  borderBottom="1px solid"
-                  borderColor={array.length - 1 === index ? 'transparent' : 'grey.200'}
-                  direction="row"
-                  gap={2}
-                  alignItems="center"
-                  boxSizing="border-box"
-                  sx={{ '&:hover': { cursor: 'pointer' } }}
-                  onClick={() => handleDepartureClick(airport)}>
-                  <>
-                    {airport.category == 'City' && <PinDropOutlinedIcon />}
-                    {airport.category == 'Airport' && (
-                      <Stack ml={2} sx={{ rotate: '180deg' }} justifyContent="center">
-                        <AirplaneIcon />
-                      </Stack>
-                    )}
-                    <Box>
-                      {airport.category == 'City' && (
-                        <Typography variant="titleSm">
-                          {airport.name} ({airport.code} - Tous les aéroports)
-                        </Typography>
-                      )}
-                      {airport.category == 'Airport' && (
-                        <Typography variant="titleSm">
-                          {airport.name} ({airport.code}) {airport.extension}
-                        </Typography>
-                      )}
-                      <Typography variant="bodyMd" color="#49454F">
-                        {airport.name}, {airport.country_name}
-                      </Typography>
-                    </Box>
-                  </>
-                </Stack>
+                  airport={airport}
+                  noBorder={array.length - 1 === index}
+                  onClick={handleDepartureClick}
+                />
               )
             })}
         </Stack>
@@ -219,41 +259,12 @@ export const DepartureAndDestinationField = ({
             destinationAirportsCodes.map((airportCode, index, array) => {
               const airport = destinationAirports[airportCode]
               return (
-                <Stack
+                <Location
                   key={airportCode}
-                  py={1.5}
-                  borderBottom="1px solid"
-                  borderColor={array.length - 1 === index ? 'transparent' : 'grey.200'}
-                  direction="row"
-                  gap={2}
-                  alignItems="center"
-                  boxSizing="border-box"
-                  sx={{ '&:hover': { cursor: 'pointer' } }}
-                  onClick={() => handleDestinationClick(airport)}>
-                  <>
-                    {airport.category == 'City' && <PinDropOutlinedIcon />}
-                    {airport.category == 'Airport' && (
-                      <Stack ml={2} sx={{ rotate: '180deg' }} justifyContent="center">
-                        <AirplaneIcon />
-                      </Stack>
-                    )}
-                    <Box>
-                      {airport.category == 'City' && (
-                        <Typography variant="titleSm">
-                          {airport.name} ({airport.code} - Tous les aéroports)
-                        </Typography>
-                      )}
-                      {airport.category == 'Airport' && (
-                        <Typography variant="titleSm">
-                          {airport.name} ({airport.code}) {airport.extension}
-                        </Typography>
-                      )}
-                      <Typography variant="bodyMd" color="#49454F">
-                        {airport.name}, {airport.country_name}
-                      </Typography>
-                    </Box>
-                  </>
-                </Stack>
+                  airport={airport}
+                  noBorder={array.length - 1 === index}
+                  onClick={handleDestinationClick}
+                />
               )
             })}
         </Stack>
