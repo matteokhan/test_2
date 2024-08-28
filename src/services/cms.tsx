@@ -1,6 +1,13 @@
 'use client'
 
-import { Agency, Airlines, AirportData, InsuranceWithSteps, PagesAPIBaseParams } from '@/types'
+import {
+  Agency,
+  Airlines,
+  AirportData,
+  Airports,
+  InsuranceWithSteps,
+  PagesAPIBaseParams,
+} from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
@@ -151,6 +158,42 @@ export const useAirportData = ({ airportCode }: { airportCode: string }) => {
     queryKey: ['airportData', airportCode],
     queryFn: () => getAirportData({ airportCode }),
     refetchOnWindowFocus: false,
+  })
+}
+
+export const searchAirportsByName = async ({ searchTerm }: { searchTerm: string }) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const params = {
+    name__icontains: searchTerm,
+    ordering: '-category,code',
+    page_size: 10,
+  }
+  const queryParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    queryParams.append(key, value as string)
+  })
+
+  const response = await fetch(
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-airport-dict/?${queryParams.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    },
+  )
+  if (!response.ok) {
+    throw new Error('Failed to fetch airport data')
+  }
+  return (await response.json()).results
+}
+
+export const useSearchAirportsByName = ({ searchTerm }: { searchTerm: string }) => {
+  return useQuery<Airports>({
+    queryKey: ['searchAirportsByName', searchTerm],
+    queryFn: () => searchAirportsByName({ searchTerm }),
+    refetchOnWindowFocus: false,
+    enabled: !!searchTerm,
   })
 }
 

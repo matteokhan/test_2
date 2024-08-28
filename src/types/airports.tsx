@@ -5,7 +5,7 @@ export type AirportData = {
   country_name: string
   region_name: string
   area_name: string
-  category: string
+  category: 'City' | 'Airport'
 }
 
 export type Airports = {

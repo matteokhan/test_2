@@ -6,7 +6,7 @@ import { Box, Button, Stack } from '@mui/material'
 import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import { Form, Formik, FormikHelpers, Field } from 'formik'
 import { RoundTripFlightSearchParams } from '@/types'
-import { CustomTextField, PassengersField } from '@/components'
+import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
 import dayjs from 'dayjs'
 
 const DEFAULT_VALUES = {
@@ -53,32 +53,7 @@ export const SearchRoundTripFlightsForm = ({
           <Stack direction="row" width="100%" gap={1}>
             <Stack gap={1} direction="row" flexGrow={1}>
               <Stack width="50%" gap={1} direction="row">
-                <Field
-                  width="50%"
-                  as={CustomTextField}
-                  name="from"
-                  label="Vol au départ de"
-                  variant="filled"
-                  sx={{ flexGrow: 1 }}
-                  error={touched.from && errors.from}
-                  helperText={touched.from && errors.from}
-                  inputProps={{
-                    'data-testid': 'fromField',
-                  }}
-                />
-                <Field
-                  width="50%"
-                  as={CustomTextField}
-                  name="to"
-                  label="Vol à destination de"
-                  variant="filled"
-                  sx={{ flexGrow: 1 }}
-                  error={touched.to && errors.to}
-                  helperText={touched.to && errors.to}
-                  inputProps={{
-                    'data-testid': 'toField',
-                  }}
-                />
+                <DepartureAndDestinationField sx={{ width: '100%' }} />
               </Stack>
               <Box width="25%">
                 <DateRangePicker
