@@ -23,7 +23,7 @@ export type PayerData = {
   salutation: SalutationOption
   firstName: string
   lastName: string
-  dateOfBirth: string
+  dateOfBirth: Dayjs
   phoneNumber: string
   email: string
   address: string

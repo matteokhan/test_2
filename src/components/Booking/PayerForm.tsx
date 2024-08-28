@@ -5,7 +5,7 @@ import { Box, Stack, TextField, Typography } from '@mui/material'
 import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import { CreateAccountOptInField, SalutationField } from '@/components'
-import { MutableRefObject } from 'react'
+import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 
@@ -39,7 +39,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             salutation: null,
             firstName: '',
             lastName: '',
-            dateOfBirth: '',
+            dateOfBirth: dayjs(),
             phoneNumber: '',
             email: '',
             address: '',
@@ -52,7 +52,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
         validationSchema={payerSchema}
         onSubmit={onSubmit}
         enableReinitialize={false}>
-        {({ errors, touched, setFieldValue }) => (
+        {({ errors, touched, setFieldValue, values }) => (
           <Form data-testid="payerForm">
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
@@ -85,15 +85,13 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                   textField: {
                     variant: 'filled',
                     error: !!(touched.dateOfBirth && errors.dateOfBirth),
-                    helperText: touched.dateOfBirth && errors.dateOfBirth,
+                    helperText: touched.dateOfBirth && (errors.dateOfBirth as ReactNode),
                   },
                 }}
-                value={initialValues?.dateOfBirth ? dayjs(initialValues.dateOfBirth) : null}
+                value={values.dateOfBirth}
                 name="dateOfBirth"
                 label="Date de naissance"
-                onChange={(value) =>
-                  setFieldValue('dateOfBirth', value?.format('YYYY-MM-DD'), true)
-                }
+                onChange={(value) => setFieldValue('dateOfBirth', value, true)}
               />
               <Field
                 as={TextField}

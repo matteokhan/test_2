@@ -17,7 +17,7 @@ export const PassengersSummary = () => {
           </Typography>
           {/* TODO: Hardcoded data here */}
           <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-birthDate">
-            Adulte - {passenger.dateOfBirth}
+            Adulte - {passenger.dateOfBirth.format('YYYY-MM-DD')}
           </Typography>
         </Box>
       ))}
