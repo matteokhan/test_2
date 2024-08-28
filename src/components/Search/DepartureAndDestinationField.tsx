@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Box, Popover, Typography, Button, Stack, SxProps } from '@mui/material'
 import { AirplaneIcon, CustomTextField } from '@/components'
 import { Field, useFormikContext } from 'formik'
@@ -21,19 +21,24 @@ export const DepartureAndDestinationField = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const anchorRef = useRef<HTMLInputElement>(null)
-  const { values, errors, touched, setFieldValue } = useFormikContext<{
+  const { errors, touched, setFieldValue } = useFormikContext<{
     from: string
     to: string
   }>()
-  const debouncedFromSearchTerm = useDebounce(values.from, 300)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedAirport, setSelectedAirport] = useState<AirportData | null>(null)
+  const debouncedFromSearchTerm = useDebounce(searchTerm, 300)
   const { data: departureAirports, isSuccess } = useSearchAirportsByName({
     searchTerm: debouncedFromSearchTerm,
   })
   const departureAirportsCodes = Object.keys(departureAirports || {})
 
-  const handleFocus = useCallback(() => {
+  const handleFocus = () => {
     setIsOpen(true)
-  }, [])
+    if (selectedAirport) {
+      setSearchTerm(selectedAirport.name)
+    }
+  }
 
   const handleClose = useCallback(() => {
     setIsOpen(false)
@@ -41,7 +46,9 @@ export const DepartureAndDestinationField = ({
 
   const handleClick = (airport: AirportData) => {
     setIsOpen(false)
+    setSelectedAirport(airport)
     setFieldValue('from', airport.code)
+    setSearchTerm(airport.name + ' (' + airport.code + ')')
   }
 
   return (
@@ -53,13 +60,12 @@ export const DepartureAndDestinationField = ({
         direction="row"
         alignItems="flex-start"
         height={58}
+        ref={anchorRef}
         sx={{ ...sx }}>
         <Field
           onClick={handleFocus}
           as={CustomTextField}
-          inputRef={anchorRef}
           noBorder={true}
-          name={fieldNames ? fieldNames[0] : 'from'}
           label={labels ? labels[0] : 'Vol au départ de'}
           sx={{ flexGrow: 1 }}
           error={touched.from && errors.from}
@@ -67,6 +73,12 @@ export const DepartureAndDestinationField = ({
           inputProps={{
             'data-testid': 'fromField',
           }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setSelectedAirport(null)
+            setFieldValue('from', null)
+            setSearchTerm(e.target.value)
+          }}
+          value={searchTerm}
         />
         <Button
           variant="outlined"
