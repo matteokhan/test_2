@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Box, Button, Collapse, Fade, Grow, Stack, Typography } from '@mui/material'
+import { Box, Button, Grow, Stack, Typography } from '@mui/material'
 import { AirlineFilterData, SearchFlightFilters } from '@/types'
 import { useSearchFlights } from '@/services'
 import {
@@ -82,6 +82,7 @@ export const SearchFlights = () => {
     })
     return airlines.sort((a, b) => a.price - b.price)
   }
+  const hasMoreResults = resultsNumber < (filteredData?.length || 0)
 
   return (
     <>
@@ -114,13 +115,13 @@ export const SearchFlights = () => {
           onSubmit={(values) => setFilters(values)}
         />
         <Stack gap={2} flexGrow={1}>
-          <Stack gap={1}>
+          {/* TODO: Implement date alternatives */}
+          {/* <Stack gap={1}>
             <Typography variant="titleMd" pb={1}>
               Ajustez la date de votre départ
             </Typography>
-            {/* TODO: Implement date alternatives */}
-            {/* <FlightDateAlternatives /> */}
-          </Stack>
+            <FlightDateAlternatives />
+          </Stack> */}
           <Typography variant="bodySm" color="grey.600">
             Prices displayed include taxes and may change based on availability. You can review any
             additional fees <br />
@@ -139,11 +140,13 @@ export const SearchFlights = () => {
                 results={filteredData?.slice(0, resultsNumber)}
                 correlationId={response.correlationId}
               />
-              <Button
-                onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
-                data-testid="searchFlights-viewMoreResultsButton">
-                Voir plus
-              </Button>
+              {hasMoreResults && (
+                <Button
+                  onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
+                  data-testid="searchFlights-viewMoreResultsButton">
+                  Voir plus
+                </Button>
+              )}
             </>
           )}
         </Stack>
