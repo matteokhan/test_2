@@ -1,12 +1,12 @@
 'use client'
 
 import {
-  ConfirmReservationRequestDto,
-  CreateReservationRequest,
+  ConfirmReservationDto,
+  CreateReservationDto,
   SearchFlightsParamsDto,
   SearchResponseDto,
 } from '@/types'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 import { getAirlinesData } from './cms'
 import { QueryClient } from '@tanstack/react-query'
@@ -52,7 +52,7 @@ export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | 
 export const createReservation = async ({
   params,
 }: {
-  params: CreateReservationRequest | undefined
+  params: CreateReservationDto | undefined
 }) => {
   const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
   const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
@@ -70,7 +70,13 @@ export const createReservation = async ({
   throw new Error('Failed to create reservation')
 }
 
-export const confirmReservation = async ({ params }: { params: ConfirmReservationRequestDto }) => {
+export const useCreateReservation = () => {
+  return useMutation({
+    mutationFn: (params: CreateReservationDto) => createReservation({ params }),
+  })
+}
+
+export const confirmReservation = async ({ params }: { params: ConfirmReservationDto }) => {
   const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
   const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
   const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/reservation/confirm', {
@@ -87,16 +93,9 @@ export const confirmReservation = async ({ params }: { params: ConfirmReservatio
   throw new Error('Failed to confirm reservation')
 }
 
-export const useCreateReservation = ({
-  params,
-}: {
-  params: CreateReservationRequest | undefined
-}) => {
-  return useQuery({
-    queryKey: ['createReservation', JSON.stringify(params)],
-    queryFn: () => createReservation({ params }),
-    refetchOnWindowFocus: false,
-    enabled: !!params,
+export const useConfirmReservation = () => {
+  return useMutation({
+    mutationFn: (params: ConfirmReservationDto) => confirmReservation({ params }),
   })
 }
 

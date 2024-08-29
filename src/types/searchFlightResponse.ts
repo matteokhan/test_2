@@ -1,3 +1,8 @@
+export type CorrelationId = string
+export type SolutionId = string
+export type RouteId = string
+export type SegmentId = string
+
 export type SearchResponseFilterData = {
   minPrice: number
   maxPrice: number
@@ -7,13 +12,13 @@ export type SearchResponseFilterData = {
 }
 
 export type SearchResponseDto = {
-  correlationId: string
+  correlationId: CorrelationId
   solutions: Solution[]
   searchFilters: SearchResponseFilterData
 }
 
 export type Solution = {
-  id: string
+  id: SolutionId
   routes: Route[]
   ticket: string
   priceInfo: PriceInfo
@@ -25,7 +30,7 @@ export type Solution = {
 }
 
 export type Route = {
-  id: string
+  id: RouteId
   segments: RouteSegment[]
   travelTime: string
   nightsBeforeRoute?: number
@@ -37,7 +42,7 @@ export type Route = {
 }
 
 export type RouteSegment = {
-  id: string
+  id: SegmentId
   departure: string
   departureCityCode: string
   departureDateTime: string

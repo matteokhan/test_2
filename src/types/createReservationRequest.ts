@@ -1,5 +1,7 @@
-export type CreateReservationRequest = {
-  correlationId: string
+import { CorrelationId, PassengerType, RouteId, SolutionId } from '@/types'
+
+export type CreateReservationDto = {
+  correlationId: CorrelationId
   ticket: string
   routes: ReservationRoute[]
   passengers: ReservationPassenger[]
@@ -7,12 +9,12 @@ export type CreateReservationRequest = {
 }
 
 export type ReservationRoute = {
-  solutionId: string
-  routeIds: string[]
+  solutionId: SolutionId
+  routeIds: RouteId[]
 }
 
 export type ReservationPassenger = {
-  type: string
+  type: PassengerType
   title: string
   firstName: string
   lastName: string

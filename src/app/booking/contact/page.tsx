@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   BookingStepActions,
   PayerForm,
@@ -12,12 +12,11 @@ import { useBooking } from '@/contexts'
 import { Box, Button, Stack, Typography, Drawer } from '@mui/material'
 import { FormikProps } from 'formik'
 import { PayerData } from '@/types'
-import { useGetArroundAgencies, useSearchAgencies } from '@/services'
+import { useCreateReservation, useGetArroundAgencies } from '@/services'
 import { SelectedAgency } from '@/components/Booking/SelectedAgency'
+import { getCreateReservationDto } from '@/utils'
 
 export default function ContactInfoPage() {
-  // TODO: search agencies by nearest position
-  const { data: agencies } = useSearchAgencies({})
   const formRef = useRef<FormikProps<PayerData> | null>(null)
   const {
     goNextStep,
@@ -29,27 +28,49 @@ export default function ContactInfoPage() {
     setMapIsOpen,
     selectedFlight,
     payer,
-    setCreateReservation,
-    reservationId,
+    setReservationId,
     agency,
     setAgency,
+    correlationId,
   } = useBooking()
-
   const [userLocation, setUserLocation] = useState<{
     latitude: number
     longitude: number
   } | null>(null)
-
   const { data: arroundAgencies } = useGetArroundAgencies({
     lat: userLocation?.latitude,
     lng: userLocation?.longitude,
   })
+  const { mutate: createReservation, isPending: isCreating } = useCreateReservation()
 
   const handleSubmit = async () => {
     if (formRef.current) {
       const errors = await formRef.current.validateForm()
       if (Object.keys(errors).length === 0) {
-        formRef.current.handleSubmit()
+        const payerDataValidated = formRef.current.values
+        setPayer(payerDataValidated)
+
+        if (selectedFlight && correlationId) {
+          const reservationParams = getCreateReservationDto({
+            correlationId: correlationId,
+            selectedFlight: selectedFlight,
+            passengers,
+            payer: payerDataValidated,
+          })
+          createReservation(reservationParams, {
+            onSuccess: (data) => {
+              setReservationId(data.ReservationId)
+              goNextStep()
+            },
+            onError: (error) => {
+              // TODO: log this somewhere
+              // TODO: Warn the user that something went wrong
+            },
+          })
+        } else {
+          // TODO: log this somewhere
+          // TODO: Warn the user that something went wrong
+        }
       } else {
         formRef.current.setTouched(
           Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
@@ -57,25 +78,8 @@ export default function ContactInfoPage() {
       }
     } else {
       // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
     }
-  }
-
-  useEffect(() => {
-    if (selectedFlight && payer && !reservationId) {
-      setCreateReservation()
-    }
-    if (!userLocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        })
-      })
-    }
-  })
-
-  const handlePayerSubmit = (values: PayerData) => {
-    setPayer(values)
   }
 
   return (
@@ -83,17 +87,17 @@ export default function ContactInfoPage() {
       <SimpleContainer title="Coordonnées">
         <PayerForm
           formRef={formRef}
-          onSubmit={handlePayerSubmit}
+          onSubmit={() => {}}
           initialValues={
             payerIndex !== null
               ? {
                   ...passengers[payerIndex],
-                  email: '',
-                  address: '',
-                  postalCode: '',
-                  city: '',
-                  country: '',
-                  createAccountOptIn: false,
+                  email: payer?.email || '',
+                  address: payer?.address || '',
+                  postalCode: payer?.postalCode || '',
+                  city: payer?.city || '',
+                  country: payer?.country || '',
+                  createAccountOptIn: payer?.createAccountOptIn || false,
                 }
               : undefined
           }
@@ -159,7 +163,11 @@ export default function ContactInfoPage() {
           </Stack>
         )}
       </SimpleContainer>
-      <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isCreating}
+      />
     </>
   )
 }
