@@ -1,16 +1,7 @@
 'use client'
 
 import React from 'react'
-import {
-  Box,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { Box, FormControl, Paper, Stack, Typography } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Form, Formik, FormikHelpers, useFormikContext } from 'formik'
 import * as Yup from 'yup'
@@ -22,8 +13,9 @@ import {
   MaxPriceFilterField,
   MaxPriceTypeFilterField,
   FlightTimeFilterField,
+  AirlinesFilterField,
 } from '@/components'
-import { useAirlinesData, useAirportData } from '@/services'
+import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
 
 const AutoSubmit = () => {
@@ -63,7 +55,7 @@ export const SearchFlightsFilters = ({
     scales: 'all',
     oneNightScale: false,
     experience: null,
-    maxPrice: filterData?.maxPrice,
+    maxPrice: filterData?.maxPrice || 0,
     maxPriceType: 'per-person',
     flightTime: null,
     airlinesSelected: [],
@@ -71,7 +63,6 @@ export const SearchFlightsFilters = ({
 
   const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
   const { data: arrivalAirportData } = useAirportData({ airportCode: arrival ? arrival : '' })
-  const { data: airlinesData } = useAirlinesData()
 
   return (
     <Paper sx={{ paddingX: 2, paddingY: 4, height: 'fit-content' }}>
@@ -80,7 +71,7 @@ export const SearchFlightsFilters = ({
         validationSchema={filtersSchema}
         onSubmit={onSubmit}
         enableReinitialize>
-        {({ values, handleChange }) => (
+        {({ values }) => (
           <Form data-testid="searchFlightsFilters">
             <Stack gap={3}>
               <AutoSubmit />
@@ -127,8 +118,6 @@ export const SearchFlightsFilters = ({
                   />
                 </FormControl>
               </Box>
-
-              {/* TODO: transform ville de and aeroport to city name and airport name, need mapping table */}
               <Box pb={1}>
                 <Typography variant="titleMd" pb={1}>
                   Temps de vol
@@ -154,36 +143,8 @@ export const SearchFlightsFilters = ({
                 <Typography variant="titleMd" pb={1}>
                   Compagnies aériennes
                 </Typography>
-                {/* TODO: Add tests ids */}
                 <Box pl={1.5} pb={1}>
-                  <FormGroup>
-                    {airlines?.map((airline) => {
-                      const airlineName =
-                        (airlinesData ? airlinesData[airline.carrier]?.name : '') +
-                        ' (' +
-                        airline.carrier +
-                        ')'
-                      return (
-                        <Stack
-                          key={airline.carrier}
-                          justifyContent="space-between"
-                          direction="row"
-                          alignItems="center">
-                          <FormControlLabel
-                            value={airline.carrier}
-                            control={<Checkbox />}
-                            name="airlinesSelected"
-                            label={airlineName}
-                            onChange={handleChange}
-                          />
-                          <Typography variant="bodyMd">
-                            {airline.price}
-                            {airline.currencySymbol}
-                          </Typography>
-                        </Stack>
-                      )
-                    })}
-                  </FormGroup>
+                  <AirlinesFilterField airlines={airlines} name="airlinesSelected" />
                 </Box>
               </Box>
             </Stack>
