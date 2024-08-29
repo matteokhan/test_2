@@ -14,13 +14,15 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import GpsOff from '@mui/icons-material/GpsOff'
-import { getArroundAgency, useSearchAgencies } from '@/services'
+import { useGetArroundAgencies, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import { CustomTextField } from '@/components'
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
+import { setDefaults, fromLatLng, OutputFormat } from 'react-geocode'
+import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
 
 type SelectAgencyMapProps = {
   onSelectAgency: ({ agency }: { agency: Agency }) => void
@@ -29,22 +31,80 @@ type SelectAgencyMapProps = {
 
 export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProps) => {
   const NEXT_PUBLIC_MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
-  const [searchTerm, setSearchTerm] = React.useState<string>('')
-  const debouncedSearchTerm = useDebounce(searchTerm, 300)
-  const { data: agencies, isSuccess } = useSearchAgencies({ searchTerm: debouncedSearchTerm })
-  const geolocatedAgencies = React.useMemo(
-    () => agencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude) || [],
-    [agencies],
-  )
+  const [place, setPlace] = React.useState<any>(null)
+  const [currentLocation, setCurrentLocation] = React.useState<any>(null)
+
+  const defaultBounds = {
+    gps_latitude: 48.866667,
+    gps_longitude: 2.333333,
+  }
 
   // TODO: enable geolocation
   const canAccessPosition = 'geolocation' in navigator
   const map = useMap()
-  const [userLocation, setUserLocation] = React.useState<{
-    latitude: number
-    longitude: number
-  } | null>(null)
-  const [agenciesFound, setAgenciesFound] = React.useState<Agency[] | null>(null)
+
+  const toRadians = (degrees: number) => {
+    return degrees * (Math.PI / 180)
+  }
+
+  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const R = 6371e3 // Rayon de la Terre en mètres
+
+    const φ1 = toRadians(lat1)
+    const φ2 = toRadians(lat2)
+    const Δφ = toRadians(lat2 - lat1)
+    const Δλ = toRadians(lng2 - lng1)
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+    const distance = R * c // Distance en mètres
+
+    return distance
+  }
+
+  const getDistance = () => {
+    const center = map?.getCenter()
+    const bounds = map?.getBounds()
+
+    if (!center || !bounds) return 40000
+
+    const centerLat = center.lat()
+    const centerLng = center.lng()
+
+    const leftLng = bounds.getSouthWest().lng()
+
+    const distance = calculateDistance(centerLat, centerLng, centerLat, leftLng)
+
+    return distance + 10000
+  }
+
+  const { data: arroundAgencies } = useGetArroundAgencies({
+    lat: currentLocation?.lat,
+    lng: currentLocation?.lng,
+    distance: getDistance(),
+  })
+
+  const getAgencies = () => {
+    if (!arroundAgencies || arroundAgencies.items.length == 0) return []
+    return arroundAgencies.items
+  }
+
+  const geolocatedAgencies = React.useMemo(() => {
+    if (arroundAgencies && arroundAgencies?.items?.length > 0)
+      return arroundAgencies?.items?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
+    return []
+  }, [arroundAgencies?.items])
+
+  setDefaults({
+    key: env('NEXT_PUBLIC_MAPS_API_KEY'),
+    language: 'fr',
+    region: 'fr',
+    outputFormat: OutputFormat.JSON,
+  })
 
   const getAgencyPosition = (agency: Agency) => ({
     lat: agency.gps_latitude,
@@ -54,47 +114,62 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const setLocation = () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        })
-        fetchArroundAgencies()
-        map?.setCenter({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
+        fromLatLng(position.coords.latitude, position.coords.longitude)
+          .then(({ results }) => {
+            const locality = results[0].address_components.find((component: any) =>
+              component.types.includes('locality'),
+            )
+            setPlace(results[0])
+          })
+          .catch(console.error)
+
+        map?.setCenter({ lat: position.coords.latitude, lng: position.coords.longitude })
+        map?.setZoom(11)
+        setCurrentLocation({ lat: position.coords.latitude, lng: position.coords.longitude })
       })
     }
   }
 
-  const fetchArroundAgencies = async () => {
-    if (userLocation) {
-      const response = await getArroundAgency({
-        lat: userLocation.latitude,
-        lng: userLocation.longitude,
-      })
-      if (response && response.items) {
-        setAgenciesFound(response.items)
-      }
-    }
+  const setPlaceAndFetchAgencies = (place: any) => {
+    setPlace(place)
+    map?.setCenter({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
+    map?.setZoom(11)
+    setCurrentLocation({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
   }
 
-  const getAgencies = () => {
-    if (!agenciesFound) return agencies
-    return agenciesFound
+  const getMarkers = () => {
+    const agenciesToShow = getAgencies()
+    return agenciesToShow
+      ?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
+      ?.map((agency: Agency) => {
+        const leclercLogo = document.createElement('img')
+        leclercLogo.src = '/leclerc_imagetype.svg'
+        return (
+          <React.Fragment key={agency.id}>
+            <AdvancedMarker
+              position={getAgencyPosition(agency)}
+              data-testid="selectAgencyMap-map-locationMarker">
+              <Pin glyph={leclercLogo} background={'#0066CC'} borderColor={'#0066CC'} />
+            </AdvancedMarker>
+          </React.Fragment>
+        )
+      })
   }
+
+  map?.addListener('dragend', () => {
+    const center = map.getCenter()
+    if (!center) return
+    setCurrentLocation({ lat: center.lat(), lng: center.lng() })
+  })
 
   useEffect(() => {
-    if (geolocatedAgencies?.length) {
-      // setSelectedAgency(null)
-      map?.fitBounds({
-        east: Math.max(...geolocatedAgencies.map((agency) => agency.gps_longitude)),
-        north: Math.max(...geolocatedAgencies.map((agency) => agency.gps_latitude)),
-        south: Math.min(...geolocatedAgencies.map((agency) => agency.gps_latitude)),
-        west: Math.min(...geolocatedAgencies.map((agency) => agency.gps_longitude)),
-      })
+    if (!currentLocation) {
+      const center = map?.getCenter()
+      if (center) {
+        setCurrentLocation({ lat: center.lat(), lng: center.lng() })
+      }
     }
-  }, [map, geolocatedAgencies])
+  }, [map])
 
   return (
     <Stack width="100vw" height="100vh" zIndex={10}>
@@ -114,28 +189,13 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
           <Map
             defaultZoom={8}
             maxZoom={16}
+            defaultCenter={{
+              lat: defaultBounds.gps_latitude,
+              lng: defaultBounds.gps_longitude,
+            }}
             disableDefaultUI={true}
-            mapId={NEXT_PUBLIC_MAPS_MAP_ID}
-            defaultBounds={{
-              east: Math.max(...geolocatedAgencies.map((agency) => agency.gps_longitude)),
-              north: Math.max(...geolocatedAgencies.map((agency) => agency.gps_latitude)),
-              south: Math.min(...geolocatedAgencies.map((agency) => agency.gps_latitude)),
-              west: Math.min(...geolocatedAgencies.map((agency) => agency.gps_longitude)),
-            }}>
-            {isSuccess &&
-              geolocatedAgencies?.map((agency: Agency) => {
-                const leclercLogo = document.createElement('img')
-                leclercLogo.src = '/leclerc_imagetype.svg'
-                return (
-                  <React.Fragment key={agency.id}>
-                    <AdvancedMarker
-                      position={getAgencyPosition(agency)}
-                      data-testid="selectAgencyMap-map-locationMarker">
-                      <Pin glyph={leclercLogo} background={'#0066CC'} borderColor={'#0066CC'} />
-                    </AdvancedMarker>
-                  </React.Fragment>
-                )
-              })}
+            mapId={NEXT_PUBLIC_MAPS_MAP_ID}>
+            {getMarkers()}
           </Map>
         </Box>
         <Stack width="420px" overflow="hidden" borderLeft="1px solid" borderColor="grey.400">
@@ -147,20 +207,9 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             borderBottom="1px solid"
             borderColor="grey.400">
             {/* I had to force the className="MuiInputAdornment-hiddenLabel", seems like a bug in MUI */}
-            <CustomTextField
-              data-testid="selectAgencyMap-searchField"
-              fullWidth
-              label={null}
-              value={searchTerm}
-              onChange={(ev) => setSearchTerm(ev.target.value)}
-              InputProps={{
-                placeholder: 'Rechercher',
-                hiddenLabel: true,
-                startAdornment: (
-                  <InputAdornment position="start" className="MuiInputAdornment-hiddenLabel">
-                    <SearchIcon data-testid={null} />
-                  </InputAdornment>
-                ),
+            <PlaceAutocompleteMap
+              onPlaceSelect={(place) => {
+                setPlaceAndFetchAgencies(place)
               }}
             />
             <Stack justifyContent="center">

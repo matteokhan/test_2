@@ -55,7 +55,6 @@ export const SearchFlights = () => {
     .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
 
   const filteredData = filteredDataOne?.filter((solution) => {
-    console.log(filters)
     if (filters?.airlinesSelected && filters?.airlinesSelected.length > 0) {
       const airlines = solution.routes.map((route) => route.carrier)
       if (!filters.airlinesSelected.some((airline) => airlines.includes(airline))) return false

@@ -197,12 +197,22 @@ export const useSearchAirportsByName = ({ searchTerm }: { searchTerm: string }) 
   })
 }
 
-export const getArroundAgency = async ({ lat, lng }: { lat: any; lng: any }) => {
+export const getArroundAgencies = async ({
+  lat,
+  lng,
+  distance,
+}: {
+  lat?: number
+  lng?: number
+  distance?: number
+}) => {
+  if (!lat || !lng) return { meta: null, items: [] }
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
   const params = {
     lat: lat,
     lng: lng,
     fields: '*',
+    distance__lte: distance ? distance : 40000,
   }
 
   const queryParams = new URLSearchParams()
@@ -225,4 +235,20 @@ export const getArroundAgency = async ({ lat, lng }: { lat: any; lng: any }) => 
   }
 
   return await response.json()
+}
+
+export const useGetArroundAgencies = ({
+  lat,
+  lng,
+  distance,
+}: {
+  lat?: number
+  lng?: number
+  distance?: number
+}) => {
+  return useQuery<{ meta: any; items: Agency[] }>({
+    queryKey: ['getArroudAgenciesResults', lat, lng, distance],
+    queryFn: async () => getArroundAgencies({ lat, lng, distance }),
+    refetchOnWindowFocus: false,
+  })
 }

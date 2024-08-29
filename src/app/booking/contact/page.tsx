@@ -12,7 +12,7 @@ import { useBooking } from '@/contexts'
 import { Box, Button, Stack, Typography, Drawer } from '@mui/material'
 import { FormikProps } from 'formik'
 import { PayerData } from '@/types'
-import { getArroundAgency, useSearchAgencies } from '@/services'
+import { useGetArroundAgencies, useSearchAgencies } from '@/services'
 import { SelectedAgency } from '@/components/Booking/SelectedAgency'
 
 export default function ContactInfoPage() {
@@ -40,7 +40,10 @@ export default function ContactInfoPage() {
     longitude: number
   } | null>(null)
 
-  const [arroundAgencies, setArroundAgencies] = useState([])
+  const { data: arroundAgencies } = useGetArroundAgencies({
+    lat: userLocation?.latitude,
+    lng: userLocation?.longitude,
+  })
 
   const handleSubmit = async () => {
     if (formRef.current) {
@@ -69,22 +72,7 @@ export default function ContactInfoPage() {
         })
       })
     }
-    if (userLocation && !arroundAgencies.length) {
-      fetchArroundAgencies()
-    }
   })
-
-  const fetchArroundAgencies = async () => {
-    if (userLocation) {
-      const response = await getArroundAgency({
-        lat: userLocation.latitude,
-        lng: userLocation.longitude,
-      })
-      if (response && response.items) {
-        setArroundAgencies(response.items)
-      }
-    }
-  }
 
   const handlePayerSubmit = (values: PayerData) => {
     setPayer(values)
@@ -138,11 +126,11 @@ export default function ContactInfoPage() {
                 Sélectionner une agence
               </Button>
             </Box>
-            {arroundAgencies?.length > 0 && (
+            {arroundAgencies && arroundAgencies?.items?.length > 0 && (
               <Box>
                 <Typography variant="titleMd">Agences les plus proches de votre adresse</Typography>
                 <SelectAgencyForm
-                  agencies={arroundAgencies}
+                  agencies={arroundAgencies.items}
                   onSelectAgency={({ agency }) => {
                     setAgency(agency)
                   }}
