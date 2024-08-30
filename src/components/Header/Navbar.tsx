@@ -6,6 +6,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import MenuIcon from '@mui/icons-material/Menu'
 import { SectionContainer } from '@/components'
+import Link from 'next/link'
 
 export const Navbar = () => {
   return (
@@ -18,15 +19,17 @@ export const Navbar = () => {
       }}>
       <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>
         <Stack gap={5} alignItems="center" direction="row">
-          <Box
-            data-testid="navbar-leclercLogo"
-            sx={{
-              position: 'relative',
-              height: 42,
-              width: 164,
-            }}>
-            <Image src="/voyages_logo.svg" alt="voyages logo" fill />
-          </Box>
+          <Link href="/">
+            <Box
+              data-testid="navbar-leclercLogo"
+              sx={{
+                position: 'relative',
+                height: 42,
+                width: 164,
+              }}>
+              <Image src="/voyages_logo.svg" alt="voyages logo" fill />
+            </Box>
+          </Link>
           <Button
             data-testid="navbar-allTripsButton"
             color="primary"
