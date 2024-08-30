@@ -103,7 +103,6 @@ export default function ContactInfoPage() {
             payerIndex !== null
               ? {
                   ...passengers[payerIndex],
-                  email: payer?.email || '',
                   address: payer?.address || '',
                   postalCode: payer?.postalCode || '',
                   city: payer?.city || '',

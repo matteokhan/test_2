@@ -11,10 +11,44 @@ import {
   Agency,
   CorrelationId,
   ReservationId,
+  BookingStepCode,
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
 import dayjs from 'dayjs'
+
+const steps: BookingStepType[] = [
+  {
+    code: 'fares',
+    name: 'Terif billet',
+    url: '/booking/fares',
+    title: 'Selectionnez votre tarif',
+  },
+  {
+    code: 'passengers',
+    name: 'Passagers et bagages',
+    url: '/booking/passengers',
+    title: 'Qui sont les passagers ?',
+  },
+  {
+    code: 'contact',
+    name: 'Coordonnées',
+    url: '/booking/contact',
+    title: 'Informations et création de votre dossier',
+  },
+  {
+    code: 'insurances',
+    name: 'Assurez votre voyage',
+    url: '/booking/insurance',
+    title: 'Assurez votre voyage',
+  },
+  {
+    code: 'summary',
+    name: 'Récapitulatif et paiement',
+    url: '/booking/summary',
+    title: 'Récapitulatif et paiement',
+  },
+]
 
 type BookingContextType = {
   // Steps
@@ -24,8 +58,9 @@ type BookingContextType = {
   currentStepTitle: string
   goNextStep: () => void
   goPreviousStep: () => void
-  goToStep: (step: number) => void
+  goToStep: (step: number | BookingStepCode) => void
   getStepIndexByPath: (pathname: string) => number
+  getStepIndexByCode: (code: BookingStepCode) => number
 
   // Select flight
   selectedFlight: Solution | null
@@ -67,25 +102,6 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined)
 export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter()
   const { totalPassengers, searchParamsCache } = useFlights()
-  const steps: BookingStepType[] = [
-    { name: 'Terif billet', url: '/booking/fares', title: 'Selectionnez votre tarif' },
-    { name: 'Passagers et bagages', url: '/booking/passengers', title: 'Qui sont les passagers ?' },
-    {
-      name: 'Coordonnées',
-      url: '/booking/contact',
-      title: 'Informations et création de votre dossier',
-    },
-    {
-      name: 'Assurez votre voyage',
-      url: '/booking/insurance',
-      title: 'Assurez votre voyage',
-    },
-    {
-      name: 'Récapitulatif et paiement',
-      url: '/booking/summary',
-      title: 'Récapitulatif et paiement',
-    },
-  ]
   const [currentStep, setCurrentStep] = useState(0)
   const currentStepTitle = steps[currentStep].title
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
@@ -102,6 +118,14 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [pnr, setPnr] = useState<string | null>(null)
   const totalPrice =
     (selectedFlight?.priceInfo?.total || 0) + (selectedInsurance?.amount || 0) * totalPassengers
+
+  const getStepIndexByPath = (pathname: string) => {
+    return steps.findIndex((s) => s.url.includes(pathname))
+  }
+
+  const getStepIndexByCode = (code: BookingStepCode) => {
+    return steps.findIndex((s) => s.code === code)
+  }
 
   const goNextStep = () => {
     const nextStep = currentStep + 1
@@ -123,9 +147,15 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     router.push(steps[previousStep].url)
   }
 
-  const goToStep = (step: number) => {
-    setCurrentStep(step)
-    router.push(steps[step].url)
+  const goToStep = (step: number | BookingStepCode) => {
+    let stepIndex = 0
+    if (typeof step === 'number') {
+      setCurrentStep(step)
+      stepIndex = step
+    } else {
+      stepIndex = getStepIndexByCode(step)
+    }
+    router.push(steps[stepIndex].url)
   }
 
   const selectFlight = (flight: Solution | null) => {
@@ -140,6 +170,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: dayjs().subtract(18, 'years'),
           phoneNumber: '',
+          email: '',
           type: 'ADT',
           isPayer: false,
         },
@@ -154,6 +185,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: dayjs(),
           phoneNumber: '',
+          email: '',
           type: 'CHD',
           isPayer: false,
         },
@@ -168,16 +200,13 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: dayjs(),
           phoneNumber: '',
+          email: '',
           type: 'INF',
           isPayer: false,
         },
       ])
     }
     setPayerIndex(null)
-  }
-
-  const getStepIndexByPath = (pathname: string) => {
-    return steps.findIndex((s) => s.url.includes(pathname))
   }
 
   return (
@@ -204,6 +233,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPayer,
         totalPrice,
         getStepIndexByPath,
+        getStepIndexByCode,
         mapIsOpen,
         setMapIsOpen,
         currentStepTitle,

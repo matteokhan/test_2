@@ -1,5 +1,6 @@
 import { useBooking } from '@/contexts'
 import { Box, Stack, Typography } from '@mui/material'
+import { getPassengerTypeDescription } from '@/utils'
 
 export const PassengersSummary = () => {
   const { passengers } = useBooking()
@@ -15,9 +16,12 @@ export const PassengersSummary = () => {
             {passenger.firstName} {passenger.lastName} -{' '}
             {passenger.salutation === 'Mr' ? 'homme' : 'femme'}
           </Typography>
-          {/* TODO: Hardcoded data here */}
           <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-birthDate">
-            Adulte - {passenger.dateOfBirth.format('YYYY-MM-DD')}
+            {getPassengerTypeDescription(passenger.type)} -{' '}
+            {passenger.dateOfBirth.format('YYYY-MM-DD')}
+          </Typography>
+          <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-email">
+            {passenger?.email}
           </Typography>
         </Box>
       ))}

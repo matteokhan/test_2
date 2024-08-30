@@ -21,6 +21,7 @@ const passengerSchema = ({ type }: { type: PassengerType }) =>
         return dayjs().diff(dayjs(value), 'year') >= 18
       }),
     phoneNumber: Yup.string().required('Le numéro de téléphone est requis'),
+    email: Yup.string().email('E-mail invalide').required("L'e-mail est requis"),
     isPayer: Yup.boolean(),
   })
 
@@ -53,6 +54,7 @@ export const PassengerForm = ({
             lastName: '',
             dateOfBirth: dayjs().toDate(),
             phoneNumber: '',
+            email: '',
             isPayer: isPayer,
           }
         }
@@ -110,6 +112,17 @@ export const PassengerForm = ({
                 helperText={touched.phoneNumber && errors.phoneNumber}
                 inputProps={{
                   'data-testid': 'phoneNumberField',
+                }}
+              />
+              <Field
+                as={TextField}
+                name="email"
+                label="E-mail"
+                variant="filled"
+                error={touched.email && errors.email}
+                helperText={touched.email && errors.email}
+                inputProps={{
+                  'data-testid': 'emailField',
                 }}
               />
               <PassengerIsPayerField

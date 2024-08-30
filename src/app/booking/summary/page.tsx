@@ -64,21 +64,21 @@ export default function BookingSummaryPage() {
         title="Passagers"
         sx={{ pb: 3 }}
         action="Modifier"
-        onAction={() => goToStep(0)}>
+        onAction={() => goToStep('passengers')}>
         <PassengersSummary />
       </SimpleContainer>
       <SimpleContainer
         title="Coordonnées de facturation"
         sx={{ pb: 3 }}
         action="Modifier"
-        onAction={() => goToStep(1)}>
+        onAction={() => goToStep('contact')}>
         <PayerSummary />
       </SimpleContainer>
       <SimpleContainer
         title="Assurances"
         sx={{ pb: 3 }}
         action="Modifier"
-        onAction={() => goToStep(3)}>
+        onAction={() => goToStep('insurances')}>
         <InsuranceSummary />
       </SimpleContainer>
       {pnr && <div>Réservation confirmé, numéro de PNR : {pnr}</div>}

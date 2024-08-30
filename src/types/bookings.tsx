@@ -1,6 +1,15 @@
 import { Dayjs } from 'dayjs'
 
+export type BookingStepCode =
+  | 'fares'
+  | 'passengers'
+  | 'contact'
+  | 'insurances'
+  | 'summary'
+  | 'confirmation'
+
 export type BookingStep = {
+  code: BookingStepCode
   name: string
   url: string
   title: string
@@ -16,6 +25,7 @@ export type PassengerData = {
   isPayer: boolean
   dateOfBirth: Dayjs
   phoneNumber: string
+  email: string
   type: PassengerType
 }
 
