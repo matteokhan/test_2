@@ -15,7 +15,6 @@ import {
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
-import dayjs from 'dayjs'
 
 const steps: BookingStepType[] = [
   {
@@ -168,7 +167,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           salutation: null,
           firstName: '',
           lastName: '',
-          dateOfBirth: dayjs().subtract(18, 'years'),
+          dateOfBirth: null,
           phoneNumber: '',
           email: '',
           type: 'ADT',
@@ -183,7 +182,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           salutation: null,
           firstName: '',
           lastName: '',
-          dateOfBirth: dayjs(),
+          dateOfBirth: null,
           phoneNumber: '',
           email: '',
           type: 'CHD',
@@ -198,7 +197,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           salutation: null,
           firstName: '',
           lastName: '',
-          dateOfBirth: dayjs(),
+          dateOfBirth: null,
           phoneNumber: '',
           email: '',
           type: 'INF',

@@ -10,7 +10,7 @@ export const PayerSummary = () => {
       </Typography>
       {/* TODO: Hardcoded data here */}
       <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-birthDate">
-        Adulte - {payer?.dateOfBirth.format('YYYY-MM-DD')}
+        Adulte - {payer?.dateOfBirth?.format('YYYY-MM-DD')}
       </Typography>
       <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-email">
         {payer?.email}

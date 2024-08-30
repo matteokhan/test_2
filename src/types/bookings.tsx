@@ -23,7 +23,7 @@ export type PassengerData = {
   firstName: string
   lastName: string
   isPayer: boolean
-  dateOfBirth: Dayjs
+  dateOfBirth: Dayjs | null
   phoneNumber: string
   email: string
   type: PassengerType
@@ -33,7 +33,7 @@ export type PayerData = {
   salutation: SalutationOption
   firstName: string
   lastName: string
-  dateOfBirth: Dayjs
+  dateOfBirth: Dayjs | null
   phoneNumber: string
   email: string
   address: string

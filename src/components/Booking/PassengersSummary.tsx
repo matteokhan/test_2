@@ -18,7 +18,7 @@ export const PassengersSummary = () => {
           </Typography>
           <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-birthDate">
             {getPassengerTypeDescription(passenger.type)} -{' '}
-            {passenger.dateOfBirth.format('YYYY-MM-DD')}
+            {passenger.dateOfBirth?.format('YYYY-MM-DD')}
           </Typography>
           <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-email">
             {passenger?.email}

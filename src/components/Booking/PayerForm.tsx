@@ -7,7 +7,6 @@ import * as Yup from 'yup'
 import { CreateAccountOptInField, SalutationField } from '@/components'
 import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import dayjs from 'dayjs'
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
@@ -39,7 +38,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             salutation: null,
             firstName: '',
             lastName: '',
-            dateOfBirth: dayjs(),
+            dateOfBirth: null,
             phoneNumber: '',
             email: '',
             address: '',

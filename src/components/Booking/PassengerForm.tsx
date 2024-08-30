@@ -52,7 +52,7 @@ export const PassengerForm = ({
             salutation: null,
             firstName: '',
             lastName: '',
-            dateOfBirth: dayjs().toDate(),
+            dateOfBirth: null,
             phoneNumber: '',
             email: '',
             isPayer: isPayer,

@@ -78,7 +78,7 @@ export const getCreateReservationDto = ({
       title: passenger.salutation || '',
       firstName: passenger.firstName,
       lastName: passenger.lastName,
-      dateOfBirth: passenger.dateOfBirth.format('YYYY-MM-DD'),
+      dateOfBirth: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
       type: passenger.type,
     })),
     booker: {
