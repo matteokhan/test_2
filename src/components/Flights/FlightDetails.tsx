@@ -4,7 +4,7 @@ import { Box, Button, IconButton, Paper, Stack, Typography } from '@mui/material
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import CloseIcon from '@mui/icons-material/Close'
 import { ItineraryRoute } from '@/components'
-import { useBooking } from '@/contexts'
+import { useBooking, useFlights } from '@/contexts'
 import { MouseEventHandler } from 'react'
 import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
@@ -32,6 +32,7 @@ export const FlightDetails = ({
   onSelectFlight,
   withControls = true,
 }: FlightDetailsProps) => {
+  const { totalPassengers } = useFlights()
   const { preSelectedFlight } = useBooking()
 
   const departure = preSelectedFlight?.routes[0]?.segments[0]?.departure
@@ -83,7 +84,8 @@ export const FlightDetails = ({
                 color="primary.main"
                 height="30px"
                 data-testid="flightDetails-price">
-                {preSelectedFlight?.priceInfo.total} {preSelectedFlight?.priceInfo.currencySymbol}{' '}
+                {(preSelectedFlight?.priceInfo.total || 0) / totalPassengers}{' '}
+                {preSelectedFlight?.priceInfo.currencySymbol}{' '}
               </Typography>
               <Typography variant="bodySm" color="grey.800">
                 Par personne
