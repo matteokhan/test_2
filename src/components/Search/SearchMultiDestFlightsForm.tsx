@@ -43,15 +43,15 @@ type FormTouched = {
 }
 
 const searchFlightSegmentSchema = Yup.object().shape({
-  from: Yup.string().required('Required'),
-  to: Yup.string().required('Required'),
-  departure: Yup.date().typeError('Invalid date').required('Required'),
+  from: Yup.string().required('Requise'),
+  to: Yup.string().required('Requise'),
+  departure: Yup.date().typeError('Date invalide').required('Requise'),
 })
 
 const searchParamsSchema = Yup.object().shape({
-  adults: Yup.number().min(1).required('Required'),
-  childrens: Yup.number().min(0).required('Required'),
-  infant: Yup.number().min(0).required('Required'),
+  adults: Yup.number().min(1).required('Requise'),
+  childrens: Yup.number().min(0).required('Requise'),
+  infant: Yup.number().min(0).required('Requise'),
   destinations: Yup.array()
     .of(searchFlightSegmentSchema)
     .min(1, 'At least one segment is required'),
