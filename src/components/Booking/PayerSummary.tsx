@@ -8,9 +8,9 @@ export const PayerSummary = () => {
       <Typography variant="bodyMd" fontWeight={500} data-testid="payerSummary-name">
         {payer?.firstName} {payer?.lastName} - {payer?.salutation === 'Mr' ? 'homme' : 'femme'}
       </Typography>
-      {/* TODO: Hardcoded data here */}
+      {/* TODO: Hardcoded data here. Or maybe payer is always adult */}
       <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-birthDate">
-        Adulte - {payer?.dateOfBirth?.format('YYYY-MM-DD')}
+        Adulte - {payer?.dateOfBirth?.format('DD/MM/YYYY')}
       </Typography>
       <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-email">
         {payer?.email}
