@@ -197,7 +197,7 @@ export const useSearchAirportsByName = ({ searchTerm }: { searchTerm: string }) 
   })
 }
 
-export const getArroundAgencies = async ({
+export const getNearAgencies = async ({
   lat,
   lng,
   distance,
@@ -234,10 +234,10 @@ export const getArroundAgencies = async ({
     throw new Error('Failed to fetch arround agency')
   }
 
-  return await response.json()
+  return (await response.json()).items
 }
 
-export const useGetArroundAgencies = ({
+export const useNearAgencies = ({
   lat,
   lng,
   distance,
@@ -246,9 +246,10 @@ export const useGetArroundAgencies = ({
   lng?: number
   distance?: number
 }) => {
-  return useQuery<{ meta: any; items: Agency[] }>({
-    queryKey: ['getArroudAgenciesResults', lat, lng, distance],
-    queryFn: async () => getArroundAgencies({ lat, lng, distance }),
+  return useQuery<Agency[]>({
+    queryKey: ['nearAgencies', lat, lng, distance],
+    queryFn: async () => getNearAgencies({ lat, lng, distance }),
     refetchOnWindowFocus: false,
+    enabled: !!lat && !!lng,
   })
 }

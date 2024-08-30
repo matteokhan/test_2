@@ -14,7 +14,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import GpsOff from '@mui/icons-material/GpsOff'
-import { useGetArroundAgencies, useSearchAgencies } from '@/services'
+import { useNearAgencies, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import { CustomTextField } from '@/components'
@@ -82,22 +82,22 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
     return distance + 10000
   }
 
-  const { data: arroundAgencies } = useGetArroundAgencies({
+  const { data: nearAgencies } = useNearAgencies({
     lat: currentLocation?.lat,
     lng: currentLocation?.lng,
     distance: getDistance(),
   })
 
   const getAgencies = () => {
-    if (!arroundAgencies || arroundAgencies.items.length == 0) return []
-    return arroundAgencies.items
+    if (!nearAgencies || nearAgencies.length == 0) return []
+    return nearAgencies
   }
 
   const geolocatedAgencies = React.useMemo(() => {
-    if (arroundAgencies && arroundAgencies?.items?.length > 0)
-      return arroundAgencies?.items?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
+    if (nearAgencies && nearAgencies?.length > 0)
+      return nearAgencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
     return []
-  }, [arroundAgencies?.items])
+  }, [nearAgencies])
 
   setDefaults({
     key: env('NEXT_PUBLIC_MAPS_API_KEY'),

@@ -49,8 +49,8 @@ type BookingContextType = {
   setSelectedFare: React.Dispatch<React.SetStateAction<Fare | null>>
   selectedInsurance: Insurance | null
   setSelectedInsurance: React.Dispatch<React.SetStateAction<Insurance | null>>
-  agency: Agency | null
-  setAgency: React.Dispatch<React.SetStateAction<Agency | null>>
+  selectedAgency: Agency | null
+  setSelectedAgency: React.Dispatch<React.SetStateAction<Agency | null>>
 
   // Reservation
   totalPrice: number
@@ -96,7 +96,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
   const [selectedFare, setSelectedFare] = React.useState<Fare | null>(null)
   const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
-  const [agency, setAgency] = useState<Agency | null>(null)
+  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
   const [correlationId, setCorrelationId] = useState<string | null>(null)
   const [reservationId, setReservationId] = useState<string | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
@@ -216,8 +216,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setReservationId,
         pnr,
         setPnr,
-        agency,
-        setAgency,
+        selectedAgency,
+        setSelectedAgency,
       }}>
       {children}
     </BookingContext.Provider>

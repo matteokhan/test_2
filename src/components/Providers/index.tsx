@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/theme'
-import { FlightsProvider, BookingProvider } from '@/contexts'
+import { FlightsProvider, BookingProvider, UserLocationProvider } from '@/contexts'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { APIProvider as GMapsProvider } from '@vis.gl/react-google-maps'
@@ -20,9 +20,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
           <GMapsProvider apiKey={NEXT_PUBLIC_MAPS_API_KEY}>
-            <FlightsProvider>
-              <BookingProvider>{children}</BookingProvider>
-            </FlightsProvider>
+            <UserLocationProvider>
+              <FlightsProvider>
+                <BookingProvider>{children}</BookingProvider>
+              </FlightsProvider>
+            </UserLocationProvider>
           </GMapsProvider>
         </LocalizationProvider>
       </QueryClientProvider>
