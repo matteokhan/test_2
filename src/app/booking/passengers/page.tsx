@@ -15,11 +15,6 @@ export default function PassengersPage() {
     let allFormsValid = true
     let formErrors: { [key: number]: any } = {}
 
-    // At least one payer must be selected
-    if (payerIndex === null) {
-      return
-    }
-
     for (let i = 0; i < formRefs.current.length; i++) {
       const formRef = formRefs.current[i]
       if (formRef) {
@@ -78,14 +73,13 @@ export default function PassengersPage() {
       )
       setPayerIndex(index)
     } else {
-      if (payerIndex !== index) {
-        setPassengers((prev) =>
-          prev.map((passenger, i) => ({
-            ...passenger,
-            isPayer: i === payerIndex,
-          })),
-        )
-      }
+      setPassengers((prev) =>
+        prev.map((passenger, i) => ({
+          ...passenger,
+          isPayer: false,
+        })),
+      )
+      setPayerIndex(null)
     }
   }
 

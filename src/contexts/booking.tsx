@@ -131,7 +131,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const selectFlight = (flight: Solution | null) => {
     setSelectedFlight(flight)
     setPassengers((prev) => [])
-    // First passenger is the payer by default
     for (let i = 0; i < (searchParamsCache?.adults || 0); i++) {
       setPassengers((prev) => [
         ...prev,
@@ -142,7 +141,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           dateOfBirth: dayjs().subtract(18, 'years'),
           phoneNumber: '',
           type: 'ADT',
-          isPayer: i === 0,
+          isPayer: false,
         },
       ])
     }
@@ -174,7 +173,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         },
       ])
     }
-    setPayerIndex(0)
+    setPayerIndex(null)
   }
 
   const getStepIndexByPath = (pathname: string) => {
