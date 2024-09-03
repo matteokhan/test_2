@@ -8,7 +8,7 @@ import {
 } from '@/types'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
-import { getAirlinesData } from './cms'
+import { getAirlinesData } from '@/services'
 import { QueryClient } from '@tanstack/react-query'
 import { BrandedFareRequestDto } from '@/types/brandedFareRequest'
 

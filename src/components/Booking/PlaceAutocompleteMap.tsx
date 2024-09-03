@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import { useMapsLibrary } from '@vis.gl/react-google-maps'
 import { InputAdornment } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import { CustomTextField } from '../Design'
+import { CustomTextField } from '@/components'
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void

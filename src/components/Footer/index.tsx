@@ -1,4 +1,4 @@
-import { SectionContainer } from '../Design'
+import { SectionContainer } from '@/components'
 import './Footer.css'
 
 export const Footer = () => {
