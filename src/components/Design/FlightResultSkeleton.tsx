@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Paper, Skeleton, Stack } from '@mui/material'
 
 export const FlightResultSkeleton = () => {
   return (
