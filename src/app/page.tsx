@@ -1,6 +1,6 @@
 'use client'
 
-import { Navbar, OldNavbar, SearchFlightsBanner, TopBar } from '@/components'
+import { Footer, Navbar, OldNavbar, SearchFlightsBanner, TopBar } from '@/components'
 
 export default function Home() {
   return (
@@ -10,6 +10,7 @@ export default function Home() {
         <OldNavbar />
       </TopBar>
       <SearchFlightsBanner />
+      <Footer />
     </>
   )
 }
