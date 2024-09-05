@@ -9,9 +9,12 @@ import {
   InsuranceWithSteps,
   PagesAPIBaseParams,
   ReservationDto,
+  ReservationId,
 } from '@/types'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
+
+const queryClient = new QueryClient()
 
 export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
@@ -256,15 +259,31 @@ export const useNearAgencies = ({
   })
 }
 
+export const getReservationToken = async () => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/api/v2/session/token', {
+    method: 'GET',
+  })
+  if (!response.ok) {
+    throw new Error('Failed to fetch reservation token')
+  }
+  const data = await response.json()
+  localStorage.setItem('reservationToken', data.token)
+  return data
+}
+
 export const createReservation = async ({ reservation }: { reservation: CreateReservationDto }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
-  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/order/', {
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/api/v2/order/', {
     method: 'POST',
     body: JSON.stringify(reservation),
     headers: {
       'content-type': 'application/json',
-      authorization: 'Token bb5b8a40876eba75783773b46dc987b7229cadd83ea87cc382f2e752f40113fd',
-      'X-CSRFToken': 'PzDRbJPM10FY9UYfTEnPvacraGwkCFwYhq6VxugYqdmQcmB1nRyDTrXWd0AjErmk',
+      authorization: `Token ${token}`,
     },
   })
   if (response.ok) {
@@ -275,18 +294,28 @@ export const createReservation = async ({ reservation }: { reservation: CreateRe
 
 export const useCreateReservation = () => {
   return useMutation<ReservationDto, Error, CreateReservationDto>({
-    mutationFn: (reservation: CreateReservationDto) => createReservation({ reservation }),
+    mutationFn: async (reservation: CreateReservationDto) => {
+      await queryClient.ensureQueryData({
+        queryKey: ['reservationToken'],
+        queryFn: getReservationToken,
+      })
+      return createReservation({ reservation })
+    },
   })
 }
 
 export const updateReservation = async ({ reservation }: { reservation: ReservationDto }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
-  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/order', {
-    method: 'POST',
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+  const response = await fetch(`${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${reservation.id}/`, {
+    method: 'PUT',
     body: JSON.stringify(reservation),
     headers: {
       'content-type': 'application/json',
-      authorization: 'Token 2f9f1298c04bbb76e2811b8bccfd89624f9546166bcf3e5fdd1d41ef3b07573e',
+      authorization: `Token ${token}`,
     },
   })
   if (response.ok) {
@@ -297,6 +326,50 @@ export const updateReservation = async ({ reservation }: { reservation: Reservat
 
 export const useUpdateReservation = () => {
   return useMutation<ReservationDto, Error, ReservationDto>({
-    mutationFn: (reservation: ReservationDto) => updateReservation({ reservation }),
+    mutationFn: async (reservation: ReservationDto) => {
+      await queryClient.ensureQueryData({
+        queryKey: ['reservationToken'],
+        queryFn: getReservationToken,
+      })
+      return updateReservation({ reservation })
+    },
+  })
+}
+
+export const getReservationPaymentInfo = async ({
+  reservationId,
+}: {
+  reservationId: ReservationId
+}) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+  const response = await fetch(
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/action-order-prepare-payment/${reservationId}/`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Token ${token}`,
+      },
+    },
+  )
+  if (response.ok) {
+    return await response.json()
+  }
+  throw new Error('Failed to get payment data')
+}
+
+export const useReservationPaymentInfo = () => {
+  return useMutation<ReservationDto, Error, ReservationId>({
+    mutationFn: async (reservationId: ReservationId) => {
+      await queryClient.ensureQueryData({
+        queryKey: ['reservationToken'],
+        queryFn: getReservationToken,
+      })
+      return getReservationPaymentInfo({ reservationId })
+    },
   })
 }

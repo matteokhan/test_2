@@ -7,7 +7,7 @@ import { PassengerData } from '@/types'
 import { SimpleContainer } from '@/components'
 
 type PassengerInfoProps = {
-  onSubmit: (values: PassengerData, actions: FormikHelpers<PassengerData>) => void
+  onSubmit?: (values: PassengerData, actions: FormikHelpers<PassengerData>) => void
   formRef: (el: FormikProps<PassengerData> | null) => void
   passengerNumber: number
   isPayer: boolean
@@ -26,7 +26,7 @@ export const PassengerInfo = ({
   return (
     <SimpleContainer title={'Passager ' + passengerNumber}>
       <PassengerForm
-        onSubmit={onSubmit}
+        onSubmit={onSubmit ? onSubmit : () => {}}
         formRef={formRef}
         isPayer={isPayer}
         onPayerChange={onPayerChange}

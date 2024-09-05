@@ -72,6 +72,7 @@ export default function ContactInfoPage() {
     const newReservation: ReservationDto = {
       ...reservation,
       client: clientDto,
+      agency: selectedAgency?.id || null,
     }
     updateReservation(newReservation, {
       onSuccess: (data) => {
@@ -92,16 +93,18 @@ export default function ContactInfoPage() {
           formRef={formRef}
           onSubmit={() => {}}
           initialValues={
-            payerIndex !== null
-              ? {
-                  ...passengers[payerIndex],
-                  address: payer?.address || '',
-                  postalCode: payer?.postalCode || '',
-                  city: payer?.city || '',
-                  country: payer?.country || '',
-                  createAccountOptIn: payer?.createAccountOptIn || false,
-                }
-              : undefined
+            payer
+              ? payer
+              : payerIndex !== null
+                ? {
+                    ...passengers[payerIndex],
+                    address: '',
+                    postalCode: '',
+                    city: '',
+                    country: '',
+                    createAccountOptIn: false,
+                  }
+                : undefined
           }
         />
       </SimpleContainer>

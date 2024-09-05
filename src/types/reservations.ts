@@ -1,5 +1,10 @@
 import { CorrelationId, RouteId, SolutionId } from '@/types'
 
+export type ReservationTokenDto = {
+  token: string
+  expires_at: string
+}
+
 export type CreateReservationDto = {
   ticket: ReservationTicketDto
 }
@@ -53,9 +58,11 @@ export type ReservationClientDto = {
 }
 
 export type ReservationPassengerDto = {
+  category: string
   title: string
   first_name: string
   last_name: string
   email: string
   birth_date: string
+  phone: string
 }

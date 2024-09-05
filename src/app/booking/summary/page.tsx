@@ -9,50 +9,32 @@ import {
   SimpleContainer,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { useState } from 'react'
-import { useConfirmReservation } from '@/services'
+import { useReservationPaymentInfo } from '@/services'
 
 export default function BookingSummaryPage() {
-  const { goPreviousStep, goToStep, reservationId, correlationId, pnr, setPnr } = useBooking()
-  const { mutate: confirmReservation, isPending: isConfirming } = useConfirmReservation()
-  const [errorMessageApi, setErrorMessageApi] = useState('')
+  const { goPreviousStep, goToStep, correlationId, reservation } = useBooking()
+  const { mutate: confirmReservation, isPending: isConfirming } = useReservationPaymentInfo()
 
   const handleSubmit = async () => {
-    if (reservationId && correlationId) {
-      confirmReservation(
-        { reservationId, correlationId },
-        {
-          onSuccess: (data) => {
-            if (
-              data.ReservationItems?.length > 0 &&
-              data.ReservationItems[0].AirlinePassengerNameRecord
-            ) {
-              const passengerNameRecord = data.ReservationItems[0].AirlinePassengerNameRecord
-              setPnr(passengerNameRecord)
-            } else {
-              // TODO: log this somewhere
-              // TODO: Warn the user that something went wrong
-              if (data.ReservationItems?.length > 0 && data.ReservationItems[0].ErrorMessage) {
-                setErrorMessageApi(
-                  'Erreur lors de la confirmation de la réservation : ' +
-                    data.ReservationItems[0].ErrorMessage,
-                )
-              } else {
-                setErrorMessageApi('Erreur lors de la confirmation de la réservation')
-              }
-            }
-          },
-          onError: (error) => {
-            setErrorMessageApi('Erreur lors de la confirmation de la réservation')
-            // TODO: log this somewhere
-            // TODO: Warn the user that something went wrong
-          },
-        },
-      )
-    } else {
+    if (!reservation || !correlationId) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
+      return
     }
+    confirmReservation(reservation.id, {
+      onSuccess: (data) => {
+        if (!data.payment_redirect_url) {
+          // TODO: log this somewhere
+          // TODO: Warn the user that something went wrong
+          return
+        }
+        window.location.replace(data.payment_redirect_url)
+      },
+      onError: (error) => {
+        // TODO: log this somewhere
+        // TODO: Warn the user that something went wrong
+      },
+    })
   }
 
   return (
@@ -81,9 +63,6 @@ export default function BookingSummaryPage() {
         onAction={() => goToStep('insurances')}>
         <InsuranceSummary />
       </SimpleContainer>
-      {pnr && <div>Réservation confirmé, numéro de PNR : {pnr}</div>}
-      {errorMessageApi && <div>{errorMessageApi}</div>}
-      {isConfirming && <div>Confirmation de la réservation en cours...</div>}
       <BookingStepActions
         onContinue={handleSubmit}
         onGoBack={goPreviousStep}

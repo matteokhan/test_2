@@ -10,6 +10,7 @@ import {
   Solution,
   CreateReservationDto,
   ReservationClientDto,
+  ReservationPassengerDto,
 } from '@/types'
 
 export const searchParamsToDto = (
@@ -68,10 +69,12 @@ export const getCreateReservationDto = ({
       correlation_id: correlationId,
       data_object: flight.ticket,
       verification_price: flight.priceInfo.total,
-      routes: flight.routes.map((route) => ({
-        solution_id: flight.id,
-        route_ids: [route.id],
-      })),
+      routes: [
+        {
+          solution_id: flight.id,
+          route_ids: flight.routes.map((route) => route.id),
+        },
+      ],
     },
   }
   return dto
@@ -92,6 +95,23 @@ export const getReservationClientDto = ({ payer }: { payer: PayerData }): Reserv
     country: payer.country,
     create_account: payer.createAccountOptIn,
     subscribe_to_newsletter: false, // TODO: add this field to the form
+  }
+  return dto
+}
+
+export const getReservationPassengerDto = ({
+  passenger,
+}: {
+  passenger: PassengerData
+}): ReservationPassengerDto => {
+  const dto = {
+    category: passenger.type,
+    title: passenger.salutation ? passenger.salutation : '',
+    first_name: passenger.firstName,
+    last_name: passenger.lastName,
+    birth_date: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
+    email: passenger.email,
+    phone: passenger.phoneNumber,
   }
   return dto
 }
