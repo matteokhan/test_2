@@ -54,6 +54,8 @@ type BookingContextType = {
   steps: BookingStepType[]
   currentStep: number
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  previousStep: number
+  setPreviousStep: React.Dispatch<React.SetStateAction<number>>
   currentStepTitle: string
   goNextStep: () => void
   goPreviousStep: () => void
@@ -102,6 +104,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const router = useRouter()
   const { totalPassengers, searchParamsCache } = useFlights()
   const [currentStep, setCurrentStep] = useState(0)
+  const [previousStep, setPreviousStep] = useState(0)
   const currentStepTitle = steps[currentStep].title
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
   const [preSelectedFlight, setPreSelectedFlight] = useState<Solution | null>(null)
@@ -133,6 +136,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return
     }
     setCurrentStep(nextStep)
+    setPreviousStep(currentStep)
     router.push(steps[nextStep].url)
   }
 
@@ -143,6 +147,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return
     }
     setCurrentStep(previousStep)
+    setPreviousStep(currentStep)
     router.push(steps[previousStep].url)
   }
 
@@ -154,6 +159,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } else {
       stepIndex = getStepIndexByCode(step)
     }
+    setPreviousStep(currentStep)
     router.push(steps[stepIndex].url)
   }
 
@@ -225,6 +231,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPayerIndex,
         currentStep,
         setCurrentStep,
+        previousStep,
+        setPreviousStep,
         goNextStep,
         goPreviousStep,
         goToStep,

@@ -10,12 +10,14 @@ import PaymentsIcon from '@mui/icons-material/Payments'
 import CloseIcon from '@mui/icons-material/Close'
 import { getBrandedFares } from '@/services'
 import { BrandedFareRequestDto } from '@/types/brandedFareRequest'
-import { Description } from '@mui/icons-material'
+import { Description, FlightClass, Star, Work } from '@mui/icons-material'
 import { get } from 'http'
 import { BrandedFareResponse } from '@/types/brandedFareResponse'
 
 export default function FaresPage() {
   const {
+    previousStep,
+    currentStep,
     goPreviousStep,
     goNextStep,
     setSelectedFare,
@@ -58,38 +60,14 @@ export default function FaresPage() {
 
     setBrandedFares(result)
     setBrandLoaded(true)
+    if (result && result?.solutions.length == 0) {
+      if (previousStep && previousStep > currentStep) {
+        goPreviousStep()
+      } else {
+        goNextStep()
+      }
+    }
   }
-
-  const fareOptions: Fare[] = [
-    {
-      id: '1',
-      name: 'Economy saver',
-      description:
-        'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique',
-      price: 125,
-      services: [
-        { name: '1 bagage à main', icon: <CheckIcon color="primary" /> },
-        { name: '1er bagage enregistré payant', icon: <PaymentsIcon /> },
-        { name: 'Payable seat selection available', icon: <PaymentsIcon /> },
-        { name: 'Pas de remboursement possible', icon: <CloseIcon color="error" /> },
-        { name: 'Assistance prioritaire', icon: <CloseIcon color="error" /> },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Economy flex',
-      description:
-        'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique',
-      price: 125,
-      services: [
-        { name: '1 bagage à main', icon: <CheckIcon color="primary" /> },
-        { name: '1er bagage enregistré payant', icon: <PaymentsIcon /> },
-        { name: 'Payable seat selection available', icon: <PaymentsIcon /> },
-        { name: 'Pas de remboursement possible', icon: <CloseIcon color="error" /> },
-        { name: 'Assistance prioritaire', icon: <CloseIcon color="error" /> },
-      ],
-    },
-  ]
 
   const getFaresOptions = () => {
     if (!selectedFlight) return []
@@ -140,8 +118,12 @@ export default function FaresPage() {
             switch (option.indicator) {
               case 'IncludedInBrand':
                 if (brand.baggagePieces) {
+                  let name = `${brand.baggagePieces} bagages enregistrés inclus`
+                  if (brand.baggageWeight) {
+                    name = name + ` (${brand.baggageWeight} kg)`
+                  }
                   return {
-                    name: `${brand.baggagePieces} bagages enregistrés inclus`,
+                    name: name,
                     icon: <CheckIcon color="primary" />,
                   }
                 } else {
@@ -158,12 +140,34 @@ export default function FaresPage() {
         }
         return { name: option.description, icon: <CloseIcon color="error" /> }
       })
+    let bestCabinClass = 1
+    fare.routes.forEach((route) => {
+      route.segments.forEach((segment) => {
+        if (segment.cabinClass > bestCabinClass) {
+          bestCabinClass = segment.cabinClass
+        }
+      })
+    })
+    switch (bestCabinClass) {
+      case 1:
+        services.push({ name: 'Voyage en classe Economique', icon: <FlightClass /> })
+        break
+      case 2:
+        services.push({ name: 'Voyage en classe Affaires', icon: <FlightClass /> })
+        break
+      case 4:
+        services.push({ name: 'Voyage en Première classe', icon: <FlightClass /> })
+        break
+      case 8:
+        services.push({ name: 'Voyage en classe Premium', icon: <FlightClass /> })
+        break
+    }
     return {
       id: fare.id,
       name: brand.name,
       description:
         'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique',
-      price: fare.priceInfo.total - basePrice,
+      price: Number((fare.priceInfo.total - basePrice).toFixed(2)),
       services: services,
     } as Fare
   }
