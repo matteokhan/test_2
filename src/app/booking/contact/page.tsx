@@ -11,9 +11,9 @@ import {
 import { useBooking, useUserLocation } from '@/contexts'
 import { Box, Button, Stack, Typography, Drawer } from '@mui/material'
 import { FormikProps } from 'formik'
-import { PayerData } from '@/types'
-import { useCreateReservation, useNearAgencies } from '@/services'
-import { getCreateReservationDto } from '@/utils'
+import { PayerData, ReservationDto } from '@/types'
+import { useUpdateReservation, useNearAgencies } from '@/services'
+import { getReservationClientDto } from '@/utils'
 
 export default function ContactInfoPage() {
   const formRef = useRef<FormikProps<PayerData> | null>(null)
@@ -25,12 +25,11 @@ export default function ContactInfoPage() {
     goPreviousStep,
     mapIsOpen,
     setMapIsOpen,
-    selectedFlight,
     payer,
-    setReservationId,
     selectedAgency,
     setSelectedAgency,
-    correlationId,
+    reservation,
+    setReservation,
   } = useBooking()
   const [userLocation, setUserLocation] = useState<{
     latitude: number
@@ -42,7 +41,7 @@ export default function ContactInfoPage() {
     lat: userLocation?.latitude,
     lng: userLocation?.longitude,
   })
-  const { mutate: createReservation, isPending: isCreating } = useCreateReservation()
+  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
 
   // const handleGeoposition = () => {
   //   if (!canAccessPosition) {
@@ -53,7 +52,7 @@ export default function ContactInfoPage() {
   // }
 
   const handleSubmit = async () => {
-    if (!formRef.current) {
+    if (!formRef.current || !reservation) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
@@ -69,21 +68,14 @@ export default function ContactInfoPage() {
     const payerDataValidated = formRef.current.values
     setPayer(payerDataValidated)
 
-    if (!selectedFlight || !correlationId) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
+    const clientDto = getReservationClientDto({ payer: payerDataValidated })
+    const newReservation: ReservationDto = {
+      ...reservation,
+      client: clientDto,
     }
-
-    const reservationParams = getCreateReservationDto({
-      correlationId: correlationId,
-      selectedFlight: selectedFlight,
-      passengers,
-      payer: payerDataValidated,
-    })
-    createReservation(reservationParams, {
+    updateReservation(newReservation, {
       onSuccess: (data) => {
-        setReservationId(data.ReservationId)
+        setReservation(data)
         goNextStep()
       },
       onError: (error) => {
@@ -176,7 +168,7 @@ export default function ContactInfoPage() {
       <BookingStepActions
         onContinue={handleSubmit}
         onGoBack={goPreviousStep}
-        isLoading={isCreating}
+        isLoading={isUpdatingReservation}
       />
     </>
   )

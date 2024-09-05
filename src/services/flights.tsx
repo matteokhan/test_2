@@ -1,16 +1,11 @@
 'use client'
 
-import {
-  ConfirmReservationDto,
-  CreateReservationDto,
-  SearchFlightsParamsDto,
-  SearchResponseDto,
-} from '@/types'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { SearchFlightsParamsDto, SearchResponseDto } from '@/types'
+import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 import { getAirlinesData } from '@/services'
 import { QueryClient } from '@tanstack/react-query'
-import { BrandedFareRequestDto } from '@/types/brandedFareRequest'
+import { BrandedFareRequestDto } from '@/types'
 
 const queryClient = new QueryClient()
 
@@ -46,56 +41,6 @@ export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | 
     },
     refetchOnWindowFocus: false,
     enabled: !!params,
-  })
-}
-
-export const createReservation = async ({
-  params,
-}: {
-  params: CreateReservationDto | undefined
-}) => {
-  const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
-  const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
-  const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/reservation/create', {
-    method: 'POST',
-    body: JSON.stringify(params),
-    headers: {
-      'content-type': 'application/json',
-      authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN,
-    },
-  })
-  if (response.ok) {
-    return await response.json()
-  }
-  throw new Error('Failed to create reservation')
-}
-
-export const useCreateReservation = () => {
-  return useMutation({
-    mutationFn: (params: CreateReservationDto) => createReservation({ params }),
-  })
-}
-
-export const confirmReservation = async ({ params }: { params: ConfirmReservationDto }) => {
-  const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
-  const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
-  const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/reservation/confirm', {
-    method: 'POST',
-    body: JSON.stringify(params),
-    headers: {
-      'content-type': 'application/json',
-      authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN,
-    },
-  })
-  if (response.ok) {
-    return await response.json()
-  }
-  throw new Error('Failed to confirm reservation')
-}
-
-export const useConfirmReservation = () => {
-  return useMutation({
-    mutationFn: (params: ConfirmReservationDto) => confirmReservation({ params }),
   })
 }
 

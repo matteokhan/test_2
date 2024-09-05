@@ -5,10 +5,12 @@ import {
   Airlines,
   AirportData,
   Airports,
+  CreateReservationDto,
   InsuranceWithSteps,
   PagesAPIBaseParams,
+  ReservationDto,
 } from '@/types'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
 export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) => {
@@ -251,5 +253,50 @@ export const useNearAgencies = ({
     queryFn: async () => getNearAgencies({ lat, lng, distance }),
     refetchOnWindowFocus: false,
     enabled: !!lat && !!lng,
+  })
+}
+
+export const createReservation = async ({ reservation }: { reservation: CreateReservationDto }) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/order/', {
+    method: 'POST',
+    body: JSON.stringify(reservation),
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Token bb5b8a40876eba75783773b46dc987b7229cadd83ea87cc382f2e752f40113fd',
+      'X-CSRFToken': 'PzDRbJPM10FY9UYfTEnPvacraGwkCFwYhq6VxugYqdmQcmB1nRyDTrXWd0AjErmk',
+    },
+  })
+  if (response.ok) {
+    return await response.json()
+  }
+  throw new Error('Failed to create reservation')
+}
+
+export const useCreateReservation = () => {
+  return useMutation<ReservationDto, Error, CreateReservationDto>({
+    mutationFn: (reservation: CreateReservationDto) => createReservation({ reservation }),
+  })
+}
+
+export const updateReservation = async ({ reservation }: { reservation: ReservationDto }) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/order', {
+    method: 'POST',
+    body: JSON.stringify(reservation),
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Token 2f9f1298c04bbb76e2811b8bccfd89624f9546166bcf3e5fdd1d41ef3b07573e',
+    },
+  })
+  if (response.ok) {
+    return await response.json()
+  }
+  throw new Error('Failed to update reservation')
+}
+
+export const useUpdateReservation = () => {
+  return useMutation<ReservationDto, Error, ReservationDto>({
+    mutationFn: (reservation: ReservationDto) => updateReservation({ reservation }),
   })
 }
