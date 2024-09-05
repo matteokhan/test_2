@@ -2,12 +2,15 @@
 
 import {
   CorrelationId,
-  CreateReservationDto,
+  ReservationDto,
   PassengerData,
   PayerData,
   SearchFlightsParams,
   SearchFlightsParamsDto,
   Solution,
+  CreateReservationDto,
+  ReservationClientDto,
+  ReservationPassengerDto,
 } from '@/types'
 
 export const searchParamsToDto = (
@@ -56,46 +59,59 @@ export const searchParamsToDto = (
 
 export const getCreateReservationDto = ({
   correlationId,
-  selectedFlight,
-  passengers,
-  payer,
+  flight,
 }: {
   correlationId: CorrelationId
-  selectedFlight: Solution
-  passengers: PassengerData[]
-  payer: PayerData
+  flight: Solution
 }): CreateReservationDto => {
-  const params = {
-    correlationId: correlationId,
-    ticket: selectedFlight?.ticket,
-    routes: [
-      {
-        solutionId: selectedFlight?.id,
-        routeIds: selectedFlight?.routes.map((route) => route.id),
-      },
-    ],
-    passengers: passengers.map((passenger) => ({
-      title: passenger.salutation || '',
-      firstName: passenger.firstName,
-      lastName: passenger.lastName,
-      dateOfBirth: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
-      type: passenger.type,
-    })),
-    booker: {
-      firstName: payer?.firstName || '',
-      lastName: payer?.lastName || '',
-      email: payer?.email || '',
-      phone: payer?.phoneNumber || '',
-      phoneCountry: '0033',
-      sex: payer?.salutation === 'Mr' ? 'M' : 'F' || '',
-      address: {
-        street: payer?.address || '',
-        city: payer?.city || '',
-        country: payer?.country || '',
-        zipCode: payer?.postalCode || '',
-        number: '1',
-      },
+  const dto = {
+    ticket: {
+      correlation_id: correlationId,
+      data_object: flight.ticket,
+      verification_price: flight.priceInfo.total,
+      routes: [
+        {
+          solution_id: flight.id,
+          route_ids: flight.routes.map((route) => route.id),
+        },
+      ],
     },
   }
-  return params
+  return dto
+}
+
+export const getReservationClientDto = ({ payer }: { payer: PayerData }): ReservationClientDto => {
+  const dto = {
+    title: payer.salutation ? payer.salutation : '',
+    first_name: payer.firstName,
+    last_name: payer.lastName,
+    birth_date: payer.dateOfBirth ? payer.dateOfBirth.format('YYYY-MM-DD') : '',
+    email: payer.email,
+    phone: payer.phoneNumber,
+    phone_country_prefix: '0033',
+    address: payer.address,
+    postal_code: payer.postalCode,
+    city: payer.city,
+    country: payer.country,
+    create_account: payer.createAccountOptIn,
+    subscribe_to_newsletter: false, // TODO: add this field to the form
+  }
+  return dto
+}
+
+export const getReservationPassengerDto = ({
+  passenger,
+}: {
+  passenger: PassengerData
+}): ReservationPassengerDto => {
+  const dto = {
+    category: passenger.type,
+    title: passenger.salutation ? passenger.salutation : '',
+    first_name: passenger.firstName,
+    last_name: passenger.lastName,
+    birth_date: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
+    email: passenger.email,
+    phone: passenger.phoneNumber,
+  }
+  return dto
 }

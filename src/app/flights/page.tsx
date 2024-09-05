@@ -12,17 +12,35 @@ import {
 import { Box, Drawer } from '@mui/material'
 import { useBooking, useFlights } from '@/contexts'
 import { SearchFlightsParams, Solution } from '@/types'
+import { useCreateReservation } from '@/services'
+import { getCreateReservationDto } from '@/utils'
 
 export default function FlighsPage() {
   const { flightDetailsOpen, setFlightDetailsOpen, setSearchParams } = useFlights()
-  const { selectFlight, goToStep } = useBooking()
+  const { selectFlight, goToStep, setReservation, correlationId } = useBooking()
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setSearchParams(searchParams)
   }
-  const handleSelectFlight = ({ flight }: { flight: Solution | null }) => {
-    setFlightDetailsOpen(false)
-    selectFlight(flight)
-    goToStep(0)
+  const { mutate: createReservation, isPending: isCreatingReservation } = useCreateReservation()
+  const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
+    if (!correlationId) {
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      return
+    }
+    const createReservationDto = getCreateReservationDto({ correlationId, flight })
+    createReservation(createReservationDto, {
+      onSuccess: (reservation) => {
+        setReservation(reservation)
+        selectFlight(flight)
+        setFlightDetailsOpen(false)
+        goToStep(0)
+      },
+      onError: (error) => {
+        // TODO: log this somewhere
+        // TODO: Warn the user that something went wrong
+      },
+    })
   }
   return (
     <>
@@ -47,6 +65,7 @@ export default function FlighsPage() {
               },
             }}>
             <FlightDetails
+              isLoading={isCreatingReservation}
               onClose={() => setFlightDetailsOpen(false)}
               onSelectFlight={handleSelectFlight}
             />

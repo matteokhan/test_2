@@ -4,13 +4,42 @@ import React from 'react'
 import { BookingStepActions, InsuranceOption, SimpleContainer } from '@/components'
 import { useBooking } from '@/contexts'
 import { Alert, Grid, Stack } from '@mui/material'
-import { useInsurances } from '@/services'
+import { useInsurances, useUpdateReservation } from '@/services'
+import { ReservationDto } from '@/types'
 
 export default function InsurancesPage() {
-  const { goPreviousStep, goNextStep, selectedInsurance, setSelectedInsurance } = useBooking()
+  const {
+    goPreviousStep,
+    goNextStep,
+    selectedInsurance,
+    setSelectedInsurance,
+    setReservation,
+    reservation,
+  } = useBooking()
   const { data: insuranceOptions, isSuccess } = useInsurances()
+  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
+
   const handleSubmit = () => {
-    goNextStep()
+    if (!reservation) {
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      return
+    }
+
+    const newReservation: ReservationDto = {
+      ...reservation,
+      insurance: selectedInsurance?.id || null,
+    }
+    updateReservation(newReservation, {
+      onSuccess: (data) => {
+        setReservation(data)
+        goNextStep()
+      },
+      onError: (error) => {
+        // TODO: log this somewhere
+        // TODO: Warn the user that something went wrong
+      },
+    })
   }
 
   return (
@@ -34,7 +63,11 @@ export default function InsurancesPage() {
           </Grid>
         </Stack>
       </SimpleContainer>
-      <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isUpdatingReservation}
+      />
     </>
   )
 }

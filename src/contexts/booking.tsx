@@ -10,8 +10,8 @@ import {
   Insurance,
   Agency,
   CorrelationId,
-  ReservationId,
   BookingStepCode,
+  ReservationDto,
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
@@ -92,10 +92,10 @@ type BookingContextType = {
   totalPrice: number
   correlationId: CorrelationId | null
   setCorrelationId: React.Dispatch<React.SetStateAction<CorrelationId | null>>
-  reservationId: ReservationId | null
-  setReservationId: React.Dispatch<React.SetStateAction<ReservationId | null>>
   pnr: string | null
   setPnr: React.Dispatch<React.SetStateAction<string | null>>
+  reservation: ReservationDto | null
+  setReservation: React.Dispatch<React.SetStateAction<ReservationDto | null>>
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -116,10 +116,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
   const [correlationId, setCorrelationId] = useState<string | null>(null)
-  const [reservationId, setReservationId] = useState<string | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
   const totalPrice =
     (selectedFlight?.priceInfo?.total || 0) + (selectedInsurance?.amount || 0) * totalPassengers
+  const [reservation, setReservation] = useState<ReservationDto | null>(null)
 
   const getStepIndexByPath = (pathname: string) => {
     return steps.findIndex((s) => s.url.includes(pathname))
@@ -248,12 +248,12 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSelectedFare,
         selectedInsurance,
         setSelectedInsurance,
-        reservationId,
-        setReservationId,
         pnr,
         setPnr,
         selectedAgency,
         setSelectedAgency,
+        reservation,
+        setReservation,
       }}>
       {children}
     </BookingContext.Provider>
