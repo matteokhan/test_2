@@ -261,6 +261,10 @@ export const useNearAgencies = ({
 
 export const getReservationToken = async () => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const token = localStorage.getItem('reservationToken')
+  if (token) {
+    return { token }
+  }
   const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/api/v2/session/token', {
     method: 'GET',
   })
@@ -298,6 +302,8 @@ export const useCreateReservation = () => {
       await queryClient.ensureQueryData({
         queryKey: ['reservationToken'],
         queryFn: getReservationToken,
+        staleTime: Infinity,
+        gcTime: Infinity,
       })
       return createReservation({ reservation })
     },
@@ -330,6 +336,8 @@ export const useUpdateReservation = () => {
       await queryClient.ensureQueryData({
         queryKey: ['reservationToken'],
         queryFn: getReservationToken,
+        staleTime: Infinity,
+        gcTime: Infinity,
       })
       return updateReservation({ reservation })
     },
@@ -368,6 +376,8 @@ export const useReservationPaymentInfo = () => {
       await queryClient.ensureQueryData({
         queryKey: ['reservationToken'],
         queryFn: getReservationToken,
+        staleTime: Infinity,
+        gcTime: Infinity,
       })
       return getReservationPaymentInfo({ reservationId })
     },
