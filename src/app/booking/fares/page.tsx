@@ -164,8 +164,7 @@ export default function FaresPage() {
       id: fare.id,
       name: brand.name,
       description:
-        'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique ' +
-        fare.id,
+        'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique',
       price: Number((fare.priceInfo.total - basePrice).toFixed(2)),
       services: services,
     } as Fare
