@@ -70,6 +70,10 @@ type BookingContextType = {
   setPreSelectedFlight: (flight: Solution | null) => void
   selectFlight: (flight: Solution | null) => void
 
+  // Base flight for fare search
+  baseFlight: Solution | null
+  setBaseFlight: (flight: Solution | null) => void
+
   // Passengers
   passengers: PassengerData[]
   setPassengers: React.Dispatch<React.SetStateAction<PassengerData[]>>
@@ -116,6 +120,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
   const [correlationId, setCorrelationId] = useState<string | null>(null)
+  const [baseFlight, setBaseFlight] = useState<Solution | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
   const totalPrice =
     (selectedFlight?.priceInfo?.total || 0) + (selectedInsurance?.amount || 0) * totalPassengers
@@ -165,6 +170,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const selectFlight = (flight: Solution | null) => {
     setSelectedFlight(flight)
+    setBaseFlight(flight)
     setPassengers((prev) => [])
     for (let i = 0; i < (searchParamsCache?.adults || 0); i++) {
       setPassengers((prev) => [
@@ -219,6 +225,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       value={{
         selectedFlight,
         setSelectedFlight,
+        baseFlight,
+        setBaseFlight,
         correlationId,
         setCorrelationId,
         preSelectedFlight,

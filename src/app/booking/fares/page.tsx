@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { use, useEffect } from 'react'
 import { BookingStepActions, FareOption, SimpleContainer } from '@/components'
 import { useBooking } from '@/contexts'
 import { Stack } from '@mui/material'
@@ -8,7 +8,7 @@ import { Fare, FareService, Solution } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
 import PaymentsIcon from '@mui/icons-material/Payments'
 import CloseIcon from '@mui/icons-material/Close'
-import { getBrandedFares } from '@/services'
+import { getBrandedFares, useGetBrandedFares } from '@/services'
 import { BrandedFareRequestDto } from '@/types/brandedFareRequest'
 import { Description, FlightClass, Star, Work } from '@mui/icons-material'
 import { get } from 'http'
@@ -23,63 +23,61 @@ export default function FaresPage() {
     setSelectedFare,
     selectedFare,
     selectedFlight,
+    setSelectedFlight,
+    baseFlight,
     passengers,
     correlationId,
   } = useBooking()
+
   const handleSubmit = () => {
     if (!selectedFare) return
+    const newSelectedFlight = brandedFares?.solutions.find(
+      (solution: Solution) => solution.id === selectedFare.id,
+    )
+    if (newSelectedFlight) {
+      setSelectedFlight(newSelectedFlight)
+      setSelectedFare(null)
+    }
     goNextStep()
   }
 
-  const [loading, setLoading] = React.useState(false)
-  const [brandedFares, setBrandedFares] = React.useState<BrandedFareResponse>()
-  const [brandLoaded, setBrandLoaded] = React.useState(false)
-
-  // TODO: Fetch fares from API
-  useEffect(() => {
-    if (!loading && !brandLoaded) {
-      setLoading(true)
-      fetchBrandedFares()
-      // fetchBrandedFares()
-      setLoading(false)
-    }
-  })
-
-  const fetchBrandedFares = async () => {
-    setSelectedFare(null)
-    if (!correlationId) return
-    if (!selectedFlight) return
-    const params = {
+  const getBrandedFareParams = () => {
+    return {
       correlationId: correlationId,
-      ticket: selectedFlight.ticket,
+      ticket: baseFlight?.ticket,
       adults: passengers.filter((passenger) => passenger.type === 'ADT').length,
       childrens: passengers.filter((passenger) => passenger.type === 'CHD').length,
       infants: passengers.filter((passenger) => passenger.type === 'INF').length,
     } as BrandedFareRequestDto
-    const result = await getBrandedFares({ params: params })
+  }
 
-    setBrandedFares(result)
-    setBrandLoaded(true)
-    if (result && result?.solutions.length == 0) {
-      if (previousStep && previousStep > currentStep) {
+  const { data: brandedFares, isSuccess } = useGetBrandedFares({ params: getBrandedFareParams() })
+
+  const getFaresOptions = () => {
+    if (!selectedFlight) return []
+    if (!brandedFares) return []
+    return brandedFares?.solutions?.map((brandedFare: any) => {
+      const fareOption = getFareOption(brandedFare, selectedFlight.priceInfo.total)
+      return fareOption
+    })
+  }
+
+  useEffect(() => {
+    if (isSuccess && brandedFares.solutions.length === 0) {
+      if (previousStep > currentStep) {
         goPreviousStep()
       } else {
         goNextStep()
       }
     }
-  }
-
-  const getFaresOptions = () => {
-    if (!selectedFlight) return []
-    if (!brandedFares) return []
-    return brandedFares?.solutions?.map((brandedFare) => {
-      const fareOption = getFareOption(brandedFare, selectedFlight.priceInfo.total)
-      if (!selectedFare && fareOption.id == selectedFlight.id) {
-        setSelectedFare(fareOption)
-      }
-      return fareOption
-    })
-  }
+    if (selectedFlight && brandedFares) {
+      const fareOptions = getFaresOptions()
+      const fareOption = fareOptions.find((option: any) => {
+        return option.name === selectedFlight.routes[0].segments[0].fare.name
+      })
+      setSelectedFare(fareOption)
+    }
+  }, [brandedFares])
 
   const getFareOption = (fare: Solution, basePrice: number) => {
     const brand = fare.routes[0].segments[0].fare
@@ -166,7 +164,8 @@ export default function FaresPage() {
       id: fare.id,
       name: brand.name,
       description:
-        'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique',
+        'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique ' +
+        fare.id,
       price: Number((fare.priceInfo.total - basePrice).toFixed(2)),
       services: services,
     } as Fare
@@ -176,14 +175,14 @@ export default function FaresPage() {
     <>
       <SimpleContainer>
         <Stack gap={2} pt={4} data-testid="faresPage-options">
-          {getFaresOptions().map((oneFare) => {
+          {getFaresOptions().map((oneFare: any) => {
             if (oneFare)
               return (
                 <FareOption
                   key={oneFare?.id}
                   fare={oneFare}
                   onSelect={setSelectedFare}
-                  isSelected={selectedFare?.id === oneFare?.id}
+                  isSelected={selectedFare?.name === oneFare?.name}
                 />
               )
           })}

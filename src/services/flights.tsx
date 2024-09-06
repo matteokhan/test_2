@@ -60,3 +60,12 @@ export const getBrandedFares = async ({ params }: { params: BrandedFareRequestDt
   }
   throw new Error('Failed to fetch branded fares')
 }
+
+export const useGetBrandedFares = ({ params }: { params: BrandedFareRequestDto }) => {
+  return useQuery({
+    queryKey: ['useSearchAirportsByName', JSON.stringify(params)],
+    queryFn: () => getBrandedFares({ params }),
+    refetchOnWindowFocus: false,
+    enabled: !!params,
+  })
+}
