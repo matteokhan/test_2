@@ -4,7 +4,11 @@ import { PayerData } from '@/types'
 import { Box, Stack, TextField, Typography } from '@mui/material'
 import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
-import { CreateAccountOptInField, SalutationField } from '@/components'
+import {
+  CreateAccountOptInField,
+  SalutationField,
+  SubscribeNewsletterOptInField,
+} from '@/components'
 import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
@@ -20,6 +24,7 @@ const payerSchema = Yup.object().shape({
   city: Yup.string().required('La ville est requise'),
   country: Yup.string().required('Le pays est requis'),
   createAccountOptIn: Yup.boolean(),
+  subscribeNewsletterOptIn: Yup.boolean(),
 })
 
 type PayerFormProps = {
@@ -46,6 +51,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             city: '',
             country: '',
             createAccountOptIn: false,
+            subscribeNewsletterOptIn: false,
           }
         }
         validationSchema={payerSchema}
@@ -53,6 +59,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
         enableReinitialize={false}>
         {({ errors, touched, setFieldValue, values }) => (
           <Form data-testid="payerForm">
+            <p>{values.createAccountOptIn ? 'create account' : 'no create'}</p>
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
             </Stack>
@@ -164,6 +171,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 }}
               />
               <CreateAccountOptInField name="createAccountOptIn" />
+              <SubscribeNewsletterOptInField name="subscribeNewsletterOptIn" />
             </Stack>
           </Form>
         )}

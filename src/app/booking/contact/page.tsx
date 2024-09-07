@@ -103,6 +103,7 @@ export default function ContactInfoPage() {
                     city: '',
                     country: '',
                     createAccountOptIn: false,
+                    subscribeNewsletterOptIn: false,
                   }
                 : undefined
           }

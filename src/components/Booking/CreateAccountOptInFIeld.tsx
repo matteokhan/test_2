@@ -17,7 +17,7 @@ export const CreateAccountOptInField = ({ name }: { name: string }) => {
   return (
     <Stack direction="row" alignItems="flex-start" pl={1}>
       <Field name={name} as={CreateAccountOptIn} />
-      <Box position="relative" top="6px" right="8px">
+      <Box position="relative" top="6px" right="8px" mb="10px">
         <Typography variant="bodySm" color="grey.800">
           Cochez cette case pour créer votre compte E.Leclerc Voyages afin de profiter de tous nos
           services en ligne. Vous déclarez avoir lu et accepter nos conditions d'utilisation du

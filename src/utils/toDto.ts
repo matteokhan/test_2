@@ -94,7 +94,7 @@ export const getReservationClientDto = ({ payer }: { payer: PayerData }): Reserv
     city: payer.city,
     country: payer.country,
     create_account: payer.createAccountOptIn,
-    subscribe_to_newsletter: false, // TODO: add this field to the form
+    subscribe_to_newsletter: payer.subscribeNewsletterOptIn,
   }
   return dto
 }

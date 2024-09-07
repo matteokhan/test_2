@@ -41,6 +41,7 @@ export type PayerData = {
   city: string
   country: string
   createAccountOptIn: boolean
+  subscribeNewsletterOptIn: boolean
 }
 
 export type Fare = {
