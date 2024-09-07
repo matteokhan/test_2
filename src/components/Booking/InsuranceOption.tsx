@@ -35,9 +35,9 @@ export const InsuranceOption = ({
     <Grid item xs={12} sm={6} style={{ display: 'flex' }} data-testid="insuranceOption">
       <Stack border="1px solid" borderColor="grey.400" borderRadius="6px" flexGrow={1} width="100%">
         {/* TODO: add image */}
-        <Box height="200px" flexShrink={0}>
+        {/* <Box height="200px" flexShrink={0}>
           Image
-        </Box>
+        </Box> */}
         <Stack p={3} flexGrow={1}>
           <Typography variant="headlineXs" pb={1} data-testid="insuranceOption-title">
             {insurance.title}
