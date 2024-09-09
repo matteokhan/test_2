@@ -51,7 +51,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             city: '',
             country: '',
             createAccountOptIn: false,
-            subscribeNewsletterOptIn: false,
+            subscribeNewsletterOptIn: true,
           }
         }
         validationSchema={payerSchema}
@@ -170,7 +170,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 }}
               />
               <CreateAccountOptInField name="createAccountOptIn" />
-              <SubscribeNewsletterOptInField name="subscribeNewsletterOptIn" />
+              <Box pt={2}>
+                <SubscribeNewsletterOptInField name="subscribeNewsletterOptIn" />
+              </Box>
             </Stack>
           </Form>
         )}
