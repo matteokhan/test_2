@@ -68,7 +68,7 @@ export const Footer = () => {
                       <a
                         target="_blank"
                         rel="noopener"
-                        href="/editoPage?code=conditions_generales_de_vente">
+                        href="https://www.leclercvoyages.com/editoPage?code=conditions_generales_de_vente">
                         Formulaire d'information standard
                       </a>
                     </li>
@@ -76,12 +76,15 @@ export const Footer = () => {
                       <a
                         target="_blank"
                         rel="noopener"
-                        href="/editoContent?code=conditions_particulieres_elv">
+                        href="https://www.leclercvoyages.com/editoContent?code=conditions_particulieres_elv">
                         Conditions Particuli&egrave;res de Vente
                       </a>
                     </li>
                     <li className="item">
-                      <a target="_blank" rel="noopener" href="/editoPage?code=MentionsLegales">
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://www.leclercvoyages.com/editoPage?code=MentionsLegales">
                         Mentions l&eacute;gales
                       </a>
                     </li>
@@ -89,22 +92,28 @@ export const Footer = () => {
                       <a
                         target="_blank"
                         rel="noopener"
-                        href="/editoPage?code=conditions_utilisation">
+                        href="https://www.leclercvoyages.com/editoPage?code=conditions_utilisation">
                         Conditions g&eacute;n&eacute;rales d'utilisation du site internet
                       </a>
                     </li>
                     <li className="item">
-                      <a target="_blank" rel="noopener" href="/editoPage?code=Charte_RGPD">
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://www.leclercvoyages.com/editoPage?code=Charte_RGPD">
                         Charte de protection des donn&eacute;es personnelles
                       </a>
                     </li>
                     <li className="item">
-                      <a href="/editoPage?code=tourisme-responsable">
+                      <a href="https://www.leclercvoyages.com/editoPage?code=tourisme-responsable">
                         Charte &eacute;thique du voyageur
                       </a>
                     </li>
                     <li className="item">
-                      <a target="_blank" rel="noopener" href="/editoPage?code=paiement">
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://www.leclercvoyages.com/editoPage?code=paiement">
                         Moyens de paiement
                       </a>
                     </li>

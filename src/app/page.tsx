@@ -5,7 +5,7 @@ import { Footer, Navbar, OldNavbar, SearchFlightsBanner, TopBar } from '@/compon
 export default function Home() {
   return (
     <>
-      <TopBar height={106}>
+      <TopBar height={120}>
         <Navbar />
         <OldNavbar />
       </TopBar>
