@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { useFlights } from '@/contexts'
 import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
+import dayjs from 'dayjs'
 
 export const SelectedFlightInfoTopbar = () => {
   const { firstSegment, lastSegment, totalPassengers, setFlightDetailsOpen } = useFlights()
@@ -62,7 +63,6 @@ export const SelectedFlightInfoTopbar = () => {
                 </Typography>
               </Stack>
             </Link>
-            {/* TODO: hardcoded data here */}
             <Stack direction="row" gap={1}>
               <Stack direction="row" gap={2} alignItems="center">
                 <Stack direction="row" gap={1}>
@@ -75,11 +75,12 @@ export const SelectedFlightInfoTopbar = () => {
                   </Typography>
                 </Stack>
                 <Stack direction="row" gap={1}>
-                  {/* TODO: Fix return date */}
                   <Typography
                     variant="bodyMd"
                     data-testid="selectedFlightInfoTopbar-depatureArrivalDates">
-                    Du {firstSegment?.date.substring(5)} au {lastSegment?.date?.substring(5)}
+                    Du {dayjs(firstSegment?.date).format('DD-MM')} au{' '}
+                    {dayjs(lastSegment?.date).format('DD-MM')}
+                    {}
                   </Typography>
                   <Typography variant="bodyMd">-</Typography>
                   <Typography
