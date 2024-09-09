@@ -59,7 +59,6 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
         enableReinitialize={false}>
         {({ errors, touched, setFieldValue, values }) => (
           <Form data-testid="payerForm">
-            <p>{values.createAccountOptIn ? 'create account' : 'no create'}</p>
             <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
               <SalutationField name="salutation" />
             </Stack>
