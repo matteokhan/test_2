@@ -33,13 +33,13 @@ export const BookingConfirmation = () => {
                 </Typography>
               </Stack>
             </Stack>
-            <Stack direction="row" justifyContent="center" height={24} gap={1}>
+            <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
               <Typography variant="bodyMd">Date de départ :</Typography>
               <Typography variant="bodyMd" color="primary" fontWeight={500}>
                 17/05/2024
               </Typography>
             </Stack>
-            <Stack direction="row" justifyContent="center" height={24} gap={1}>
+            <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
               <Typography variant="bodyMd">Référence de votre réservation :</Typography>
               <Typography variant="bodyMd" color="primary" fontWeight={500}>
                 X125-DF
