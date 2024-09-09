@@ -88,10 +88,10 @@ export const SelectedFlightInfoTopbar = () => {
                     {totalPassengers} voyageurs
                   </Typography>
                   {/* TODO: Fix baggages */}
-                  <Typography variant="bodyMd">-</Typography>
+                  {/* <Typography variant="bodyMd">-</Typography>
                   <Typography variant="bodyMd" data-testid="selectedFlightInfoTopbar-baggages">
                     N bagages
-                  </Typography>
+                  </Typography> */}
                 </Stack>
               </Stack>
               <Button onClick={() => setFlightDetailsOpen(true)}>Voir le détail du vol</Button>

@@ -17,7 +17,7 @@ export const PurchaseDetails = () => {
       <Stack pt={1} gap={1} pb={2}>
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd" data-testid="purchaseDetails-totalPassengers">
-            {totalPassengers} x passager(s) (avec réduction)
+            {totalPassengers} x passager(s)
           </Typography>
           <Typography
             variant="bodyMd"

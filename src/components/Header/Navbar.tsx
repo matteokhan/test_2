@@ -1,9 +1,9 @@
 import React from 'react'
 import Image from 'next/image'
-import { Box, Button, Stack, Typography, IconButton, AppBar, Paper } from '@mui/material'
+import { Box, Button, Stack, Typography, IconButton } from '@mui/material'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
-import ExpandMore from '@mui/icons-material/ExpandMore'
+// import ExpandMore from '@mui/icons-material/ExpandMore'
 import MenuIcon from '@mui/icons-material/Menu'
 import { SectionContainer } from '@/components'
 import Link from 'next/link'
@@ -30,7 +30,8 @@ export const Navbar = () => {
               <Image src="/voyages_logo.svg" alt="voyages logo" fill />
             </Box>
           </Link>
-          <Button
+          {/* TODO: enable this when neccesary */}
+          {/* <Button
             data-testid="navbar-allTripsButton"
             color="primary"
             variant="contained"
@@ -42,7 +43,7 @@ export const Navbar = () => {
               },
             }}>
             Tous nos voyages et séjours
-          </Button>
+          </Button> */}
         </Stack>
         <Stack alignItems="space-between" direction="row" gap={3}>
           <Stack
