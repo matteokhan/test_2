@@ -66,7 +66,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
             {airlinesData ? (
               <Image
                 src={airlinesData[route.carrier]?.logo_small_path || ''}
-                alt="Airline logo"
+                alt={airlinesData ? airlinesData[route.carrier]?.name : 'Airline logo'}
                 width={21}
                 height={21}
                 unoptimized={true}
