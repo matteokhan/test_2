@@ -5,12 +5,10 @@ import SearchIcon from '@mui/icons-material/Search'
 import { CustomTextField } from '@/components'
 
 interface Props {
-  // @ts-ignore
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void
 }
 
 export const PlaceAutocompleteMap = ({ onPlaceSelect }: Props) => {
-  // @ts-ignore
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
