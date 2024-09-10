@@ -1,8 +1,9 @@
-import { Insurance, InsuranceWithSteps } from '@/types'
+import { InsuranceWithSteps } from '@/types'
 import { Box, Button, Grid, Stack, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import DOMPurify from 'dompurify'
 import { useBooking, useFlights } from '@/contexts'
+import { getInsurancePrice } from '@/utils'
 
 export const InsuranceOption = ({
   insurance,
@@ -11,25 +12,11 @@ export const InsuranceOption = ({
 }: {
   insurance: InsuranceWithSteps
   isSelected: boolean
-  onSelect: (insurance: Insurance | null) => void
+  onSelect: (insurance: InsuranceWithSteps | null) => void
 }) => {
   const { totalPassengers } = useFlights()
-  const { totalPrice } = useBooking()
-
-  const getInsurancePrice = (
-    amount: number,
-    insurance: InsuranceWithSteps,
-    totalPeople: number,
-  ) => {
-    const rate = amount / totalPeople
-    const step = insurance.steps.find((step) => {
-      return Number(step.min) <= rate && Number(step.max) >= rate
-    })
-    // TODO: Is this the price per person? I guess yes, bc the formula for total price is amount * totalPeople
-    return Number(step?.amount)
-  }
-
-  const perPersonInsurancePrice = getInsurancePrice(totalPrice, insurance, totalPassengers)
+  const { basePrice } = useBooking()
+  const perPersonInsurancePrice = getInsurancePrice(basePrice, insurance, totalPassengers)
 
   return (
     <Grid item xs={12} sm={6} style={{ display: 'flex' }} data-testid="insuranceOption">
@@ -74,13 +61,7 @@ export const InsuranceOption = ({
                 onSelect(null)
                 return
               }
-              onSelect({
-                id: insurance.id,
-                title: insurance.title,
-                code: insurance.code,
-                amount: perPersonInsurancePrice,
-                currency: 'EUR',
-              })
+              onSelect(insurance)
             }}
             startIcon={isSelected ? <CheckIcon /> : null}>
             {isSelected ? 'Sélectionné' : 'Sélectionner cette formule'}

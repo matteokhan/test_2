@@ -1,6 +1,6 @@
 'use client'
 
-import { SearchFlightsParamsDto, SearchResponseDto } from '@/types'
+import { SearchFlightsParamsDto, SearchResponseDto, Solution } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 import { getAirlinesData } from '@/services'
@@ -29,9 +29,9 @@ export const searchFlights = async ({ params }: { params?: SearchFlightsParamsDt
 export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | undefined }) => {
   return useQuery<SearchResponseDto>({
     // TODO: use a better key
-    // TODO: prefetching is not working as expected
     queryKey: ['searchFlightsResults', JSON.stringify(params)],
     queryFn: async () => {
+      // TODO: prefetching is not working as expected
       queryClient.prefetchQuery({
         queryKey: ['airlinesData'],
         queryFn: getAirlinesData,
@@ -55,17 +55,21 @@ export const getBrandedFares = async ({ params }: { params: BrandedFareRequestDt
       authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN,
     },
   })
-  if (response.ok) {
-    return await response.json()
+  if (!response.ok) {
+    throw new Error('Failed to fetch branded fares')
   }
-  throw new Error('Failed to fetch branded fares')
+  const solutions = (await response.json()).solutions
+  return solutions
 }
 
-export const useGetBrandedFares = ({ params }: { params: BrandedFareRequestDto }) => {
-  return useQuery({
-    queryKey: ['useSearchAirportsByName', JSON.stringify(params)],
+export const useBrandedFares = ({ params }: { params: BrandedFareRequestDto }) => {
+  return useQuery<Solution[]>({
+    // TODO: use a better key
+    queryKey: ['brandedFares', JSON.stringify(params)],
     queryFn: () => getBrandedFares({ params }),
     refetchOnWindowFocus: false,
     enabled: !!params,
+    gcTime: Infinity,
+    staleTime: Infinity,
   })
 }

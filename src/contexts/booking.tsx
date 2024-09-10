@@ -6,15 +6,15 @@ import {
   BookingStep as BookingStepType,
   PayerData,
   Solution,
-  Fare,
-  Insurance,
   Agency,
   CorrelationId,
   BookingStepCode,
   ReservationDto,
+  InsuranceWithSteps,
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
+import { getInsurancePrice } from '@/utils'
 
 const steps: BookingStepType[] = [
   {
@@ -70,10 +70,6 @@ type BookingContextType = {
   setPreSelectedFlight: (flight: Solution | null) => void
   selectFlight: (flight: Solution | null) => void
 
-  // Base flight for fare search
-  baseFlight: Solution | null
-  setBaseFlight: (flight: Solution | null) => void
-
   // Passengers
   passengers: PassengerData[]
   setPassengers: React.Dispatch<React.SetStateAction<PassengerData[]>>
@@ -85,14 +81,16 @@ type BookingContextType = {
   // Options
   mapIsOpen: boolean
   setMapIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  selectedFare: Fare | null
-  setSelectedFare: React.Dispatch<React.SetStateAction<Fare | null>>
-  selectedInsurance: Insurance | null
-  setSelectedInsurance: React.Dispatch<React.SetStateAction<Insurance | null>>
+  selectedFare: Solution | null
+  setSelectedFare: React.Dispatch<React.SetStateAction<Solution | null>>
+  selectedInsurance: InsuranceWithSteps | null
+  setSelectedInsurance: React.Dispatch<React.SetStateAction<InsuranceWithSteps | null>>
   selectedAgency: Agency | null
   setSelectedAgency: React.Dispatch<React.SetStateAction<Agency | null>>
 
   // Reservation
+  basePrice: number // Price with no insurance
+  totalInsurancePrice: number // Insurance price for all passengers
   totalPrice: number
   correlationId: CorrelationId | null
   setCorrelationId: React.Dispatch<React.SetStateAction<CorrelationId | null>>
@@ -116,15 +114,22 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [payerIndex, setPayerIndex] = useState<number | null>(null) // Index of the payer in the passengers array
   const [payer, setPayer] = useState<PayerData | null>(null)
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
-  const [selectedFare, setSelectedFare] = React.useState<Fare | null>(null)
-  const [selectedInsurance, setSelectedInsurance] = React.useState<Insurance | null>(null)
+  const [selectedFare, setSelectedFare] = React.useState<Solution | null>(null)
+  const [selectedInsurance, setSelectedInsurance] = React.useState<InsuranceWithSteps | null>(null)
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
   const [correlationId, setCorrelationId] = useState<string | null>(null)
-  const [baseFlight, setBaseFlight] = useState<Solution | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
-  const totalPrice =
-    (selectedFlight?.priceInfo?.total || 0) + (selectedInsurance?.amount || 0) * totalPassengers
   const [reservation, setReservation] = useState<ReservationDto | null>(null)
+
+  // Prices calculations
+  const basePrice = selectedFare
+    ? selectedFare.priceInfo.total
+    : selectedFlight?.priceInfo?.total || 0
+  const selectedInsurancePrice: number = selectedInsurance
+    ? getInsurancePrice(basePrice, selectedInsurance, totalPassengers)
+    : 0
+  const totalInsurancePrice = selectedInsurancePrice * totalPassengers
+  const totalPrice = basePrice + totalInsurancePrice
 
   const getStepIndexByPath = (pathname: string) => {
     return steps.findIndex((s) => s.url.includes(pathname))
@@ -170,7 +175,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const selectFlight = (flight: Solution | null) => {
     setSelectedFlight(flight)
-    setBaseFlight(flight)
     setPassengers((prev) => [])
     for (let i = 0; i < (searchParamsCache?.adults || 0); i++) {
       setPassengers((prev) => [
@@ -225,8 +229,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       value={{
         selectedFlight,
         setSelectedFlight,
-        baseFlight,
-        setBaseFlight,
         correlationId,
         setCorrelationId,
         preSelectedFlight,
@@ -246,6 +248,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         goToStep,
         payer,
         setPayer,
+        basePrice,
+        totalInsurancePrice,
         totalPrice,
         getStepIndexByPath,
         getStepIndexByCode,

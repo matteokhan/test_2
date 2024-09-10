@@ -2,7 +2,6 @@
 
 import {
   CorrelationId,
-  ReservationDto,
   PassengerData,
   PayerData,
   SearchFlightsParams,
@@ -11,6 +10,7 @@ import {
   CreateReservationDto,
   ReservationClientDto,
   ReservationPassengerDto,
+  BrandedFareRequestDto,
 } from '@/types'
 
 export const searchParamsToDto = (
@@ -114,4 +114,22 @@ export const getReservationPassengerDto = ({
     phone: passenger.phoneNumber,
   }
   return dto
+}
+
+export const getSearchBrandedFaresDto = ({
+  correlationId,
+  solution,
+  passengers,
+}: {
+  correlationId: CorrelationId
+  solution: Solution
+  passengers: PassengerData[]
+}): BrandedFareRequestDto => {
+  return {
+    correlationId,
+    ticket: solution.ticket,
+    adults: passengers.filter((passenger) => passenger.type === 'ADT').length,
+    childrens: passengers.filter((passenger) => passenger.type === 'CHD').length,
+    infants: passengers.filter((passenger) => passenger.type === 'INF').length,
+  }
 }

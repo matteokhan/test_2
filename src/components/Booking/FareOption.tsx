@@ -1,29 +1,33 @@
 import { Box, Button, Stack, Typography } from '@mui/material'
-import { Fare } from '@/types'
+import { Solution } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
+import { getFareData } from '@/utils'
 
 export const FareOption = ({
+  basePrice,
   fare,
   onSelect,
   isSelected,
 }: {
-  fare: Fare
-  onSelect: (fare: Fare) => void
+  basePrice: number
+  fare: Solution
+  onSelect: (fare: Solution) => void
   isSelected: boolean
 }) => {
+  const fareData = getFareData(fare)
   return (
     <Box border="1px solid" borderColor="grey.400" borderRadius="6px" data-testid="fareOption">
       <Stack direction="row" gap={4} p={3}>
         <Box width="50%">
           <Typography variant="headlineXs" pb={1} data-testid="fareOption-name">
-            {fare.name}
+            {fareData.name}
           </Typography>
           <Typography variant="bodyMd" data-testid="fareOption-description">
-            {fare.description}
+            {fareData.description}
           </Typography>
         </Box>
         <Stack gap={1} width="50%" py={0.5} data-testid="fareOption-services">
-          {fare.services.map((service) => (
+          {fareData.services.map((service) => (
             <Stack
               key={service.name}
               direction="row"
@@ -48,9 +52,8 @@ export const FareOption = ({
         gap={1.5}>
         <Box>
           <Typography variant="titleLg" color="primary" data-testid="fareOption-price">
-            +{fare.price}€
+            +{Number(fareData.price - basePrice).toFixed(2)}€
           </Typography>
-          <Typography variant="bodySm">par personne</Typography>
         </Box>
         <Button
           data-testid="fareOption-selectButton"
