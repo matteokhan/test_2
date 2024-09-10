@@ -1,4 +1,5 @@
 import { Alert, Box, Stack, Typography } from '@mui/material'
+import WarningIcon from '@mui/icons-material/Warning'
 
 export const ItinerarySegmentDetails = ({
   location,
@@ -38,7 +39,11 @@ export const ItinerarySegmentDetails = ({
           )}
           {airportChange && (
             <Box pt={1} data-testid="itinerarySegmentDetails-airportChangeWarning">
-              <Alert severity="warning">Vous devez récupérer et réenregistrer vos bagages</Alert>
+              <Alert
+                severity="error"
+                icon={<WarningIcon fontSize="inherit" sx={{ color: 'leclerc.red.main' }} />}>
+                Vous devez récupérer et réenregistrer vos bagages
+              </Alert>
             </Box>
           )}
         </Box>

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-
 import {
   BookingStepActions,
   InsuranceOption,
@@ -12,6 +11,7 @@ import { useBooking } from '@/contexts'
 import { Alert, Grid, Stack, Modal, Button } from '@mui/material'
 import { useInsurances, useUpdateReservation } from '@/services'
 import { ReservationDto } from '@/types'
+import WarningIcon from '@mui/icons-material/Warning'
 
 export default function InsurancesPage() {
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -70,7 +70,7 @@ export default function InsurancesPage() {
     <>
       <SimpleContainer>
         <Stack gap={2} pt={4}>
-          <Alert severity="info">
+          <Alert severity="info" icon={<WarningIcon fontSize="inherit" sx={{ color: 'black' }} />}>
             Pour votre confort, nous vous recommandons de sélectionner une des assurances proposées.
             Il ne sera plus possible d’y souscrire après votre réservation.
           </Alert>

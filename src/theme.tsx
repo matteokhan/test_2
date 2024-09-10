@@ -12,6 +12,7 @@ type LeclercPalette = {
   red: SimplePaletteColorOptions
   blueLabel: SimplePaletteColorOptions
   blueNotif: SimplePaletteColorOptions
+  redNotif: SimplePaletteColorOptions
 }
 declare module '@mui/material/styles' {
   interface Palette {
@@ -96,10 +97,6 @@ let theme = createTheme({
       xl: 1536,
     },
   },
-  zIndex: {
-    appBar: 10,
-    drawer: 20,
-  },
   palette: {
     leclerc: {
       red: palette.augmentColor({
@@ -116,6 +113,11 @@ let theme = createTheme({
       blueNotif: palette.augmentColor({
         color: {
           main: '#E4EFF9',
+        },
+      }),
+      redNotif: palette.augmentColor({
+        color: {
+          main: '#F8E5EB',
         },
       }),
     },
@@ -366,6 +368,31 @@ theme = createTheme(theme, {
         },
         flexContainer: {
           gap: theme.spacing(4),
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { severity: 'info' },
+              style: {
+                backgroundColor: theme.palette.leclerc.blueNotif.main,
+                color: theme.palette.common.black,
+              },
+            },
+            {
+              props: { severity: 'error' },
+              style: {
+                backgroundColor: theme.palette.leclerc.redNotif.main,
+                color: theme.palette.leclerc.red.main,
+              },
+            },
+          ],
+        },
+        icon: {
+          alignItems: 'center',
         },
       },
     },
