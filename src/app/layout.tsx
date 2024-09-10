@@ -25,7 +25,8 @@ export default function RootLayout({
         {/* Look at this to see why this is needed: https://github.com/vercel/next.js/discussions/44628 */}
         <PublicEnvScript />
       </head>
-      <body className={inter.className} style={{ background: '#E6E6E6' }}>
+      {/* Overflow X visible is mandatory to make sticky components work */}
+      <body className={inter.className} style={{ background: '#E6E6E6', overflowX: 'visible' }}>
         <CssBaseline />
         <MuiXLicense />
         <AppRouterCacheProvider>

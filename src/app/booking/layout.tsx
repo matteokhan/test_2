@@ -59,9 +59,12 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
             <Stack
               direction="row"
               gap={2}
-              sx={{ overflow: mapIsOpen ? 'hidden' : 'auto', height: mapIsOpen ? '50vh' : 'auto' }}>
+              sx={{
+                overflow: mapIsOpen ? 'hidden' : 'visible',
+                height: mapIsOpen ? '50vh' : 'auto',
+              }}>
               <Box flexGrow="1">{children}</Box>
-              <Box>
+              <Box height="fit-content" position="sticky" top="136px">
                 <PurchaseDetails />
               </Box>
             </Stack>

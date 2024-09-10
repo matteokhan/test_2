@@ -9,7 +9,12 @@ export const PurchaseDetails = () => {
   const { selectedFlight, totalPrice, selectedInsurance } = useBooking()
   return (
     <Paper
-      sx={{ paddingX: 4, paddingBottom: 4, paddingTop: 3, width: '389px' }}
+      sx={{
+        paddingX: 4,
+        paddingBottom: 4,
+        paddingTop: 3,
+        width: '389px',
+      }}
       data-testid="purchaseDetails">
       <Typography variant="titleLg" paddingBottom={2}>
         Détails du prix
