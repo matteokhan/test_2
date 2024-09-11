@@ -47,7 +47,7 @@ export const SearchFlightsBanner = () => {
     } else if (!canAccessPosition && !permissionAsked) {
       setPermissionAsked(true)
       askUserForPermission()
-    } else if (!selectedAgency && arroundAgencies) {
+    } else if (!selectedAgency && arroundAgencies && arroundAgencies.length > 0) {
       const agency = arroundAgencies[0]
       setSelectedAgency({
         code: agency.code,

@@ -36,7 +36,11 @@ export const PurchaseDetails = () => {
             </Stack>
             <Stack ml={2} gap={1}>
               {getFareData(selectedFare).services.map((service) => (
-                <Stack direction="row" width="100%" justifyContent="space-between">
+                <Stack
+                  direction="row"
+                  width="100%"
+                  justifyContent="space-between"
+                  key={service.name}>
                   <Typography variant="bodyMd">{service.name}</Typography>
                   <Typography variant="bodyMd" fontWeight={500}>
                     0 €
