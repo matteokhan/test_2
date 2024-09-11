@@ -116,7 +116,7 @@ export const DestinationField = ({
           error={touched.to && errors.to}
           helperText={touched.to && errors.to}
           inputProps={{
-            'data-testid': 'destinationField-fromField',
+            'data-testid': 'destinationField',
           }}
           label="Ville ou aéroport"
           onChange={handleChange}

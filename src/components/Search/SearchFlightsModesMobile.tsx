@@ -65,8 +65,8 @@ export const SearchFlightsModesMobile = () => {
     <Stack>
       <Stack bgcolor="grey.100">
         <Tabs value={activeTab} onChange={handleTabChange} sx={{ height: '48px', mx: 4 }}>
-          <Tab label="Aller-retour" data-testid="searchFlightsMode-roundtripFlightTab" />
-          <Tab label="Aller simple" data-testid="searchFlightsMode-singleFlightTab" />
+          <Tab label="Aller-retour" data-testid="searchFlightsModesMobile-roundtripFlightTab" />
+          <Tab label="Aller simple" data-testid="searchFlightsModesMobile-singleFlightTab" />
         </Tabs>
       </Stack>
       <Box sx={{ p: 3 }}>
@@ -101,7 +101,7 @@ export const SearchFlightsModesMobile = () => {
         <Button
           variant="outlined"
           size="medium"
-          data-testid="searchFlightsModes-clearButton"
+          data-testid="searchFlightsModesMobile-clearButton"
           onClick={() => {
             if (activeTab === 0 && formRefRoundTrip.current) {
               formRefRoundTrip.current.resetForm()
@@ -116,7 +116,7 @@ export const SearchFlightsModesMobile = () => {
           onClick={handleSubmit}
           variant="contained"
           size="medium"
-          data-testid="searchFlightsModes-submitButton">
+          data-testid="searchFlightsModesMobile-submitButton">
           Rechercher
         </Button>
       </Stack>

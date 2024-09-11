@@ -66,7 +66,7 @@ export const SearchOneWayFlightsFormMobile = ({
                 error={touched.from && errors.from}
                 helperText={touched.from && errors.from}
                 inputProps={{
-                  'data-testid': 'searchRoundTrip-departureField',
+                  'data-testid': 'searchOneWayMobile-departureField',
                   readOnly: true,
                 }}
                 onClick={() => setDepartureIsOpen(true)}
@@ -79,7 +79,7 @@ export const SearchOneWayFlightsFormMobile = ({
                 error={touched.to && errors.to}
                 helperText={touched.to && errors.to}
                 inputProps={{
-                  'data-testid': 'searchRoundTrip-destinationField',
+                  'data-testid': 'searchOneWayMobile-destinationField',
                   readOnly: true,
                 }}
                 onClick={() => setDestinationIsOpen(true)}
@@ -92,7 +92,7 @@ export const SearchOneWayFlightsFormMobile = ({
                 error={touched.departure && errors.departure}
                 helperText={touched.departure && errors.departure}
                 inputProps={{
-                  'data-testid': 'datesField',
+                  'data-testid': 'searchOneWayMobile-datesField',
                   readOnly: true,
                 }}
                 onClick={() => setDatesIsOpen(true)}
@@ -105,7 +105,7 @@ export const SearchOneWayFlightsFormMobile = ({
                 error={touched.adults && errors.adults}
                 helperText={touched.adults && errors.adults}
                 inputProps={{
-                  'data-testid': 'passengersField',
+                  'data-testid': 'searchOneWayMobile-passengersField',
                   readOnly: true,
                 }}
                 onClick={() => setPassengersIsOpen(true)}
@@ -123,7 +123,9 @@ export const SearchOneWayFlightsFormMobile = ({
                 },
               }}>
               <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
-                <Box onClick={() => setDepartureIsOpen(false)}>
+                <Box
+                  onClick={() => setDepartureIsOpen(false)}
+                  data-testid="departureDrawer-backButton">
                   <ArrowBackIcon />
                 </Box>
                 <Typography variant="titleMd" color="#49454F">
@@ -148,7 +150,9 @@ export const SearchOneWayFlightsFormMobile = ({
                 },
               }}>
               <Stack direction="row" gap={2} alignItems="center" padding={3}>
-                <Box onClick={() => setDestinationIsOpen(false)}>
+                <Box
+                  onClick={() => setDestinationIsOpen(false)}
+                  data-testid="destinationDrawer-backButton">
                   <ArrowBackIcon />
                 </Box>
                 <Typography variant="titleMd" color="#49454F">
@@ -176,6 +180,7 @@ export const SearchOneWayFlightsFormMobile = ({
                 <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
                   <Box
                     onClick={() => setDatesIsOpen(false)}
+                    data-testid="datesDrawer-backButton"
                     sx={{ display: 'flex', alignItems: 'center' }}>
                     <ArrowBackIcon />
                   </Box>
@@ -187,7 +192,7 @@ export const SearchOneWayFlightsFormMobile = ({
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <DateCalendar
                   sx={{ width: '100%' }}
-                  data-testid="searchOneWay-dateField"
+                  data-testid="dateField"
                   value={dayjs(values.departure)}
                   minDate={dayjs()}
                   onChange={(value) => {
@@ -214,7 +219,7 @@ export const SearchOneWayFlightsFormMobile = ({
                     <Button
                       variant="outlined"
                       size="medium"
-                      data-testid="searchFlightsModes-clearButton"
+                      data-testid="departureDrawer-clearButton"
                       onClick={() => {
                         setFieldValue('departure', DEFAULT_VALUES.departure, true)
                       }}>
@@ -223,7 +228,7 @@ export const SearchOneWayFlightsFormMobile = ({
                     <Button
                       variant="contained"
                       size="medium"
-                      data-testid="searchFlightsModes-submitButton"
+                      data-testid="departureDrawer-submitButton"
                       onClick={() => setDatesIsOpen(false)}>
                       Valider les dates
                     </Button>
@@ -244,6 +249,7 @@ export const SearchOneWayFlightsFormMobile = ({
               <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
                 <Box
                   onClick={() => setPassengersIsOpen(false)}
+                  data-testid="passengersDrawer-backButton"
                   sx={{ display: 'flex', alignItems: 'center' }}>
                   <ArrowBackIcon />
                 </Box>
@@ -276,7 +282,7 @@ export const SearchOneWayFlightsFormMobile = ({
                     <Button
                       variant="outlined"
                       size="medium"
-                      data-testid="searchFlightsModes-clearButton"
+                      data-testid="passengersDrawer-clearButton"
                       onClick={() => {
                         setFieldValue('adults', DEFAULT_VALUES.adults, true)
                         setFieldValue('childrens', DEFAULT_VALUES.childrens, true)
@@ -287,7 +293,7 @@ export const SearchOneWayFlightsFormMobile = ({
                     <Button
                       variant="contained"
                       size="medium"
-                      data-testid="searchFlightsModes-validateButton"
+                      data-testid="passengersDrawer-validateButton"
                       onClick={() => setPassengersIsOpen(false)}>
                       Valider
                     </Button>

@@ -68,7 +68,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                 error={touched.from && errors.from}
                 helperText={touched.from && errors.from}
                 inputProps={{
-                  'data-testid': 'searchRoundTrip-departureField',
+                  'data-testid': 'searchRoundTripMobile-departureField',
                   readOnly: true,
                 }}
                 onClick={() => setDepartureIsOpen(true)}
@@ -82,7 +82,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                 error={touched.to && errors.to}
                 helperText={touched.to && errors.to}
                 inputProps={{
-                  'data-testid': 'searchRoundTrip-destinationField',
+                  'data-testid': 'searchRoundTripMobile-destinationField',
                   readOnly: true,
                 }}
                 onClick={() => setDestinationIsOpen(true)}
@@ -126,7 +126,9 @@ export const SearchRoundTripFlightsFormMobile = ({
                 },
               }}>
               <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
-                <Box onClick={() => setDepartureIsOpen(false)}>
+                <Box
+                  onClick={() => setDepartureIsOpen(false)}
+                  data-testid="departureDrawer-backButton">
                   <ArrowBackIcon />
                 </Box>
                 <Typography variant="titleMd" color="#49454F">
@@ -151,7 +153,9 @@ export const SearchRoundTripFlightsFormMobile = ({
                 },
               }}>
               <Stack direction="row" gap={2} alignItems="center" padding={3}>
-                <Box onClick={() => setDestinationIsOpen(false)}>
+                <Box
+                  onClick={() => setDestinationIsOpen(false)}
+                  data-testid="destinationDrawer-backButton">
                   <ArrowBackIcon />
                 </Box>
                 <Typography variant="titleMd" color="#49454F">
@@ -179,6 +183,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                 <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
                   <Box
                     onClick={() => setDatesIsOpen(false)}
+                    data-testid="datesDrawer-backButton"
                     sx={{ display: 'flex', alignItems: 'center' }}>
                     <ArrowBackIcon />
                   </Box>
@@ -191,7 +196,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                 <DateRangeCalendar
                   calendars={1}
                   sx={{ mt: 2 }}
-                  data-testid="searchRoundTripMobile-datesField"
+                  data-testid="datesField"
                   value={[dayjs(values.departure), dayjs(values.return)]}
                   minDate={dayjs()}
                   onChange={(value) => {
@@ -220,7 +225,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                     <Button
                       variant="outlined"
                       size="medium"
-                      data-testid="searchFlightsModes-clearButton"
+                      data-testid="datesDrawer-clearButton"
                       onClick={() => {
                         setFieldValue('departure', DEFAULT_VALUES.departure, true)
                         setFieldValue('return', DEFAULT_VALUES.return, true)
@@ -230,7 +235,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                     <Button
                       variant="contained"
                       size="medium"
-                      data-testid="searchFlightsModes-submitButton"
+                      data-testid="datesDrawer-submitButton"
                       onClick={() => setDatesIsOpen(false)}>
                       Valider les dates
                     </Button>
@@ -251,6 +256,7 @@ export const SearchRoundTripFlightsFormMobile = ({
               <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
                 <Box
                   onClick={() => setPassengersIsOpen(false)}
+                  data-testid="passengersDrawer-backButton"
                   sx={{ display: 'flex', alignItems: 'center' }}>
                   <ArrowBackIcon />
                 </Box>
@@ -277,7 +283,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                   <Button
                     variant="outlined"
                     size="medium"
-                    data-testid="searchFlightsModes-clearButton"
+                    data-testid="passengersDrawer-clearButton"
                     onClick={() => {
                       setFieldValue('adults', DEFAULT_VALUES.adults, true)
                       setFieldValue('childrens', DEFAULT_VALUES.childrens, true)
@@ -288,7 +294,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                   <Button
                     variant="contained"
                     size="medium"
-                    data-testid="searchFlightsModes-validateButton"
+                    data-testid="passengersDrawer-validateButton"
                     onClick={() => setPassengersIsOpen(false)}>
                     Valider
                   </Button>

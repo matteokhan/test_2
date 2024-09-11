@@ -33,18 +33,18 @@ export const TravelOptionsBanner = () => {
           <Typography
             color="common.white"
             variant="titleLg"
-            sx={{ maxWidth: '250px', textAlign: 'center' }}
-            data-testid="travelOptionsBanner-title">
+            sx={{ maxWidth: '250px', textAlign: 'center' }}>
             Explorez toute l’offre E.Leclerc Voyages
           </Typography>
         </Box>
         <Stack gap={1} direction="row" justifyContent="flex-start" width="100%">
           <TravelOptionButton
             onClick={() => setFlightSearchOpen(true)}
-            data-testid="travelOptionsBanner-resortsButton">
+            data-testid="travelOptionsBanner-travelsButton">
+            {/* TODO: this is not the right icon for flights */}
             <ResortsStayIcon />
             <Typography color="common.black" variant="labelLg">
-              Séjours
+              Voyages
             </Typography>
           </TravelOptionButton>
           {/* <TravelOptionButton
