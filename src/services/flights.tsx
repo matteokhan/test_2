@@ -1,16 +1,11 @@
 'use client'
 
-import {
-  ConfirmReservationDto,
-  CreateReservationDto,
-  SearchFlightsParamsDto,
-  SearchResponseDto,
-} from '@/types'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { SearchFlightsParamsDto, SearchResponseDto, Solution } from '@/types'
+import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 import { getAirlinesData } from '@/services'
 import { QueryClient } from '@tanstack/react-query'
-import { BrandedFareRequestDto } from '@/types/brandedFareRequest'
+import { BrandedFareRequestDto } from '@/types'
 
 const queryClient = new QueryClient()
 
@@ -34,9 +29,9 @@ export const searchFlights = async ({ params }: { params?: SearchFlightsParamsDt
 export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | undefined }) => {
   return useQuery<SearchResponseDto>({
     // TODO: use a better key
-    // TODO: prefetching is not working as expected
     queryKey: ['searchFlightsResults', JSON.stringify(params)],
     queryFn: async () => {
+      // TODO: prefetching is not working as expected
       queryClient.prefetchQuery({
         queryKey: ['airlinesData'],
         queryFn: getAirlinesData,
@@ -46,56 +41,6 @@ export const useSearchFlights = ({ params }: { params: SearchFlightsParamsDto | 
     },
     refetchOnWindowFocus: false,
     enabled: !!params,
-  })
-}
-
-export const createReservation = async ({
-  params,
-}: {
-  params: CreateReservationDto | undefined
-}) => {
-  const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
-  const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
-  const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/reservation/create', {
-    method: 'POST',
-    body: JSON.stringify(params),
-    headers: {
-      'content-type': 'application/json',
-      authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN,
-    },
-  })
-  if (response.ok) {
-    return await response.json()
-  }
-  throw new Error('Failed to create reservation')
-}
-
-export const useCreateReservation = () => {
-  return useMutation({
-    mutationFn: (params: CreateReservationDto) => createReservation({ params }),
-  })
-}
-
-export const confirmReservation = async ({ params }: { params: ConfirmReservationDto }) => {
-  const NEXT_PUBLIC_FLIGHTS_API_URL = env('NEXT_PUBLIC_FLIGHTS_API_URL') || ''
-  const NEXT_PUBLIC_FLIGHTS_API_TOKEN = env('NEXT_PUBLIC_FLIGHTS_API_TOKEN') || ''
-  const response = await fetch(NEXT_PUBLIC_FLIGHTS_API_URL + '/reservation/confirm', {
-    method: 'POST',
-    body: JSON.stringify(params),
-    headers: {
-      'content-type': 'application/json',
-      authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN,
-    },
-  })
-  if (response.ok) {
-    return await response.json()
-  }
-  throw new Error('Failed to confirm reservation')
-}
-
-export const useConfirmReservation = () => {
-  return useMutation({
-    mutationFn: (params: ConfirmReservationDto) => confirmReservation({ params }),
   })
 }
 
@@ -110,8 +55,21 @@ export const getBrandedFares = async ({ params }: { params: BrandedFareRequestDt
       authorization: NEXT_PUBLIC_FLIGHTS_API_TOKEN,
     },
   })
-  if (response.ok) {
-    return await response.json()
+  if (!response.ok) {
+    throw new Error('Failed to fetch branded fares')
   }
-  throw new Error('Failed to fetch branded fares')
+  const solutions = (await response.json()).solutions
+  return solutions
+}
+
+export const useBrandedFares = ({ params }: { params: BrandedFareRequestDto }) => {
+  return useQuery<Solution[]>({
+    // TODO: use a better key
+    queryKey: ['brandedFares', JSON.stringify(params)],
+    queryFn: () => getBrandedFares({ params }),
+    refetchOnWindowFocus: false,
+    enabled: !!params,
+    gcTime: Infinity,
+    staleTime: Infinity,
+  })
 }

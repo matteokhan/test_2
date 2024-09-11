@@ -3,53 +3,72 @@
 import React, { useRef } from 'react'
 import { BookingStepActions, PassengerInfo } from '@/components'
 import { useBooking } from '@/contexts'
-import { PassengerData } from '@/types'
+import { PassengerData, ReservationDto, ReservationPassengerDto } from '@/types'
 import { FormikProps } from 'formik'
+import { getReservationPassengerDto } from '@/utils'
+import { useUpdateReservation } from '@/services'
 
 export default function PassengersPage() {
-  const { passengers, setPassengers, payerIndex, setPayerIndex, goNextStep, goPreviousStep } =
-    useBooking()
+  const {
+    passengers,
+    setPassengers,
+    payerIndex,
+    setPayerIndex,
+    goNextStep,
+    goPreviousStep,
+    reservation,
+    setReservation,
+  } = useBooking()
   const formRefs = useRef<(FormikProps<PassengerData> | null)[]>([])
+  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
 
   const handleSubmit = async () => {
-    let allFormsValid = true
+    if (!reservation) {
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      return
+    }
+
     let formErrors: { [key: number]: any } = {}
 
     for (let i = 0; i < formRefs.current.length; i++) {
       const formRef = formRefs.current[i]
       if (formRef) {
-        try {
-          const errors = await formRef.validateForm()
-          if (Object.keys(errors).length > 0) {
-            allFormsValid = false
-            formErrors[i] = errors
-            formRef.setTouched(
-              Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
-            )
-          }
-        } catch (error) {
-          allFormsValid = false
+        const errors = await formRef.validateForm()
+        if (Object.keys(errors).length > 0) {
+          formErrors[i] = errors
+          formRef.setTouched(
+            Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
+          )
+          return
         }
       }
     }
 
-    if (allFormsValid) {
-      // Try to submit all forms
-      formRefs.current.forEach((formRef, index) => {
-        if (formRef) {
-          try {
-            formRef.handleSubmit()
-          } catch (error) {}
-        }
-      })
-      setPassengers((prev) =>
-        prev.map((passenger, index) => ({
-          ...passenger,
-          isPayer: index === payerIndex,
-        })),
-      )
-      goNextStep()
+    const passengersDto: ReservationPassengerDto[] = []
+    formRefs.current.forEach((formRef, index) => {
+      if (formRef) {
+        const passengerDataValidated = formRef.values
+        const passengerDto = getReservationPassengerDto({ passenger: passengerDataValidated })
+        passengersDto.push(passengerDto)
+        handlePassengerSubmit(passengerDataValidated, index)
+      }
+    })
+
+    const newReservation: ReservationDto = {
+      ...reservation,
+      passangers: passengersDto,
     }
+    updateReservation(newReservation, {
+      onSuccess: (data) => {
+        setReservation(data)
+        goNextStep()
+      },
+      onError: (error) => {
+        // TODO: log this somewhere
+        // TODO: Warn the user that something went wrong
+      },
+    })
   }
 
   const handlePassengerSubmit = (values: PassengerData, index: number) => {
@@ -89,14 +108,17 @@ export default function PassengersPage() {
         <PassengerInfo
           key={index}
           formRef={(el) => (formRefs.current[index] = el)}
-          onSubmit={(values) => handlePassengerSubmit(values, index)}
           passengerNumber={index + 1}
           isPayer={index === payerIndex}
           onPayerChange={(isPayer) => handlePayerChange(index, isPayer)}
           initialValues={passenger}
         />
       ))}
-      <BookingStepActions onContinue={handleSubmit} onGoBack={goPreviousStep} />
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isUpdatingReservation}
+      />
     </>
   )
 }

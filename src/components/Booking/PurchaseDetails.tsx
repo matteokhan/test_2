@@ -1,31 +1,51 @@
 'use client'
 
 import { useBooking, useFlights } from '@/contexts'
+import { getFareData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
 
 export const PurchaseDetails = () => {
   const { totalPassengers } = useFlights()
-  const { selectedFlight, totalPrice, selectedInsurance } = useBooking()
+  const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare } = useBooking()
   return (
     <Paper
-      sx={{ paddingX: 4, paddingBottom: 4, paddingTop: 3, width: '389px' }}
+      sx={{
+        paddingX: 4,
+        paddingBottom: 4,
+        paddingTop: 3,
+        width: '389px',
+      }}
       data-testid="purchaseDetails">
       <Typography variant="titleLg" paddingBottom={2}>
         Détails du prix
       </Typography>
       <Stack pt={1} gap={1} pb={2}>
-        <Stack direction="row" width="100%" justifyContent="space-between">
-          <Typography variant="bodyMd" data-testid="purchaseDetails-totalPassengers">
-            {totalPassengers} x passager(s) (avec réduction)
-          </Typography>
-          <Typography
-            variant="bodyMd"
-            fontWeight={500}
-            data-testid="purchaseDetails-passengersPrice">
-            {selectedFlight?.priceInfo.total} {selectedFlight?.priceInfo.currencySymbol}
-          </Typography>
-        </Stack>
+        {selectedFare && (
+          <>
+            <Stack direction="row" width="100%" justifyContent="space-between">
+              <Typography variant="bodyMd" data-testid="purchaseDetails-totalPassengers">
+                {totalPassengers} x passager(s)
+              </Typography>
+              <Typography
+                variant="bodyMd"
+                fontWeight={500}
+                data-testid="purchaseDetails-passengersPrice">
+                {selectedFare.priceInfo.total} €
+              </Typography>
+            </Stack>
+            <Stack ml={2} gap={1}>
+              {getFareData(selectedFare).services.map((service) => (
+                <Stack direction="row" width="100%" justifyContent="space-between">
+                  <Typography variant="bodyMd">{service.name}</Typography>
+                  <Typography variant="bodyMd" fontWeight={500}>
+                    0 €
+                  </Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </>
+        )}
         {/* TODO: make this dynamic when baggages enabled */}
         {/* <Stack direction="row" width="100%" justifyContent="space-between">
           <Typography variant="bodyMd" data-testid="purchaseDetails-baggages">
@@ -45,7 +65,7 @@ export const PurchaseDetails = () => {
               variant="bodyMd"
               fontWeight={500}
               data-testid="purchaseDetails-insurancesPrice">
-              {selectedInsurance.amount * totalPassengers}€
+              {totalInsurancePrice}€
             </Typography>
           </Stack>
         )}

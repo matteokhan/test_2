@@ -1916,7 +1916,7 @@ select::-ms-expand {
 .nav .title-nav {
   font-size: 13px;
   color: #fff;
-  height: 42px;
+  height: 60px;
   padding: 14px 10px 0 9px;
   display: block;
   -webkit-box-sizing: border-box;
@@ -1989,7 +1989,7 @@ select::-ms-expand {
 .nav-redoutable .title-nav {
   font-size: 13px;
   color: #fff;
-  height: 42px;
+  height: 60px;
   padding: 5px 10px 0 9px;
   display: block;
   -webkit-box-sizing: border-box;
@@ -2047,16 +2047,18 @@ select::-ms-expand {
   color: #fff;
 }
 .nav-redoutable .nav-item-redoutable.multiline .tab {
-  height: 42px;
+  height: 60px;
   line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .nav-redoutable .nav-item-redoutable.multiline .tab > span {
   white-space: nowrap;
-  padding-top: 9px;
   display: block;
 }
 .nav-redoutable .nav-item-redoutable.multiline .tab a {
-  padding: 9px 0 0;
+  padding: 0 0;
   display: block;
 }
 .nav-redoutable .nav-item-redoutable.multiline .tab .arrow-box {
@@ -2067,8 +2069,8 @@ select::-ms-expand {
   display: none;
 }
 .nav-redoutable .nav-item-redoutable .tab {
-  height: 42px;
-  line-height: 42px;
+  height: 60px;
+  line-height: 60px;
 }
 .nav-redoutable .nav-item-redoutable .tab a {
   display: block;
@@ -2088,7 +2090,7 @@ select::-ms-expand {
 }
 .nav-redoutable .nav-item-redoutable .sub-nav-redoutable > ul > li {
   float: left;
-  height: 42px;
+  height: 60px;
   line-height: 1;
   font-weight: normal;
   text-align: left;
@@ -2097,7 +2099,7 @@ select::-ms-expand {
   position: relative;
   display: table-cell;
   vertical-align: middle;
-  height: 42px;
+  height: 60px;
 }
 .nav-redoutable .nav-item-redoutable .sub-nav-redoutable > ul > li .sub-tab.selected a {
   font-weight: bold;
@@ -2285,8 +2287,8 @@ select::-ms-expand {
 .nav-redoutable.hovered .nav-item-redoutable.single.hovered .sub-panel ul li {
   float: none;
   position: relative;
-  height: 42px;
-  line-height: 42px;
+  height: 60px;
+  line-height: 60px;
 }
 .nav-redoutable.hovered .nav-item-redoutable.single.hovered .sub-panel ul li.title {
   text-transform: uppercase;

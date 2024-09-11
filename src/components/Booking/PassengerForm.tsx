@@ -8,6 +8,7 @@ import { PassengerIsPayerField, SalutationField } from '@/components'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import { ReactNode } from 'react'
+import WarningIcon from '@mui/icons-material/Warning'
 
 const passengerSchema = ({ type }: { type: PassengerType }) =>
   Yup.object().shape({
@@ -41,8 +42,8 @@ export const PassengerForm = ({
   initialValues,
 }: PassengerFormProps) => {
   return (
-    <Box maxWidth="590px" pt={2}>
-      <Alert severity="info">
+    <Box pt={2}>
+      <Alert severity="info" icon={<WarningIcon fontSize="inherit" sx={{ color: 'black' }} />}>
         Les noms des voyageurs doivent être identiques à ceux indiqués sur les pièces d'identité
       </Alert>
       <Formik
@@ -67,64 +68,89 @@ export const PassengerForm = ({
               <SalutationField name="salutation" />
             </Stack>
             <Stack gap={1}>
-              <Field
-                as={TextField}
-                name="firstName"
-                label="Prénom"
-                variant="filled"
-                error={touched.firstName && errors.firstName}
-                helperText={touched.firstName && errors.firstName}
-                inputProps={{
-                  'data-testid': 'firstNameField',
-                }}
-              />
-              <Field
-                as={TextField}
-                name="lastName"
-                label="Nom"
-                variant="filled"
-                error={touched.lastName && errors.lastName}
-                helperText={touched.lastName && errors.lastName}
-                inputProps={{
-                  'data-testid': 'lastNameField',
-                }}
-              />
-              <DatePicker
-                slotProps={{
-                  textField: {
-                    variant: 'filled',
-                    error: !!(touched.dateOfBirth && errors.dateOfBirth),
-                    helperText: touched.dateOfBirth && (errors.dateOfBirth as ReactNode),
-                  },
-                }}
-                value={values.dateOfBirth}
-                data-testid="dateOfBirthField"
-                name="dateOfBirth"
-                label="Date de naissance"
-                onChange={(value) => setFieldValue('dateOfBirth', value, true)}
-              />
-              <Field
-                as={TextField}
-                name="phoneNumber"
-                label="Téléphone"
-                variant="filled"
-                error={touched.phoneNumber && errors.phoneNumber}
-                helperText={touched.phoneNumber && errors.phoneNumber}
-                inputProps={{
-                  'data-testid': 'phoneNumberField',
-                }}
-              />
-              <Field
-                as={TextField}
-                name="email"
-                label="E-mail"
-                variant="filled"
-                error={touched.email && errors.email}
-                helperText={touched.email && errors.email}
-                inputProps={{
-                  'data-testid': 'emailField',
-                }}
-              />
+              <Stack gap={2} direction="row">
+                <Box width="50%">
+                  <Field
+                    fullWidth
+                    as={TextField}
+                    name="firstName"
+                    label="Prénom"
+                    variant="filled"
+                    error={touched.firstName && errors.firstName}
+                    helperText={touched.firstName && errors.firstName}
+                    inputProps={{
+                      'data-testid': 'firstNameField',
+                    }}
+                  />
+                </Box>
+                <Box width="50%">
+                  <Field
+                    fullWidth
+                    as={TextField}
+                    name="lastName"
+                    label="Nom"
+                    variant="filled"
+                    error={touched.lastName && errors.lastName}
+                    helperText={touched.lastName && errors.lastName}
+                    inputProps={{
+                      'data-testid': 'lastNameField',
+                    }}
+                  />
+                </Box>
+              </Stack>
+              <Stack gap={2} direction="row">
+                <Box width="50%">
+                  <DatePicker
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        variant: 'filled',
+                        error: !!(touched.dateOfBirth && errors.dateOfBirth),
+                        helperText: touched.dateOfBirth && (errors.dateOfBirth as ReactNode),
+                      },
+                    }}
+                    value={values.dateOfBirth}
+                    data-testid="dateOfBirthField"
+                    name="dateOfBirth"
+                    label="Date de naissance"
+                    onChange={(value) => setFieldValue('dateOfBirth', value, true)}
+                  />
+                </Box>
+                <Box width="50%">
+                  <Field
+                    fullWidth
+                    as={TextField}
+                    name="email"
+                    label="E-mail"
+                    variant="filled"
+                    error={touched.email && errors.email}
+                    helperText={touched.email && errors.email}
+                    inputProps={{
+                      'data-testid': 'emailField',
+                    }}
+                  />
+                </Box>
+              </Stack>
+              <Stack gap={2} direction="row">
+                <Box width="50%">
+                  <Field
+                    fullWidth
+                    as={TextField}
+                    name="phoneNumber"
+                    label="Téléphone"
+                    variant="filled"
+                    error={touched.phoneNumber && errors.phoneNumber}
+                    helperText={touched.phoneNumber && errors.phoneNumber}
+                    inputProps={{
+                      'data-testid': 'phoneNumberField',
+                    }}
+                  />
+                </Box>
+                <Box width="50%"></Box>
+              </Stack>
+            </Stack>
+
+            <Stack height={48} mt={1} ml={1} justifyContent="center">
               <PassengerIsPayerField
                 name="isPayer"
                 checked={isPayer}
