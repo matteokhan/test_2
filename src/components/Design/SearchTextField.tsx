@@ -1,14 +1,7 @@
 'use client'
 
 import React from 'react'
-import {
-  InputAdornment,
-  TextFieldProps,
-  TextField,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-} from '@mui/material'
+import { InputAdornment, TextFieldProps, TextField } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 
 type SearchTextFieldProps = TextFieldProps

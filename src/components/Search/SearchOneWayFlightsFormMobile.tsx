@@ -251,7 +251,6 @@ export const SearchOneWayFlightsFormMobile = ({
                   Ajouter des voyageurs
                 </Typography>
               </Stack>
-
               <Box px={3} py={1.5}>
                 <PassengersControls />
               </Box>

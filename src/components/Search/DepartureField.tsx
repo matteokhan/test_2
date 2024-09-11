@@ -57,13 +57,9 @@ const Location = ({
 }
 
 export const DepartureField = ({
-  labels,
-  sx,
   onSearchTermChange,
   onChange,
 }: {
-  labels?: [string, string]
-  sx?: SxProps
   onSearchTermChange: (term: string) => void
   onChange?: (airport: AirportData) => void
 }) => {

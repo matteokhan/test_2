@@ -6,7 +6,6 @@ import {
   MultiDestinationsFlightSearchParams,
   OneWayFlightSearchParams,
   RoundTripFlightSearchParams,
-  SearchFlightsParams,
 } from '@/types'
 import { useFlights } from '@/contexts'
 import { SearchRoundTripFlightsFormMobile, SearchOneWayFlightsFormMobile } from '@/components'
@@ -31,18 +30,29 @@ export const SearchFlightsModesMobile = () => {
   const [multiDestInitialValues, setmultiDestInitialValues] = React.useState<
     MultiDestinationsFlightSearchParams | undefined
   >()
-  const { searchParamsCache } = useFlights()
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
   }
 
-  const handleSubmit = () => {
-    console.log('formRefOneWay', formRefOneWay)
-    console.log('formRefRoundTrip', formRefRoundTrip)
+  const handleSubmit = async () => {
     if (formRefRoundTrip.current) {
+      const errors = await formRefRoundTrip.current.validateForm()
+      if (Object.keys(errors).length !== 0) {
+        formRefRoundTrip.current.setTouched(
+          Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
+        )
+        return
+      }
       setSearchParams(formRefRoundTrip.current.values)
     } else if (formRefOneWay.current) {
+      const errors = await formRefOneWay.current.validateForm()
+      if (Object.keys(errors).length !== 0) {
+        formRefOneWay.current.setTouched(
+          Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
+        )
+        return
+      }
       setSearchParams(formRefOneWay.current.values)
     } else {
       // TODO: log this somewhere

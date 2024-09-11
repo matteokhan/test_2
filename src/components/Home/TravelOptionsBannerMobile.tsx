@@ -12,14 +12,15 @@ import {
 } from '@/components'
 import { styled } from '@mui/material/styles'
 
-const TravelOptionButton = styled(Box)(({ theme }) => ({
+const TravelOptionButton = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
   borderRadius: theme.spacing(0.5),
   flexDirection: 'column',
   gap: theme.spacing(0.75),
   height: 'auto',
   padding: `${theme.spacing(1.25)} ${theme.spacing(1.8125)}`,
-  width: theme.spacing(11.125),
+  width: '25%',
+  alignItems: 'center',
 }))
 
 export const TravelOptionsBanner = () => {
@@ -27,7 +28,7 @@ export const TravelOptionsBanner = () => {
 
   return (
     <SectionContainer sx={{ bgcolor: 'primary.main', justifyContent: 'center' }}>
-      <Stack sx={{ gap: 3.5, pt: 4, pb: 8 }}>
+      <Stack sx={{ gap: 3.5, pt: 4, pb: 8, width: '100%' }}>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Typography
             color="common.white"
@@ -37,7 +38,7 @@ export const TravelOptionsBanner = () => {
             Explorez toute l’offre E.Leclerc Voyages
           </Typography>
         </Box>
-        <Stack gap={1} direction="row">
+        <Stack gap={1} direction="row" justifyContent="flex-start" width="100%">
           <TravelOptionButton
             onClick={() => setFlightSearchOpen(true)}
             data-testid="travelOptionsBanner-resortsButton">
