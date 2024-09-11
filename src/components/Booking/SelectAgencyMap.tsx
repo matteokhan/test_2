@@ -12,17 +12,15 @@ import {
   Fab,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import SearchIcon from '@mui/icons-material/Search'
 import GpsOff from '@mui/icons-material/GpsOff'
 import { useNearAgencies, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
-import { useDebounce } from '@uidotdev/usehooks'
-import { CustomTextField } from '@/components'
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
 import { setDefaults, fromLatLng, OutputFormat } from 'react-geocode'
 import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
+import { useUserLocation } from '@/contexts'
 
 type SelectAgencyMapProps = {
   onSelectAgency: ({ agency }: { agency: Agency }) => void
@@ -33,10 +31,11 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const NEXT_PUBLIC_MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
   const [place, setPlace] = React.useState<any>(null)
   const [currentLocation, setCurrentLocation] = React.useState<any>(null)
+  const { position: userLocation } = useUserLocation()
 
   const defaultBounds = {
-    gps_latitude: 48.866667,
-    gps_longitude: 2.333333,
+    gps_latitude: userLocation?.lat || 48.866667,
+    gps_longitude: userLocation?.lng || 2.333333,
   }
 
   // TODO: enable geolocation

@@ -43,6 +43,7 @@ export type SearchFlightsParams =
   | MultiDestinationsFlightSearchParams
 
 export type SearchFlightsParamsDto = {
+  agencyCode: string
   adults: number
   childrens: number
   infant: number

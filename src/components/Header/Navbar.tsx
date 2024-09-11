@@ -1,14 +1,17 @@
 import React from 'react'
 import Image from 'next/image'
-import { Box, Button, Stack, Typography, IconButton } from '@mui/material'
+import { Box, Button, Stack, Typography, IconButton, Drawer } from '@mui/material'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 // import ExpandMore from '@mui/icons-material/ExpandMore'
 import MenuIcon from '@mui/icons-material/Menu'
-import { SectionContainer } from '@/components'
+import { SectionContainer, SelectAgencyMap } from '@/components'
 import Link from 'next/link'
+import { setCookiesAgency } from '@/utils/cookies'
 
 export const Navbar = () => {
+  const [mapIsOpen, setMapIsOpen] = React.useState(false)
+
   return (
     <Box
       sx={{
@@ -81,13 +84,30 @@ export const Navbar = () => {
                 Aide
               </Button>
               <Button
-                href="/agencies"
+                onClick={() => setMapIsOpen(true)}
                 color="primary"
                 variant="text"
                 data-testid="navbar-ourAgenciesButton">
                 Nos agences
               </Button>
             </Stack>
+            <Drawer
+              open={mapIsOpen}
+              onClose={() => setMapIsOpen(false)}
+              anchor="right"
+              PaperProps={{
+                sx: {
+                  borderRadius: 0,
+                },
+              }}>
+              <SelectAgencyMap
+                onClose={() => setMapIsOpen(false)}
+                onSelectAgency={({ agency }) => {
+                  setCookiesAgency(agency)
+                  setMapIsOpen(false)
+                }}
+              />
+            </Drawer>
             <Stack direction="row">
               <IconButton
                 aria-label="favorites"
