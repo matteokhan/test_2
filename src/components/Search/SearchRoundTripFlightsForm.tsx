@@ -36,11 +36,13 @@ type SearchRoundTripFlightsFormProps = {
     actions: FormikHelpers<RoundTripFlightSearchParams>,
   ) => void
   initialValues?: RoundTripFlightSearchParams
+  disabled?: boolean
 }
 
 export const SearchRoundTripFlightsForm = ({
   onSubmit,
   initialValues,
+  disabled,
 }: SearchRoundTripFlightsFormProps) => {
   return (
     <Formik
@@ -83,7 +85,12 @@ export const SearchRoundTripFlightsForm = ({
                 <PassengersField sx={{ width: '100%' }} />
               </Box>
             </Stack>
-            <Button type="submit" variant="contained" size="large" data-testid="searchButton">
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              data-testid="searchButton"
+              disabled={disabled}>
               Rechercher
             </Button>
           </Stack>

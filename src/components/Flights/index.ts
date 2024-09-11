@@ -1,6 +1,5 @@
 export * from './FlightResult'
 export * from './FlightRouteDetails'
-export * from './SearchFlights'
 export * from './Itinerary'
 export * from './ItineraryRoute'
 export * from './ItinerarySegment'

@@ -18,9 +18,10 @@ import { useFlights } from '@/contexts'
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
   sx?: SxProps
+  disabled?: boolean
 }
 
-export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) => {
+export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
   const [oneWayInitialValues, setOneWayInitialValues] = React.useState<
     OneWayFlightSearchParams | undefined
@@ -75,12 +76,17 @@ export const SearchFlightsModes = ({ sx, onSearch }: SearchFlightsModesProps) =>
       <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
         {activeTab === 0 && (
           <SearchRoundTripFlightsForm
+            disabled={disabled}
             onSubmit={handleSearch}
             initialValues={roundTripInitialValues}
           />
         )}
         {activeTab === 1 && (
-          <SearchOneWayFlightsForm onSubmit={handleSearch} initialValues={oneWayInitialValues} />
+          <SearchOneWayFlightsForm
+            disabled={disabled}
+            onSubmit={handleSearch}
+            initialValues={oneWayInitialValues}
+          />
         )}
         {/* TODO: enable multidestinations */}
         {/* {activeTab === 2 && (

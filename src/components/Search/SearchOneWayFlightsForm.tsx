@@ -38,11 +38,13 @@ type SearchOneWayFlightsFormProps = {
     actions: FormikHelpers<OneWayFlightSearchParams>,
   ) => void
   initialValues?: OneWayFlightSearchParams
+  disabled?: boolean
 }
 
 export const SearchOneWayFlightsForm = ({
   onSubmit,
   initialValues,
+  disabled,
 }: SearchOneWayFlightsFormProps) => {
   return (
     <Formik
@@ -80,7 +82,12 @@ export const SearchOneWayFlightsForm = ({
                 <PassengersField sx={{ width: '100%' }} />
               </Box>
             </Stack>
-            <Button type="submit" variant="contained" size="large" data-testid="searchButton">
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              data-testid="searchButton"
+              disabled={disabled}>
               Rechercher
             </Button>
           </Stack>
