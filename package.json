@@ -25,6 +25,7 @@
     "dayjs": "^1.11.12",
     "dompurify": "^3.1.6",
     "formik": "^2.4.6",
+    "js-cookie": "^3.0.5",
     "next": "14.2.5",
     "next-runtime-env": "3.x",
     "react": "^18",

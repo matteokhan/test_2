@@ -12,6 +12,7 @@ import {
   ReservationPassengerDto,
   BrandedFareRequestDto,
 } from '@/types'
+import { getAgencyCodeForRequest } from '@/utils'
 
 export const searchParamsToDto = (
   params: SearchFlightsParams | undefined,
@@ -23,6 +24,7 @@ export const searchParamsToDto = (
     childrens: params?.childrens || 0,
     infant: params?.infant || 0,
     segments: [],
+    agencyCode: getAgencyCodeForRequest(),
   }
   if (params._type === 'oneWay') {
     searchParamsDto.segments.push({
