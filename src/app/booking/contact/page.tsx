@@ -109,7 +109,9 @@ export default function ContactInfoPage() {
           }
         />
       </SimpleContainer>
-      <SimpleContainer title="Sélectionner votre agence Leclerc Voyages">
+
+      {/* TODO: hidden agency selection for the demo */}
+      {/* <SimpleContainer title="Sélectionner votre agence Leclerc Voyages">
         <Stack gap={2} pt={3} pb={1}>
           <Typography variant="bodyMd" color="grey.900" maxWidth="535px">
             Veuillez sélectionner une agence Leclerc Voyages qui suivra votre réservation sur
@@ -168,7 +170,7 @@ export default function ContactInfoPage() {
             setMapIsOpen(false)
           }}
         />
-      </Drawer>
+      </Drawer> */}
       <BookingStepActions
         onContinue={handleSubmit}
         onGoBack={goPreviousStep}
