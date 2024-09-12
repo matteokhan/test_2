@@ -167,9 +167,9 @@ export default function FlighsPage() {
             <FlightDateAlternatives />
           </Stack> */}
               <Typography variant="bodySm" color="grey.600">
-                Prices displayed include taxes and may change based on availability. You can review
-                any additional fees <br />
-                before checkout. Prices are not final until you complete your purchase.
+                Les prix affichés incluent les taxes et peuvent changer en fonction de la
+                disponibilité. Vous pouvez consulter les frais supplémentaires avant le paiement.
+                Les prix ne sont pas définitifs tant que vous n'avez pas finalisé votre achat.
               </Typography>
               {isLoading && (
                 <>
