@@ -19,7 +19,7 @@ import { getInsurancePrice } from '@/utils'
 const steps: BookingStepType[] = [
   {
     code: 'fares',
-    name: 'Terif billet',
+    name: 'Tarif billet',
     url: '/booking/fares',
     title: 'Selectionnez votre tarif',
   },
