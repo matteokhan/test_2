@@ -13,7 +13,7 @@ export const getFareData = (solution: Solution): Fare => {
         case 'CHANGES':
           switch (option.indicator) {
             case 'IncludedInBrand':
-              return { name: 'Modification autorisé', icon: <CheckIcon color="primary" /> }
+              return { name: 'Modification autorisée', icon: <CheckIcon color="primary" /> }
             case 'NotOffered':
               return { name: 'Pas de modification possible', icon: <CloseIcon color="error" /> }
             case 'AvailableForACharge':
@@ -50,7 +50,7 @@ export const getFareData = (solution: Solution): Fare => {
                   icon: <CheckIcon color="primary" />,
                 }
               } else {
-                return { name: '1er bagage enregistré payant', icon: <PaymentsIcon /> }
+                return { name: 'Bagage enregistré payant', icon: <PaymentsIcon /> }
               }
             case 'NotOffered':
               return {
@@ -58,7 +58,7 @@ export const getFareData = (solution: Solution): Fare => {
                 icon: <CloseIcon color="error" />,
               }
             case 'AvailableForACharge':
-              return { name: '1er bagage enregistré payant', icon: <PaymentsIcon /> }
+              return { name: 'Bagage enregistré payant', icon: <PaymentsIcon /> }
           }
       }
       return { name: option.description, icon: <CloseIcon color="error" /> }
