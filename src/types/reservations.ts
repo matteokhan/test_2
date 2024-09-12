@@ -13,7 +13,7 @@ export type ReservationId = string
 export type ReservationDto = {
   id: ReservationId
   client: ReservationClientDto | null
-  passangers: ReservationPassengerDto[]
+  passengers: ReservationPassengerDto[]
   ticket: ReservationTicketDto | null
   amount: null
   is_paid: boolean
@@ -27,6 +27,7 @@ export type ReservationDto = {
   modified_at: string
   agency: number | null
   insurance: number | null
+  agency_contract: string | null
 }
 
 export type ReservationTicketDto = {
@@ -34,6 +35,7 @@ export type ReservationTicketDto = {
   data_object: string
   verification_price: number
   routes: ReservationRouteDto[]
+  is_reserved?: boolean
 }
 
 export type ReservationRouteDto = {

@@ -48,16 +48,21 @@ export const FlightDetails = ({
   return (
     <>
       {preSelectedFlight && (
-        <Stack width="444px" bgcolor="grey.200" height="100%" justifyContent="space-between">
+        <Stack
+          width="444px"
+          bgcolor="grey.200"
+          height="100%"
+          justifyContent="space-between"
+          data-testid="flightDetails">
           <Stack overflow="hidden">
             <Paper elevation={2} sx={{ borderRadius: 0, py: 1.5, px: 2, zIndex: 10 }}>
               <Stack direction="row" justifyContent="space-between">
                 <Stack direction="row" gap={1} alignItems="center">
-                  <Typography variant="titleMd">
+                  <Typography variant="titleMd" data-testid="flightDetails-departure">
                     {airportName(departureAirportData)} ({departure})
                   </Typography>
                   <SwapHorizIcon data-testid={null} />
-                  <Typography variant="titleMd">
+                  <Typography variant="titleMd" data-testid="flightDetails-arrival">
                     {airportName(arrivalAirportData)} ({arrival})
                   </Typography>
                 </Stack>
@@ -67,7 +72,7 @@ export const FlightDetails = ({
               </Stack>
             </Paper>
             <Stack px={4} py={2} gap={2} overflow="scroll" flexGrow={1}>
-              <Stack gap={1}>
+              <Stack gap={1} data-testid="flightDetails-itinerary">
                 <Stack height="37px" justifyContent="center">
                   <Typography variant="titleMd">Détails du voyage</Typography>
                 </Stack>
@@ -99,7 +104,7 @@ export const FlightDetails = ({
                   size="medium"
                   sx={{ height: 'auto', width: '128px' }}
                   onClick={() => onSelectFlight({ flight: preSelectedFlight })}
-                  data-testid="flightDetails-selectFlight">
+                  data-testid="flightDetails-selectFlightButton">
                   Sélectionner
                 </Button>
               </Stack>

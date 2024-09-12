@@ -344,6 +344,33 @@ export const useUpdateReservation = () => {
   })
 }
 
+export const getReservation = async ({ reservationId }: { reservationId: ReservationId }) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+  const response = await fetch(`${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${reservationId}/`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Token ${token}`,
+    },
+  })
+  if (response.ok) {
+    return await response.json()
+  }
+  throw new Error('Failed to get reservation')
+}
+
+export const useReservation = ({ reservationId }: { reservationId: ReservationId }) => {
+  return useQuery<ReservationDto>({
+    queryKey: ['reservation', reservationId],
+    queryFn: () => getReservation({ reservationId }),
+    refetchOnWindowFocus: false,
+  })
+}
+
 export const getReservationPaymentInfo = async ({
   reservationId,
 }: {

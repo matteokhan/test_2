@@ -18,6 +18,8 @@ export type AgencyMetaData = WagtailPageMetadata & {
   type: 'agency.AgencyPage'
 }
 
+export type AgencyContractCode = '3DS' | 'CB' | 'ANCV' | 'MULTI_CB'
+
 export type Agency = {
   id: number
   meta: AgencyMetaData
@@ -61,4 +63,5 @@ export type Agency = {
   gps_latitude: number
   gps_longitude: number
   agency_openings: AgencyOpening[]
+  available_contracts: string
 }

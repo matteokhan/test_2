@@ -57,7 +57,7 @@ export default function PassengersPage() {
 
     const newReservation: ReservationDto = {
       ...reservation,
-      passangers: passengersDto,
+      passengers: passengersDto,
     }
     updateReservation(newReservation, {
       onSuccess: (data) => {

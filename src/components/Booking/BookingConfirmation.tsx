@@ -1,8 +1,9 @@
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import Image from 'next/image'
+import { ReservationDto } from '@/types'
 
-export const BookingConfirmation = () => {
+export const BookingConfirmation = ({ reservation }: { reservation: ReservationDto }) => {
   return (
     <Paper sx={{ width: '100%', p: 4 }}>
       <Stack alignItems="center">
@@ -11,7 +12,8 @@ export const BookingConfirmation = () => {
         </Box>
         <Stack p={3} gap={1.2} alignItems="center">
           <Typography variant="headlineMd" textAlign="center">
-            Merci M. Calando,
+            Merci {reservation.client?.title}. {reservation.client?.last_name} pour votre
+            réservation,
             <br />
             Votre réservation est confirmée
           </Typography>
@@ -20,7 +22,7 @@ export const BookingConfirmation = () => {
               <Typography variant="bodyMd">Itinéraire :</Typography>
               <Stack direction="row" alignItems="center">
                 <Typography variant="bodyMd" color="primary" fontWeight={500}>
-                  Paris
+                  {'Paris'}
                 </Typography>
                 <SwapHorizIcon
                   sx={{

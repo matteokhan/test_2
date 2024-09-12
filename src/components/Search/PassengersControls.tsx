@@ -23,7 +23,7 @@ export const PassengersControls = () => {
   }
 
   return (
-    <Stack gap={1}>
+    <Stack gap={1} data-testid="passengersControls">
       <Stack direction="row" justifyContent="space-between">
         <Box>
           <Typography variant="titleSm">Adultes</Typography>
@@ -33,6 +33,7 @@ export const PassengersControls = () => {
         </Box>
         <Stack direction="row" gap={1.7} alignItems="center">
           <Button
+            data-testid="passengersControls-adults-subtract"
             variant="outlined"
             onClick={() => updatePassengers('adults', 'subtract')}
             disabled={values.adults <= 1}
@@ -41,6 +42,7 @@ export const PassengersControls = () => {
           </Button>
           <Typography variant="bodyLg">{values.adults}</Typography>
           <Button
+            data-testid="passengersControls-adults-add"
             variant="outlined"
             onClick={() => updatePassengers('adults', 'add')}
             sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
@@ -57,6 +59,7 @@ export const PassengersControls = () => {
         </Box>
         <Stack direction="row" gap={1.7} alignItems="center">
           <Button
+            data-testid="passengersControls-childrens-subtract"
             variant="outlined"
             onClick={() => updatePassengers('childrens', 'subtract')}
             disabled={values.childrens <= 0}
@@ -65,6 +68,7 @@ export const PassengersControls = () => {
           </Button>
           <Typography variant="bodyLg">{values.childrens}</Typography>
           <Button
+            data-testid="passengersControls-childrens-add"
             variant="outlined"
             onClick={() => updatePassengers('childrens', 'add')}
             sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
@@ -81,6 +85,7 @@ export const PassengersControls = () => {
         </Box>
         <Stack direction="row" gap={1.7} alignItems="center">
           <Button
+            data-testid="passengersControls-infant-subtract"
             variant="outlined"
             onClick={() => updatePassengers('infant', 'subtract')}
             disabled={values.infant <= 0}
@@ -89,6 +94,7 @@ export const PassengersControls = () => {
           </Button>
           <Typography variant="bodyLg">{values.infant}</Typography>
           <Button
+            data-testid="passengersControls-infant-add"
             variant="outlined"
             onClick={() => updatePassengers('infant', 'add')}
             sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
