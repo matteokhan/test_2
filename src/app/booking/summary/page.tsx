@@ -10,27 +10,36 @@ import {
   SimpleContainer,
   SelectPaymentMethod,
   NoPaymentMethodConfirmationModal,
+  BookingConditionsCheckbox,
+  AcceptBookingConditionsModal,
 } from '@/components'
 import { useBooking } from '@/contexts'
 import { useReservationPaymentInfo, useUpdateReservation } from '@/services'
 import { AgencyContractCode, ReservationDto } from '@/types'
-import { Modal } from '@mui/material'
+import { Box, Modal, Typography } from '@mui/material'
 
 export default function BookingSummaryPage() {
   const [paymentMethodCode, setPaymentMethodCode] = useState<AgencyContractCode | null>(null)
-  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [conditionsAccepted, setConditionsAccepted] = useState(false)
+  const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
+  const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
   const { goPreviousStep, goToStep, correlationId, reservation, selectedAgency } = useBooking()
   const { mutate: confirmReservation, isPending: isConfirming } = useReservationPaymentInfo()
   const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
 
   const handleSubmit = async () => {
-    if (!reservation || !correlationId || !selectedAgency) {
+    // TODO: Need to validate the selectedAgency is set to show the correct payment methods
+    if (!reservation || !correlationId) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
     }
     if (!paymentMethodCode) {
-      setModalIsOpen(true)
+      setNoMethodSelectedModalIsOpen(true)
+      return
+    }
+    if (!conditionsAccepted) {
+      setAcceptConditionsModalIsOpen(true)
       return
     }
 
@@ -96,9 +105,29 @@ export default function BookingSummaryPage() {
       </SimpleContainer>
       <SimpleContainer title="Payer avec" sx={{ pb: 3 }}>
         <SelectPaymentMethod onSelect={(contractCode) => setPaymentMethodCode(contractCode)} />
+        <Typography variant="bodySm" color="grey.700" pb={1} pr={2}>
+          Nous protégeons vos données à l’aide des méthodes de cryptage de paiement les plus
+          récentes
+        </Typography>
+        <Box pt={1} pr={2}>
+          <Typography variant="titleSm">Je reconnais avoir pris connaissance et accepte</Typography>
+          <BookingConditionsCheckbox
+            onChange={(checked) => setConditionsAccepted(checked)}
+            checked={conditionsAccepted}
+          />
+        </Box>
       </SimpleContainer>
-      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
-        <NoPaymentMethodConfirmationModal onChoosePaymentMethod={() => setModalIsOpen(false)} />
+      <Modal
+        open={noMethodSelectedModalIsOpen}
+        onClose={() => setNoMethodSelectedModalIsOpen(false)}>
+        <NoPaymentMethodConfirmationModal
+          onChoosePaymentMethod={() => setNoMethodSelectedModalIsOpen(false)}
+        />
+      </Modal>
+      <Modal
+        open={acceptConditionsModalIsOpen}
+        onClose={() => setAcceptConditionsModalIsOpen(false)}>
+        <AcceptBookingConditionsModal onClose={() => setAcceptConditionsModalIsOpen(false)} />
       </Modal>
       <BookingStepActions
         onContinue={handleSubmit}

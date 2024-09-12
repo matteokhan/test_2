@@ -20,8 +20,9 @@ export type AgencyMetaData = WagtailPageMetadata & {
 
 export type AgencyContractCode = '3DS' | 'CB' | 'ANCV' | 'MULTI_CB'
 
+export type AgencyId = number
 export type Agency = {
-  id: number
+  id: AgencyId
   meta: AgencyMetaData
   title: string
   code: string

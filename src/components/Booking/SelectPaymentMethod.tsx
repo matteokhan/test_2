@@ -3,6 +3,7 @@ import { useBooking } from '@/contexts'
 import { AgencyContractCode } from '@/types'
 import { getPaymentMethodData } from '@/utils'
 import { Box, Radio, Stack, Typography } from '@mui/material'
+import { useAgency } from '@/services'
 
 export const SelectPaymentMethod = ({
   onSelect,
@@ -10,10 +11,15 @@ export const SelectPaymentMethod = ({
   onSelect: (contract: AgencyContractCode) => void
 }) => {
   // TODO: need to attend to the selected agency
-  const { selectedAgency } = useBooking()
+  // const { selectedAgency } = useBooking()
+
+  const { data: selectedAgency } = useAgency({ agencyId: 9755 }) // TODO: remove this after the demo
   const [selectedMethod, setSelectedMethod] = React.useState<AgencyContractCode | null>(null)
-  // TODO: get available contracts from selected agency
-  const availableContracts: AgencyContractCode[] = ['3DS', 'ANCV', 'MULTI_CB']
+  const availableContracts: AgencyContractCode[] =
+    (selectedAgency?.available_contracts
+      .split(',')
+      .map((contractCode) => contractCode.replace(/\s/g, '')) as AgencyContractCode[]) || []
+
   return (
     <Box pt={3} pb={2} data-testid="selectPaymentMethod" maxWidth={590}>
       <Stack border="1px solid" borderColor="grey.400" borderRadius={2}>

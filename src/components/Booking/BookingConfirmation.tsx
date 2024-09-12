@@ -5,13 +5,16 @@ import { ReservationDto } from '@/types'
 
 export const BookingConfirmation = ({ reservation }: { reservation: ReservationDto }) => {
   return (
-    <Paper sx={{ width: '100%', p: 4 }}>
+    <Paper sx={{ width: '100%', p: 4 }} data-testid="bookingConfirmation">
       <Stack alignItems="center">
         <Box width={140} height={140} position="relative">
           <Image src="/design_1.svg" alt="voyages image" fill />
         </Box>
         <Stack p={3} gap={1.2} alignItems="center">
-          <Typography variant="headlineMd" textAlign="center">
+          <Typography
+            variant="headlineMd"
+            textAlign="center"
+            data-testid="bookingConfirmation-confirmationText">
             Merci {reservation.client?.title}. {reservation.client?.last_name} pour votre
             réservation,
             <br />
@@ -21,7 +24,11 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
             <Stack direction="row" justifyContent="center" height={24} alignItems="center" gap={1}>
               <Typography variant="bodyMd">Itinéraire :</Typography>
               <Stack direction="row" alignItems="center">
-                <Typography variant="bodyMd" color="primary" fontWeight={500}>
+                <Typography
+                  variant="bodyMd"
+                  color="primary"
+                  fontWeight={500}
+                  data-testid="bookingConfirmation-departure">
                   {'Paris'}
                 </Typography>
                 <SwapHorizIcon
@@ -30,20 +37,32 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                     height: 24,
                   }}
                 />
-                <Typography variant="bodyMd" color="primary" fontWeight={500}>
+                <Typography
+                  variant="bodyMd"
+                  color="primary"
+                  fontWeight={500}
+                  data-testid="bookingConfirmation-destination">
                   Djerba
                 </Typography>
               </Stack>
             </Stack>
             <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
               <Typography variant="bodyMd">Date de départ :</Typography>
-              <Typography variant="bodyMd" color="primary" fontWeight={500}>
+              <Typography
+                variant="bodyMd"
+                color="primary"
+                fontWeight={500}
+                data-testid="bookingConfirmation-departureDate">
                 17/05/2024
               </Typography>
             </Stack>
             <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
               <Typography variant="bodyMd">Référence de votre réservation :</Typography>
-              <Typography variant="bodyMd" color="primary" fontWeight={500}>
+              <Typography
+                variant="bodyMd"
+                color="primary"
+                fontWeight={500}
+                data-testid="bookingConfirmation-reference">
                 X125-DF
               </Typography>
             </Stack>
@@ -52,7 +71,12 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
             <Typography variant="headlineSm" display="flex" height={32}>
               Vous avez choisi l'agence
             </Typography>
-            <Typography variant="headlineSm" color="primary" display="flex" height={32}>
+            <Typography
+              variant="headlineSm"
+              color="primary"
+              display="flex"
+              height={32}
+              data-testid="bookingConfirmation-agencyName">
               Voyages E.Leclerc Riorges
             </Typography>
             <Typography variant="headlineSm" display="flex" height={32}>

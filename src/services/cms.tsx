@@ -2,6 +2,7 @@
 
 import {
   Agency,
+  AgencyId,
   Airlines,
   AirportData,
   Airports,
@@ -15,6 +16,30 @@ import { QueryClient, useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
 const queryClient = new QueryClient()
+
+export const getAgency = async ({ agencyId }: { agencyId: AgencyId }) => {
+  const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+  const response = await fetch(`${NEXT_PUBLIC_CMS_API_URL}/api/v2/pages/${agencyId}/`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+    },
+  })
+  if (response.ok) {
+    return await response.json()
+  }
+  throw new Error('Failed to fetch agency')
+}
+
+export const useAgency = ({ agencyId }: { agencyId: AgencyId }) => {
+  return useQuery<Agency>({
+    queryKey: ['agency', agencyId],
+    queryFn: () => getAgency({ agencyId }),
+    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 0,
+  })
+}
 
 export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
