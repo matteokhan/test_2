@@ -120,7 +120,7 @@ export const SearchFlightsFilters = ({
               </Box>
               <Box pb={1}>
                 <Typography variant="titleMd" pb={1}>
-                  Tranche horaire pour le départs
+                  Tranche horaire pour le départ
                 </Typography>
                 <Box pb={1}>
                   <Stack direction="row" gap={1} alignItems="center">
