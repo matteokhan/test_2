@@ -12,6 +12,7 @@ import WarningIcon from '@mui/icons-material/Warning'
 
 const passengerSchema = ({ type }: { type: PassengerType }) =>
   Yup.object().shape({
+    type: Yup.string(),
     salutation: Yup.string().required('La salutation est requise'),
     firstName: Yup.string().required('Le prénom est requis'),
     lastName: Yup.string().required('Le nom est requis'),
@@ -21,8 +22,18 @@ const passengerSchema = ({ type }: { type: PassengerType }) =>
         if (type !== 'ADT') return true
         return dayjs().diff(dayjs(value), 'year') >= 18
       }),
-    phoneNumber: Yup.string().required('Le numéro de téléphone est requis'),
-    email: Yup.string().email('E-mail invalide').required("L'e-mail est requis"),
+    phoneNumber: Yup.string().when('type', {
+      is: 'ADT',
+      then: (schema) => schema.required('Le numéro de téléphone est requis'),
+      otherwise: (schema) => schema.optional(),
+    }),
+    email: Yup.string()
+      .email('E-mail invalide')
+      .when('type', {
+        is: 'ADT',
+        then: (schema) => schema.required("L'e-mail est requis"),
+        otherwise: (schema) => schema.optional(),
+      }),
     isPayer: Yup.boolean(),
   })
 
@@ -57,6 +68,7 @@ export const PassengerForm = ({
             phoneNumber: '',
             email: '',
             isPayer: isPayer,
+            type: '',
           }
         }
         validationSchema={passengerSchema({ type: initialValues.type })}
@@ -117,49 +129,55 @@ export const PassengerForm = ({
                   />
                 </Box>
                 <Box width="50%">
-                  <Field
-                    fullWidth
-                    as={TextField}
-                    name="email"
-                    label="E-mail"
-                    variant="filled"
-                    error={touched.email && errors.email}
-                    helperText={touched.email && errors.email}
-                    inputProps={{
-                      'data-testid': 'emailField',
-                    }}
-                  />
+                  {initialValues.type === 'ADT' && (
+                    <Field
+                      fullWidth
+                      as={TextField}
+                      name="email"
+                      label="E-mail"
+                      variant="filled"
+                      error={touched.email && errors.email}
+                      helperText={touched.email && errors.email}
+                      inputProps={{
+                        'data-testid': 'emailField',
+                      }}
+                    />
+                  )}
                 </Box>
               </Stack>
               <Stack gap={2} direction="row">
                 <Box width="50%">
-                  <Field
-                    fullWidth
-                    as={TextField}
-                    name="phoneNumber"
-                    label="Téléphone"
-                    variant="filled"
-                    error={touched.phoneNumber && errors.phoneNumber}
-                    helperText={touched.phoneNumber && errors.phoneNumber}
-                    inputProps={{
-                      'data-testid': 'phoneNumberField',
-                    }}
-                  />
+                  {initialValues.type === 'ADT' && (
+                    <Field
+                      fullWidth
+                      as={TextField}
+                      name="phoneNumber"
+                      label="Téléphone"
+                      variant="filled"
+                      error={touched.phoneNumber && errors.phoneNumber}
+                      helperText={touched.phoneNumber && errors.phoneNumber}
+                      inputProps={{
+                        'data-testid': 'phoneNumberField',
+                      }}
+                    />
+                  )}
                 </Box>
                 <Box width="50%"></Box>
               </Stack>
             </Stack>
 
-            <Stack height={48} mt={1} ml={1} justifyContent="center">
-              <PassengerIsPayerField
-                name="isPayer"
-                checked={isPayer}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  const newValue = e.target.checked
-                  onPayerChange(newValue)
-                }}
-              />
-            </Stack>
+            {initialValues.type === 'ADT' && (
+              <Stack height={48} mt={1} ml={1} justifyContent="center">
+                <PassengerIsPayerField
+                  name="isPayer"
+                  checked={isPayer}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const newValue = e.target.checked
+                    onPayerChange(newValue)
+                  }}
+                />
+              </Stack>
+            )}
           </Form>
         )}
       </Formik>
