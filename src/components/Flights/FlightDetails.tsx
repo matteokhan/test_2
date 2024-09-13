@@ -91,11 +91,11 @@ export const FlightDetails = ({
                     color="primary.main"
                     height="30px"
                     data-testid="flightDetails-price">
-                    {(preSelectedFlight.priceInfo.total || 0) / totalPassengers}{' '}
+                    {preSelectedFlight.priceInfo.total.toFixed(2)}{' '}
                     {preSelectedFlight.priceInfo.currencySymbol}{' '}
                   </Typography>
                   <Typography variant="bodySm" color="grey.800">
-                    Par personne
+                    A partir de
                   </Typography>
                 </Box>
                 <Button
