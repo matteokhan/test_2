@@ -66,8 +66,9 @@ export const FlightResult = ({
                 color="grey.800"
                 data-testid="flightResult-pricePerPassenger">
                 Vol pour {result.priceInfo.passengerNumber} voyageurs (
-                {result.priceInfo.total / result.priceInfo.passengerNumber}
-                {result.priceInfo.currencySymbol} par pers.)
+                {`${result.adults.number} adultes`}
+                {result.childrens.number ? `, ${result.childrens.number} enfants` : ''}
+                {result.infants?.number ? `, ${result.infants.number} bébés` : ''})
               </Typography>
             )}
             {result.priceInfo.passengerNumber === 1 && (
@@ -75,7 +76,8 @@ export const FlightResult = ({
                 variant="bodySm"
                 color="grey.800"
                 data-testid="flightResult-pricePerPassenger">
-                Vol pour {result.priceInfo.passengerNumber} voyageur
+                Vol pour {result.priceInfo.passengerNumber} voyageur (
+                {`${result.adults.number} adulte`})
               </Typography>
             )}
           </Stack>
