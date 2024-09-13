@@ -16,7 +16,7 @@ export const ItinerarySegmentDetails = ({
 }) => {
   return (
     <Box flexGrow={1}>
-      <Stack direction="row" justifyContent="space-between" width="100%">
+      <Stack direction="row" justifyContent="space-between" width="100%" gap={2}>
         <Box>
           <Typography variant="bodyMd" data-testid="itinerarySegmentDetails-location">
             {location}

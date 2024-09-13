@@ -19,12 +19,7 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
   const { data: arrivalAirportData } = useAirportData({ airportCode: arrival })
 
   return (
-    <Box
-      maxWidth="590px"
-      borderRadius={1}
-      bgcolor="white"
-      sx={{ ...sx }}
-      data-testid="itineraryRoute">
+    <Box borderRadius={1} bgcolor="white" sx={{ ...sx }} data-testid="itineraryRoute">
       <Box py={1.5} px={2}>
         <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
           {airportName(departureAirportData)} - {airportName(arrivalAirportData)}
@@ -42,6 +37,7 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
       <Stack p={2} gap={2}>
         {route.segments.map((segment, index) => (
           <ItinerarySegment
+            carrier={route.carrier}
             key={segment.id}
             segment={segment}
             indexSegment={index}

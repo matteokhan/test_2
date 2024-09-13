@@ -1,13 +1,11 @@
-import { Box, Chip, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
-import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
+import { CarryOnLuggageIcon, CheckedLuggageIcon, FlightAirline, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
 import { airportNameExtension, transformDuration } from '@/utils'
-import Image from 'next/image'
-import { useAirlinesData, useAirportData } from '@/services'
+import { useAirportData } from '@/services'
 
 export const FlightRouteDetails = ({ route }: { route: Route }) => {
-  const { data: airlinesData } = useAirlinesData()
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
@@ -53,32 +51,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
   return (
     <Stack gap={4} direction="row">
       <Stack gap={1} minWidth="25%" maxWidth="25%">
-        <Stack gap={0.5}>
-          {/* TODO: default image */}
-          <Stack
-            width="32px"
-            height="32px"
-            borderRadius="32px"
-            border="1px solid"
-            borderColor="grey.400"
-            alignItems="center"
-            justifyContent="center">
-            {airlinesData ? (
-              <Image
-                src={airlinesData[route.carrier]?.logo_small_path || ''}
-                alt={airlinesData ? airlinesData[route.carrier]?.name : 'Airline logo'}
-                width={21}
-                height={21}
-                unoptimized={true}
-              />
-            ) : (
-              <Skeleton variant="circular" width={32} height={32} />
-            )}
-          </Stack>
-          <Typography variant="bodySm" color="grey.700" data-testid="flightRouteDetails-carrier">
-            {airlinesData ? airlinesData[route.carrier]?.name : ''}
-          </Typography>
-        </Stack>
+        <FlightAirline carrier={route.carrier} />
         {tags && (
           <Stack direction="row" data-testid="flightRouteDetails-tags">
             <Chip label={tags} sx={{ backgroundColor: 'grey.100' }} size="small" />

@@ -29,18 +29,20 @@ export type Solution = {
   platingCarrier: string
 }
 
+export type RouteCarrier = string
 export type Route = {
   id: RouteId
   segments: RouteSegment[]
   travelTime: string
   nightsBeforeRoute?: number
   stopNumber: number
-  carrier: string
+  carrier: RouteCarrier
   airportChange: boolean
   totalStopDuration?: string
   baggages?: number
 }
 
+export type RouteSegmentCarrier = string
 export type RouteSegment = {
   id: SegmentId
   departure: string
@@ -49,7 +51,7 @@ export type RouteSegment = {
   arrival: string
   arrivalCityCode: string
   arrivalDateTime: string
-  carrier: string
+  carrier: RouteSegmentCarrier
   flightNumber: string
   operatingCarrier: string
   operatingFlightNumber?: string | null

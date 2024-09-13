@@ -49,7 +49,7 @@ export const FlightDetails = ({
     <>
       {preSelectedFlight && (
         <Stack
-          width="444px"
+          width="544px"
           bgcolor="grey.200"
           height="100%"
           justifyContent="space-between"
