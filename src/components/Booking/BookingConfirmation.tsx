@@ -2,6 +2,7 @@ import { Alert, Box, Paper, Stack, Typography } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import Image from 'next/image'
 import { ReservationDto } from '@/types'
+import dayjs from 'dayjs'
 
 export const BookingConfirmation = ({ reservation }: { reservation: ReservationDto }) => {
   return (
@@ -29,7 +30,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                   color="primary"
                   fontWeight={500}
                   data-testid="bookingConfirmation-departure">
-                  {'Paris'}
+                  {reservation.ticket?.travel_data?.departure_city_name}
                 </Typography>
                 <SwapHorizIcon
                   sx={{
@@ -42,7 +43,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                   color="primary"
                   fontWeight={500}
                   data-testid="bookingConfirmation-destination">
-                  Djerba
+                  {reservation.ticket?.travel_data?.return_city_name}
                 </Typography>
               </Stack>
             </Stack>
@@ -53,7 +54,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                 color="primary"
                 fontWeight={500}
                 data-testid="bookingConfirmation-departureDate">
-                17/05/2024
+                {dayjs(reservation.ticket?.travel_data?.trip_start_date).format('DD/MM/YYYY')}
               </Typography>
             </Stack>
             <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
@@ -63,7 +64,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                 color="primary"
                 fontWeight={500}
                 data-testid="bookingConfirmation-reference">
-                X125-DF
+                {reservation.ticket?.travel_data?.passenger_name_record}
               </Typography>
             </Stack>
           </Box>
@@ -77,7 +78,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
               display="flex"
               height={32}
               data-testid="bookingConfirmation-agencyName">
-              Voyages E.Leclerc Riorges
+              {reservation.agency__name}
             </Typography>
             <Typography variant="headlineSm" display="flex" height={32}>
               pour votre réservation.

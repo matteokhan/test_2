@@ -28,6 +28,7 @@ export type ReservationDto = {
   agency: number | null
   insurance: number | null
   agency_contract: string | null
+  agency__name: string | null
 }
 
 export type ReservationTicketDto = {
@@ -36,6 +37,30 @@ export type ReservationTicketDto = {
   verification_price: number
   routes: ReservationRouteDto[]
   is_reserved?: boolean
+  travel_data?: ReservationTravelDataDto
+  trip_end_date: string | null
+}
+
+export type ReservationTravelDataDto = {
+  departure_city: string
+  departure_city_name: string
+  passenger_name_record: string
+  return_city: string
+  return_city_name: string
+  stay_city: string | null
+  stay_country: string | null
+  transports: ReservationTransportDto[]
+  trip_end_date: string
+  trip_start_date: string
+}
+
+export type ReservationTransportDto = {
+  arrival_city: string
+  arrival_city_name: string
+  carrier: string
+  departure_city: string
+  departure_city_name: string
+  flight_number: string
 }
 
 export type ReservationRouteDto = {

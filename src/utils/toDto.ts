@@ -77,6 +77,7 @@ export const getCreateReservationDto = ({
           route_ids: flight.routes.map((route) => route.id),
         },
       ],
+      trip_end_date: flight.routes.slice(-1)[0].segments.slice(-1)[0].arrivalDateTime,
     },
   }
   return dto
