@@ -23,7 +23,7 @@ export type Solution = {
   ticket: string
   priceInfo: PriceInfo
   adults: PassengerTypeInfo
-  childrens: PassengerTypeInfo
+  childrens?: PassengerTypeInfo
   infants?: PassengerTypeInfo | null
   provider: string
   platingCarrier: string

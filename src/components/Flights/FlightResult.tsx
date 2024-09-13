@@ -67,7 +67,7 @@ export const FlightResult = ({
                 data-testid="flightResult-pricePerPassenger">
                 Vol pour {result.priceInfo.passengerNumber} voyageurs (
                 {`${result.adults.number} adultes`}
-                {result.childrens.number ? `, ${result.childrens.number} enfants` : ''}
+                {result.childrens?.number ? `, ${result.childrens.number} enfants` : ''}
                 {result.infants?.number ? `, ${result.infants.number} bébés` : ''})
               </Typography>
             )}
