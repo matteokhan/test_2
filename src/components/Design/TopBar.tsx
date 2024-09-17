@@ -8,8 +8,8 @@ export const TopBar = ({ children, height }: { children: React.ReactNode; height
           position: 'fixed',
           width: '100%',
           zIndex: 'appBar',
+          borderRadius: 0,
         }}
-        square
         elevation={2}>
         {children}
       </Paper>

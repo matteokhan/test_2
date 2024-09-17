@@ -2,13 +2,19 @@
 
 import { useAirlinesData } from '@/services'
 import { RouteCarrier, RouteSegmentCarrier } from '@/types'
-import { Skeleton, Stack, Typography } from '@mui/material'
+import { Skeleton, Stack, SxProps, Typography } from '@mui/material'
 import Image from 'next/image'
 
-export const FlightAirline = ({ carrier }: { carrier: RouteCarrier | RouteSegmentCarrier }) => {
+export const FlightAirline = ({
+  carrier,
+  sx,
+}: {
+  carrier: RouteCarrier | RouteSegmentCarrier
+  sx?: SxProps
+}) => {
   const { data: airlinesData } = useAirlinesData()
   return (
-    <Stack gap={0.5} data-testid="flightAirline">
+    <Stack gap={0.5} sx={{ ...sx }} data-testid="flightAirline">
       {/* TODO: default image */}
       <Stack
         width="32px"

@@ -11,14 +11,19 @@ import {
   FlightsLoader,
   SearchFlightsFilters,
   SearchResults,
+  SelectedFlightInfoTopbarMobile,
 } from '@/components'
 import { Box, Drawer, Button, Grow, Stack, Typography } from '@mui/material'
 import { useBooking, useFlights } from '@/contexts'
 import { SearchFlightsParams, Solution, AirlineFilterData, SearchFlightFilters } from '@/types'
 import { useCreateReservation, useSearchFlights } from '@/services'
 import { getCreateReservationDto } from '@/utils'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 export default function FlighsPage() {
+  const theme = useTheme()
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [filters, setFilters] = React.useState({} as SearchFlightFilters)
@@ -120,19 +125,30 @@ export default function FlighsPage() {
 
   return (
     <>
-      <TopBar height={60}>
+      <TopBar height={isDesktop ? 60 : 176}>
         <Navbar />
+        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+          <SelectedFlightInfoTopbarMobile />
+        </Box>
       </TopBar>
       <Box
         sx={{
           backgroundColor: 'grey.200',
         }}>
         <SectionContainer
-          sx={{ justifyContent: 'space-between', paddingY: 3, flexDirection: 'column' }}>
-          <SearchFlightsModes onSearch={onSearch} sx={{ mb: 3 }} disabled={isLoading} />
+          sx={{
+            justifyContent: 'space-between',
+            paddingY: { xs: 2, lg: 3 },
+            flexDirection: 'column',
+          }}>
+          <SearchFlightsModes
+            onSearch={onSearch}
+            sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
+            disabled={isLoading}
+          />
           {isLoading && (
             <Grow in={isLoading}>
-              <Stack mt={2} mb={5} alignItems="center">
+              <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
                 <Stack maxWidth="516px" direction="row" gap={3}>
                   <FlightsLoader />
                   <Box>
@@ -146,18 +162,20 @@ export default function FlighsPage() {
               </Stack>
             </Grow>
           )}
-          <Stack direction="row" spacing={2}>
-            <SearchFlightsFilters
-              filterData={response?.searchFilters}
-              airlines={getAirlines()}
-              departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
-              arrival={
-                response?.solutions[0]?.routes[0]?.segments[
-                  response.solutions[0]?.routes[0]?.segments?.length - 1
-                ]?.arrival
-              }
-              onSubmit={(values) => setFilters(values)}
-            />
+          <Stack direction="row" spacing={isDesktop ? 2 : 0}>
+            <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+              <SearchFlightsFilters
+                filterData={response?.searchFilters}
+                airlines={getAirlines()}
+                departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
+                arrival={
+                  response?.solutions[0]?.routes[0]?.segments[
+                    response.solutions[0]?.routes[0]?.segments?.length - 1
+                  ]?.arrival
+                }
+                onSubmit={(values) => setFilters(values)}
+              />
+            </Box>
             <Stack gap={2} flexGrow={1}>
               {/* TODO: Implement date alternatives */}
               {/* <Stack gap={1}>
@@ -202,6 +220,10 @@ export default function FlighsPage() {
             PaperProps={{
               sx: {
                 borderRadius: 0,
+                height: { xs: 'calc(100% - 64px)', lg: '100%' },
+                top: 'unset',
+                bottom: 0,
+                width: { xs: '100%', lg: 'unset' },
               },
             }}>
             <FlightDetails
