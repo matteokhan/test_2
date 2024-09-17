@@ -20,12 +20,16 @@ export const FlightResult = ({
     setCorrelationId(correlationId)
     setFlightDetailsOpen(true)
   }
+
+  const passengersDescription = () => `Vol pour ${result.priceInfo.passengerNumber} voyageurs (
+      ${result.adults.number} adultes
+      ${result.childrens?.number ? ', ' + result.childrens.number + 'enfants' : ''}
+      ${result.infants?.number ? ', ' + result.infants.number + 'bébés' : ''})`
+
   return (
     <>
       {/* Desktop */}
-      <Paper
-        sx={{ padding: 2, display: { xs: 'none', lg: 'block' } }}
-        data-testid="flightResult-desktop">
+      <Paper sx={{ padding: 2, display: { xs: 'none', lg: 'block' } }} data-testid="flightResult">
         <Stack gap={5.5} direction="row">
           <Stack flexGrow={1}>
             {result.routes.map((route, index, routes) => (
@@ -71,18 +75,17 @@ export const FlightResult = ({
                 <Typography
                   variant="bodySm"
                   color="grey.800"
-                  data-testid="flightResult-pricePerPassenger">
-                  Vol pour {result.priceInfo.passengerNumber} voyageurs (
-                  {result.priceInfo.total / result.priceInfo.passengerNumber}
-                  {result.priceInfo.currencySymbol} par pers.)
+                  data-testid="flightResult-passengersDescription">
+                  {passengersDescription()}
                 </Typography>
               )}
               {result.priceInfo.passengerNumber === 1 && (
                 <Typography
                   variant="bodySm"
                   color="grey.800"
-                  data-testid="flightResult-pricePerPassenger">
-                  Vol pour {result.priceInfo.passengerNumber} voyageur
+                  data-testid="flightResult-passengersDescription">
+                  Vol pour {result.priceInfo.passengerNumber} voyageur (
+                  {`${result.adults.number} adulte`})
                 </Typography>
               )}
             </Stack>
@@ -146,18 +149,17 @@ export const FlightResult = ({
                 <Typography
                   variant="bodySm"
                   color="grey.800"
-                  data-testid="flightResult-pricePerPassenger">
-                  Vol pour {result.priceInfo.passengerNumber} voyageurs (
-                  {result.priceInfo.total / result.priceInfo.passengerNumber}
-                  {result.priceInfo.currencySymbol} par pers.)
+                  data-testid="flightResult-passengersDescription">
+                  {passengersDescription()}
                 </Typography>
               )}
               {result.priceInfo.passengerNumber === 1 && (
                 <Typography
                   variant="bodySm"
                   color="grey.800"
-                  data-testid="flightResult-pricePerPassenger">
-                  Vol pour {result.priceInfo.passengerNumber} voyageur
+                  data-testid="flightResult-passengersDescription">
+                  Vol pour {result.priceInfo.passengerNumber} voyageur (
+                  {`${result.adults.number} adulte`})
                 </Typography>
               )}
             </Stack>

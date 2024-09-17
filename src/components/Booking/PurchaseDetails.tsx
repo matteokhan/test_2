@@ -137,7 +137,7 @@ export const PurchaseDetails = () => {
               height: 23,
               width: 36,
             }}>
-            <Image src="/ancv_logo.svg" alt="floa logo" fill />
+            <Image src="/ancv_logo.svg" alt="ancv logo" fill />
           </Box>
           <Box
             sx={{
@@ -145,7 +145,7 @@ export const PurchaseDetails = () => {
               height: 23,
               width: 36,
             }}>
-            <Image src="/ob_logo.svg" alt="floa logo" fill />
+            <Image src="/ob_logo.svg" alt="ob logo" fill />
           </Box>
           <Box
             sx={{

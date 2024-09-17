@@ -15,6 +15,7 @@ import WarningIcon from '@mui/icons-material/Warning'
 
 export default function InsurancesPage() {
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [firstWarning, setFirstWarning] = useState(true)
   const [noInsurance, setNoInsurance] = useState(false)
   const {
     goPreviousStep,
@@ -34,6 +35,12 @@ export default function InsurancesPage() {
       return
     }
     if (!selectedInsurance && !noInsurance) {
+      setFirstWarning(false)
+      setModalIsOpen(true)
+      return
+    }
+    if (noInsurance && firstWarning) {
+      setFirstWarning(false)
       setModalIsOpen(true)
       return
     }
@@ -107,6 +114,10 @@ export default function InsurancesPage() {
           onChooseInsurance={() => setModalIsOpen(false)}
           onNoInsurance={() => {
             setModalIsOpen(false)
+            if (noInsurance) {
+              handleSubmit()
+              return
+            }
             setNoInsurance(true)
           }}
         />

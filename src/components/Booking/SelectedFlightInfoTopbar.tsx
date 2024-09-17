@@ -17,7 +17,7 @@ export const SelectedFlightInfoTopbar = () => {
     airportCode: firstSegment?.from ? firstSegment.from : '',
   })
   const { data: arrivalAirportData } = useAirportData({
-    airportCode: firstSegment?.to ? firstSegment.to : '',
+    airportCode: lastSegment?.from ? lastSegment.from : '',
   })
 
   return (
@@ -71,7 +71,7 @@ export const SelectedFlightInfoTopbar = () => {
                   </Typography>
                   <SwapHorizIcon data-testid={null} />
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-to">
-                    {airportName(arrivalAirportData)} ({firstSegment?.to})
+                    {airportName(arrivalAirportData)} ({lastSegment?.from})
                   </Typography>
                 </Stack>
                 <Stack direction="row" gap={1}>

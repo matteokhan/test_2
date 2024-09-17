@@ -7,7 +7,9 @@ export type SearchFlightSegment = {
 export type OneWayFlightSearchParams = {
   _type: 'oneWay'
   from: string
+  fromLabel: string
   to: string
+  toLabel: string
   departure: string
   adults: number
   childrens: number
@@ -17,7 +19,9 @@ export type OneWayFlightSearchParams = {
 export type RoundTripFlightSearchParams = {
   _type: 'roundTrip'
   from: string
+  fromLabel: string
   to: string
+  toLabel: string
   departure: string
   return: string
   adults: number
@@ -29,7 +33,9 @@ export type MultiDestinationsFlightSearchParams = {
   _type: 'multiDestinations'
   destinations: {
     from: string
+    fromLabel: string
     to: string
+    toLabel: string
     departure: string
   }[]
   adults: number

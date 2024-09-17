@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Box, Popover, Typography, Button, Stack, SxProps } from '@mui/material'
 import { AirplaneIcon, CustomTextField } from '@/components'
 import { Field, useFormikContext } from 'formik'
@@ -65,52 +65,50 @@ export const DepartureAndDestinationField = ({
   sx?: SxProps
 }) => {
   const anchorRef = useRef<HTMLInputElement>(null)
-  const { errors, touched, setFieldValue } = useFormikContext<{
+  const { errors, touched, setFieldValue, values } = useFormikContext<{
     from: string
+    fromLabel: string
     to: string
+    toLabel: string
   }>()
 
   // Departure
   const [departureIsOpen, setDepartureIsOpen] = useState(false)
-  const [departureSearchTerm, setDepartureSearchTerm] = useState('')
+  const [departureSearchTerm, setDepartureSearchTerm] = useState(values.fromLabel) // TODO: Fix initial values, should be only the departure name, not the entire label
   const [selectedDepartureAirport, setSelectedDepartureAirport] = useState<AirportData | null>(null)
   const debouncedFromSearchTerm = useDebounce(departureSearchTerm, 300)
   const { data: departureAirports, isSuccess: departureIsSuccess } = useSearchAirportsByName({
     searchTerm: debouncedFromSearchTerm,
   })
   const departureAirportsCodes = Object.keys(departureAirports || {})
-  const handleDepartureFocus = () => {
+  const openDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(true)
-    if (selectedDepartureAirport) {
-      setDepartureSearchTerm(selectedDepartureAirport.name)
-    }
-  }
-  const handleDepartureClose = useCallback(() => {
+  }, [])
+  const closeDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(false)
   }, [])
-  const handleDepartureClick = (airport: AirportData) => {
+  const selectDeparture = (airport: AirportData) => {
     setDepartureIsOpen(false)
     setSelectedDepartureAirport(airport)
     setFieldValue('from', airport.code)
-    setDepartureSearchTerm(airport.name + ' (' + airport.code + ')')
+    setFieldValue('fromLabel', airport.name + ' (' + airport.code + ')')
   }
   const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDepartureAirport(null)
     setFieldValue('from', null)
+    setFieldValue('fromLabel', null)
     setDepartureSearchTerm(e.target.value)
   }
   const handleDepartureBlur = () => {
     setDepartureIsOpen(false)
     if (selectedDepartureAirport) {
       setDepartureSearchTerm(selectedDepartureAirport.name)
-    } else {
-      setDepartureSearchTerm('')
     }
   }
 
   // Destination
   const [destinationIsOpen, setDestinationIsOpen] = useState(false)
-  const [destinationSearchTerm, setDestinationSearchTerm] = useState('')
+  const [destinationSearchTerm, setDestinationSearchTerm] = useState(values.toLabel) // TODO: Fix initial values, should be only the destination name, not the entire label
   const [selectedDestinationAirport, setSelectedDestinationAirport] = useState<AirportData | null>(
     null,
   )
@@ -119,35 +117,32 @@ export const DepartureAndDestinationField = ({
     searchTerm: debouncedToSearchTerm,
   })
   const destinationAirportsCodes = Object.keys(destinationAirports || {})
-  const handleDestinationFocus = () => {
+  const openDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(true)
-    if (selectedDestinationAirport) {
-      setDestinationSearchTerm(selectedDestinationAirport.name)
-    }
-  }
-  const handleDestinationClose = useCallback(() => {
+  }, [])
+  const closeDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(false)
   }, [])
-  const handleDestinationClick = (airport: AirportData) => {
+  const selectDestination = (airport: AirportData) => {
     setDestinationIsOpen(false)
     setSelectedDestinationAirport(airport)
     setFieldValue('to', airport.code)
-    setDestinationSearchTerm(airport.name + ' (' + airport.code + ')')
+    setFieldValue('toLabel', airport.name + ' (' + airport.code + ')')
   }
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDestinationAirport(null)
     setFieldValue('to', null)
+    setFieldValue('toLabel', null)
     setDestinationSearchTerm(e.target.value)
   }
   const handleDestinationBlur = () => {
     setDestinationIsOpen(false)
     if (selectedDestinationAirport) {
       setDestinationSearchTerm(selectedDestinationAirport.name)
-    } else {
-      setDestinationSearchTerm('')
     }
   }
 
+  // TODO: Swap doesn't work after navigation between pages. Need to store the selected airports in the context to make it work
   const swapAirports = () => {
     if (!selectedDepartureAirport || !selectedDestinationAirport) {
       return
@@ -158,9 +153,21 @@ export const DepartureAndDestinationField = ({
     setSelectedDestinationAirport(from)
     setFieldValue('from', to.code)
     setFieldValue('to', from.code)
+    setFieldValue('fromLabel', to.name + ' (' + to.code + ')')
+    setFieldValue('toLabel', from.name + ' (' + from.code + ')')
     setDepartureSearchTerm(to.name + ' (' + to.code + ')')
     setDestinationSearchTerm(from.name + ' (' + from.code + ')')
   }
+
+  useEffect(() => {
+    if (values.fromLabel) {
+      setDepartureSearchTerm(values.fromLabel)
+    }
+    if (values.toLabel) {
+      setDestinationSearchTerm(values.toLabel)
+    }
+  }, [])
+
   return (
     <>
       <Stack
@@ -172,21 +179,34 @@ export const DepartureAndDestinationField = ({
         height={58}
         ref={anchorRef}
         sx={{ ...sx }}>
-        <Field
-          onClick={handleDepartureFocus}
-          as={CustomTextField}
-          noBorder
-          label={labels ? labels[0] : 'Vol au départ de'}
-          sx={{ flexGrow: 1 }}
-          error={touched.from && errors.from}
-          helperText={touched.from && errors.from}
-          inputProps={{
-            'data-testid': 'fromField',
-          }}
-          onChange={handleDepartureChange}
-          onBlur={handleDepartureBlur}
-          value={departureSearchTerm}
-        />
+        <Box position="relative" flexGrow={1}>
+          <Field
+            onClick={openDepartureSuggestions}
+            as={CustomTextField}
+            noBorder
+            label={labels ? labels[0] : 'Vol au départ de'}
+            sx={{ flexGrow: 1 }}
+            error={touched.from && errors.from}
+            helperText={touched.from && errors.from}
+            inputProps={{
+              'data-testid': 'fromField',
+            }}
+            onChange={handleDepartureChange}
+            onBlur={handleDepartureBlur}
+            value={departureSearchTerm}
+          />
+          {!departureIsOpen && (
+            <Typography
+              onClick={openDepartureSuggestions}
+              variant="bodyLg"
+              position="absolute"
+              top="27px"
+              left="13px"
+              bgcolor="white">
+              {values.fromLabel}
+            </Typography>
+          )}
+        </Box>
         <Button
           disabled={!selectedDepartureAirport || !selectedDestinationAirport}
           onClick={swapAirports}
@@ -200,27 +220,40 @@ export const DepartureAndDestinationField = ({
             }}
           />
         </Button>
-        <Field
-          onClick={handleDestinationFocus}
-          as={CustomTextField}
-          noBorder
-          label={labels ? labels[1] : 'Vol à destination de'}
-          sx={{ flexGrow: 1 }}
-          error={touched.to && errors.to}
-          helperText={touched.to && errors.to}
-          inputProps={{
-            'data-testid': 'toField',
-          }}
-          onChange={handleDestinationChange}
-          onBlur={handleDestinationBlur}
-          value={destinationSearchTerm}
-        />
+        <Box position="relative" flexGrow={1}>
+          <Field
+            onClick={openDestinationSuggestions}
+            as={CustomTextField}
+            noBorder
+            label={labels ? labels[1] : 'Vol à destination de'}
+            sx={{ flexGrow: 1 }}
+            error={touched.to && errors.to}
+            helperText={touched.to && errors.to}
+            inputProps={{
+              'data-testid': 'toField',
+            }}
+            onChange={handleDestinationChange}
+            onBlur={handleDestinationBlur}
+            value={destinationSearchTerm}
+          />
+          {!destinationIsOpen && (
+            <Typography
+              onClick={openDestinationSuggestions}
+              variant="bodyLg"
+              position="absolute"
+              top="27px"
+              left="13px"
+              bgcolor="white">
+              {values.toLabel}
+            </Typography>
+          )}
+        </Box>
       </Stack>
       <Popover
         sx={{ mt: 1.2 }}
         open={departureIsSuccess && departureIsOpen && departureAirportsCodes.length > 0}
         anchorEl={anchorRef.current}
-        onClose={handleDepartureClose}
+        onClose={closeDepartureSuggestions}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
@@ -237,7 +270,7 @@ export const DepartureAndDestinationField = ({
                   key={airportCode}
                   airport={airport}
                   noBorder={array.length - 1 === index}
-                  onClick={handleDepartureClick}
+                  onClick={selectDeparture}
                 />
               )
             })}
@@ -247,7 +280,7 @@ export const DepartureAndDestinationField = ({
         sx={{ mt: 1.2 }}
         open={destinationIsSuccess && destinationIsOpen && destinationAirportsCodes.length > 0}
         anchorEl={anchorRef.current}
-        onClose={handleDestinationClose}
+        onClose={closeDestinationSuggestions}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
@@ -264,7 +297,7 @@ export const DepartureAndDestinationField = ({
                   key={airportCode}
                   airport={airport}
                   noBorder={array.length - 1 === index}
-                  onClick={handleDestinationClick}
+                  onClick={selectDestination}
                 />
               )
             })}

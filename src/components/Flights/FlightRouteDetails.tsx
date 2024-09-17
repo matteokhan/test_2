@@ -1,13 +1,11 @@
-import { Box, Chip, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
-import { CarryOnLuggageIcon, CheckedLuggageIcon, NoLuggageIcon } from '@/components'
+import { CarryOnLuggageIcon, CheckedLuggageIcon, FlightAirline, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
 import { airportNameExtension, transformDuration } from '@/utils'
-import Image from 'next/image'
-import { useAirlinesData, useAirportData } from '@/services'
+import { useAirportData } from '@/services'
 
 export const FlightRouteDetails = ({ route }: { route: Route }) => {
-  const { data: airlinesData } = useAirlinesData()
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
@@ -55,32 +53,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
       {/* Desktop */}
       <Stack gap={4} direction="row" sx={{ display: { xs: 'none', lg: 'flex' } }}>
         <Stack gap={1} minWidth="25%" maxWidth="25%">
-          <Stack gap={0.5}>
-            {/* TODO: default image */}
-            <Stack
-              width="32px"
-              height="32px"
-              borderRadius="32px"
-              border="1px solid"
-              borderColor="grey.400"
-              alignItems="center"
-              justifyContent="center">
-              {airlinesData ? (
-                <Image
-                  src={airlinesData[route.carrier]?.logo_small_path || ''}
-                  alt={airlinesData ? airlinesData[route.carrier]?.name : 'Airline logo'}
-                  width={21}
-                  height={21}
-                  unoptimized={true}
-                />
-              ) : (
-                <Skeleton variant="circular" width={32} height={32} />
-              )}
-            </Stack>
-            <Typography variant="bodySm" color="grey.700" data-testid="flightRouteDetails-carrier">
-              {airlinesData ? airlinesData[route.carrier]?.name : ''}
-            </Typography>
-          </Stack>
+          <FlightAirline carrier={route.carrier} />
           {tags && (
             <Stack direction="row" data-testid="flightRouteDetails-tags">
               <Chip label={tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
@@ -190,37 +163,10 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
       {/* Mobile */}
       <Stack gap={1.5} sx={{ display: { xs: 'flex', lg: 'none' } }}>
         <Stack gap={1} direction="row" justifyContent="space-between" alignItems="center">
-          <Stack gap={1} direction="row" alignItems="center" width="100%">
-            {/* TODO: default image */}
-            <Stack
-              width="32px"
-              height="32px"
-              borderRadius="32px"
-              border="1px solid"
-              borderColor="grey.400"
-              alignItems="center"
-              justifyContent="center">
-              {airlinesData ? (
-                <Image
-                  src={airlinesData[route.carrier]?.logo_small_path || ''}
-                  alt={airlinesData ? airlinesData[route.carrier]?.name : 'Airline logo'}
-                  width={21}
-                  height={21}
-                  unoptimized={true}
-                />
-              ) : (
-                <Skeleton variant="circular" width={32} height={32} />
-              )}
-            </Stack>
-            <Typography
-              variant="bodySm"
-              color="grey.700"
-              data-testid="flightRouteDetails-carrier"
-              sx={{ height: 'fit-content' }}>
-              {' '}
-              {airlinesData ? airlinesData[route.carrier]?.name : ''}
-            </Typography>
-          </Stack>
+          <FlightAirline
+            carrier={route.carrier}
+            sx={{ gap: 1, flexDirection: 'row', alignItems: 'center', width: '100%' }}
+          />
           {tags && (
             <Stack direction="row" data-testid="flightRouteDetails-tags">
               <Chip label={tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
@@ -229,15 +175,21 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
         </Stack>
         <Stack gap={1}>
           <Stack direction="row" gap={5} alignItems="center">
-            <Box width="60px" textAlign="right">
+            <Box width="60px" minWidth="60px" textAlign="right">
               <Typography
                 variant="titleLg"
                 color="leclerc.red.main"
-                data-testid="flightRouteDetails-departureTime">
+                data-testid="flightRouteDetails-departureTime"
+                fontSize="22px">
                 {departureTime}
               </Typography>
             </Box>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" flexGrow={1}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flexGrow={1}
+              gap={2}>
               <Stack direction="row" alignItems="center" justifyContent="flex-start" gap={0.5}>
                 <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
                   {airportNameExtension(departureAirportData)}
@@ -250,7 +202,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
             </Stack>
           </Stack>
           <Stack direction="row" gap={5}>
-            <Box width="60px" textAlign="right">
+            <Box width="60px" minWidth="60px" textAlign="right">
               <Typography variant="bodySm" data-testid="flightRouteDetails-duration">
                 {transformDuration(travelTime, true)}
               </Typography>
@@ -273,15 +225,16 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
             </Stack>
           </Stack>
           <Stack direction="row" gap={5}>
-            <Box width="60px" textAlign="right" position="relative">
+            <Box width="60px" minWidth="60px" textAlign="right" position="relative">
               <Typography
                 variant="titleLg"
                 color="leclerc.red.main"
-                data-testid="flightRouteDetails-arrivalTime">
+                data-testid="flightRouteDetails-arrivalTime"
+                fontSize="22px">
                 {arrivalTime}
               </Typography>
               {daysToArrival > 0 && (
-                <Box sx={{ position: 'absolute', left: '-24px', top: '2px' }}>
+                <Box sx={{ position: 'absolute', right: '-32px', top: '2px' }}>
                   {' '}
                   <Typography
                     variant="bodySm"
@@ -292,17 +245,16 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
                 </Box>
               )}
             </Box>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" flexGrow={1}>
-              <Typography
-                variant="bodyMd"
-                data-testid="flightRouteDetails-arrivalAirport"
-                width="60%">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flexGrow={1}
+              gap={2}>
+              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
                 {airportNameExtension(arrivalAirportData)}
               </Typography>
-              <Typography
-                variant="labelLg"
-                data-testid="flightRouteDetails-arrivalCityCode"
-                width="10%">
+              <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
                 {arrivalCityCode}
               </Typography>
             </Stack>

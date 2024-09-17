@@ -4,7 +4,7 @@ import Image from 'next/image'
 type SimpleModalBaseProps = {
   imageUrl: string
   title: string
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 type SimpleModalMainActionProps =

@@ -51,6 +51,7 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
         <Stack p={2} gap={2}>
           {route.segments.map((segment, index) => (
             <ItinerarySegment
+              carrier={route.carrier}
               key={segment.id}
               segment={segment}
               indexSegment={index}
@@ -94,9 +95,15 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
             </Typography>
           </Box>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}>
           {route.segments.map((segment, index) => (
             <ItinerarySegment
+              carrier={route.carrier}
               key={segment.id}
               segment={segment}
               indexSegment={index}

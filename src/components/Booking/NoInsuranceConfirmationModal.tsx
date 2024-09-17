@@ -1,13 +1,12 @@
+import React, { forwardRef } from 'react'
 import { Typography } from '@mui/material'
 import { SimpleModal } from '@/components'
 
-export const NoInsuranceConfirmationModal = ({
-  onChooseInsurance,
-  onNoInsurance,
-}: {
+export const NoInsuranceConfirmationModal: React.FC<{
   onChooseInsurance: () => void
   onNoInsurance: () => void
-}) => {
+}> = forwardRef((props, ref) => {
+  const { onChooseInsurance, onNoInsurance } = props
   return (
     <SimpleModal
       imageUrl="/design_2.svg"
@@ -22,4 +21,4 @@ export const NoInsuranceConfirmationModal = ({
       </Typography>
     </SimpleModal>
   )
-}
+})
