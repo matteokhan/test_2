@@ -73,7 +73,6 @@ export const SearchRoundTripFlightsFormMobile = ({
                 }}
                 onClick={() => setDepartureIsOpen(true)}
                 value={departureSearchTerm ? departureSearchTerm : ''}
-                name="test-ed"
               />
               <Field
                 as={TextField}

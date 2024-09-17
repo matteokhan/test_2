@@ -11,6 +11,7 @@ import {
   CruisesIcon,
 } from '@/components'
 import { styled } from '@mui/material/styles'
+import { useRouter } from 'next/navigation'
 
 const TravelOptionButton = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -24,6 +25,7 @@ const TravelOptionButton = styled(Stack)(({ theme }) => ({
 }))
 
 export const TravelOptionsBanner = () => {
+  const router = useRouter()
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
 
   return (
@@ -98,7 +100,7 @@ export const TravelOptionsBanner = () => {
               <CloseIcon />
             </IconButton>
           </Stack>
-          <SearchFlightsModesMobile />
+          <SearchFlightsModesMobile onSubmit={() => router.push('/flights')} />
         </Drawer>
       </Stack>
     </SectionContainer>
