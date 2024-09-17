@@ -7,12 +7,7 @@ import {
   SearchRoundTripFlightsForm,
   SearchMultiDestFlightsForm,
 } from '@/components'
-import {
-  MultiDestinationsFlightSearchParams,
-  OneWayFlightSearchParams,
-  RoundTripFlightSearchParams,
-  SearchFlightsParams,
-} from '@/types'
+import { SearchFlightsParams } from '@/types'
 import { useFlights } from '@/contexts'
 
 type SearchFlightsModesProps = {
@@ -23,15 +18,6 @@ type SearchFlightsModesProps = {
 
 export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
-  const [oneWayInitialValues, setOneWayInitialValues] = React.useState<
-    OneWayFlightSearchParams | undefined
-  >()
-  const [roundTripInitialValues, setRoundTripInitialValues] = React.useState<
-    RoundTripFlightSearchParams | undefined
-  >()
-  const [multiDestInitialValues, setmultiDestInitialValues] = React.useState<
-    MultiDestinationsFlightSearchParams | undefined
-  >()
   const { searchParamsCache } = useFlights()
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -44,15 +30,12 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
   useEffect(() => {
     if (searchParamsCache) {
       if (searchParamsCache._type === 'oneWay') {
-        setOneWayInitialValues(searchParamsCache)
         setActiveTab(1)
       }
       if (searchParamsCache._type === 'roundTrip') {
-        setRoundTripInitialValues(searchParamsCache)
         setActiveTab(0)
       }
       if (searchParamsCache._type === 'multiDestinations') {
-        setmultiDestInitialValues(searchParamsCache)
         setActiveTab(2)
       }
     }
@@ -78,14 +61,14 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           <SearchRoundTripFlightsForm
             disabled={disabled}
             onSubmit={handleSearch}
-            initialValues={roundTripInitialValues}
+            initialValues={searchParamsCache?._type === 'roundTrip' ? searchParamsCache : undefined}
           />
         )}
         {activeTab === 1 && (
           <SearchOneWayFlightsForm
             disabled={disabled}
             onSubmit={handleSearch}
-            initialValues={oneWayInitialValues}
+            initialValues={searchParamsCache?._type === 'oneWay' ? searchParamsCache : undefined}
           />
         )}
         {/* TODO: enable multidestinations */}
