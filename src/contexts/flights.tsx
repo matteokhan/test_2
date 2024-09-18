@@ -14,6 +14,7 @@ type FlightsContextType = {
   totalPassengers: number
   flightDetailsOpen: boolean
   setFlightDetailsOpen: (open: boolean) => void
+  isOneWay: boolean
 }
 
 const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
@@ -23,6 +24,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [searchParamsCache, setSearchParamsCache] = useState<SearchFlightsParams | undefined>()
   const firstSegment = searchParamsDto?.segments[0]
   const lastSegment = searchParamsDto?.segments[searchParamsDto.segments.length - 1]
+  const isOneWay = searchParamsDto?.segments.length === 1
   const totalPassengers: number = +(
     (searchParamsDto?.adults || 0) +
     (searchParamsDto?.childrens || 0) +
@@ -48,6 +50,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         totalPassengers,
         flightDetailsOpen,
         setFlightDetailsOpen,
+        isOneWay,
       }}>
       {children}
     </FlightsContext.Provider>

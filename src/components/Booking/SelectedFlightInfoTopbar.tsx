@@ -11,13 +11,21 @@ import { airportName } from '@/utils'
 import dayjs from 'dayjs'
 
 export const SelectedFlightInfoTopbar = () => {
-  const { firstSegment, lastSegment, totalPassengers, setFlightDetailsOpen } = useFlights()
+  const { firstSegment, lastSegment, totalPassengers, setFlightDetailsOpen, isOneWay } =
+    useFlights()
+
+  // Depending on whether the flight is round trip or one way, the departure location and
+  // destination location will be different'
+  const departureLocation = firstSegment ? firstSegment.from : ''
+  const departureDate = firstSegment ? firstSegment.date : ''
+  const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
+  const destinationDate = lastSegment ? (isOneWay ? lastSegment.date : lastSegment?.date) : ''
 
   const { data: departureAirportData } = useAirportData({
-    airportCode: firstSegment?.from ? firstSegment.from : '',
+    airportCode: departureLocation,
   })
   const { data: arrivalAirportData } = useAirportData({
-    airportCode: lastSegment?.from ? lastSegment.from : '',
+    airportCode: destinationLocation,
   })
 
   return (
@@ -67,26 +75,34 @@ export const SelectedFlightInfoTopbar = () => {
               <Stack direction="row" gap={2} alignItems="center">
                 <Stack direction="row" gap={1}>
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-from">
-                    {airportName(departureAirportData)} ({firstSegment?.from})
+                    {airportName(departureAirportData)} ({departureLocation})
                   </Typography>
                   <SwapHorizIcon data-testid={null} />
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-to">
-                    {airportName(arrivalAirportData)} ({lastSegment?.from})
+                    {airportName(arrivalAirportData)} ({destinationLocation})
                   </Typography>
                 </Stack>
                 <Stack direction="row" gap={1}>
-                  <Typography
-                    variant="bodyMd"
-                    data-testid="selectedFlightInfoTopbar-depatureArrivalDates">
-                    Du {dayjs(firstSegment?.date).format('DD-MM')} au{' '}
-                    {dayjs(lastSegment?.date).format('DD-MM')}
-                    {}
-                  </Typography>
+                  {isOneWay && (
+                    <Typography
+                      variant="bodyMd"
+                      data-testid="selectedFlightInfoTopbar-depatureArrivalDates">
+                      Le {dayjs(departureDate).format('DD-MM')}
+                    </Typography>
+                  )}
+                  {!isOneWay && (
+                    <Typography
+                      variant="bodyMd"
+                      data-testid="selectedFlightInfoTopbar-depatureArrivalDates">
+                      Du {dayjs(departureDate).format('DD-MM')} au{' '}
+                      {dayjs(destinationDate).format('DD-MM')}
+                    </Typography>
+                  )}
                   <Typography variant="bodyMd">-</Typography>
                   <Typography
                     variant="bodyMd"
                     data-testid="selectedFlightInfoTopbar-totalPassengers">
-                    {totalPassengers} voyageurs
+                    {totalPassengers} {totalPassengers > 1 ? 'voyageurs' : 'voyageur'}
                   </Typography>
                   {/* TODO: Fix baggages */}
                   {/* <Typography variant="bodyMd">-</Typography>
