@@ -26,7 +26,7 @@ export const PassengersSummary = () => {
             </Typography>
           )}
           {passenger?.phoneNumber && (
-            <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-email">
+            <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-phone">
               {passenger.phoneNumber}
             </Typography>
           )}
