@@ -23,13 +23,13 @@ export default function BookingSummaryPage() {
   const [conditionsAccepted, setConditionsAccepted] = useState(false)
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
-  const { goPreviousStep, goToStep, correlationId, reservation, selectedAgency } = useBooking()
+  const { goPreviousStep, goToStep, reservation, selectedAgency } = useBooking()
   const { mutate: confirmReservation, isPending: isConfirming } = useReservationPaymentInfo()
   const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
 
   const handleSubmit = async () => {
     // TODO: Need to validate the selectedAgency is set to show the correct payment methods
-    if (!reservation || !correlationId) {
+    if (!reservation) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
