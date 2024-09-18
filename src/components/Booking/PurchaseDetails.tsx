@@ -63,7 +63,7 @@ export const PurchaseDetails = () => {
         {selectedInsurance && (
           <Stack direction="row" width="100%" justifyContent="space-between">
             <Typography variant="bodyMd" data-testid="purchaseDetails-insurances">
-              1 x assurance voyage
+              {totalPassengers} x assurance voyage
             </Typography>
             <Typography
               variant="bodyMd"
