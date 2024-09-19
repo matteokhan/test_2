@@ -1,14 +1,15 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { Box, Paper, SxProps, Tab, Tabs } from '@mui/material'
+import { Box, Drawer, Paper, SxProps, Tab, Tabs, Typography } from '@mui/material'
 import {
   SearchOneWayFlightsForm,
   SearchRoundTripFlightsForm,
   SearchMultiDestFlightsForm,
+  SelectAgencyMap,
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
-import { useFlights } from '@/contexts'
+import { useAgencySelector, useFlights } from '@/contexts'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
@@ -18,12 +19,16 @@ type SearchFlightsModesProps = {
 
 export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
+  const [mapIsOpen, setMapIsOpen] = React.useState(false)
   const { searchParamsCache } = useFlights()
+  const { selectedAgencyCode, selectedAgencyName, saveSelectedAgency, setSelectedAgency } =
+    useAgencySelector()
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
   }
   const handleSearch = (values: SearchFlightsParams) => {
+    if (selectedAgencyCode) saveSelectedAgency()
     onSearch({ searchParams: values })
   }
 
@@ -79,6 +84,38 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           />
         )} */}
       </Box>
+      {!selectedAgencyCode && (
+        <Typography variant="titleSm" color="grey.600">
+          <a onClick={() => setMapIsOpen(true)} style={{ cursor: 'pointer' }}>
+            Veuillez sélectionner votre agence en ligne
+          </a>
+        </Typography>
+      )}
+      {selectedAgencyCode && selectedAgencyName && (
+        <Typography variant="titleSm" color="grey.600">
+          Agence {selectedAgencyName} -{' '}
+          <a onClick={() => setMapIsOpen(true)} style={{ cursor: 'pointer' }}>
+            Changer d'agence
+          </a>
+        </Typography>
+      )}
+      <Drawer
+        open={mapIsOpen}
+        onClose={() => setMapIsOpen(false)}
+        anchor="right"
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+          },
+        }}>
+        <SelectAgencyMap
+          onClose={() => setMapIsOpen(false)}
+          onSelectAgency={({ agency }) => {
+            setSelectedAgency(agency.code, agency.name, true)
+            setMapIsOpen(false)
+          }}
+        />
+      </Drawer>
     </Paper>
   )
 }
