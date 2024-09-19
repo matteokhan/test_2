@@ -23,8 +23,8 @@ export const FlightResult = ({
 
   const passengersDescription = () => `Vol pour ${result.priceInfo.passengerNumber} voyageurs (
       ${result.adults.number} adultes
-      ${result.childrens?.number ? ', ' + result.childrens.number + 'enfants' : ''}
-      ${result.infants?.number ? ', ' + result.infants.number + 'bébés' : ''})`
+      ${result.childrens?.number ? ', ' + result.childrens.number + ' enfants' : ''}
+      ${result.infants?.number ? ', ' + result.infants.number + ' bébés' : ''})`
 
   return (
     <>
