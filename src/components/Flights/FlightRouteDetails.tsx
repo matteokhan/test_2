@@ -9,8 +9,8 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
-  const isTrain = firstSegment.equipment == 'TRN'
-  const tags = firstSegment.equipment == 'TRN' ? 'Vol + train' : null
+  const hasTrainSegment = segments.some((segment) => segment.equipment === 'TRN')
+  const tags = hasTrainSegment ? 'Vol + train' : null
   const departureDateTime = new Date(firstSegment.departureDateTime)
   const departureTime =
     departureDateTime.getUTCHours().toString().padStart(2, '0') +
@@ -102,7 +102,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
                 <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
                   {departureCityCode}
                 </Typography>
-                {isTrain && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
+                {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
               </Stack>
             </Stack>
             <Stack textAlign="center" width="40%" gap="2px">
@@ -194,7 +194,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
                 <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
                   {airportNameExtension(departureAirportData)}
                 </Typography>
-                {isTrain && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
+                {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
               </Stack>
               <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
                 {departureCityCode}

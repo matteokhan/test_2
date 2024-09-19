@@ -33,7 +33,8 @@ export const ItinerarySegment = ({
     scaleTime = nextSegment.timeBeforeSegment
     airportChange = nextSegment.departureCityCode != segment.arrivalCityCode
   }
-  const tags = segment.equipment == 'TRN' ? 'Vol + train' : null
+  const isTrainSegment = segment.equipment == 'TRN'
+  const tags = isTrainSegment ? 'Vol + train' : null
 
   const dateOptions: Intl.DateTimeFormatOptions = {
     month: 'short',
@@ -44,7 +45,7 @@ export const ItinerarySegment = ({
   const { data: arrivalAirportData } = useAirportData({ airportCode: segment.arrivalCityCode })
 
   const getSegmentIcon = () => {
-    if (segment.equipment == 'TRN') {
+    if (isTrainSegment) {
       return <TrainIcon />
     } else {
       return <AirplaneIcon />
