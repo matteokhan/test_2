@@ -67,7 +67,7 @@ export const Navbar = () => {
               0 825 884 620
             </Typography>
             <Typography color="grey.700" variant="bodySm">
-              (0,25€ TTC/min)
+              *
             </Typography>
           </Stack>
           <Stack gap={{ xs: 2, sm: 5 }} direction="row" alignItems="center">
