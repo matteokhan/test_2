@@ -65,7 +65,10 @@ export default function FlighsPage() {
 
   const filteredDataOne = response?.solutions
     .filter((solution) => {
-      const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
+      const totalStops = solution.routes.reduce(
+        (acc, route) => ((route.stopNumber || 0) > acc ? route.stopNumber : acc),
+        0,
+      )
       if (
         filters.maxPriceType == 'total' &&
         filters?.maxPrice &&
