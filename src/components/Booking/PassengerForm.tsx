@@ -54,7 +54,7 @@ export const PassengerForm = ({
 }: PassengerFormProps) => {
   return (
     <Box pt={2}>
-      <Alert severity="info" icon={<WarningIcon fontSize="inherit" sx={{ color: 'black' }} />}>
+      <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
         Les noms des voyageurs doivent être identiques à ceux indiqués sur les pièces d'identité
       </Alert>
       <Formik
@@ -80,8 +80,8 @@ export const PassengerForm = ({
               <SalutationField name="salutation" />
             </Stack>
             <Stack gap={1}>
-              <Stack gap={2} direction="row">
-                <Box width="50%">
+              <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
+                <Box width={{ xs: '100%', lg: '50%' }}>
                   <Field
                     fullWidth
                     as={TextField}
@@ -95,7 +95,7 @@ export const PassengerForm = ({
                     }}
                   />
                 </Box>
-                <Box width="50%">
+                <Box width={{ xs: '100%', lg: '50%' }}>
                   <Field
                     fullWidth
                     as={TextField}
@@ -110,8 +110,8 @@ export const PassengerForm = ({
                   />
                 </Box>
               </Stack>
-              <Stack gap={2} direction="row">
-                <Box width="50%">
+              <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
+                <Box width={{ xs: '100%', lg: '50%' }}>
                   <DatePicker
                     slotProps={{
                       textField: {
@@ -128,7 +128,7 @@ export const PassengerForm = ({
                     onChange={(value) => setFieldValue('dateOfBirth', value, true)}
                   />
                 </Box>
-                <Box width="50%">
+                <Box width={{ xs: '100%', lg: '50%' }}>
                   {initialValues.type === 'ADT' && (
                     <Field
                       fullWidth
@@ -145,8 +145,8 @@ export const PassengerForm = ({
                   )}
                 </Box>
               </Stack>
-              <Stack gap={2} direction="row">
-                <Box width="50%">
+              <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
+                <Box width={{ xs: '100%', lg: '50%' }}>
                   {initialValues.type === 'ADT' && (
                     <Field
                       fullWidth
@@ -162,12 +162,12 @@ export const PassengerForm = ({
                     />
                   )}
                 </Box>
-                <Box width="50%"></Box>
+                <Box width={{ xs: '100%', lg: '50%' }}></Box>
               </Stack>
             </Stack>
 
             {initialValues.type === 'ADT' && (
-              <Stack height={48} mt={1} ml={1} justifyContent="center">
+              <Stack height={48} mt={{ xs: 0, lg: 1 }} ml={1} justifyContent="center">
                 <PassengerIsPayerField
                   name="isPayer"
                   checked={isPayer}

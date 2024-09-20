@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { PassengerForm, PassengerFormMobile } from '@/components'
+import { PassengerForm } from '@/components'
 import { FormikHelpers, FormikProps } from 'formik'
 import { PassengerData } from '@/types'
 import { SimpleContainer } from '@/components'
@@ -24,35 +24,14 @@ export const PassengerInfo = ({
   initialValues,
 }: PassengerInfoProps) => {
   return (
-    <>
-      {/* Desktop */}
-      <SimpleContainer
-        title={'Passager ' + passengerNumber}
-        sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <PassengerForm
-          onSubmit={onSubmit ? onSubmit : () => {}}
-          formRef={formRef}
-          isPayer={isPayer}
-          onPayerChange={onPayerChange}
-          initialValues={initialValues}
-        />
-      </SimpleContainer>
-
-      {/* Mobile */}
-      <SimpleContainer
-        title={'Passager ' + passengerNumber}
-        sx={{
-          display: { xs: 'block', lg: 'none' },
-          pb: 3,
-        }}>
-        <PassengerFormMobile
-          onSubmit={onSubmit ? onSubmit : () => {}}
-          formRef={formRef}
-          isPayer={isPayer}
-          onPayerChange={onPayerChange}
-          initialValues={initialValues}
-        />
-      </SimpleContainer>
-    </>
+    <SimpleContainer title={'Passager ' + passengerNumber}>
+      <PassengerForm
+        onSubmit={onSubmit ? onSubmit : () => {}}
+        formRef={formRef}
+        isPayer={isPayer}
+        onPayerChange={onPayerChange}
+        initialValues={initialValues}
+      />
+    </SimpleContainer>
   )
 }

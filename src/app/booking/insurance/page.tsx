@@ -78,10 +78,7 @@ export default function InsurancesPage() {
     <>
       <SimpleContainer>
         <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
-          <Alert
-            sx={{ color: 'primary.main', fontSize: { xs: '12px', lg: '14px' } }}
-            severity="info"
-            icon={<WarningIcon fontSize="inherit" sx={{ color: 'primary.main' }} />}>
+          <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
             Pour votre confort, nous vous recommandons de sélectionner une des assurances proposées.
             Il ne sera plus possible d’y souscrire après votre réservation.
           </Alert>

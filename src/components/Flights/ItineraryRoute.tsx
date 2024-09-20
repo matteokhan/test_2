@@ -1,7 +1,7 @@
 'use client'
 
 import { Route } from '@/types'
-import { Box, Stack, SxProps, Typography } from '@mui/material'
+import { Box, SxProps, Typography } from '@mui/material'
 import { ItinerarySegment } from '@/components'
 import { airportName, transformDuration } from '@/utils'
 import { useAirportData } from '@/services'
@@ -11,8 +11,16 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useState } from 'react'
 
-export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) => {
-  const [expanded, setExpanded] = useState(true)
+export const ItineraryRoute = ({
+  route,
+  sx,
+  isExpanded = false,
+}: {
+  route: Route
+  sx?: SxProps
+  isExpanded?: boolean
+}) => {
+  const [expanded, setExpanded] = useState(isExpanded)
 
   const departure = route.segments[0].departure
   const arrival = route.segments[route.segments.length - 1].arrival
@@ -32,15 +40,25 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
   }
 
   return (
-    <>
-      {/* Desktop */}
-      <Box
-        maxWidth="590px"
-        borderRadius={1}
-        bgcolor="white"
-        sx={{ ...sx, display: { xs: 'none', lg: 'block' } }}
-        data-testid="itineraryRoute">
-        <Box py={1.5} px={2}>
+    <Accordion
+      expanded={expanded}
+      onChange={handleAccordionChange}
+      disableGutters
+      data-testid="itineraryRoute"
+      sx={{
+        maxWidth: '100%',
+        borderRadius: '4px',
+        '&:before': {
+          display: 'none',
+        },
+        ...sx,
+      }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1-content"
+        id="itineraryRoute-header"
+        data-testid="itineraryRoute-detailsAccordion">
+        <Box>
           <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
             {airportName(departureAirportData)} - {airportName(arrivalAirportData)}
           </Typography>
@@ -57,75 +75,24 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
             )}
           </Typography>
         </Box>
-        <Stack p={2} gap={2}>
-          {route.segments.map((segment, index) => (
-            <ItinerarySegment
-              carrier={route.carrier}
-              key={segment.id}
-              segment={segment}
-              indexSegment={index}
-              allSegments={route.segments}
-              isLastSegment={index === route.segments.length - 1}
-            />
-          ))}
-        </Stack>
-      </Box>
-
-      {/* Mobile */}
-      <Accordion
-        expanded={expanded}
-        onChange={handleAccordionChange}
-        disableGutters
+      </AccordionSummary>
+      <AccordionDetails
         sx={{
-          borderRadius: '4px',
-          '&:before': {
-            display: 'none',
-          },
-          border: '1px solid',
-          borderColor: 'grey.400',
-          display: { xs: 'block', lg: 'none' },
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
         }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1-content"
-          id="itineraryRoute-header"
-          data-testid="itineraryRoute-detailsAccordion">
-          <Box>
-            <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
-              {airportName(departureAirportData)} - {airportName(arrivalAirportData)}
-            </Typography>
-            <Typography
-              variant="bodyMd"
-              color="grey.800"
-              data-testid="itineraryRoute-durationDetails">
-              {departureDate.toLocaleDateString(undefined, dateOptions)} - durée{' '}
-              {transformDuration(route.travelTime, true)}{' '}
-              {route.stopNumber > 0 && (
-                <span>
-                  - {route.stopNumber} escale ({transformDuration(route.totalStopDuration)})
-                </span>
-              )}
-            </Typography>
-          </Box>
-        </AccordionSummary>
-        <AccordionDetails
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}>
-          {route.segments.map((segment, index) => (
-            <ItinerarySegment
-              carrier={route.carrier}
-              key={segment.id}
-              segment={segment}
-              indexSegment={index}
-              allSegments={route.segments}
-              isLastSegment={index === route.segments.length - 1}
-            />
-          ))}
-        </AccordionDetails>
-      </Accordion>
-    </>
+        {route.segments.map((segment, index) => (
+          <ItinerarySegment
+            carrier={route.carrier}
+            key={segment.id}
+            segment={segment}
+            indexSegment={index}
+            allSegments={route.segments}
+            isLastSegment={index === route.segments.length - 1}
+          />
+        ))}
+      </AccordionDetails>
+    </Accordion>
   )
 }

@@ -99,10 +99,9 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
           <Stack
             direction="row"
             justifyContent="space-between"
-            px={2}
+            px={{ xs: 2, md: 5 }}
             pt={4}
             gap={2}
-            //pb={2}
             alignItems="flex-end">
             <Typography variant="headlineMd">{currentStepTitle}</Typography>
             <Typography variant="bodyMd" color="grey.800" sx={{ textWrap: 'nowrap' }}>

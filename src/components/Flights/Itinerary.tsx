@@ -11,6 +11,7 @@ export const Itinerary = () => {
           key={route.id}
           route={route}
           sx={{ border: '1px solid', borderColor: 'grey.400' }}
+          isExpanded={true}
         />
       ))}
     </Stack>

@@ -10,7 +10,7 @@ export const BookingStepActionsMobile = ({
   isLoading?: boolean
 }) => {
   return (
-    <Stack pt={2} px={2} pb={8} justifyContent="center" gap={1}>
+    <Stack pt={2} px={{ xs: 2, md: 5 }} pb={8} justifyContent="center" gap={1}>
       <Button
         disabled={isLoading}
         onClick={onContinue}

@@ -5,7 +5,6 @@ import {
   BookingStepActions,
   BookingStepActionsMobile,
   FareOption,
-  SectionContainer,
   SimpleContainer,
 } from '@/components'
 import { useBooking } from '@/contexts'
@@ -57,8 +56,7 @@ export default function FaresPage() {
 
   return (
     <>
-      {/* Desktop */}
-      <SimpleContainer sx={{ display: { xs: 'none', lg: 'block' } }}>
+      <SimpleContainer>
         <Stack gap={2} pt={4} data-testid="faresPage-options">
           {brandedFares &&
             brandedFares.map((fare) => (
@@ -75,26 +73,6 @@ export default function FaresPage() {
             ))}
         </Stack>
       </SimpleContainer>
-
-      {/* Mobile */}
-      <SectionContainer
-        sx={{ display: { xs: 'flex', lg: 'none' }, backgroundColor: 'common.white', py: 3, mb: 1 }}>
-        <Stack gap={2} data-testid="faresPage-optionsMobile">
-          {brandedFares &&
-            brandedFares.map((fare) => (
-              <FareOption
-                key={fare.id}
-                basePrice={selectedFlight.priceInfo.total}
-                fare={fare}
-                onSelect={setSelectedFare}
-                isSelected={
-                  selectedFare?.routes[0].segments[0].fare.name ===
-                  fare?.routes[0].segments[0].fare.name
-                }
-              />
-            ))}
-        </Stack>
-      </SectionContainer>
       <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
         <BookingStepActions onContinue={goNextStep} onGoBack={goPreviousStep} />
       </Box>

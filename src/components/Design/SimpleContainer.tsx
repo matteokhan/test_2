@@ -26,7 +26,7 @@ export const SimpleContainer = ({
   onAction,
 }: SimpleContainerProps) => {
   return (
-    <Paper sx={{ pb: 4, mb: 2, ...sx }}>
+    <Paper sx={{ pb: { xs: 3, lg: 4 }, borderRadius: { xs: 0, lg: '6px' }, mb: 2, ...sx }}>
       {title && (
         <Stack
           alignItems="center"
@@ -36,7 +36,7 @@ export const SimpleContainer = ({
           borderColor="grey.400"
           direction="row"
           justifyContent="space-between"
-          sx={{ pt: action ? 2 : 3, px: { xs: 2, lg: 4 } }}>
+          sx={{ pt: action ? 2 : 3, px: { xs: 2, md: 5, lg: 4 } }}>
           <Typography variant="titleLg">{title}</Typography>
           {action && (
             <Button onClick={onAction} variant="outlined" sx={{ px: 3 }}>
@@ -45,7 +45,7 @@ export const SimpleContainer = ({
           )}
         </Stack>
       )}
-      <Box sx={{ px: { xs: 2, lg: 4 } }}>{children}</Box>
+      <Box sx={{ px: { xs: 2, md: 5, lg: 4 } }}>{children}</Box>
     </Paper>
   )
 }
