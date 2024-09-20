@@ -54,7 +54,7 @@ export const FareOption = ({
             {fareData.description}
           </Typography>
         </Stack>
-        <Stack gap={1} data-testid="fareOption-servicesMobile">
+        <Stack gap={1} data-testid="fareOption-services">
           {fareData.services.map((service) => (
             <Stack
               key={service.name}

@@ -16,7 +16,7 @@ export const BookingStepActionsMobile = ({
         onClick={onContinue}
         variant="contained"
         size="medium"
-        data-testid="bookingStepsAction-continueButtonMobile">
+        data-testid="bookingStepsAction-continueButton">
         Continuer
       </Button>
       <Button
@@ -24,7 +24,7 @@ export const BookingStepActionsMobile = ({
         onClick={onGoBack}
         variant="text"
         size="medium"
-        data-testid="bookingStepsAction-goBackButtonMobile">
+        data-testid="bookingStepsAction-goBackButton">
         Précédent
       </Button>
     </Stack>

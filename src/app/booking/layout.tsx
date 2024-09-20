@@ -95,7 +95,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
         </SectionContainer>
 
         {/* Mobile */}
-        <Box sx={{ display: { xs: 'block', lg: 'none', position: 'relative' } }}>
+        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -112,7 +112,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
           <Paper
             elevation={3}
             onClick={() => setTotalPriceOpen(true)}
-            data-testid="totalPrice-detailMobile"
+            data-testid="checkoutBottomBar"
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -127,7 +127,10 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
               borderRadius: 0,
             }}>
             <Stack onClick={() => {}}>
-              <Typography variant="headlineMd" color="common.white">
+              <Typography
+                variant="headlineMd"
+                color="common.white"
+                data-testid="checkoutBottomBar-totalPrice">
                 {totalPrice} €
               </Typography>
               <Typography variant="bodySm" color="common.white">

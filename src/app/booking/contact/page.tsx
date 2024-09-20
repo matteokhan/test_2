@@ -89,7 +89,7 @@ export default function ContactInfoPage() {
 
   return (
     <>
-      <SimpleContainer title="Coordonnées" sx={{ pb: { xs: 3, lg: 4 } }}>
+      <SimpleContainer title="Coordonnées">
         <PayerForm
           formRef={formRef}
           onSubmit={() => {}}

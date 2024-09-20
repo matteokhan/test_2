@@ -101,7 +101,7 @@ export const FlightResult = ({
       </Paper>
 
       {/* Mobile */}
-      <Paper sx={{ py: 2, display: { xs: 'block', lg: 'none' } }} data-testid="flightResult-mobile">
+      <Paper sx={{ py: 2, display: { xs: 'block', lg: 'none' } }} data-testid="flightResult">
         <Stack gap={1.5}>
           <Stack flexGrow={1}>
             {result.routes.map((route, index, routes) => (
