@@ -41,7 +41,8 @@ export const ItinerarySegment = ({
   const departureDateTime = dayjs(segment.departureDateTime).utc()
   const arrivalDateTime = dayjs(segment.arrivalDateTime).utc()
   const travelStartDateTime = dayjs(allSegments[0].departureDateTime).utc()
-  const daysToArrival = calculateDaysBetween(travelStartDateTime, departureDateTime)
+  const daysToArrival = calculateDaysBetween(travelStartDateTime, arrivalDateTime)
+  const daysToDeparture = calculateDaysBetween(travelStartDateTime, departureDateTime)
 
   const { data: departureAirportData } = useAirportData({ airportCode: segment.departureCityCode })
   const { data: arrivalAirportData } = useAirportData({ airportCode: segment.arrivalCityCode })
@@ -69,7 +70,7 @@ export const ItinerarySegment = ({
           <ItinerarySegmentDatetime
             time={departureDateTime.format('HH:mm')}
             date={departureDateTime.format('DD MMM').toLowerCase()}
-            daysToArrival={daysToArrival}
+            daysSinceTravelStart={daysToDeparture}
           />
           <ItineraryTimeline />
           <ItinerarySegmentDetails
@@ -98,7 +99,7 @@ export const ItinerarySegment = ({
           <ItinerarySegmentDatetime
             time={arrivalDateTime.format('HH:mm')}
             date={arrivalDateTime.format('DD MMM').toLowerCase()}
-            daysToArrival={daysToArrival}
+            daysSinceTravelStart={daysToArrival}
           />
           <ItineraryTimeline noLine={isLastSegment} dotted={!isLastSegment} />
           <ItinerarySegmentDetails
