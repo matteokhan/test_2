@@ -8,9 +8,12 @@ import {
   TrainIcon,
 } from '@/components'
 import { RouteCarrier, RouteSegment, RouteSegmentCarrier } from '@/types'
-import { transformDuration } from '@/utils/date'
 import { useAirportData } from '@/services'
-import { airportNameExtension } from '@/utils'
+import { airportNameExtension, calculateDaysBetween, transformDuration } from '@/utils'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 export const ItinerarySegment = ({
   carrier,
@@ -35,11 +38,10 @@ export const ItinerarySegment = ({
   }
   const isTrainSegment = segment.equipment == 'TRN'
   const tags = isTrainSegment ? 'Vol + train' : null
-
-  const dateOptions: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-  }
+  const departureDateTime = dayjs(segment.departureDateTime).utc()
+  const arrivalDateTime = dayjs(segment.arrivalDateTime).utc()
+  const travelStartDateTime = dayjs(allSegments[0].departureDateTime).utc()
+  const daysToArrival = calculateDaysBetween(travelStartDateTime, departureDateTime)
 
   const { data: departureAirportData } = useAirportData({ airportCode: segment.departureCityCode })
   const { data: arrivalAirportData } = useAirportData({ airportCode: segment.arrivalCityCode })
@@ -65,8 +67,9 @@ export const ItinerarySegment = ({
       <Stack gap={2} key={segment.id} width="100%">
         <Stack direction="row" gap={1}>
           <ItinerarySegmentDatetime
-            time={segment.departureDateTime.split('T')[1].slice(0, 5)}
-            date={new Date(segment.departureDateTime).toLocaleDateString(undefined, dateOptions)}
+            time={departureDateTime.format('HH:mm')}
+            date={departureDateTime.format('DD MMM').toLowerCase()}
+            daysToArrival={daysToArrival}
           />
           <ItineraryTimeline />
           <ItinerarySegmentDetails
@@ -93,8 +96,9 @@ export const ItinerarySegment = ({
         </Stack>
         <Stack direction="row" gap={1}>
           <ItinerarySegmentDatetime
-            time={segment.arrivalDateTime.split('T')[1].slice(0, 5)}
-            date={new Date(segment.arrivalDateTime).toLocaleDateString(undefined, dateOptions)}
+            time={arrivalDateTime.format('HH:mm')}
+            date={arrivalDateTime.format('DD MMM').toLowerCase()}
+            daysToArrival={daysToArrival}
           />
           <ItineraryTimeline noLine={isLastSegment} dotted={!isLastSegment} />
           <ItinerarySegmentDetails
