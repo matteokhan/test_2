@@ -9,8 +9,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
     <Paper
       sx={{
         width: '100%',
-        px: { xs: 2, lg: 4 },
-        py: { xs: 2, lg: 4 },
+        p: { xs: 2, lg: 4 },
         height: { xs: '100%', lg: 'unset' },
         borderRadius: { xs: 0, lg: '6px' },
       }}

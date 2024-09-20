@@ -7,10 +7,10 @@ import Image from 'next/image'
 import CloseIcon from '@mui/icons-material/Close'
 
 type PurchaseDetailsProps = {
-  onAction?: () => void
+  onClose?: () => void
 }
 
-export const PurchaseDetails = ({ onAction }: PurchaseDetailsProps) => {
+export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
   const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare } = useBooking()
   return (
@@ -22,15 +22,13 @@ export const PurchaseDetails = ({ onAction }: PurchaseDetailsProps) => {
         width: { xs: 'unset', lg: '389px' },
       }}
       data-testid="purchaseDetails">
-      {!onAction && (
-        <Typography variant="titleLg" paddingBottom={2}>
-          Détails du prix
-        </Typography>
-      )}
-      {onAction && (
+      <Typography variant="titleLg" paddingBottom={2} sx={{ display: { xs: 'none', lg: 'block' } }}>
+        Détails du prix
+      </Typography>
+      {onClose && (
         <Stack justifyContent="space-between" alignItems="center" direction="row" paddingBottom={2}>
           <Typography variant="titleLg">Détails du prix</Typography>
-          <CloseIcon onClick={() => onAction()} />
+          <CloseIcon onClick={() => onClose()} />
         </Stack>
       )}
       <Stack pt={1} gap={1} pb={2}>

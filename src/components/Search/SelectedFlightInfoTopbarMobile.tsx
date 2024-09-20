@@ -9,9 +9,9 @@ import TuneIcon from '@mui/icons-material/Tune'
 import { airportName } from '@/utils'
 import dayjs from 'dayjs'
 import { styled } from '@mui/material/styles'
-
 import CloseIcon from '@mui/icons-material/Close'
 import { useAirportData } from '@/services'
+import { useRouter } from 'next/navigation'
 
 type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
@@ -20,6 +20,7 @@ type SelectedFlightInfoTopbarMobileProps = {
 export const SelectedFlightInfoTopbarMobile = ({
   withFilters,
 }: SelectedFlightInfoTopbarMobileProps) => {
+  const router = useRouter()
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
 
   // Depending on whether the flight is round trip or one way, the departure location and
@@ -131,7 +132,12 @@ export const SelectedFlightInfoTopbarMobile = ({
             <CloseIcon />
           </IconButton>
         </Stack>
-        <SearchFlightsModesMobile onSubmit={() => setFlightSearchOpen(false)} />
+        <SearchFlightsModesMobile
+          onSubmit={() => {
+            setFlightSearchOpen(false)
+            router.push('/flights')
+          }}
+        />
       </Drawer>
     </SectionContainer>
   )

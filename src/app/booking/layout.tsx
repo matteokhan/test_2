@@ -160,7 +160,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
               height: 'auto',
             },
           }}>
-          <PurchaseDetails onAction={() => setTotalPriceOpen(false)} />
+          <PurchaseDetails onClose={() => setTotalPriceOpen(false)} />
         </Drawer>
       </Box>
     </>

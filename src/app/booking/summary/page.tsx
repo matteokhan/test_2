@@ -80,12 +80,12 @@ export default function BookingSummaryPage() {
 
   return (
     <>
-      <SimpleContainer title="Itinéraire" sx={{ borderRadius: { xs: 0, lg: 'initial' } }}>
+      <SimpleContainer title="Itinéraire">
         <Itinerary />
       </SimpleContainer>
       <SimpleContainer
         title="Passagers"
-        sx={{ pb: 3, borderRadius: { xs: 0, lg: 'initial' } }}
+        sx={{ pb: 3 }}
         action="Modifier"
         onAction={() => goToStep('passengers')}>
         <PassengersSummary />

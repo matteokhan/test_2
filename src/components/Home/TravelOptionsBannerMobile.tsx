@@ -100,7 +100,12 @@ export const TravelOptionsBanner = () => {
               <CloseIcon />
             </IconButton>
           </Stack>
-          <SearchFlightsModesMobile onSubmit={() => setFlightSearchOpen(false)} />
+          <SearchFlightsModesMobile
+            onSubmit={() => {
+              setFlightSearchOpen(false)
+              router.push('/flights')
+            }}
+          />
         </Drawer>
       </Stack>
     </SectionContainer>
