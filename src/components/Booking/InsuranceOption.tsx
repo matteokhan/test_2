@@ -25,7 +25,7 @@ export const InsuranceOption = ({
         {/* <Box height="200px" flexShrink={0}>
           Image
         </Box> */}
-        <Stack p={3} flexGrow={1}>
+        <Stack sx={{ p: { xs: 2, lg: 3 } }} flexGrow={1}>
           <Typography variant="headlineXs" pb={1} data-testid="insuranceOption-title">
             {insurance.title}
           </Typography>
@@ -37,8 +37,8 @@ export const InsuranceOption = ({
         <Stack
           borderTop="1px solid"
           borderColor="grey.400"
-          px={3}
           py={2}
+          sx={{ px: { xs: 2, lg: 3 } }}
           direction="row"
           justifyContent="space-between"
           alignItems="center"

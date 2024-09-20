@@ -9,21 +9,33 @@ import TuneIcon from '@mui/icons-material/Tune'
 import { airportName } from '@/utils'
 import dayjs from 'dayjs'
 import { styled } from '@mui/material/styles'
-
 import CloseIcon from '@mui/icons-material/Close'
 import { useAirportData } from '@/services'
+import { useRouter } from 'next/navigation'
 
-export const SelectedFlightInfoTopbarMobile = () => {
-  const { firstSegment, lastSegment, totalPassengers } = useFlights()
+type SelectedFlightInfoTopbarMobileProps = {
+  withFilters?: boolean
+}
+
+export const SelectedFlightInfoTopbarMobile = ({
+  withFilters,
+}: SelectedFlightInfoTopbarMobileProps) => {
+  const router = useRouter()
+  const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
+
+  // Depending on whether the flight is round trip or one way, the departure location and
+  // destination location will be different'
+  const departureLocation = firstSegment ? firstSegment.from : ''
+  const departureDate = firstSegment ? firstSegment.date : ''
+  const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
+  const destinationDate = lastSegment ? (isOneWay ? lastSegment.date : lastSegment?.date) : ''
 
   const { data: departureAirportData } = useAirportData({
-    airportCode: firstSegment?.from ? firstSegment.from : '',
+    airportCode: departureLocation,
   })
-
   const { data: arrivalAirportData } = useAirportData({
-    airportCode: lastSegment?.to ? lastSegment.to : '',
+    airportCode: destinationLocation,
   })
-
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
 
   const TravelOptionButton = styled(Box)(({ theme }) => ({
@@ -44,54 +56,56 @@ export const SelectedFlightInfoTopbarMobile = () => {
         {' '}
         <Stack direction="row" gap={1} alignItems="center">
           <Typography variant="titleMd">
-            {airportName(departureAirportData)} ({firstSegment?.from})
+            {airportName(departureAirportData)} ({departureLocation})
           </Typography>
           <SwapHorizIcon data-testid={null} />
           <Typography variant="titleMd">
-            {airportName(arrivalAirportData)} ({lastSegment?.to})
+            {airportName(arrivalAirportData)} ({destinationLocation})
           </Typography>
         </Stack>
         <Typography variant="bodyMd">
-          Du {dayjs(firstSegment?.date).format('DD-MM')} au{' '}
-          {dayjs(lastSegment?.date).format('DD-MM')} - {totalPassengers} voyageurs
+          Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')} -{' '}
+          {totalPassengers} voyageurs
         </Typography>
       </Stack>
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 1,
-          overflowX: 'auto',
-          width: '100%',
-          maxWidth: '100vw',
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-          py: 1,
-        }}>
-        <TravelOptionButton
-          sx={{ alignItems: 'center', gap: 1 }}
-          data-testid="SelectedFlightInfoTopbarMobile-allFiltersButton">
-          <TuneIcon />
-          <Typography variant="titleSm" height="fit-content">
-            Tous les filtres
-          </Typography>{' '}
-        </TravelOptionButton>
-        <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-directFlightsButton">
-          <Typography variant="titleSm" height="fit-content">
-            Directs
-          </Typography>
-        </TravelOptionButton>
-        <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-theFastestButton">
-          <Typography variant="titleSm" height="fit-content">
-            Les plus rapides
-          </Typography>
-        </TravelOptionButton>
-        <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-theCheapestButton">
-          <Typography variant="titleSm" height="fit-content">
-            Les moins chères
-          </Typography>
-        </TravelOptionButton>
-      </Box>
+      {withFilters && (
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            overflowX: 'auto',
+            width: '100%',
+            maxWidth: '100vw',
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
+            py: 1,
+          }}>
+          <TravelOptionButton
+            sx={{ alignItems: 'center', gap: 1 }}
+            data-testid="SelectedFlightInfoTopbarMobile-allFiltersButton">
+            <TuneIcon />
+            <Typography variant="titleSm" height="fit-content">
+              Tous les filtres
+            </Typography>{' '}
+          </TravelOptionButton>
+          <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-directFlightsButton">
+            <Typography variant="titleSm" height="fit-content">
+              Directs
+            </Typography>
+          </TravelOptionButton>
+          <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-theFastestButton">
+            <Typography variant="titleSm" height="fit-content">
+              Les plus rapides
+            </Typography>
+          </TravelOptionButton>
+          <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-theCheapestButton">
+            <Typography variant="titleSm" height="fit-content">
+              Les moins chères
+            </Typography>
+          </TravelOptionButton>
+        </Box>
+      )}
       <Drawer
         open={flightSearchOpen}
         anchor="right"
@@ -118,7 +132,12 @@ export const SelectedFlightInfoTopbarMobile = () => {
             <CloseIcon />
           </IconButton>
         </Stack>
-        <SearchFlightsModesMobile onSubmit={() => setFlightSearchOpen(false)} />
+        <SearchFlightsModesMobile
+          onSubmit={() => {
+            setFlightSearchOpen(false)
+            router.push('/flights')
+          }}
+        />
       </Drawer>
     </SectionContainer>
   )

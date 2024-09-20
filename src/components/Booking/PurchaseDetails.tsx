@@ -4,22 +4,33 @@ import { useBooking, useFlights } from '@/contexts'
 import { getFareData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
+import CloseIcon from '@mui/icons-material/Close'
 
-export const PurchaseDetails = () => {
+type PurchaseDetailsProps = {
+  onClose?: () => void
+}
+
+export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
   const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare } = useBooking()
   return (
     <Paper
       sx={{
-        paddingX: 4,
+        paddingX: { xs: 2, lg: 4 },
         paddingBottom: 4,
-        paddingTop: 3,
-        width: '389px',
+        paddingTop: { xs: 1.5, lg: 3 },
+        width: { xs: 'unset', lg: '389px' },
       }}
       data-testid="purchaseDetails">
-      <Typography variant="titleLg" paddingBottom={2}>
+      <Typography variant="titleLg" paddingBottom={2} sx={{ display: { xs: 'none', lg: 'block' } }}>
         Détails du prix
       </Typography>
+      {onClose && (
+        <Stack justifyContent="space-between" alignItems="center" direction="row" paddingBottom={2}>
+          <Typography variant="titleLg">Détails du prix</Typography>
+          <CloseIcon onClick={() => onClose()} />
+        </Stack>
+      )}
       <Stack pt={1} gap={1} pb={2}>
         {selectedFare && (
           <>

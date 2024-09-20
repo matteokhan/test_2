@@ -1,9 +1,14 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { BookingStepActions, FareOption, SimpleContainer } from '@/components'
+import {
+  BookingStepActions,
+  BookingStepActionsMobile,
+  FareOption,
+  SimpleContainer,
+} from '@/components'
 import { useBooking } from '@/contexts'
-import { Stack } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import { useBrandedFares } from '@/services'
 import { getSearchBrandedFaresDto } from '@/utils'
 
@@ -68,7 +73,12 @@ export default function FaresPage() {
             ))}
         </Stack>
       </SimpleContainer>
-      <BookingStepActions onContinue={goNextStep} onGoBack={goPreviousStep} />
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+        <BookingStepActions onContinue={goNextStep} onGoBack={goPreviousStep} />
+      </Box>
+      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+        <BookingStepActionsMobile onContinue={goNextStep} onGoBack={goPreviousStep} />
+      </Box>
     </>
   )
 }

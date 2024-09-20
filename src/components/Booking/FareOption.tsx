@@ -17,8 +17,8 @@ export const FareOption = ({
   const fareData = getFareData(fare)
   return (
     <Box border="1px solid" borderColor="grey.400" borderRadius="6px" data-testid="fareOption">
-      <Stack direction="row" gap={4} p={3}>
-        <Box width="50%">
+      <Stack direction={{ xs: 'column', lg: 'row' }} gap={{ xs: 1, lg: 4 }} p={3}>
+        <Box width={{ xs: '100%', lg: '50%' }}>
           <Typography variant="headlineXs" pb={1} data-testid="fareOption-name">
             {fareData.name}
           </Typography>
@@ -26,7 +26,7 @@ export const FareOption = ({
             {fareData.description}
           </Typography>
         </Box>
-        <Stack gap={1} width="50%" py={0.5} data-testid="fareOption-services">
+        <Stack gap={1} width={{ xs: '100%', lg: '50%' }} py={0.5} data-testid="fareOption-services">
           {fareData.services.map((service) => (
             <Stack
               key={service.name}
@@ -44,8 +44,8 @@ export const FareOption = ({
       <Stack
         borderTop="1px solid"
         borderColor="grey.400"
-        px={3}
         py={2}
+        sx={{ px: { xs: 2, lg: 3 } }}
         direction="row"
         justifyContent="space-between"
         alignItems="center"

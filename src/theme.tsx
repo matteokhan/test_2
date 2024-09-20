@@ -374,12 +374,16 @@ theme = createTheme(theme, {
     MuiAlert: {
       styleOverrides: {
         root: {
+          fontSize: '12px',
+          [theme.breakpoints.up('lg')]: {
+            fontSize: '14px',
+          },
           variants: [
             {
               props: { severity: 'info' },
               style: {
                 backgroundColor: theme.palette.leclerc.blueNotif.main,
-                color: theme.palette.common.black,
+                color: theme.palette.primary.main,
               },
             },
             {

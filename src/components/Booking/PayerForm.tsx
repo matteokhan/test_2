@@ -121,6 +121,9 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 }}
               />
             </Stack>
+            <Box pb={2} sx={{ display: { xs: 'block', lg: 'none' } }}>
+              <SubscribeNewsletterOptInField name="subscribeNewsletterOptIn" />
+            </Box>
             <Typography pt={3} pb={2} variant="titleMd">
               Adresse de facturation
             </Typography>
@@ -170,7 +173,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 }}
               />
               <CreateAccountOptInField name="createAccountOptIn" />
-              <Box pt={2}>
+              <Box pt={2} sx={{ display: { xs: 'none', lg: 'block' } }}>
                 <SubscribeNewsletterOptInField name="subscribeNewsletterOptIn" />
               </Box>
             </Stack>
