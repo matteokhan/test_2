@@ -33,6 +33,7 @@ const filtersSchema = Yup.object().shape({
   maxPrice: Yup.number(),
   maxPriceType: Yup.string(),
   flightTime: Yup.string().nullable(),
+  flightTimeReturn: Yup.string().nullable(),
   airlineSelected: Yup.array().of(Yup.string()),
 })
 
@@ -42,6 +43,7 @@ type SearchFlightsFiltersProps = {
   airlines?: AirlineFilterData[]
   departure?: string
   arrival?: string
+  isRoundTrip?: boolean
 }
 
 export const SearchFlightsFilters = ({
@@ -50,6 +52,7 @@ export const SearchFlightsFilters = ({
   departure,
   arrival,
   airlines,
+  isRoundTrip,
 }: SearchFlightsFiltersProps) => {
   const DEFAULT_FILTERS = {
     scales: 'all',
@@ -58,6 +61,7 @@ export const SearchFlightsFilters = ({
     maxPrice: filterData?.maxPrice || 0,
     maxPriceType: 'per-person',
     flightTime: null,
+    flightTimeReturn: null,
     airlinesSelected: [],
   } as SearchFlightFilters
 
@@ -122,23 +126,53 @@ export const SearchFlightsFilters = ({
                 <Typography variant="titleMd" pb={1}>
                   Tranche horaire pour le départ
                 </Typography>
-                <Box pb={1}>
-                  <Stack direction="row" gap={1} alignItems="center">
-                    <Typography variant="titleSm">
-                      {airportName(departureAirportData)} ({departure})
+                {filterData !== undefined && (
+                  <Box pb={1}>
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <Typography variant="titleSm">
+                        {airportName(departureAirportData)} ({departure})
+                      </Typography>
+                      <ArrowForwardIcon data-testid={null} />
+                      <Typography variant="titleSm">
+                        {airportName(arrivalAirportData)} ({arrival})
+                      </Typography>
+                    </Stack>
+                    <Typography variant="bodySm">
+                      Départ de aeroport{' '}
+                      {departureAirportData ? departureAirportData.extension : departure}
                     </Typography>
-                    <ArrowForwardIcon data-testid={null} />
-                    <Typography variant="titleSm">
-                      {airportName(arrivalAirportData)} ({arrival})
-                    </Typography>
-                  </Stack>
-                  <Typography variant="bodySm">
-                    Départ de aeroport{' '}
-                    {departureAirportData ? departureAirportData.extension : departure}
-                  </Typography>
-                </Box>
+                  </Box>
+                )}
                 <FlightTimeFilterField name="flightTime" disabled={filterData === undefined} />
               </Box>
+              {isRoundTrip && (
+                <Box pb={1}>
+                  <Typography variant="titleMd" pb={1}>
+                    Tranche horaire pour le retour
+                  </Typography>
+                  {filterData !== undefined && (
+                    <Box pb={1}>
+                      <Stack direction="row" gap={1} alignItems="center">
+                        <Typography variant="titleSm">
+                          {airportName(arrivalAirportData)} ({departure})
+                        </Typography>
+                        <ArrowForwardIcon data-testid={null} />
+                        <Typography variant="titleSm">
+                          {airportName(departureAirportData)} ({arrival})
+                        </Typography>
+                      </Stack>
+                      <Typography variant="bodySm">
+                        Arrivé à l'aeroport{' '}
+                        {departureAirportData ? departureAirportData.extension : departure}
+                      </Typography>
+                    </Box>
+                  )}
+                  <FlightTimeFilterField
+                    name="flightTimeReturn"
+                    disabled={filterData === undefined}
+                  />
+                </Box>
+              )}
               <Box>
                 <Typography variant="titleMd" pb={1}>
                   Compagnies aériennes
