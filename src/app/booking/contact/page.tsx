@@ -7,6 +7,7 @@ import {
   SelectAgencyMap,
   SimpleContainer,
   SelectAgency,
+  BookingStepActionsMobile,
 } from '@/components'
 import { useBooking, useUserLocation } from '@/contexts'
 import { Box, Button, Stack, Typography, Drawer } from '@mui/material'
@@ -88,7 +89,7 @@ export default function ContactInfoPage() {
 
   return (
     <>
-      <SimpleContainer title="Coordonnées">
+      <SimpleContainer title="Coordonnées" sx={{ pb: { xs: 3, lg: 4 } }}>
         <PayerForm
           formRef={formRef}
           onSubmit={() => {}}
@@ -171,11 +172,20 @@ export default function ContactInfoPage() {
           }}
         />
       </Drawer> */}
-      <BookingStepActions
-        onContinue={handleSubmit}
-        onGoBack={goPreviousStep}
-        isLoading={isUpdatingReservation}
-      />
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+        <BookingStepActions
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingReservation}
+        />
+      </Box>
+      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+        <BookingStepActionsMobile
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingReservation}
+        />
+      </Box>
     </>
   )
 }

@@ -10,12 +10,14 @@ import {
 import { useFlights } from '@/contexts'
 import { SearchRoundTripFlightsFormMobile, SearchOneWayFlightsFormMobile } from '@/components'
 import { FormikProps } from 'formik'
+import { useRouter } from 'next/navigation'
 
 type SearchFlightsModesMobileProps = {
   onSubmit?: () => void
 }
 
 export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileProps) => {
+  const router = useRouter()
   const [activeTab, setActiveTab] = React.useState(0)
 
   const formRefOneWay = useRef<FormikProps<OneWayFlightSearchParams> | null>(null)
@@ -60,6 +62,7 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
       // TODO: log this somewhere
       return
     }
+    router.push('/flights')
     if (onSubmit) onSubmit()
   }
 

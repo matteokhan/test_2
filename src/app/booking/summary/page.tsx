@@ -12,6 +12,7 @@ import {
   NoPaymentMethodConfirmationModal,
   BookingConditionsCheckbox,
   AcceptBookingConditionsModal,
+  BookingStepActionsMobile,
 } from '@/components'
 import { useBooking } from '@/contexts'
 import { useReservationPaymentInfo, useUpdateReservation } from '@/services'
@@ -79,12 +80,12 @@ export default function BookingSummaryPage() {
 
   return (
     <>
-      <SimpleContainer title="Itinéraire">
+      <SimpleContainer title="Itinéraire" sx={{ borderRadius: { xs: 0, lg: 'initial' } }}>
         <Itinerary />
       </SimpleContainer>
       <SimpleContainer
         title="Passagers"
-        sx={{ pb: 3 }}
+        sx={{ pb: 3, borderRadius: { xs: 0, lg: 'initial' } }}
         action="Modifier"
         onAction={() => goToStep('passengers')}>
         <PassengersSummary />
@@ -129,11 +130,20 @@ export default function BookingSummaryPage() {
         onClose={() => setAcceptConditionsModalIsOpen(false)}>
         <AcceptBookingConditionsModal onClose={() => setAcceptConditionsModalIsOpen(false)} />
       </Modal>
-      <BookingStepActions
-        onContinue={handleSubmit}
-        onGoBack={goPreviousStep}
-        isLoading={isConfirming || isUpdatingReservation}
-      />
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+        <BookingStepActions
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isConfirming || isUpdatingReservation}
+        />
+      </Box>
+      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+        <BookingStepActionsMobile
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isConfirming || isUpdatingReservation}
+        />
+      </Box>
     </>
   )
 }

@@ -22,10 +22,18 @@ export default function SuccessPage() {
       <Box
         sx={{
           backgroundColor: 'grey.200',
+          display: { xs: 'none', lg: 'block' },
         }}>
         <SectionContainer sx={{ paddingY: 3 }}>
           {reservation && <BookingConfirmation reservation={reservation} />}
         </SectionContainer>
+      </Box>
+      <Box
+        sx={{
+          display: { xs: 'block', lg: 'none' },
+          height: '100vh',
+        }}>
+        {reservation && <BookingConfirmation reservation={reservation} />}
       </Box>
     </>
   )

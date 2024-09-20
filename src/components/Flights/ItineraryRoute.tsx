@@ -1,3 +1,5 @@
+'use client'
+
 import { Route } from '@/types'
 import { Box, Stack, SxProps, Typography } from '@mui/material'
 import { ItinerarySegment } from '@/components'
@@ -7,8 +9,11 @@ import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { useState } from 'react'
 
 export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) => {
+  const [expanded, setExpanded] = useState(true)
+
   const departure = route.segments[0].departure
   const arrival = route.segments[route.segments.length - 1].arrival
 
@@ -21,6 +26,10 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
 
   const { data: departureAirportData } = useAirportData({ airportCode: departure })
   const { data: arrivalAirportData } = useAirportData({ airportCode: arrival })
+
+  const handleAccordionChange = (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded)
+  }
 
   return (
     <>
@@ -64,12 +73,16 @@ export const ItineraryRoute = ({ route, sx }: { route: Route; sx?: SxProps }) =>
 
       {/* Mobile */}
       <Accordion
+        expanded={expanded}
+        onChange={handleAccordionChange}
         disableGutters
         sx={{
           borderRadius: '4px',
           '&:before': {
             display: 'none',
           },
+          border: '1px solid',
+          borderColor: 'grey.400',
           display: { xs: 'block', lg: 'none' },
         }}>
         <AccordionSummary

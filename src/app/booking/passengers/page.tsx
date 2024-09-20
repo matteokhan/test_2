@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useRef } from 'react'
-import { BookingStepActions, PassengerInfo } from '@/components'
+import { BookingStepActions, BookingStepActionsMobile, PassengerInfo } from '@/components'
 import { useBooking } from '@/contexts'
 import { PassengerData, ReservationDto, ReservationPassengerDto } from '@/types'
 import { FormikProps } from 'formik'
 import { getReservationPassengerDto } from '@/utils'
 import { useUpdateReservation } from '@/services'
+import { Box } from '@mui/material'
 
 export default function PassengersPage() {
   const {
@@ -114,11 +115,20 @@ export default function PassengersPage() {
           initialValues={passenger}
         />
       ))}
-      <BookingStepActions
-        onContinue={handleSubmit}
-        onGoBack={goPreviousStep}
-        isLoading={isUpdatingReservation}
-      />
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+        <BookingStepActions
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingReservation}
+        />
+      </Box>
+      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+        <BookingStepActionsMobile
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingReservation}
+        />
+      </Box>
     </>
   )
 }

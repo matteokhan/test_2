@@ -6,7 +6,15 @@ import dayjs from 'dayjs'
 
 export const BookingConfirmation = ({ reservation }: { reservation: ReservationDto }) => {
   return (
-    <Paper sx={{ width: '100%', p: 4 }} data-testid="bookingConfirmation">
+    <Paper
+      sx={{
+        width: '100%',
+        px: { xs: 2, lg: 4 },
+        py: { xs: 2, lg: 4 },
+        height: { xs: '100%', lg: 'unset' },
+        borderRadius: { xs: 0, lg: '6px' },
+      }}
+      data-testid="bookingConfirmation">
       <Stack alignItems="center">
         <Box width={140} height={140} position="relative">
           <Image src="/design_1.svg" alt="voyages image" fill />

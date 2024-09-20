@@ -2,6 +2,7 @@ import { Box, Button, Stack, Typography } from '@mui/material'
 import { Solution } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
 import { getFareData } from '@/utils'
+import { SectionContainer } from '@/components'
 
 export const FareOption = ({
   basePrice,
@@ -17,7 +18,8 @@ export const FareOption = ({
   const fareData = getFareData(fare)
   return (
     <Box border="1px solid" borderColor="grey.400" borderRadius="6px" data-testid="fareOption">
-      <Stack direction="row" gap={4} p={3}>
+      {/* Desktop */}
+      <Stack direction="row" gap={4} p={3} sx={{ display: { xs: 'none', lg: 'flex' } }}>
         <Box width="50%">
           <Typography variant="headlineXs" pb={1} data-testid="fareOption-name">
             {fareData.name}
@@ -41,11 +43,37 @@ export const FareOption = ({
           ))}
         </Stack>
       </Stack>
+
+      {/* Mobile */}
+      <SectionContainer sx={{ display: { xs: 'block', lg: 'none' }, py: 3 }}>
+        <Stack mb={1}>
+          <Typography variant="headlineXs" pb={1} data-testid="fareOption-name">
+            {fareData.name}
+          </Typography>
+          <Typography variant="bodyMd" data-testid="fareOption-description">
+            {fareData.description}
+          </Typography>
+        </Stack>
+        <Stack gap={1} data-testid="fareOption-servicesMobile">
+          {fareData.services.map((service) => (
+            <Stack
+              key={service.name}
+              direction="row"
+              alignItems="center"
+              data-testid="fareOption-service">
+              {service.icon}
+              <Typography sx={{ ml: 1 }} variant="bodyMd" data-testid="fareOption-serviceName">
+                {service.name}
+              </Typography>
+            </Stack>
+          ))}
+        </Stack>
+      </SectionContainer>
       <Stack
         borderTop="1px solid"
         borderColor="grey.400"
-        px={3}
         py={2}
+        sx={{ px: { xs: 2, lg: 3 } }}
         direction="row"
         justifyContent="space-between"
         alignItems="center"

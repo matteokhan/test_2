@@ -6,9 +6,10 @@ import {
   InsuranceOption,
   SimpleContainer,
   NoInsuranceConfirmationModal,
+  BookingStepActionsMobile,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Alert, Grid, Stack, Modal, Button } from '@mui/material'
+import { Alert, Grid, Stack, Modal, Button, Box } from '@mui/material'
 import { useInsurances, useUpdateReservation } from '@/services'
 import { ReservationDto } from '@/types'
 import WarningIcon from '@mui/icons-material/Warning'
@@ -76,8 +77,11 @@ export default function InsurancesPage() {
   return (
     <>
       <SimpleContainer>
-        <Stack gap={2} pt={4}>
-          <Alert severity="info" icon={<WarningIcon fontSize="inherit" sx={{ color: 'black' }} />}>
+        <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
+          <Alert
+            sx={{ color: 'primary.main', fontSize: { xs: '12px', lg: '14px' } }}
+            severity="info"
+            icon={<WarningIcon fontSize="inherit" sx={{ color: 'primary.main' }} />}>
             Pour votre confort, nous vous recommandons de sélectionner une des assurances proposées.
             Il ne sera plus possible d’y souscrire après votre réservation.
           </Alert>
@@ -104,11 +108,20 @@ export default function InsurancesPage() {
           </Button>
         </Stack>
       </SimpleContainer>
-      <BookingStepActions
-        onContinue={handleSubmit}
-        onGoBack={goPreviousStep}
-        isLoading={isUpdatingReservation}
-      />
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+        <BookingStepActions
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingReservation}
+        />
+      </Box>
+      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+        <BookingStepActionsMobile
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingReservation}
+        />
+      </Box>
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
         <NoInsuranceConfirmationModal
           onChooseInsurance={() => setModalIsOpen(false)}

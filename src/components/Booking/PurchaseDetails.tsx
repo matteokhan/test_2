@@ -4,22 +4,35 @@ import { useBooking, useFlights } from '@/contexts'
 import { getFareData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
+import CloseIcon from '@mui/icons-material/Close'
 
-export const PurchaseDetails = () => {
+type PurchaseDetailsProps = {
+  onAction?: () => void
+}
+
+export const PurchaseDetails = ({ onAction }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
   const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare } = useBooking()
   return (
     <Paper
       sx={{
-        paddingX: 4,
+        paddingX: { xs: 2, lg: 4 },
         paddingBottom: 4,
-        paddingTop: 3,
-        width: '389px',
+        paddingTop: { xs: 1.5, lg: 3 },
+        width: { xs: 'unset', lg: '389px' },
       }}
       data-testid="purchaseDetails">
-      <Typography variant="titleLg" paddingBottom={2}>
-        Détails du prix
-      </Typography>
+      {!onAction && (
+        <Typography variant="titleLg" paddingBottom={2}>
+          Détails du prix
+        </Typography>
+      )}
+      {onAction && (
+        <Stack justifyContent="space-between" alignItems="center" direction="row" paddingBottom={2}>
+          <Typography variant="titleLg">Détails du prix</Typography>
+          <CloseIcon onClick={() => onAction()} />
+        </Stack>
+      )}
       <Stack pt={1} gap={1} pb={2}>
         {selectedFare && (
           <>
