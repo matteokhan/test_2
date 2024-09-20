@@ -95,14 +95,6 @@ export const SearchFlightsFilters = ({
                 </Box>
               </Box>
               <Box pb={1}>
-                <Typography variant="titleMd" pb={1}>
-                  Expérience de vol
-                </Typography>
-                <Box pl={1.5}>
-                  <ExperienceFilterField name="experience" disabled={filterData === undefined} />
-                </Box>
-              </Box>
-              <Box pb={1}>
                 <Stack direction="row" justifyContent="space-between" pb={1}>
                   <Typography variant="titleMd">Prix maximum</Typography>
                   <Typography variant="bodyLg" data-testid="searchFlightsFilters-maxPriceLabel">
