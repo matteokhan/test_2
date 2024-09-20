@@ -15,6 +15,9 @@ export const PayerSummary = () => {
       <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-email">
         {payer?.email}
       </Typography>
+      <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-phone">
+        {payer?.phoneNumber}
+      </Typography>
       <Box pt={1}>
         <Typography variant="bodyMd" color="grey.700" data-testid="payerSummary-address">
           {payer?.address}

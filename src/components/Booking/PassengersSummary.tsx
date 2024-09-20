@@ -20,9 +20,16 @@ export const PassengersSummary = () => {
             {getPassengerTypeDescription(passenger.type)} -{' '}
             {passenger.dateOfBirth?.format('DD/MM/YYYY')}
           </Typography>
-          <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-email">
-            {passenger?.email}
-          </Typography>
+          {passenger?.email && (
+            <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-email">
+              {passenger.email}
+            </Typography>
+          )}
+          {passenger?.phoneNumber && (
+            <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-phone">
+              {passenger.phoneNumber}
+            </Typography>
+          )}
         </Box>
       ))}
     </Stack>

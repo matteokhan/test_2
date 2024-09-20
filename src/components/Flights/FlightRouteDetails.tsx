@@ -4,24 +4,23 @@ import { CarryOnLuggageIcon, CheckedLuggageIcon, FlightAirline, NoLuggageIcon } 
 import { Route } from '@/types'
 import { airportNameExtension, transformDuration } from '@/utils'
 import { useAirportData } from '@/services'
+import { calculateDaysBetween } from '@/utils'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 export const FlightRouteDetails = ({ route }: { route: Route }) => {
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
-  const isTrain = firstSegment.equipment == 'TRN'
-  const tags = firstSegment.equipment == 'TRN' ? 'Vol + train' : null
-  const departureDateTime = new Date(firstSegment.departureDateTime)
-  const departureTime =
-    departureDateTime.getUTCHours().toString().padStart(2, '0') +
-    ':' +
-    departureDateTime.getUTCMinutes().toString().padStart(2, '0')
-  const arrivalDateTime = new Date(lastSegment.arrivalDateTime)
-  const arrivalTime =
-    arrivalDateTime.getUTCHours().toString().padStart(2, '0') +
-    ':' +
-    arrivalDateTime.getUTCMinutes().toString().padStart(2, '0')
-  const daysToArrival = arrivalDateTime.getDate() - departureDateTime.getDate()
+  const hasTrainSegment = segments.some((segment) => segment.equipment === 'TRN')
+  const tags = hasTrainSegment ? 'Vol + train' : null
+  const departureDateTime = dayjs(firstSegment.departureDateTime).utc()
+  const departureTime = departureDateTime.format('HH:mm')
+  const arrivalDateTime = dayjs(lastSegment.arrivalDateTime).utc()
+  const arrivalTime = arrivalDateTime.format('HH:mm')
+  const daysToArrival = calculateDaysBetween(departureDateTime, arrivalDateTime)
   const departureAirport = firstSegment.departure
   const departureCityCode = firstSegment.departureCityCode
   const arrivalAirport = lastSegment.arrival
@@ -102,7 +101,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
                 <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
                   {departureCityCode}
                 </Typography>
-                {isTrain && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
+                {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
               </Stack>
             </Stack>
             <Stack textAlign="center" width="40%" gap="2px">
@@ -194,7 +193,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
                 <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
                   {airportNameExtension(departureAirportData)}
                 </Typography>
-                {isTrain && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
+                {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
               </Stack>
               <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
                 {departureCityCode}

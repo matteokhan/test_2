@@ -10,6 +10,7 @@ export type SearchFlightFilters = {
   maxPrice?: number
   maxPriceType?: MaxPriceTypeFilterOption
   flightTime?: FlightTimeFilterOption
+  flightTimeReturn?: FlightTimeFilterOption
   airlinesSelected?: string[]
 }
 export type AirlineFilterData = {

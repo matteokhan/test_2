@@ -65,7 +65,10 @@ export default function FlighsPage() {
 
   const filteredDataOne = response?.solutions
     .filter((solution) => {
-      const totalStops = solution.routes.reduce((acc, route) => acc + (route.stopNumber || 0), 0)
+      const totalStops = solution.routes.reduce(
+        (acc, route) => ((route.stopNumber || 0) > acc ? route.stopNumber : acc),
+        0,
+      )
       if (
         filters.maxPriceType == 'total' &&
         filters?.maxPrice &&
@@ -88,6 +91,18 @@ export default function FlighsPage() {
       if (filters?.flightTime === '12-18' && (flightStartAt < 12 || flightStartAt >= 18))
         return false
       if (filters?.flightTime === '18-24' && flightStartAt < 18) return false
+
+      if (solution.routes.length > 1) {
+        const flightReturnAt = new Date(
+          solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalDateTime,
+        ).getUTCHours()
+        if (filters?.flightTimeReturn === '0-6' && flightReturnAt >= 6) return false
+        if (filters?.flightTimeReturn === '6-12' && (flightReturnAt < 6 || flightReturnAt >= 12))
+          return false
+        if (filters?.flightTimeReturn === '12-18' && (flightReturnAt < 12 || flightReturnAt >= 18))
+          return false
+        if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
+      }
 
       return true
     })
@@ -172,6 +187,9 @@ export default function FlighsPage() {
                   response?.solutions[0]?.routes[0]?.segments[
                     response.solutions[0]?.routes[0]?.segments?.length - 1
                   ]?.arrival
+                }
+                isRoundTrip={
+                  searchParamsDto?.segments?.length ? searchParamsDto.segments.length > 1 : false
                 }
                 onSubmit={(values) => setFilters(values)}
               />
