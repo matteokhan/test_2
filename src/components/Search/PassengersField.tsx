@@ -28,7 +28,7 @@ export const PassengersField = ({ label, sx }: { label?: string; sx?: SxProps })
     <>
       <CustomTextField
         sx={{ ...sx }}
-        value={`${totalPassengers} Passenger${totalPassengers !== 1 ? 's' : ''}`}
+        value={`${totalPassengers} Passager${totalPassengers !== 1 ? 's' : ''}`}
         label={label ? label : 'Voyageurs'}
         onFocus={handleFocus}
         inputRef={anchorRef}

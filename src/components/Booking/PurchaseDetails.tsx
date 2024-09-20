@@ -116,7 +116,8 @@ export const PurchaseDetails = () => {
           bgcolor="leclerc.blueNotif.main"
           direction="row"
           gap={0.75}
-          alignItems="center">
+          alignItems="center"
+          display="none">
           <Typography variant="bodySm">Payez en plusieurs fois avec</Typography>
           <Box
             sx={{
@@ -152,6 +153,7 @@ export const PurchaseDetails = () => {
               position: 'relative',
               height: 23,
               width: 36,
+              display: 'none',
             }}>
             <Image src="/floa_logo_2.svg" alt="floa logo" fill />
           </Box>

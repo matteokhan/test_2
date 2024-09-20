@@ -9,10 +9,11 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import MenuIcon from '@mui/icons-material/Menu'
 import { SectionContainer, SelectAgencyMap } from '@/components'
 import Link from 'next/link'
-import { setCookiesAgency } from '@/utils/cookies'
+import { useAgencySelector } from '@/contexts'
 
 export const Navbar = () => {
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
+  const { setSelectedAgency } = useAgencySelector()
 
   return (
     <Box
@@ -66,7 +67,7 @@ export const Navbar = () => {
               0 825 884 620
             </Typography>
             <Typography color="grey.700" variant="bodySm">
-              (0,25€ TTC/min)
+              *
             </Typography>
           </Stack>
           <Stack gap={{ xs: 2, sm: 5 }} direction="row" alignItems="center">
@@ -105,7 +106,7 @@ export const Navbar = () => {
               <SelectAgencyMap
                 onClose={() => setMapIsOpen(false)}
                 onSelectAgency={({ agency }) => {
-                  setCookiesAgency(agency)
+                  setSelectedAgency(agency.code, agency.name, true)
                   setMapIsOpen(false)
                 }}
               />
