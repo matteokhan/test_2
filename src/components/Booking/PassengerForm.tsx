@@ -19,9 +19,9 @@ const passengerSchema = ({ type }: { type: PassengerType }) =>
     dateOfBirth: Yup.date()
       .typeError('La date de naissance est invalide')
       .required('La date de naissance est requise')
-      .test('is-adult', 'Le passager doit être âgé de 18 ans ou plus', function (value) {
+      .test('is-adult', 'Le passager doit être âgé de 12 ans ou plus', function (value) {
         if (type !== 'ADT') return true
-        return dayjs().diff(dayjs(value), 'year') >= 18
+        return dayjs().diff(dayjs(value), 'year') >= 12
       }),
     phoneNumber: Yup.string().when('type', {
       is: 'ADT',

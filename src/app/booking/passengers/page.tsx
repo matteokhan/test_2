@@ -1,13 +1,18 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { BookingStepActions, BookingStepActionsMobile, PassengerInfo } from '@/components'
+import {
+  AtLeastOneAdultPassengerModal,
+  BookingStepActions,
+  BookingStepActionsMobile,
+  PassengerInfo,
+} from '@/components'
 import { useBooking } from '@/contexts'
 import { PassengerData, ReservationDto, ReservationPassengerDto } from '@/types'
 import { FormikProps } from 'formik'
-import { getReservationPassengerDto } from '@/utils'
+import { getReservationPassengerDto, passengerIsAbove16 } from '@/utils'
 import { useUpdateReservation } from '@/services'
-import { Box } from '@mui/material'
+import { Box, Modal } from '@mui/material'
 
 export default function PassengersPage() {
   const {
@@ -22,6 +27,7 @@ export default function PassengersPage() {
   } = useBooking()
   const formRefs = useRef<(FormikProps<PassengerData> | null)[]>([])
   const [isNavigating, setIsNavigating] = useState(false)
+  const [oneAdultModalIsOpen, setOneAdultModalIsOpen] = useState(false)
   const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
 
   const handleSubmit = async () => {
@@ -47,15 +53,26 @@ export default function PassengersPage() {
       }
     }
 
+    let atLeastOneAdultPassenger = false
     const passengersDto: ReservationPassengerDto[] = []
     formRefs.current.forEach((formRef, index) => {
       if (formRef) {
         const passengerDataValidated = formRef.values
+        if (
+          passengerDataValidated.dateOfBirth &&
+          passengerIsAbove16(passengerDataValidated.dateOfBirth)
+        )
+          atLeastOneAdultPassenger = true
+
         const passengerDto = getReservationPassengerDto({ passenger: passengerDataValidated })
         passengersDto.push(passengerDto)
         handlePassengerSubmit(passengerDataValidated, index)
       }
     })
+    if (!atLeastOneAdultPassenger) {
+      setOneAdultModalIsOpen(true)
+      return
+    }
 
     const newReservation: ReservationDto = {
       ...reservation,
@@ -131,6 +148,9 @@ export default function PassengersPage() {
           isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
+      <Modal open={oneAdultModalIsOpen} onClose={() => setOneAdultModalIsOpen(false)}>
+        <AtLeastOneAdultPassengerModal onClose={() => setOneAdultModalIsOpen(false)} />
+      </Modal>
     </>
   )
 }

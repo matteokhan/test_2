@@ -5,6 +5,7 @@ import { PassengerForm } from '@/components'
 import { FormikHelpers, FormikProps } from 'formik'
 import { PassengerData } from '@/types'
 import { SimpleContainer } from '@/components'
+import { getPassengerTypeDescription } from '@/utils'
 
 type PassengerInfoProps = {
   onSubmit?: (values: PassengerData, actions: FormikHelpers<PassengerData>) => void
@@ -23,8 +24,9 @@ export const PassengerInfo = ({
   onPayerChange,
   initialValues,
 }: PassengerInfoProps) => {
+  const passengerType = getPassengerTypeDescription(initialValues.type)
   return (
-    <SimpleContainer title={'Passager ' + passengerNumber}>
+    <SimpleContainer title={`Passager ${passengerNumber} (${passengerType})`}>
       <PassengerForm
         onSubmit={onSubmit ? onSubmit : () => {}}
         formRef={formRef}
