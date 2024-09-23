@@ -22,7 +22,7 @@ export const searchParamsToDto = (
   const searchParamsDto: SearchFlightsParamsDto = {
     adults: params?.adults || 0,
     childrens: params?.childrens || 0,
-    infant: params?.infant || 0,
+    infants: params?.infants || 0,
     segments: [],
     agencyCode: getAgencyCodeForRequest(),
   }

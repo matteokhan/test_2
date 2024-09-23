@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 const DEFAULT_VALUES = {
   adults: 1,
   childrens: 0,
-  infant: 0,
+  infants: 0,
   destinations: [{ from: '', to: '', departure: dayjs().add(2, 'day').format('YYYY-MM-DD') }],
   _type: 'multiDestinations',
 } as MultiDestinationsFlightSearchParams
@@ -27,14 +27,14 @@ type DestinationErrors = {
 type FormErrors = {
   adults?: string
   childrens?: string
-  infant?: string
+  infants?: string
   destinations?: DestinationErrors[]
 }
 
 type FormTouched = {
   adults?: boolean
   childrens?: boolean
-  infant?: boolean
+  infants?: boolean
   destinations?: {
     from?: boolean
     to?: boolean
@@ -51,7 +51,7 @@ const searchFlightSegmentSchema = Yup.object().shape({
 const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),
   childrens: Yup.number().min(0).required('Requise'),
-  infant: Yup.number().min(0).required('Requise'),
+  infants: Yup.number().min(0).required('Requise'),
   destinations: Yup.array()
     .of(searchFlightSegmentSchema)
     .min(1, 'At least one segment is required'),

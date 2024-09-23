@@ -10,11 +10,11 @@ export const PassengersControls = () => {
   const { values, setFieldValue } = useFormikContext<{
     adults: number
     childrens: number
-    infant: number
+    infants: number
   }>()
 
   const updatePassengers = (
-    field: 'adults' | 'childrens' | 'infant',
+    field: 'adults' | 'childrens' | 'infants',
     operation: 'add' | 'subtract',
   ) => {
     const currentValue = values[field]
@@ -87,16 +87,16 @@ export const PassengersControls = () => {
           <Button
             data-testid="passengersControls-infant-subtract"
             variant="outlined"
-            onClick={() => updatePassengers('infant', 'subtract')}
-            disabled={values.infant <= 0}
+            onClick={() => updatePassengers('infants', 'subtract')}
+            disabled={values.infants <= 0}
             sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
             <RemoveIcon sx={{ width: 16, height: 16 }} />
           </Button>
-          <Typography variant="bodyLg">{values.infant}</Typography>
+          <Typography variant="bodyLg">{values.infants}</Typography>
           <Button
-            data-testid="passengersControls-infant-add"
+            data-testid="passengersControls-infants-add"
             variant="outlined"
-            onClick={() => updatePassengers('infant', 'add')}
+            onClick={() => updatePassengers('infants', 'add')}
             sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
             <AddIcon sx={{ width: 16, height: 16 }} />
           </Button>

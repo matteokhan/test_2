@@ -206,7 +206,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         },
       ])
     }
-    for (let i = 0; i < (searchParamsCache?.infant || 0); i++) {
+    for (let i = 0; i < (searchParamsCache?.infants || 0); i++) {
       setPassengers((prev) => [
         ...prev,
         {

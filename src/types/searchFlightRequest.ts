@@ -13,7 +13,7 @@ export type OneWayFlightSearchParams = {
   departure: string
   adults: number
   childrens: number
-  infant: number
+  infants: number
 }
 
 export type RoundTripFlightSearchParams = {
@@ -26,7 +26,7 @@ export type RoundTripFlightSearchParams = {
   return: string
   adults: number
   childrens: number
-  infant: number
+  infants: number
 }
 
 export type MultiDestinationsFlightSearchParams = {
@@ -40,7 +40,7 @@ export type MultiDestinationsFlightSearchParams = {
   }[]
   adults: number
   childrens: number
-  infant: number
+  infants: number
 }
 
 export type SearchFlightsParams =
@@ -52,6 +52,6 @@ export type SearchFlightsParamsDto = {
   agencyCode: string
   adults: number
   childrens: number
-  infant: number
+  infants: number
   segments: SearchFlightSegment[]
 }

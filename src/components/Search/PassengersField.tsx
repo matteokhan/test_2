@@ -11,7 +11,7 @@ export const PassengersField = ({ label, sx }: { label?: string; sx?: SxProps })
   const { values } = useFormikContext<{
     adults: number
     childrens: number
-    infant: number
+    infants: number
   }>()
 
   const handleFocus = useCallback(() => {
@@ -22,7 +22,7 @@ export const PassengersField = ({ label, sx }: { label?: string; sx?: SxProps })
     setIsOpen(false)
   }, [])
 
-  const totalPassengers = values.adults + values.childrens + values.infant
+  const totalPassengers = values.adults + values.childrens + values.infants
 
   return (
     <>

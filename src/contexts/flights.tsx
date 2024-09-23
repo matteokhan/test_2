@@ -28,7 +28,7 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const totalPassengers: number = +(
     (searchParamsDto?.adults || 0) +
     (searchParamsDto?.childrens || 0) +
-    (searchParamsDto?.infant || 0)
+    (searchParamsDto?.infants || 0)
   )
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
 

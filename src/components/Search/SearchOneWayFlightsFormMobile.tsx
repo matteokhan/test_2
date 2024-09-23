@@ -15,7 +15,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 const DEFAULT_VALUES = {
   adults: 1,
   childrens: 0,
-  infant: 0,
+  infants: 0,
   from: '',
   to: '',
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
@@ -25,7 +25,7 @@ const DEFAULT_VALUES = {
 const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),
   childrens: Yup.number().min(0).required('Requise'),
-  infant: Yup.number().min(0).required('Requise'),
+  infants: Yup.number().min(0).required('Requise'),
   from: Yup.string().required('Requise'),
   to: Yup.string().required('Requise'),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
@@ -55,7 +55,7 @@ export const SearchOneWayFlightsFormMobile = ({
       onSubmit={() => {}}
       enableReinitialize>
       {({ values, setFieldValue, touched, errors }) => {
-        const totalPassengers = values.adults + values.childrens + values.infant
+        const totalPassengers = values.adults + values.childrens + values.infants
         return (
           <Form data-testid="searchOneWayMobile-form">
             <Stack gap={1}>
@@ -286,7 +286,7 @@ export const SearchOneWayFlightsFormMobile = ({
                       onClick={() => {
                         setFieldValue('adults', DEFAULT_VALUES.adults, true)
                         setFieldValue('childrens', DEFAULT_VALUES.childrens, true)
-                        setFieldValue('infant', DEFAULT_VALUES.infant, true)
+                        setFieldValue('infants', DEFAULT_VALUES.infants, true)
                       }}>
                       Tout effacer
                     </Button>

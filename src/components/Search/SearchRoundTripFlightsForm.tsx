@@ -12,7 +12,7 @@ import dayjs from 'dayjs'
 const DEFAULT_VALUES = {
   adults: 1,
   childrens: 0,
-  infant: 0,
+  infants: 0,
   from: '',
   fromLabel: '',
   to: '',
@@ -25,7 +25,7 @@ const DEFAULT_VALUES = {
 const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),
   childrens: Yup.number().min(0).required('Requise'),
-  infant: Yup.number().min(0).required('Requise'),
+  infants: Yup.number().min(0).required('Requise'),
   from: Yup.string().required('Requise'),
   fromLabel: Yup.string(),
   to: Yup.string().required('Requise'),
