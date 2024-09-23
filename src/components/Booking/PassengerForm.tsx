@@ -76,7 +76,7 @@ export const PassengerForm = ({
         enableReinitialize={false}>
         {({ errors, touched, setFieldValue, values }) => (
           <Form data-testid="passengerForm">
-            <Stack direction="row" pt={0.5} pl={1} pb={0.5}>
+            <Stack direction="row" pt={0.5} pb={0.5}>
               <SalutationField name="salutation" />
             </Stack>
             <Stack gap={1}>
