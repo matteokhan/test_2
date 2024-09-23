@@ -11,12 +11,18 @@ import {
 } from '@/components'
 import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import dayjs from 'dayjs'
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
   firstName: Yup.string().required('Le prénom est requis'),
   lastName: Yup.string().required('Le nom est requis'),
-  dateOfBirth: Yup.string().required('La date de naissance est requise'),
+  dateOfBirth: Yup.date()
+    .typeError('La date de naissance est invalide')
+    .required('La date de naissance est requise')
+    .test('is-adult', 'Le payeur doit être âgé de 18 ans ou plus', function (value) {
+      return dayjs().diff(dayjs(value), 'year') >= 18
+    }),
   phoneNumber: Yup.string().required('Le numéro de téléphone est requis'),
   email: Yup.string().email('E-mail invalide').required("L'e-mail est requis"),
   address: Yup.string().required('L’adresse est requise'),

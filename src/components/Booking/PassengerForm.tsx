@@ -17,6 +17,7 @@ const passengerSchema = ({ type }: { type: PassengerType }) =>
     firstName: Yup.string().required('Le prénom est requis'),
     lastName: Yup.string().required('Le nom est requis'),
     dateOfBirth: Yup.date()
+      .typeError('La date de naissance est invalide')
       .required('La date de naissance est requise')
       .test('is-adult', 'Le passager doit être âgé de 18 ans ou plus', function (value) {
         if (type !== 'ADT') return true
