@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { BookingStepActions, BookingStepActionsMobile, PassengerInfo } from '@/components'
 import { useBooking } from '@/contexts'
 import { PassengerData, ReservationDto, ReservationPassengerDto } from '@/types'
@@ -21,6 +21,7 @@ export default function PassengersPage() {
     setReservation,
   } = useBooking()
   const formRefs = useRef<(FormikProps<PassengerData> | null)[]>([])
+  const [isNavigating, setIsNavigating] = useState(false)
   const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
 
   const handleSubmit = async () => {
@@ -63,6 +64,7 @@ export default function PassengersPage() {
     updateReservation(newReservation, {
       onSuccess: (data) => {
         setReservation(data)
+        setIsNavigating(true)
         goNextStep()
       },
       onError: (error) => {
@@ -119,14 +121,14 @@ export default function PassengersPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation}
+          isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation}
+          isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
     </>

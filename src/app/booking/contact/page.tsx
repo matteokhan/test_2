@@ -18,6 +18,7 @@ import { getReservationClientDto } from '@/utils'
 
 export default function ContactInfoPage() {
   const formRef = useRef<FormikProps<PayerData> | null>(null)
+  const [isNavigating, setIsNavigating] = useState(false)
   const {
     goNextStep,
     setPayer,
@@ -78,6 +79,7 @@ export default function ContactInfoPage() {
     updateReservation(newReservation, {
       onSuccess: (data) => {
         setReservation(data)
+        setIsNavigating(true)
         goNextStep()
       },
       onError: (error) => {
@@ -176,14 +178,14 @@ export default function ContactInfoPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation}
+          isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation}
+          isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
     </>

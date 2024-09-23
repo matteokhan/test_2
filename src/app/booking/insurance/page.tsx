@@ -18,6 +18,7 @@ export default function InsurancesPage() {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [firstWarning, setFirstWarning] = useState(true)
   const [noInsurance, setNoInsurance] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
   const {
     goPreviousStep,
     goNextStep,
@@ -53,6 +54,7 @@ export default function InsurancesPage() {
     updateReservation(newReservation, {
       onSuccess: (data) => {
         setReservation(data)
+        setIsNavigating(true)
         goNextStep()
       },
       onError: (error) => {
@@ -109,14 +111,14 @@ export default function InsurancesPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation}
+          isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation}
+          isLoading={isUpdatingReservation || isNavigating}
         />
       </Box>
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
