@@ -9,6 +9,13 @@ export type SearchResponseFilterData = {
   allCarriers: string[]
   allCabinClasses: string[]
   allStops: number[]
+  airports: AirportFilter[]
+}
+
+export type AirportFilter = {
+  routeIndex: number
+  from: string[]
+  to: string[]
 }
 
 export type SearchResponseDto = {

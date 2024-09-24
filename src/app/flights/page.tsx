@@ -104,6 +104,22 @@ export default function FlighsPage() {
         if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
       }
 
+      if (filters?.airportSelected) {
+        for (let airportFilter of filters.airportSelected) {
+          const route = solution.routes[airportFilter.routeIndex]
+          if (airportFilter.from.length > 0) {
+            if (!airportFilter.from.includes(route.segments[0].departure)) {
+              return false
+            }
+          }
+          if (airportFilter.to.length > 0) {
+            if (!airportFilter.to.includes(route.segments[route.segments.length - 1].arrival)) {
+              return false
+            }
+          }
+        }
+      }
+
       return true
     })
     .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
