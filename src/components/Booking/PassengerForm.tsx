@@ -22,6 +22,16 @@ const passengerSchema = ({ type }: { type: PassengerType }) =>
       .test('is-adult', 'Le passager doit être âgé de 12 ans ou plus', function (value) {
         if (type !== 'ADT') return true
         return dayjs().diff(dayjs(value), 'year') >= 12
+      })
+      .test('is-child', "L'âge de l'enfant doit être entre 2 et 11 ans", function (value) {
+        if (type !== 'CHD') return true
+        const age = dayjs().diff(dayjs(value), 'year')
+        return age >= 2 && age < 12
+      })
+      .test('is-infant', "L'âge de l'enfant doit être inférieur à 2 ans", function (value) {
+        if (type !== 'INF') return true
+        const age = dayjs().diff(dayjs(value), 'year')
+        return age < 2
       }),
     phoneNumber: Yup.string().when('type', {
       is: 'ADT',
