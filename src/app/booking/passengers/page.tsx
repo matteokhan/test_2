@@ -8,7 +8,7 @@ import {
   AtLeastOneAdultPassengerModal,
   AtLeastOneYoungAdultPassengerModal,
 } from '@/components'
-import { useBooking } from '@/contexts'
+import { EmailRequirementProvider, useBooking } from '@/contexts'
 import { PassengerData, ReservationDto, ReservationPassengerDto } from '@/types'
 import { FormikProps } from 'formik'
 import { getReservationPassengerDto, ageIsAtLeast } from '@/utils'
@@ -50,9 +50,11 @@ export default function PassengersPage() {
           formRef.setTouched(
             Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
           )
-          return
         }
       }
+    }
+    if (Object.keys(formErrors).length > 0) {
+      return
     }
 
     let atLeastOneYoungAdultPassenger = false
@@ -137,16 +139,18 @@ export default function PassengersPage() {
 
   return (
     <>
-      {passengers.map((passenger, index) => (
-        <PassengerInfo
-          key={index}
-          formRef={(el) => (formRefs.current[index] = el)}
-          passengerNumber={index + 1}
-          isPayer={index === payerIndex}
-          onPayerChange={(isPayer) => handlePayerChange(index, isPayer)}
-          initialValues={passenger}
-        />
-      ))}
+      <EmailRequirementProvider totalPassengers={passengers.length}>
+        {passengers.map((passenger, index) => (
+          <PassengerInfo
+            key={index}
+            formRef={(el) => (formRefs.current[index] = el)}
+            passengerIndex={index}
+            isPayer={index === payerIndex}
+            onPayerChange={(isPayer) => handlePayerChange(index, isPayer)}
+            initialValues={passenger}
+          />
+        ))}
+      </EmailRequirementProvider>
       <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
         <BookingStepActions
           onContinue={handleSubmit}

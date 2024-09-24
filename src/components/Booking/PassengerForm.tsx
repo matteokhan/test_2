@@ -1,16 +1,40 @@
 'use client'
 
+import React, { useEffect } from 'react'
 import { PassengerData, PassengerType } from '@/types'
 import { Alert, Box, Stack, TextField } from '@mui/material'
-import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
+import { Formik, Form, FormikHelpers, Field, FormikProps, useFormikContext } from 'formik'
 import * as Yup from 'yup'
 import { PassengerIsPayerField, SalutationField } from '@/components'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
+import { useEmailRequirement } from '@/contexts'
 
-const passengerSchema = ({ type }: { type: PassengerType }) =>
+// When atLeastOneEmail changes, it resets all the passenger form errors.
+// This is necessary because the form errors are not reset when the email condition is
+// fullfilled on another passenger form
+const FormErrorResetter = () => {
+  const { atLeastOneEmail } = useEmailRequirement()
+  const { setErrors, validateForm } = useFormikContext()
+
+  useEffect(() => {
+    setErrors({})
+    validateForm()
+  }, [atLeastOneEmail, setErrors, validateForm])
+
+  return null
+}
+
+const emailSchema = Yup.string().email('E-mail invalide')
+const passengerSchema = ({
+  type,
+  isEmailProvided,
+}: {
+  type: PassengerType
+  isEmailProvided: boolean
+}) =>
   Yup.object().shape({
     type: Yup.string(),
     salutation: Yup.string().required('La salutation est requise'),
@@ -40,9 +64,9 @@ const passengerSchema = ({ type }: { type: PassengerType }) =>
     }),
     email: Yup.string()
       .email('E-mail invalide')
-      .when('type', {
-        is: 'ADT',
-        then: (schema) => schema.required("L'e-mail est requis"),
+      .when(['type'], {
+        is: (type: PassengerType) => type === 'ADT' && !isEmailProvided,
+        then: (schema) => schema.required("L'e-mail est requis pour au moins un passager adulte"),
         otherwise: (schema) => schema.optional(),
       }),
     isPayer: Yup.boolean(),
@@ -54,6 +78,7 @@ type PassengerFormProps = {
   isPayer: boolean
   onPayerChange: (isPayer: boolean) => void
   initialValues: PassengerData
+  passengerIndex: number
 }
 
 export const PassengerForm = ({
@@ -62,7 +87,20 @@ export const PassengerForm = ({
   isPayer,
   onPayerChange,
   initialValues,
+  passengerIndex,
 }: PassengerFormProps) => {
+  const { isEmailProvided, setIsEmailProvided, atLeastOneEmail } = useEmailRequirement()
+
+  useEffect(() => {
+    if (initialValues.type === 'ADT' && initialValues.email) {
+      setIsEmailProvided((prev) => {
+        const newIsEmailProvided = [...prev]
+        newIsEmailProvided[passengerIndex] = true
+        return newIsEmailProvided
+      })
+    }
+  }, [])
+
   return (
     <Box pt={2}>
       <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
@@ -82,11 +120,15 @@ export const PassengerForm = ({
             type: '',
           }
         }
-        validationSchema={passengerSchema({ type: initialValues.type })}
+        validationSchema={passengerSchema({
+          type: initialValues.type,
+          isEmailProvided: atLeastOneEmail,
+        })}
         onSubmit={onSubmit}
         enableReinitialize={false}>
         {({ errors, touched, setFieldValue, values }) => (
           <Form data-testid="passengerForm">
+            <FormErrorResetter />
             <Stack direction="row" pt={0.5} pb={0.5}>
               <SalutationField name="salutation" />
             </Stack>
@@ -147,6 +189,21 @@ export const PassengerForm = ({
                       name="email"
                       label="E-mail"
                       variant="filled"
+                      value={values.email}
+                      onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+                        setFieldValue('email', e.target.value)
+                        const newIsEmailProvided = [...isEmailProvided]
+                        try {
+                          if (await emailSchema.validate(e.target.value)) {
+                            newIsEmailProvided[passengerIndex] = true
+                          } else {
+                            newIsEmailProvided[passengerIndex] = false
+                          }
+                        } catch (e) {
+                          newIsEmailProvided[passengerIndex] = false
+                        }
+                        setIsEmailProvided(newIsEmailProvided)
+                      }}
                       error={touched.email && errors.email}
                       helperText={touched.email && errors.email}
                       inputProps={{
