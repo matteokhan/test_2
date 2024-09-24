@@ -7,7 +7,6 @@ import { Form, Formik, FormikHelpers, useFormikContext } from 'formik'
 import * as Yup from 'yup'
 import { AirlineFilterData, SearchFlightFilters, SearchResponseFilterData } from '@/types'
 import {
-  ExperienceFilterField,
   ScalesFilterField,
   OneNightScaleFilterField,
   MaxPriceFilterField,
@@ -17,6 +16,7 @@ import {
 } from '@/components'
 import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
+import { AirportFilterField } from './AirportFilterField copy'
 
 const AutoSubmit = () => {
   const { values, submitForm } = useFormikContext()
@@ -34,7 +34,8 @@ const filtersSchema = Yup.object().shape({
   maxPriceType: Yup.string(),
   flightTime: Yup.string().nullable(),
   flightTimeReturn: Yup.string().nullable(),
-  airlineSelected: Yup.array().of(Yup.string()),
+  airlinesSelected: Yup.array().of(Yup.string()),
+  airportSelected: Yup.array(),
 })
 
 type SearchFlightsFiltersProps = {
@@ -63,6 +64,7 @@ export const SearchFlightsFilters = ({
     flightTime: null,
     flightTimeReturn: null,
     airlinesSelected: [],
+    airportSelected: [],
   } as SearchFlightFilters
 
   const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
@@ -121,22 +123,24 @@ export const SearchFlightsFilters = ({
                 {filterData !== undefined && (
                   <Box pb={1}>
                     <Stack direction="row" gap={1} alignItems="center">
-                      <Typography variant="titleSm">
-                        {airportName(departureAirportData)} ({departure})
-                      </Typography>
+                      <Typography variant="titleSm">{airportName(departureAirportData)}</Typography>
                       <ArrowForwardIcon data-testid={null} />
-                      <Typography variant="titleSm">
-                        {airportName(arrivalAirportData)} ({arrival})
-                      </Typography>
+                      <Typography variant="titleSm">{airportName(arrivalAirportData)}</Typography>
                     </Stack>
                     <Typography variant="bodySm">
-                      Départ de aeroport{' '}
-                      {departureAirportData ? departureAirportData.extension : departure}
+                      Départ de aeroport de{' '}
+                      {departureAirportData ? airportName(departureAirportData) : departure}
                     </Typography>
                   </Box>
                 )}
                 <FlightTimeFilterField name="flightTime" disabled={filterData === undefined} />
               </Box>
+              {filterData !== undefined && (
+                <AirportFilterField
+                  airportFilter={filterData.airports.find((a) => a.routeIndex === 0)}
+                  name="airportSelected"
+                />
+              )}
               {isRoundTrip && (
                 <Box pb={1}>
                   <Typography variant="titleMd" pb={1}>
@@ -145,17 +149,15 @@ export const SearchFlightsFilters = ({
                   {filterData !== undefined && (
                     <Box pb={1}>
                       <Stack direction="row" gap={1} alignItems="center">
-                        <Typography variant="titleSm">
-                          {airportName(arrivalAirportData)} ({departure})
-                        </Typography>
+                        <Typography variant="titleSm">{airportName(arrivalAirportData)}</Typography>
                         <ArrowForwardIcon data-testid={null} />
                         <Typography variant="titleSm">
-                          {airportName(departureAirportData)} ({arrival})
+                          {airportName(departureAirportData)}
                         </Typography>
                       </Stack>
                       <Typography variant="bodySm">
-                        Arrivé à l'aeroport{' '}
-                        {departureAirportData ? departureAirportData.extension : departure}
+                        Arrivé à l'aeroport de{' '}
+                        {departureAirportData ? airportName(departureAirportData) : departure}
                       </Typography>
                     </Box>
                   )}
@@ -165,14 +167,22 @@ export const SearchFlightsFilters = ({
                   />
                 </Box>
               )}
-              <Box>
-                <Typography variant="titleMd" pb={1}>
-                  Compagnies aériennes
-                </Typography>
-                <Box pl={1.5} pb={1}>
-                  <AirlinesFilterField airlines={airlines} name="airlinesSelected" />
+              {isRoundTrip && filterData !== undefined && (
+                <AirportFilterField
+                  airportFilter={filterData.airports.find((a) => a.routeIndex === 1)}
+                  name="airportSelected"
+                />
+              )}
+              {filterData !== undefined && (
+                <Box>
+                  <Typography variant="titleMd" pb={1}>
+                    Compagnies aériennes
+                  </Typography>
+                  <Box pl={1.5} pb={1}>
+                    <AirlinesFilterField airlines={airlines} name="airlinesSelected" />
+                  </Box>
                 </Box>
-              </Box>
+              )}
             </Stack>
           </Form>
         )}
