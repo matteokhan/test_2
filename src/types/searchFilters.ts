@@ -12,9 +12,16 @@ export type SearchFlightFilters = {
   flightTime?: FlightTimeFilterOption
   flightTimeReturn?: FlightTimeFilterOption
   airlinesSelected?: string[]
+  airportSelected?: AirportFilterData[]
 }
 export type AirlineFilterData = {
   carrier: string
   price: number
   currencySymbol: string
+}
+
+export type AirportFilterData = {
+  routeIndex: number
+  from: string[]
+  to: string[]
 }

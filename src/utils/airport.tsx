@@ -10,3 +10,8 @@ export const airportNameExtension = (airportData?: AirportData) => {
   if (!airportData.extension) return airportData.name
   return airportData.name + ' ' + airportData.extension
 }
+
+export const airportExtensionOrName = (airportData?: AirportData) => {
+  if (!airportData) return ''
+  return airportData.extension || airportData.name
+}
