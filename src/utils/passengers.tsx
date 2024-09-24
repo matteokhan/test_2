@@ -9,6 +9,6 @@ export const getPassengerTypeDescription = (passengerType: PassengerType) => {
   return allCasesHandled
 }
 
-export const passengerIsAbove16 = (dateOfBirth: Dayjs) => {
-  return dayjs().diff(dateOfBirth, 'year') >= 16
+export const ageIsAtLeast = (dateOfBirth: Dayjs, yearsOld: number) => {
+  return dayjs().diff(dateOfBirth, 'year') >= yearsOld
 }
