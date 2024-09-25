@@ -16,7 +16,7 @@ import {
 } from '@/components'
 import { useAirportData } from '@/services'
 import { airportName } from '@/utils'
-import { AirportFilterField } from './AirportFilterField copy'
+import { AirportFilterField } from './AirportFilterField'
 
 const AutoSubmit = () => {
   const { values, submitForm } = useFormikContext()
@@ -35,7 +35,7 @@ const filtersSchema = Yup.object().shape({
   flightTime: Yup.string().nullable(),
   flightTimeReturn: Yup.string().nullable(),
   airlinesSelected: Yup.array().of(Yup.string()),
-  airportSelected: Yup.array(),
+  airportsSelected: Yup.array(),
 })
 
 type SearchFlightsFiltersProps = {
@@ -64,7 +64,7 @@ export const SearchFlightsFilters = ({
     flightTime: null,
     flightTimeReturn: null,
     airlinesSelected: [],
-    airportSelected: [],
+    airportsSelected: [],
   } as SearchFlightFilters
 
   const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
@@ -138,7 +138,7 @@ export const SearchFlightsFilters = ({
               {filterData !== undefined && (
                 <AirportFilterField
                   airportFilter={filterData.airports.find((a) => a.routeIndex === 0)}
-                  name="airportSelected"
+                  name="airportsSelected"
                 />
               )}
               {isRoundTrip && (
@@ -170,7 +170,7 @@ export const SearchFlightsFilters = ({
               {isRoundTrip && filterData !== undefined && (
                 <AirportFilterField
                   airportFilter={filterData.airports.find((a) => a.routeIndex === 1)}
-                  name="airportSelected"
+                  name="airportsSelected"
                 />
               )}
               {filterData !== undefined && (

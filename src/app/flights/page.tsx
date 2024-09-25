@@ -104,8 +104,8 @@ export default function FlighsPage() {
         if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
       }
 
-      if (filters?.airportSelected) {
-        for (let airportFilter of filters.airportSelected) {
+      if (filters?.airportsSelected) {
+        for (let airportFilter of filters.airportsSelected) {
           const route = solution.routes[airportFilter.routeIndex]
           if (airportFilter.from.length > 0) {
             if (!airportFilter.from.includes(route.segments[0].departure)) {
