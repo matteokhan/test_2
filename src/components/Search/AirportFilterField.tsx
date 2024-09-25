@@ -66,7 +66,7 @@ export const AirportFilterField = ({
           })}
         </Box>
       )}
-      {airportFilter && airportFilter.to.length && (
+      {airportFilter && airportFilter.to.length > 1 && (
         <Box>
           <Typography variant="titleMd" pb={1}>
             Attérir à
