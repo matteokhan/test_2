@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useCallback } from 'react'
-import { Box, Popover, Typography, Stack, SxProps } from '@mui/material'
+import { Box, Popover, Typography, Stack } from '@mui/material'
 import { AirplaneIcon, SearchTextField } from '@/components'
 import { Field, useFormikContext } from 'formik'
 import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined'
@@ -56,16 +56,11 @@ const Location = ({
   )
 }
 
-export const DepartureField = ({
-  onSearchTermChange,
-  onChange,
-}: {
-  onSearchTermChange: (term: string) => void
-  onChange?: (airport: AirportData) => void
-}) => {
+export const DepartureField = ({ onChange }: { onChange?: (airport: AirportData) => void }) => {
   const anchorRef = useRef<HTMLInputElement>(null)
   const { errors, touched, setFieldValue } = useFormikContext<{
     from: string
+    fromLabel: string
   }>()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -89,13 +84,14 @@ export const DepartureField = ({
     setIsOpen(false)
     setSelectedAirport(airport)
     setFieldValue('from', airport.code)
+    setFieldValue('fromLabel', airport.name + ' (' + airport.code + ')')
     setSearchTerm(airport.name + ' (' + airport.code + ')')
-    onSearchTermChange(airport.name + ' (' + airport.code + ')')
     if (onChange) onChange(airport)
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedAirport(null)
     setFieldValue('from', null)
+    setFieldValue('fromLabel', null)
     setSearchTerm(e.target.value)
   }
   const handleBlur = () => {
