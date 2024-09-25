@@ -39,7 +39,7 @@ export const TravelOptionsBanner = () => {
             Explorez toute l’offre E.Leclerc Voyages
           </Typography>
         </Box>
-        <Stack gap={1} direction="row" justifyContent="flex-start" width="100%">
+        <Stack gap={1} direction="row" justifyContent="center" width="100%">
           <TravelOptionButton
             onClick={() => setFlightSearchOpen(true)}
             data-testid="travelOptionsBanner-travelsButton">
