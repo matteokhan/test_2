@@ -62,13 +62,15 @@ export const SimpleModal = ({
           {children}
         </Stack>
         <Stack direction="row" gap={1} width="100%" justifyContent="flex-end" pt={2}>
-          <Button
-            sx={{ px: 3 }}
-            onClick={() => {
-              onSecondaryAction ? onSecondaryAction() : null
-            }}>
-            {secondaryAction}
-          </Button>
+          {onSecondaryAction && (
+            <Button
+              sx={{ px: 3 }}
+              onClick={() => {
+                onSecondaryAction ? onSecondaryAction() : null
+              }}>
+              {secondaryAction}
+            </Button>
+          )}
           <Button
             sx={{ px: 3 }}
             variant="contained"

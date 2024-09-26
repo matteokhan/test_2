@@ -79,7 +79,7 @@ export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, Countr
               value={selectedCountry ? selectedCountry : 'FR'}
               onChange={(ev) => setSelectedCountry(ev.target.value as CountryCode)}>
               {countryList.map((country) => (
-                <MenuItem value={country.code}>
+                <MenuItem value={country.code} key={country.code}>
                   <Stack direction="row" gap={1} alignItems="center">
                     <ReactCountryFlag countryCode={country.code} svg />
                     <p>(+{country.phoneCode})</p>

@@ -9,6 +9,9 @@ type EmailRequirementContextType = {
   isEmailProvided: boolean[]
   setIsEmailProvided: React.Dispatch<React.SetStateAction<boolean[]>>
   atLeastOneEmail: boolean
+  isPhoneProvided: boolean[]
+  setIsPhoneProvided: React.Dispatch<React.SetStateAction<boolean[]>>
+  atLeastOnePhone: boolean
 }
 
 const EmailRequirementContext = createContext<EmailRequirementContextType | undefined>(undefined)
@@ -20,10 +23,21 @@ export const EmailRequirementProvider: React.FC<
     Array(totalPassengers).fill(false),
   )
   const atLeastOneEmail = isEmailProvided.some((value) => value)
+  const [isPhoneProvided, setIsPhoneProvided] = useState<boolean[]>(
+    Array(totalPassengers).fill(false),
+  )
+  const atLeastOnePhone = isPhoneProvided.some((value) => value)
 
   return (
     <EmailRequirementContext.Provider
-      value={{ isEmailProvided, setIsEmailProvided, atLeastOneEmail }}>
+      value={{
+        isEmailProvided,
+        setIsEmailProvided,
+        atLeastOneEmail,
+        isPhoneProvided,
+        setIsPhoneProvided,
+        atLeastOnePhone,
+      }}>
       {children}
     </EmailRequirementContext.Provider>
   )

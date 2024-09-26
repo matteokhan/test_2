@@ -16,24 +16,27 @@ import { useEmailRequirement } from '@/contexts'
 // This is necessary because the form errors are not reset when the email condition is
 // fullfilled on another passenger form
 const FormErrorResetter = () => {
-  const { atLeastOneEmail } = useEmailRequirement()
+  const { atLeastOneEmail, atLeastOnePhone } = useEmailRequirement()
   const { setErrors, validateForm } = useFormikContext()
 
   useEffect(() => {
     setErrors({})
     validateForm()
-  }, [atLeastOneEmail, setErrors, validateForm])
+  }, [atLeastOneEmail, setErrors, validateForm, atLeastOnePhone])
 
   return null
 }
 
 const emailSchema = Yup.string().email('E-mail invalide')
+const phoneSchema = Yup.string().required('Le numéro de téléphone est requis')
 const passengerSchema = ({
   type,
-  isEmailProvided,
+  atLeastOneEmail,
+  atLeastOnePhone,
 }: {
   type: PassengerType
-  isEmailProvided: boolean
+  atLeastOneEmail: boolean
+  atLeastOnePhone: boolean
 }) =>
   Yup.object().shape({
     type: Yup.string(),
@@ -63,14 +66,14 @@ const passengerSchema = ({
       otherwise: (schema) => schema.optional(),
     }),
     phoneNumber: Yup.string().when('type', {
-      is: 'ADT',
+      is: (type: PassengerType) => type === 'ADT' && !atLeastOnePhone,
       then: (schema) => schema.required('Le numéro de téléphone est requis'),
       otherwise: (schema) => schema.optional(),
     }),
     email: Yup.string()
       .email('E-mail invalide')
       .when(['type'], {
-        is: (type: PassengerType) => type === 'ADT' && !isEmailProvided,
+        is: (type: PassengerType) => type === 'ADT' && !atLeastOneEmail,
         then: (schema) => schema.required("L'e-mail est requis pour au moins un passager adulte"),
         otherwise: (schema) => schema.optional(),
       }),
@@ -94,7 +97,14 @@ export const PassengerForm = ({
   initialValues,
   passengerIndex,
 }: PassengerFormProps) => {
-  const { isEmailProvided, setIsEmailProvided, atLeastOneEmail } = useEmailRequirement()
+  const {
+    isEmailProvided,
+    setIsEmailProvided,
+    atLeastOneEmail,
+    isPhoneProvided,
+    setIsPhoneProvided,
+    atLeastOnePhone,
+  } = useEmailRequirement()
 
   useEffect(() => {
     if (initialValues.type === 'ADT' && initialValues.email) {
@@ -102,6 +112,13 @@ export const PassengerForm = ({
         const newIsEmailProvided = [...prev]
         newIsEmailProvided[passengerIndex] = true
         return newIsEmailProvided
+      })
+    }
+    if (initialValues.type === 'ADT' && initialValues.phoneNumber) {
+      setIsPhoneProvided((prev) => {
+        const newIsPhoneProvided = [...prev]
+        newIsPhoneProvided[passengerIndex] = true
+        return newIsPhoneProvided
       })
     }
   }, [])
@@ -128,7 +145,8 @@ export const PassengerForm = ({
         }
         validationSchema={passengerSchema({
           type: initialValues.type,
-          isEmailProvided: atLeastOneEmail,
+          atLeastOneEmail: atLeastOneEmail,
+          atLeastOnePhone: atLeastOnePhone,
         })}
         onSubmit={onSubmit}
         enableReinitialize={false}>
@@ -225,9 +243,23 @@ export const PassengerForm = ({
                     <CountryPhoneField
                       data-testid="phoneNumberField"
                       values={[values.phoneCode, values.phoneNumber]}
-                      onChange={(values) => {
+                      onChange={async (values) => {
                         setFieldValue('phoneNumber', values[1])
                         setFieldValue('phoneCode', values[0])
+                        const newIsPhoneProvided = [...isPhoneProvided]
+                        try {
+                          if (
+                            (await phoneSchema.validate(values[1])) &&
+                            (await phoneSchema.validate(values[0]))
+                          ) {
+                            newIsPhoneProvided[passengerIndex] = true
+                          } else {
+                            newIsPhoneProvided[passengerIndex] = false
+                          }
+                        } catch (e) {
+                          newIsPhoneProvided[passengerIndex] = false
+                        }
+                        setIsPhoneProvided(newIsPhoneProvided)
                       }}
                       error={errors.phoneNumber ? touched.phoneNumber : false}
                       helperText={touched.phoneNumber && errors.phoneNumber}
