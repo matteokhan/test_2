@@ -2,60 +2,12 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { Box, Popover, Typography, Button, Stack, SxProps } from '@mui/material'
-import { AirplaneIcon, CustomTextField } from '@/components'
+import { Location, CustomTextField } from '@/components'
 import { Field, useFormikContext } from 'formik'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined'
-import { useSearchAirportsByName } from '@/services'
+import { useLocationsByName } from '@/services'
 import { useDebounce } from '@uidotdev/usehooks'
-import { AirportData } from '@/types'
-
-const Location = ({
-  airport,
-  noBorder,
-  onClick,
-}: {
-  airport: AirportData
-  noBorder: boolean
-  onClick: (airport: AirportData) => void
-}) => {
-  return (
-    <Stack
-      py={1.5}
-      borderBottom="1px solid"
-      borderColor={noBorder ? 'transparent' : 'grey.200'}
-      direction="row"
-      gap={2}
-      alignItems="center"
-      boxSizing="border-box"
-      sx={{ '&:hover': { cursor: 'pointer' } }}
-      onClick={() => onClick(airport)}>
-      <>
-        {airport.category == 'City' && <PinDropOutlinedIcon />}
-        {airport.category == 'Airport' && (
-          <Stack ml={2} sx={{ rotate: '180deg' }} justifyContent="center">
-            <AirplaneIcon />
-          </Stack>
-        )}
-        <Box>
-          {airport.category == 'City' && (
-            <Typography variant="titleSm">
-              {airport.name} ({airport.code} - Tous les aéroports)
-            </Typography>
-          )}
-          {airport.category == 'Airport' && (
-            <Typography variant="titleSm">
-              {airport.name} ({airport.code}) {airport.extension}
-            </Typography>
-          )}
-          <Typography variant="bodyMd" color="#49454F">
-            {airport.name}, {airport.country_name}
-          </Typography>
-        </Box>
-      </>
-    </Stack>
-  )
-}
+import { LocationData } from '@/types'
 
 export const DepartureAndDestinationField = ({
   labels,
@@ -75,82 +27,80 @@ export const DepartureAndDestinationField = ({
   // Departure
   const [departureIsOpen, setDepartureIsOpen] = useState(false)
   const [departureSearchTerm, setDepartureSearchTerm] = useState(values.fromLabel) // TODO: Fix initial values, should be only the departure name, not the entire label
-  const [selectedDepartureAirport, setSelectedDepartureAirport] = useState<AirportData | null>(null)
+  const [selectedDeparture, setSelectedDeparture] = useState<LocationData | null>(null)
   const debouncedFromSearchTerm = useDebounce(departureSearchTerm, 300)
-  const { data: departureAirports, isSuccess: departureIsSuccess } = useSearchAirportsByName({
+  const { data: departures, isSuccess: departuresIsSuccess } = useLocationsByName({
     searchTerm: debouncedFromSearchTerm,
   })
-  const departureAirportsCodes = Object.keys(departureAirports || {})
+  const departuresCodes = Object.keys(departures || {})
   const openDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(true)
   }, [])
   const closeDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(false)
   }, [])
-  const selectDeparture = (airport: AirportData) => {
+  const selectDeparture = (location: LocationData) => {
     setDepartureIsOpen(false)
-    setSelectedDepartureAirport(airport)
-    setFieldValue('from', airport.code)
-    setFieldValue('fromLabel', airport.name + ' (' + airport.code + ')')
+    setSelectedDeparture(location)
+    setFieldValue('from', location.code)
+    setFieldValue('fromLabel', location.name + ' (' + location.code + ')')
   }
   const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDepartureAirport(null)
+    setSelectedDeparture(null)
     setFieldValue('from', null)
     setFieldValue('fromLabel', null)
     setDepartureSearchTerm(e.target.value)
   }
   const handleDepartureBlur = () => {
     setDepartureIsOpen(false)
-    if (selectedDepartureAirport) {
-      setDepartureSearchTerm(selectedDepartureAirport.name)
+    if (selectedDeparture) {
+      setDepartureSearchTerm(selectedDeparture.name)
     }
   }
 
   // Destination
   const [destinationIsOpen, setDestinationIsOpen] = useState(false)
   const [destinationSearchTerm, setDestinationSearchTerm] = useState(values.toLabel) // TODO: Fix initial values, should be only the destination name, not the entire label
-  const [selectedDestinationAirport, setSelectedDestinationAirport] = useState<AirportData | null>(
-    null,
-  )
+  const [selectedDestination, setSelectedDestination] = useState<LocationData | null>(null)
   const debouncedToSearchTerm = useDebounce(destinationSearchTerm, 300)
-  const { data: destinationAirports, isSuccess: destinationIsSuccess } = useSearchAirportsByName({
+  const { data: destinations, isSuccess: destinationsIsSuccess } = useLocationsByName({
     searchTerm: debouncedToSearchTerm,
   })
-  const destinationAirportsCodes = Object.keys(destinationAirports || {})
+  const destinationsCodes = Object.keys(destinations || {})
   const openDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(true)
   }, [])
   const closeDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(false)
   }, [])
-  const selectDestination = (airport: AirportData) => {
+  const selectDestination = (airport: LocationData) => {
     setDestinationIsOpen(false)
-    setSelectedDestinationAirport(airport)
+    setSelectedDestination(airport)
     setFieldValue('to', airport.code)
     setFieldValue('toLabel', airport.name + ' (' + airport.code + ')')
   }
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDestinationAirport(null)
+    setSelectedDestination(null)
     setFieldValue('to', null)
     setFieldValue('toLabel', null)
     setDestinationSearchTerm(e.target.value)
   }
   const handleDestinationBlur = () => {
     setDestinationIsOpen(false)
-    if (selectedDestinationAirport) {
-      setDestinationSearchTerm(selectedDestinationAirport.name)
+    if (selectedDestination) {
+      setDestinationSearchTerm(selectedDestination.name)
     }
   }
 
-  // TODO: Swap doesn't work after navigation between pages. Need to store the selected airports in the context to make it work
-  const swapAirports = () => {
-    if (!selectedDepartureAirport || !selectedDestinationAirport) {
+  // TODO: Swap doesn't work after navigation between pages. Need to store the selected locations in the context to make it work
+  const swapLocations = () => {
+    if (!selectedDeparture || !selectedDestination) {
       return
     }
-    const from = selectedDepartureAirport
-    const to = selectedDestinationAirport
-    setSelectedDepartureAirport(to)
-    setSelectedDestinationAirport(from)
+    const from = selectedDeparture
+    const to = selectedDestination
+    setSelectedDeparture(to)
+    setSelectedDestination(from)
     setFieldValue('from', to.code)
     setFieldValue('to', from.code)
     setFieldValue('fromLabel', to.name + ' (' + to.code + ')')
@@ -208,15 +158,15 @@ export const DepartureAndDestinationField = ({
           )}
         </Box>
         <Button
-          disabled={!selectedDepartureAirport || !selectedDestinationAirport}
-          onClick={swapAirports}
+          disabled={!selectedDeparture || !selectedDestination}
+          onClick={swapLocations}
           variant="outlined"
           sx={{ width: 32, height: 32, padding: 0, minWidth: 32, alignSelf: 'center' }}>
           <SwapHorizIcon
             sx={{
               width: 24,
               height: 24,
-              color: !selectedDepartureAirport || !selectedDestinationAirport ? 'grey' : 'black',
+              color: !selectedDeparture || !selectedDestination ? 'grey' : 'black',
             }}
           />
         </Button>
@@ -251,7 +201,7 @@ export const DepartureAndDestinationField = ({
       </Stack>
       <Popover
         sx={{ mt: 1.2 }}
-        open={departureIsSuccess && departureIsOpen && departureAirportsCodes.length > 0}
+        open={departuresIsSuccess && departureIsOpen && departuresCodes.length > 0}
         anchorEl={anchorRef.current}
         onClose={closeDepartureSuggestions}
         anchorOrigin={{
@@ -262,13 +212,13 @@ export const DepartureAndDestinationField = ({
         disableScrollLock
         disableAutoFocus>
         <Stack px={4} py={1} width={484}>
-          {departureIsSuccess &&
-            departureAirportsCodes.map((airportCode, index, array) => {
-              const airport = departureAirports[airportCode]
+          {departuresIsSuccess &&
+            departuresCodes.map((code, index, array) => {
+              const location = departures[code]
               return (
                 <Location
-                  key={airportCode}
-                  airport={airport}
+                  key={code}
+                  location={location}
                   noBorder={array.length - 1 === index}
                   onClick={selectDeparture}
                 />
@@ -278,7 +228,7 @@ export const DepartureAndDestinationField = ({
       </Popover>
       <Popover
         sx={{ mt: 1.2 }}
-        open={destinationIsSuccess && destinationIsOpen && destinationAirportsCodes.length > 0}
+        open={destinationsIsSuccess && destinationIsOpen && destinationsCodes.length > 0}
         anchorEl={anchorRef.current}
         onClose={closeDestinationSuggestions}
         anchorOrigin={{
@@ -289,13 +239,13 @@ export const DepartureAndDestinationField = ({
         disableScrollLock
         disableAutoFocus>
         <Stack px={4} py={1} width={484}>
-          {destinationIsSuccess &&
-            destinationAirportsCodes.map((airportCode, index, array) => {
-              const airport = destinationAirports[airportCode]
+          {destinationsIsSuccess &&
+            destinationsCodes.map((code, index, array) => {
+              const location = destinations[code]
               return (
                 <Location
-                  key={airportCode}
-                  airport={airport}
+                  key={code}
+                  location={location}
                   noBorder={array.length - 1 === index}
                   onClick={selectDestination}
                 />

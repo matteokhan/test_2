@@ -1,62 +1,14 @@
 'use client'
 
 import React, { useState, useRef, useCallback } from 'react'
-import { Box, Popover, Typography, Stack } from '@mui/material'
-import { AirplaneIcon, SearchTextField } from '@/components'
+import { Popover, Stack } from '@mui/material'
+import { Location, SearchTextField } from '@/components'
 import { Field, useFormikContext } from 'formik'
-import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined'
-import { useSearchAirportsByName } from '@/services'
+import { useLocationsByName } from '@/services'
 import { useDebounce } from '@uidotdev/usehooks'
-import { AirportData } from '@/types'
+import { LocationData } from '@/types'
 
-const Location = ({
-  airport,
-  noBorder,
-  onClick,
-}: {
-  airport: AirportData
-  noBorder: boolean
-  onClick: (airport: AirportData) => void
-}) => {
-  return (
-    <Stack
-      py={1.5}
-      borderBottom="1px solid"
-      borderColor={noBorder ? 'transparent' : 'grey.200'}
-      direction="row"
-      gap={2}
-      alignItems="center"
-      boxSizing="border-box"
-      sx={{ '&:hover': { cursor: 'pointer' } }}
-      onClick={() => onClick(airport)}>
-      <>
-        {airport.category == 'City' && <PinDropOutlinedIcon />}
-        {airport.category == 'Airport' && (
-          <Stack ml={2} sx={{ rotate: '180deg' }} justifyContent="center">
-            <AirplaneIcon />
-          </Stack>
-        )}
-        <Box>
-          {airport.category == 'City' && (
-            <Typography variant="titleSm">
-              {airport.name} ({airport.code} - Tous les aéroports)
-            </Typography>
-          )}
-          {airport.category == 'Airport' && (
-            <Typography variant="titleSm">
-              {airport.name} ({airport.code}) {airport.extension}
-            </Typography>
-          )}
-          <Typography variant="bodyMd" color="#49454F">
-            {airport.name}, {airport.country_name}
-          </Typography>
-        </Box>
-      </>
-    </Stack>
-  )
-}
-
-export const DestinationField = ({ onChange }: { onChange?: (airport: AirportData) => void }) => {
+export const DestinationField = ({ onChange }: { onChange?: (location: LocationData) => void }) => {
   const anchorRef = useRef<HTMLInputElement>(null)
   const { errors, touched, setFieldValue } = useFormikContext<{
     to: string
@@ -65,39 +17,39 @@ export const DestinationField = ({ onChange }: { onChange?: (airport: AirportDat
 
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedAirport, setSelectedAirport] = useState<AirportData | null>(null)
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null)
   const debouncedToSearchTerm = useDebounce(searchTerm, 300)
-  const { data: airports, isSuccess: isSuccess } = useSearchAirportsByName({
+  const { data: locations, isSuccess: isSuccess } = useLocationsByName({
     searchTerm: debouncedToSearchTerm,
   })
-  const airportsCodes = Object.keys(airports || {})
+  const locationsCodes = Object.keys(locations || {})
   const handleFocus = () => {
     setIsOpen(true)
-    if (selectedAirport) {
-      setSearchTerm(selectedAirport.name)
+    if (selectedLocation) {
+      setSearchTerm(selectedLocation.name)
     }
   }
   const handleClose = useCallback(() => {
     setIsOpen(false)
   }, [])
-  const handleClick = (airport: AirportData) => {
+  const handleClick = (location: LocationData) => {
     setIsOpen(false)
-    setSelectedAirport(airport)
-    setFieldValue('to', airport.code)
-    setFieldValue('toLabel', airport.name + ' (' + airport.code + ')')
-    setSearchTerm(airport.name + ' (' + airport.code + ')')
-    if (onChange) onChange(airport)
+    setSelectedLocation(location)
+    setFieldValue('to', location.code)
+    setFieldValue('toLabel', location.name + ' (' + location.code + ')')
+    setSearchTerm(location.name + ' (' + location.code + ')')
+    if (onChange) onChange(location)
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedAirport(null)
+    setSelectedLocation(null)
     setFieldValue('to', null)
     setFieldValue('toLabel', null)
     setSearchTerm(e.target.value)
   }
   const handleBlur = () => {
     setIsOpen(false)
-    if (selectedAirport) {
-      setSearchTerm(selectedAirport.name)
+    if (selectedLocation) {
+      setSearchTerm(selectedLocation.name)
     } else {
       setSearchTerm('')
     }
@@ -123,7 +75,7 @@ export const DestinationField = ({ onChange }: { onChange?: (airport: AirportDat
       <Popover
         elevation={0}
         sx={{ mt: 1.2 }}
-        open={isSuccess && isOpen && airportsCodes.length > 0}
+        open={isSuccess && isOpen && locationsCodes.length > 0}
         anchorEl={anchorRef.current}
         onClose={handleClose}
         anchorOrigin={{
@@ -135,12 +87,12 @@ export const DestinationField = ({ onChange }: { onChange?: (airport: AirportDat
         disableAutoFocus>
         <Stack py={1} px={2} minWidth={360}>
           {isSuccess &&
-            airportsCodes.map((airportCode, index, array) => {
-              const airport = airports[airportCode]
+            locationsCodes.map((code, index, array) => {
+              const location = locations[code]
               return (
                 <Location
-                  key={airportCode}
-                  airport={airport}
+                  key={code}
+                  location={location}
                   noBorder={array.length - 1 === index}
                   onClick={handleClick}
                 />

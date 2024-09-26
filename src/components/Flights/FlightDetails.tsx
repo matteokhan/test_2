@@ -7,8 +7,8 @@ import ArrowBack from '@mui/icons-material/ArrowBack'
 import { ItineraryRoute } from '@/components'
 import { useBooking, useFlights } from '@/contexts'
 import { MouseEventHandler } from 'react'
-import { useAirportData } from '@/services'
-import { airportName } from '@/utils'
+import { useLocationData } from '@/services'
+import { locationName } from '@/utils'
 import { Solution } from '@/types'
 
 type BaseFlightDetailsProps = {
@@ -35,7 +35,6 @@ export const FlightDetails = ({
   onSelectFlight,
   withControls = true,
 }: FlightDetailsProps) => {
-  const { totalPassengers } = useFlights()
   const { preSelectedFlight } = useBooking()
 
   const departure = preSelectedFlight?.routes[0]?.segments[0]?.departure
@@ -43,8 +42,10 @@ export const FlightDetails = ({
     preSelectedFlight?.routes[0]?.segments[preSelectedFlight?.routes[0]?.segments?.length - 1]
       ?.arrival
 
-  const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
-  const { data: arrivalAirportData } = useAirportData({ airportCode: arrival ? arrival : '' })
+  const { data: departureLocationData } = useLocationData({
+    locationCode: departure ? departure : '',
+  })
+  const { data: arrivalLocationData } = useLocationData({ locationCode: arrival ? arrival : '' })
 
   return (
     <>
@@ -63,11 +64,11 @@ export const FlightDetails = ({
                 <Stack direction="row" justifyContent="space-between">
                   <Stack direction="row" gap={1} alignItems="center">
                     <Typography variant="titleMd" data-testid="flightDetails-departure">
-                      {airportName(departureAirportData)} ({departure})
+                      {locationName(departureLocationData)} ({departure})
                     </Typography>
                     <SwapHorizIcon data-testid={null} />
                     <Typography variant="titleMd" data-testid="flightDetails-arrival">
-                      {airportName(arrivalAirportData)} ({arrival})
+                      {locationName(arrivalLocationData)} ({arrival})
                     </Typography>
                   </Stack>
                   <IconButton
@@ -138,11 +139,11 @@ export const FlightDetails = ({
                   </IconButton>
                   <Stack direction="row" gap={1} alignItems="center">
                     <Typography variant="titleMd" sx={{ textWrap: 'nowrap' }}>
-                      {airportName(departureAirportData)} ({departure})
+                      {locationName(departureLocationData)} ({departure})
                     </Typography>
                     <SwapHorizIcon data-testid={null} />
                     <Typography variant="titleMd" sx={{ textWrap: 'nowrap' }}>
-                      {airportName(arrivalAirportData)} ({arrival})
+                      {locationName(arrivalLocationData)} ({arrival})
                     </Typography>
                   </Stack>
                 </Stack>

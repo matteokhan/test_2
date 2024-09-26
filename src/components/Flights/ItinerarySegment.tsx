@@ -8,8 +8,8 @@ import {
   TrainIcon,
 } from '@/components'
 import { RouteCarrier, RouteSegment, RouteSegmentCarrier } from '@/types'
-import { useAirportData } from '@/services'
-import { airportNameExtension, calculateDaysBetween, transformDuration } from '@/utils'
+import { useLocationData } from '@/services'
+import { locationNameExtension, calculateDaysBetween, transformDuration } from '@/utils'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
@@ -44,8 +44,10 @@ export const ItinerarySegment = ({
   const daysToArrival = calculateDaysBetween(travelStartDateTime, arrivalDateTime)
   const daysToDeparture = calculateDaysBetween(travelStartDateTime, departureDateTime)
 
-  const { data: departureAirportData } = useAirportData({ airportCode: segment.departureCityCode })
-  const { data: arrivalAirportData } = useAirportData({ airportCode: segment.arrivalCityCode })
+  const { data: departureLocationData } = useLocationData({
+    locationCode: segment.departureCityCode,
+  })
+  const { data: arrivalLocationData } = useLocationData({ locationCode: segment.arrivalCityCode })
 
   const getSegmentIcon = () => {
     if (isTrainSegment) {
@@ -74,7 +76,7 @@ export const ItinerarySegment = ({
           />
           <ItineraryTimeline />
           <ItinerarySegmentDetails
-            location={airportNameExtension(departureAirportData)}
+            location={locationNameExtension(departureLocationData)}
             locationCode={segment.departureCityCode}
           />
         </Stack>
@@ -103,7 +105,7 @@ export const ItinerarySegment = ({
           />
           <ItineraryTimeline noLine={isLastSegment} dotted={!isLastSegment} />
           <ItinerarySegmentDetails
-            location={airportNameExtension(arrivalAirportData)}
+            location={locationNameExtension(arrivalLocationData)}
             locationCode={segment.arrivalCityCode}
             scaleDuration={transformDuration(scaleTime)}
             airportChange={airportChange}

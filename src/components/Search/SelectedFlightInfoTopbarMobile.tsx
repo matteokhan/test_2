@@ -6,11 +6,11 @@ import { SectionContainer, SearchFlightsModesMobile } from '@/components'
 import { Box, Drawer, Stack, Typography, IconButton } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import TuneIcon from '@mui/icons-material/Tune'
-import { airportName } from '@/utils'
+import { locationName } from '@/utils'
 import dayjs from 'dayjs'
 import { styled } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
-import { useAirportData } from '@/services'
+import { useLocationData } from '@/services'
 import { useRouter } from 'next/navigation'
 
 type SelectedFlightInfoTopbarMobileProps = {
@@ -30,11 +30,11 @@ export const SelectedFlightInfoTopbarMobile = ({
   const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
   const destinationDate = lastSegment ? (isOneWay ? lastSegment.date : lastSegment?.date) : ''
 
-  const { data: departureAirportData } = useAirportData({
-    airportCode: departureLocation,
+  const { data: departureLocationData } = useLocationData({
+    locationCode: departureLocation,
   })
-  const { data: arrivalAirportData } = useAirportData({
-    airportCode: destinationLocation,
+  const { data: arrivalLocationData } = useLocationData({
+    locationCode: destinationLocation,
   })
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
 
@@ -51,16 +51,16 @@ export const SelectedFlightInfoTopbarMobile = ({
     <SectionContainer sx={{ flexDirection: 'column', py: 1, gap: 0.5 }}>
       <Stack
         onClick={() => setFlightSearchOpen(true)}
-        data-testid="SelectedFlightInfoTopbarMobile-searchFlightButton"
+        data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
         gap={0.25}>
         {' '}
         <Stack direction="row" gap={1} alignItems="center">
           <Typography variant="titleMd">
-            {airportName(departureAirportData)} ({departureLocation})
+            {locationName(departureLocationData)} ({departureLocation})
           </Typography>
           <SwapHorizIcon data-testid={null} />
           <Typography variant="titleMd">
-            {airportName(arrivalAirportData)} ({destinationLocation})
+            {locationName(arrivalLocationData)} ({destinationLocation})
           </Typography>
         </Stack>
         <Typography variant="bodyMd">
@@ -83,23 +83,23 @@ export const SelectedFlightInfoTopbarMobile = ({
           }}>
           <TravelOptionButton
             sx={{ alignItems: 'center', gap: 1 }}
-            data-testid="SelectedFlightInfoTopbarMobile-allFiltersButton">
+            data-testid="selectedFlightInfoTopbarMobile-allFiltersButton">
             <TuneIcon />
             <Typography variant="titleSm" height="fit-content">
               Tous les filtres
             </Typography>{' '}
           </TravelOptionButton>
-          <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-directFlightsButton">
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-directFlightsButton">
             <Typography variant="titleSm" height="fit-content">
               Directs
             </Typography>
           </TravelOptionButton>
-          <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-theFastestButton">
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-theFastestButton">
             <Typography variant="titleSm" height="fit-content">
               Les plus rapides
             </Typography>
           </TravelOptionButton>
-          <TravelOptionButton data-testid="SelectedFlightInfoTopbarMobile-theCheapestButton">
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-theCheapestButton">
             <Typography variant="titleSm" height="fit-content">
               Les moins chères
             </Typography>

@@ -1,9 +1,9 @@
 'use client'
 
-import { useAirportData } from '@/services'
+import { useLocationData } from '@/services'
 import { AirportFilter, AirportFilterData } from '@/types'
-import { airportExtensionOrName } from '@/utils'
-import { Box, Checkbox, FormControlLabel, FormGroup, Grid, Stack, Typography } from '@mui/material'
+import { locationExtensionOrName } from '@/utils'
+import { Box, Checkbox, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material'
 import { FieldHookConfig, useField } from 'formik'
 
 export const AirportFilterField = ({
@@ -45,7 +45,7 @@ export const AirportFilterField = ({
             Décoller depuis
           </Typography>
           {airportFilter?.from?.map((airport) => {
-            const { data: airportData } = useAirportData({ airportCode: airport })
+            const { data: locationData } = useLocationData({ locationCode: airport })
             return (
               <Stack
                 key={airport}
@@ -56,7 +56,7 @@ export const AirportFilterField = ({
                   value={airport}
                   control={<Checkbox />}
                   name={props.name}
-                  label={airportExtensionOrName(airportData) + ' (' + airport + ')'}
+                  label={locationExtensionOrName(locationData) + ' (' + airport + ')'}
                   onChange={() => {
                     handleChange('from', airport)
                   }}
@@ -73,7 +73,7 @@ export const AirportFilterField = ({
           </Typography>
 
           {airportFilter?.to?.map((airport) => {
-            const { data: airportData } = useAirportData({ airportCode: airport })
+            const { data: locationData } = useLocationData({ locationCode: airport })
             return (
               <Stack
                 key={airport}
@@ -84,7 +84,7 @@ export const AirportFilterField = ({
                   value={airport}
                   control={<Checkbox />}
                   name={props.name}
-                  label={airportExtensionOrName(airportData) + ' (' + airport + ')'}
+                  label={locationExtensionOrName(locationData) + ' (' + airport + ')'}
                   onChange={() => {
                     handleChange('to', airport)
                   }}

@@ -1,17 +1,17 @@
-import { AirportData } from '@/types'
+import { LocationData } from '@/types'
 
-export const airportName = (airportData?: AirportData) => {
-  if (!airportData) return ''
-  return airportData.name
+export const locationName = (location?: LocationData) => {
+  if (!location) return ''
+  return location.name
 }
 
-export const airportNameExtension = (airportData?: AirportData) => {
-  if (!airportData) return ''
-  if (!airportData.extension) return airportData.name
-  return airportData.name + ' ' + airportData.extension
+export const locationNameExtension = (location?: LocationData) => {
+  if (!location) return ''
+  if (!location.extension) return location.name
+  return location.name + ' ' + location.extension
 }
 
-export const airportExtensionOrName = (airportData?: AirportData) => {
-  if (!airportData) return ''
-  return airportData.extension || airportData.name
+export const locationExtensionOrName = (location?: LocationData) => {
+  if (!location) return ''
+  return location.extension || location.name
 }

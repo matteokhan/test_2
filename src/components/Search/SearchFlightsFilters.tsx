@@ -14,8 +14,8 @@ import {
   FlightTimeFilterField,
   AirlinesFilterField,
 } from '@/components'
-import { useAirportData } from '@/services'
-import { airportName } from '@/utils'
+import { useLocationData } from '@/services'
+import { locationName } from '@/utils'
 import { AirportFilterField } from './AirportFilterField'
 
 const AutoSubmit = () => {
@@ -67,8 +67,10 @@ export const SearchFlightsFilters = ({
     airportsSelected: [],
   } as SearchFlightFilters
 
-  const { data: departureAirportData } = useAirportData({ airportCode: departure ? departure : '' })
-  const { data: arrivalAirportData } = useAirportData({ airportCode: arrival ? arrival : '' })
+  const { data: departureLocationData } = useLocationData({
+    locationCode: departure ? departure : '',
+  })
+  const { data: arrivalLocationData } = useLocationData({ locationCode: arrival ? arrival : '' })
 
   return (
     <Paper sx={{ paddingX: 2, paddingY: 4, height: 'fit-content' }}>
@@ -123,13 +125,15 @@ export const SearchFlightsFilters = ({
                 {filterData !== undefined && (
                   <Box pb={1}>
                     <Stack direction="row" gap={1} alignItems="center">
-                      <Typography variant="titleSm">{airportName(departureAirportData)}</Typography>
+                      <Typography variant="titleSm">
+                        {locationName(departureLocationData)}
+                      </Typography>
                       <ArrowForwardIcon data-testid={null} />
-                      <Typography variant="titleSm">{airportName(arrivalAirportData)}</Typography>
+                      <Typography variant="titleSm">{locationName(arrivalLocationData)}</Typography>
                     </Stack>
                     <Typography variant="bodySm">
                       Départ de aeroport de{' '}
-                      {departureAirportData ? airportName(departureAirportData) : departure}
+                      {departureLocationData ? locationName(departureLocationData) : departure}
                     </Typography>
                   </Box>
                 )}
@@ -149,15 +153,17 @@ export const SearchFlightsFilters = ({
                   {filterData !== undefined && (
                     <Box pb={1}>
                       <Stack direction="row" gap={1} alignItems="center">
-                        <Typography variant="titleSm">{airportName(arrivalAirportData)}</Typography>
+                        <Typography variant="titleSm">
+                          {locationName(arrivalLocationData)}
+                        </Typography>
                         <ArrowForwardIcon data-testid={null} />
                         <Typography variant="titleSm">
-                          {airportName(departureAirportData)}
+                          {locationName(departureLocationData)}
                         </Typography>
                       </Stack>
                       <Typography variant="bodySm">
                         Arrivé à l'aeroport de{' '}
-                        {departureAirportData ? airportName(departureAirportData) : departure}
+                        {departureLocationData ? locationName(departureLocationData) : departure}
                       </Typography>
                     </Box>
                   )}

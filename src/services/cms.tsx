@@ -4,8 +4,8 @@ import {
   Agency,
   AgencyId,
   Airlines,
-  AirportData,
-  Airports,
+  LocationData,
+  Locations,
   CreateReservationDto,
   InsuranceWithSteps,
   PagesAPIBaseParams,
@@ -155,10 +155,10 @@ export const useAirlinesData = () => {
   })
 }
 
-export const getAirportData = async ({ airportCode }: { airportCode: string }) => {
+export const getLocationData = async ({ locationCode }: { locationCode: string }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
   const params = {
-    code: airportCode,
+    code: locationCode,
   }
 
   const queryParams = new URLSearchParams()
@@ -177,21 +177,23 @@ export const getAirportData = async ({ airportCode }: { airportCode: string }) =
   )
 
   if (!response.ok) {
-    throw new Error('Failed to fetch airport data')
+    throw new Error('Failed to fetch location data')
   }
 
-  return (await response.json()).results[airportCode]
+  return (await response.json()).results[locationCode]
 }
 
-export const useAirportData = ({ airportCode }: { airportCode: string }) => {
-  return useQuery<AirportData>({
-    queryKey: ['airportData', airportCode],
-    queryFn: () => getAirportData({ airportCode }),
+export const useLocationData = ({ locationCode }: { locationCode: string }) => {
+  return useQuery<LocationData>({
+    queryKey: ['locationData', locationCode],
+    queryFn: () => getLocationData({ locationCode }),
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   })
 }
 
-export const searchAirportsByName = async ({ searchTerm }: { searchTerm: string }) => {
+export const searchLocationsByName = async ({ searchTerm }: { searchTerm: string }) => {
   const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
   const params = {
     name__icontains: searchTerm,
@@ -213,15 +215,15 @@ export const searchAirportsByName = async ({ searchTerm }: { searchTerm: string 
     },
   )
   if (!response.ok) {
-    throw new Error('Failed to fetch airport data')
+    throw new Error('Failed to fetch locations data')
   }
   return (await response.json()).results
 }
 
-export const useSearchAirportsByName = ({ searchTerm }: { searchTerm: string }) => {
-  return useQuery<Airports>({
-    queryKey: ['searchAirportsByName', searchTerm],
-    queryFn: () => searchAirportsByName({ searchTerm }),
+export const useLocationsByName = ({ searchTerm }: { searchTerm: string }) => {
+  return useQuery<Locations>({
+    queryKey: ['locationsByName', searchTerm],
+    queryFn: () => searchLocationsByName({ searchTerm }),
     refetchOnWindowFocus: false,
     enabled: !!searchTerm,
   })

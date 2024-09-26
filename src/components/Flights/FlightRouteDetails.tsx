@@ -2,8 +2,8 @@ import { Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, FlightAirline, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
-import { airportNameExtension, transformDuration } from '@/utils'
-import { useAirportData } from '@/services'
+import { locationNameExtension, transformDuration } from '@/utils'
+import { useLocationData } from '@/services'
 import { calculateDaysBetween } from '@/utils'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -21,16 +21,16 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
   const arrivalDateTime = dayjs(lastSegment.arrivalDateTime).utc()
   const arrivalTime = arrivalDateTime.format('HH:mm')
   const daysToArrival = calculateDaysBetween(departureDateTime, arrivalDateTime)
-  const departureAirport = firstSegment.departure
+  const departureLocation = firstSegment.departure
   const departureCityCode = firstSegment.departureCityCode
-  const arrivalAirport = lastSegment.arrival
+  const arrivalLocation = lastSegment.arrival
   const arrivalCityCode = lastSegment.arrivalCityCode
   const carbonFootprint = 'carbonFootprint'
   const carryOnLuggage = false
   const checkedLuggage = false
   const noLuggage = route.baggages === 0
-  const { data: departureAirportData } = useAirportData({ airportCode: departureAirport })
-  const { data: arrivalAirportData } = useAirportData({ airportCode: arrivalAirport })
+  const { data: departureLocationData } = useLocationData({ locationCode: departureLocation })
+  const { data: arrivalLocationData } = useLocationData({ locationCode: arrivalLocation })
 
   const getScaleDetails = () => {
     if (!route.totalStopDuration) {
@@ -94,8 +94,8 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
           </Stack>
           <Stack direction="row" gap={4.5}>
             <Stack gap={0.5} width="30%">
-              <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
-                {airportNameExtension(departureAirportData)}
+              <Typography variant="bodyMd" data-testid="flightRouteDetails-departureLocation">
+                {locationNameExtension(departureLocationData)}
               </Typography>
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
@@ -124,8 +124,8 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
               )}
             </Stack>
             <Stack gap={0.5} textAlign="right" width="30%">
-              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
-                {airportNameExtension(arrivalAirportData)}
+              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalLocation">
+                {locationNameExtension(arrivalLocationData)}
               </Typography>
               <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
                 <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
@@ -190,8 +190,8 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
               flexGrow={1}
               gap={2}>
               <Stack direction="row" alignItems="center" justifyContent="flex-start" gap={0.5}>
-                <Typography variant="bodyMd" data-testid="flightRouteDetails-departureAirport">
-                  {airportNameExtension(departureAirportData)}
+                <Typography variant="bodyMd" data-testid="flightRouteDetails-departureLocation">
+                  {locationNameExtension(departureLocationData)}
                 </Typography>
                 {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
               </Stack>
@@ -250,8 +250,8 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
               alignItems="center"
               flexGrow={1}
               gap={2}>
-              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalAirport">
-                {airportNameExtension(arrivalAirportData)}
+              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalLocation">
+                {locationNameExtension(arrivalLocationData)}
               </Typography>
               <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
                 {arrivalCityCode}

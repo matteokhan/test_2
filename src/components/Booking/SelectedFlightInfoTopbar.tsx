@@ -6,8 +6,8 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { SectionContainer } from '@/components'
 import Link from 'next/link'
 import { useFlights } from '@/contexts'
-import { useAirportData } from '@/services'
-import { airportName } from '@/utils'
+import { useLocationData } from '@/services'
+import { locationName } from '@/utils'
 import dayjs from 'dayjs'
 
 export const SelectedFlightInfoTopbar = () => {
@@ -21,11 +21,11 @@ export const SelectedFlightInfoTopbar = () => {
   const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
   const destinationDate = lastSegment ? (isOneWay ? lastSegment.date : lastSegment?.date) : ''
 
-  const { data: departureAirportData } = useAirportData({
-    airportCode: departureLocation,
+  const { data: departureLocationData } = useLocationData({
+    locationCode: departureLocation,
   })
-  const { data: arrivalAirportData } = useAirportData({
-    airportCode: destinationLocation,
+  const { data: arrivalLocationData } = useLocationData({
+    locationCode: destinationLocation,
   })
 
   return (
@@ -75,11 +75,11 @@ export const SelectedFlightInfoTopbar = () => {
               <Stack direction="row" gap={2} alignItems="center">
                 <Stack direction="row" gap={1}>
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-from">
-                    {airportName(departureAirportData)} ({departureLocation})
+                    {locationName(departureLocationData)} ({departureLocation})
                   </Typography>
                   <SwapHorizIcon data-testid={null} />
                   <Typography variant="titleMd" data-testid="selectedFlightInfoTopbar-to">
-                    {airportName(arrivalAirportData)} ({destinationLocation})
+                    {locationName(arrivalLocationData)} ({destinationLocation})
                   </Typography>
                 </Stack>
                 <Stack direction="row" gap={1}>

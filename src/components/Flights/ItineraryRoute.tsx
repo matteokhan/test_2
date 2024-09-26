@@ -3,8 +3,8 @@
 import { Route } from '@/types'
 import { Box, SxProps, Typography } from '@mui/material'
 import { ItinerarySegment } from '@/components'
-import { airportName, transformDuration } from '@/utils'
-import { useAirportData } from '@/services'
+import { locationName, transformDuration } from '@/utils'
+import { useLocationData } from '@/services'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -32,8 +32,8 @@ export const ItineraryRoute = ({
     day: 'numeric',
   }
 
-  const { data: departureAirportData } = useAirportData({ airportCode: departure })
-  const { data: arrivalAirportData } = useAirportData({ airportCode: arrival })
+  const { data: departureLocationData } = useLocationData({ locationCode: departure })
+  const { data: arrivalLocationData } = useLocationData({ locationCode: arrival })
 
   const handleAccordionChange = (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded)
@@ -60,7 +60,7 @@ export const ItineraryRoute = ({
         data-testid="itineraryRoute-detailsAccordion">
         <Box>
           <Typography variant="titleMd" data-testid="itineraryRoute-departureAndArrival">
-            {airportName(departureAirportData)} - {airportName(arrivalAirportData)}
+            {locationName(departureLocationData)} - {locationName(arrivalLocationData)}
           </Typography>
           <Typography
             variant="bodyMd"
