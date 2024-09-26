@@ -1,0 +1,12 @@
+@keyframes fly {
+  0% {
+    left: -47px;
+  }
+  100% {
+    left: 90px;
+  }
+}
+
+.flying-plane {
+  animation: fly 3s linear infinite;
+}

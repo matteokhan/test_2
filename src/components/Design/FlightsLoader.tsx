@@ -1,4 +1,5 @@
 import { Box } from '@mui/material'
+import './FlightsLoader.css'
 
 export const FlightsLoader = () => {
   return (
@@ -22,6 +23,13 @@ export const FlightsLoader = () => {
         width="32px"
         height="21px"
         style={{ position: 'absolute', top: '47px', left: '-6px' }}
+      />
+      <img
+        className="flying-plane"
+        src="plane.svg"
+        width="47px"
+        height="34px"
+        style={{ position: 'absolute', top: '20px', left: '-47px' }}
       />
     </Box>
   )
