@@ -8,27 +8,32 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { Box, Button, Drawer, Paper, Stack, TextField, Typography } from '@mui/material'
 import { DateRangeCalendar } from '@mui/x-date-pickers-pro'
-
 import { DestinationField, DepartureField, PassengersControls } from '@/components'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   adults: 1,
   childrens: 0,
   infants: 0,
   from: '',
+  fromLabel: '',
   to: '',
+  toLabel: '',
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   return: dayjs().add(3, 'day').format('YYYY-MM-DD'),
   _type: 'roundTrip',
-} as RoundTripFlightSearchParams
+}
+
+export const ROUND_TRIP_DEFAULT_VALUES = DEFAULT_VALUES
 
 const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),
   childrens: Yup.number().min(0).required('Requise'),
   infants: Yup.number().min(0).required('Requise'),
   from: Yup.string().required('Requise'),
+  fromLabel: Yup.string(),
   to: Yup.string().required('Requise'),
+  toLabel: Yup.string(),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
   return: Yup.date().typeError('Date invalide').required('Requise'),
 })
@@ -46,8 +51,6 @@ export const SearchRoundTripFlightsFormMobile = ({
   const [destinationIsOpen, setDestinationIsOpen] = useState(false)
   const [datesIsOpen, setDatesIsOpen] = useState(false)
   const [passengersIsOpen, setPassengersIsOpen] = useState(false)
-  const [departureSearchTerm, setDepartureSearchTerm] = useState('')
-  const [destinationSearchTerm, setDestinationSearchTerm] = useState('')
 
   return (
     <Formik
@@ -72,7 +75,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                   readOnly: true,
                 }}
                 onClick={() => setDepartureIsOpen(true)}
-                value={departureSearchTerm ? departureSearchTerm : ''}
+                value={values.fromLabel}
               />
               <Field
                 as={TextField}
@@ -85,7 +88,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                   readOnly: true,
                 }}
                 onClick={() => setDestinationIsOpen(true)}
-                value={destinationSearchTerm ? destinationSearchTerm : ''}
+                value={values.toLabel}
               />
               <Field
                 as={TextField}
@@ -135,10 +138,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                 </Typography>
               </Stack>
               <Box px={3} py={1.5}>
-                <DepartureField
-                  onSearchTermChange={(term) => setDepartureSearchTerm(term)}
-                  onChange={() => setDepartureIsOpen(false)}
-                />
+                <DepartureField onChange={() => setDepartureIsOpen(false)} />
               </Box>
             </Drawer>
             <Drawer
@@ -162,10 +162,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                 </Typography>
               </Stack>
               <Box px={3} py={1.5}>
-                <DestinationField
-                  onSearchTermChange={(term) => setDestinationSearchTerm(term)}
-                  onChange={() => setDestinationIsOpen(false)}
-                />
+                <DestinationField onChange={() => setDestinationIsOpen(false)} />
               </Box>
             </Drawer>
             <Drawer

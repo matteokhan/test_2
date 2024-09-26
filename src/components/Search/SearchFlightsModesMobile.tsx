@@ -1,14 +1,15 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { Box, Tab, Tabs, Stack, Button } from '@mui/material'
-import {
-  MultiDestinationsFlightSearchParams,
-  OneWayFlightSearchParams,
-  RoundTripFlightSearchParams,
-} from '@/types'
+import { OneWayFlightSearchParams, RoundTripFlightSearchParams } from '@/types'
 import { useFlights } from '@/contexts'
-import { SearchRoundTripFlightsFormMobile, SearchOneWayFlightsFormMobile } from '@/components'
+import {
+  SearchRoundTripFlightsFormMobile,
+  SearchOneWayFlightsFormMobile,
+  ROUND_TRIP_DEFAULT_VALUES,
+  ONE_WAY_DEFAULT_VALUES,
+} from '@/components'
 import { FormikProps } from 'formik'
 
 type SearchFlightsModesMobileProps = {
@@ -21,17 +22,18 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
   const formRefOneWay = useRef<FormikProps<OneWayFlightSearchParams> | null>(null)
   const formRefRoundTrip = useRef<FormikProps<RoundTripFlightSearchParams> | null>(null)
 
-  const { setSearchParams } = useFlights()
+  const { setSearchParams, searchParamsCache } = useFlights()
 
-  const [oneWayInitialValues, setOneWayInitialValues] = React.useState<
-    OneWayFlightSearchParams | undefined
-  >()
-  const [roundTripInitialValues, setRoundTripInitialValues] = React.useState<
-    RoundTripFlightSearchParams | undefined
-  >()
-  const [multiDestInitialValues, setmultiDestInitialValues] = React.useState<
-    MultiDestinationsFlightSearchParams | undefined
-  >()
+  useEffect(() => {
+    if (searchParamsCache) {
+      if (searchParamsCache._type === 'oneWay') {
+        setActiveTab(1)
+      }
+      if (searchParamsCache._type === 'roundTrip') {
+        setActiveTab(0)
+      }
+    }
+  }, [searchParamsCache])
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -75,13 +77,13 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
         {activeTab === 0 && (
           <SearchRoundTripFlightsFormMobile
             formRef={formRefRoundTrip}
-            initialValues={roundTripInitialValues}
+            initialValues={searchParamsCache?._type === 'roundTrip' ? searchParamsCache : undefined}
           />
         )}
         {activeTab === 1 && (
           <SearchOneWayFlightsFormMobile
             formRef={formRefOneWay}
-            initialValues={oneWayInitialValues}
+            initialValues={searchParamsCache?._type === 'oneWay' ? searchParamsCache : undefined}
           />
         )}
       </Box>
@@ -106,10 +108,10 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
           data-testid="searchFlightsModesMobile-clearButton"
           onClick={() => {
             if (activeTab === 0 && formRefRoundTrip.current) {
-              formRefRoundTrip.current.resetForm()
+              formRefRoundTrip.current.resetForm({ values: ROUND_TRIP_DEFAULT_VALUES })
             }
             if (activeTab === 1 && formRefOneWay.current) {
-              formRefOneWay.current.resetForm()
+              formRefOneWay.current.resetForm({ values: ONE_WAY_DEFAULT_VALUES })
             }
           }}>
           Tout effacer
