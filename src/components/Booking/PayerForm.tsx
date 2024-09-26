@@ -54,7 +54,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             lastName: '',
             dateOfBirth: null,
             phoneNumber: '',
-            phoneCode: '594' as CountryCallingCode,
+            phoneCode: '33' as CountryCallingCode,
             email: '',
             address: '',
             postalCode: '',

@@ -137,7 +137,7 @@ export const PassengerForm = ({
             lastName: '',
             dateOfBirth: null,
             phoneNumber: '',
-            phoneCode: '594',
+            phoneCode: '33',
             email: '',
             isPayer: isPayer,
             type: '',
