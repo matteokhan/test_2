@@ -1,15 +1,41 @@
+'use client'
+
 import { SectionContainer } from '@/components'
 import './Footer.css'
 import Box from '@mui/material/Box'
 import { Stack } from '@mui/material'
+import { useState } from 'react'
+import * as Yup from 'yup'
+
+const emailSchema = Yup.string().email('E-mail invalide').required("L'e-mail est requis")
 
 export const Footer = () => {
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    try {
+      await emailSchema.validate(email)
+      setError('')
+      setEmail('')
+      const url = `https://www.leclercvoyages.com/account/signup/newsletter?email=${encodeURIComponent(email)}`
+      window.open(url, '_blank')
+    } catch (error: unknown) {
+      if (error instanceof Yup.ValidationError) {
+        setError(error.message)
+      } else {
+        setError('An unexpected error occurred.')
+      }
+    }
+  }
+
   return (
     <SectionContainer>
       <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
         <footer className="footer">
           <section className="footer-links" style={{ backgroundColor: '#e6e6e6' }}>
-            <form className="subscribe">
+            <form className="subscribe" onSubmit={handleSubmit}>
               <div className="inner-footer-links">
                 <div className="footer-links-list">
                   <div className="links-item">
@@ -166,17 +192,23 @@ export const Footer = () => {
                     J'accepte de recevoir les offres commerciales et newsletters de Voyages
                     E.Leclerc
                   </label>
-                  <div className="field">
+                  <div style={{ marginTop: '10px', marginBottom: '4px', display: 'flex' }}>
                     <input
                       className="input-newsletter"
                       type="text"
                       name="email"
                       placeholder="Votre email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value)
+                        setError('')
+                      }}
                     />
                     <button className="reset-button button--primary espacePriv" type="submit">
                       OK
                     </button>
                   </div>
+                  {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
                   <div className="phone-legal-image">
                     <img
                       alt=""
@@ -217,7 +249,7 @@ export const Footer = () => {
             src="https://wizard.leclercvoyages.com/admin/TS/fckUserFiles/Content_Image/footer/contact.png"
             style={{ width: '90%', margin: 'auto' }}
           />
-          <form>
+          <form onSubmit={handleSubmit}>
             <Stack bgcolor="primary" gap={1} py={2}>
               <Stack direction="row" alignItems="center" gap={1}>
                 <img
@@ -231,17 +263,25 @@ export const Footer = () => {
               <p style={{ fontSize: '12px', color: 'grey.900' }}>
                 J'accepte de recevoir les offres commerciales et newsletters de Voyages E.Leclerc
               </p>
-              <Stack direction="row">
-                <input
-                  className="input-newsletter"
-                  type="email"
-                  name="email"
-                  placeholder="Votre email"
-                  style={{ width: '100%' }}
-                />
-                <button className="reset-button button--primary espacePriv" type="submit">
-                  OK
-                </button>
+              <Stack>
+                <Stack direction="row">
+                  <input
+                    className="input-newsletter"
+                    type="email"
+                    name="email"
+                    placeholder="Votre email"
+                    style={{ width: '100%' }}
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      setError('')
+                    }}
+                  />
+                  <button className="reset-button button--primary espacePriv" type="submit">
+                    OK
+                  </button>
+                </Stack>
+                {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
               </Stack>
             </Stack>
           </form>
