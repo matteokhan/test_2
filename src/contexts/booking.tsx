@@ -15,6 +15,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { useFlights } from './flights'
 import { getInsurancePrice } from '@/utils'
+import { CountryCallingCode } from 'libphonenumber-js'
 
 const steps: BookingStepType[] = [
   {
@@ -185,6 +186,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: null,
           phoneNumber: '',
+          phoneCode: '594' as CountryCallingCode,
           email: '',
           type: 'ADT',
           isPayer: false,
@@ -200,6 +202,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: null,
           phoneNumber: '',
+          phoneCode: '594' as CountryCallingCode,
           email: '',
           type: 'CHD',
           isPayer: false,
@@ -215,6 +218,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           lastName: '',
           dateOfBirth: null,
           phoneNumber: '',
+          phoneCode: '594' as CountryCallingCode,
           email: '',
           type: 'INF',
           isPayer: false,

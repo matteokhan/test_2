@@ -5,6 +5,7 @@ import { Box, Stack, TextField, Typography } from '@mui/material'
 import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import {
+  CountryPhoneField,
   CreateAccountOptInField,
   SalutationField,
   SubscribeNewsletterOptInField,
@@ -12,6 +13,7 @@ import {
 import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
+import { CountryCallingCode } from 'libphonenumber-js'
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
@@ -24,6 +26,7 @@ const payerSchema = Yup.object().shape({
       return dayjs().diff(dayjs(value), 'year') >= 18
     }),
   phoneNumber: Yup.string().required('Le numéro de téléphone est requis'),
+  phoneCode: Yup.string().required('Le numéro de téléphone est requis'),
   email: Yup.string().email('E-mail invalide').required("L'e-mail est requis"),
   address: Yup.string().required('L’adresse est requise'),
   postalCode: Yup.string().required('Le code postal est requis'),
@@ -51,6 +54,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             lastName: '',
             dateOfBirth: null,
             phoneNumber: '',
+            phoneCode: '594' as CountryCallingCode,
             email: '',
             address: '',
             postalCode: '',
@@ -104,16 +108,17 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                 label="Date de naissance"
                 onChange={(value) => setFieldValue('dateOfBirth', value, true)}
               />
-              <Field
-                as={TextField}
-                name="phoneNumber"
+              <CountryPhoneField
+                data-testid="phoneNumberField"
+                values={[values.phoneCode, values.phoneNumber]}
+                onChange={(values) => {
+                  setFieldValue('phoneNumber', values[1])
+                  setFieldValue('phoneCode', values[0])
+                }}
+                error={errors.phoneNumber ? touched.phoneNumber : false}
+                helperText={touched.phoneNumber && errors.phoneNumber}
                 label="Téléphone"
                 variant="filled"
-                error={touched.phoneNumber && errors.phoneNumber}
-                helperText={touched.phoneNumber && errors.phoneNumber}
-                inputProps={{
-                  'data-testid': 'phoneNumberField',
-                }}
               />
               <Field
                 as={TextField}

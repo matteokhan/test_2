@@ -114,7 +114,7 @@ export const getReservationPassengerDto = ({
     last_name: passenger.lastName,
     birth_date: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
     email: passenger.email,
-    phone: passenger.phoneNumber,
+    phone: `${passenger.phoneCode}${passenger.phoneNumber}`,
   }
   return dto
 }

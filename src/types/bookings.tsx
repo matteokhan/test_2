@@ -1,4 +1,5 @@
 import { Dayjs } from 'dayjs'
+import { CountryCallingCode } from 'libphonenumber-js'
 
 export type BookingStepCode =
   | 'fares'
@@ -25,6 +26,7 @@ export type PassengerData = {
   isPayer: boolean
   dateOfBirth: Dayjs | null
   phoneNumber: string
+  phoneCode: CountryCallingCode
   email: string
   type: PassengerType
 }
@@ -35,6 +37,7 @@ export type PayerData = {
   lastName: string
   dateOfBirth: Dayjs | null
   phoneNumber: string
+  phoneCode: CountryCallingCode
   email: string
   address: string
   postalCode: string

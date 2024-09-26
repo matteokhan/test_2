@@ -25,9 +25,9 @@ export const PassengersSummary = () => {
               {passenger.email}
             </Typography>
           )}
-          {passenger?.phoneNumber && (
+          {passenger?.phoneNumber && passenger?.phoneCode && (
             <Typography variant="bodyMd" color="grey.700" data-testid="passengersSummary-phone">
-              {passenger.phoneNumber}
+              (+{passenger.phoneCode}) {passenger.phoneNumber}
             </Typography>
           )}
         </Box>

@@ -5,7 +5,7 @@ import { PassengerData, PassengerType } from '@/types'
 import { Alert, Box, Stack, TextField } from '@mui/material'
 import { Formik, Form, FormikHelpers, Field, FormikProps, useFormikContext } from 'formik'
 import * as Yup from 'yup'
-import { PassengerIsPayerField, SalutationField } from '@/components'
+import { CountryPhoneField, PassengerIsPayerField, SalutationField } from '@/components'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import { ReactNode } from 'react'
@@ -57,6 +57,11 @@ const passengerSchema = ({
         const age = dayjs().diff(dayjs(value), 'year')
         return age < 2
       }),
+    phoneCode: Yup.string().when('type', {
+      is: 'ADT',
+      then: (schema) => schema.required('Le numéro de téléphone est requis'),
+      otherwise: (schema) => schema.optional(),
+    }),
     phoneNumber: Yup.string().when('type', {
       is: 'ADT',
       then: (schema) => schema.required('Le numéro de téléphone est requis'),
@@ -115,6 +120,7 @@ export const PassengerForm = ({
             lastName: '',
             dateOfBirth: null,
             phoneNumber: '',
+            phoneCode: '594',
             email: '',
             isPayer: isPayer,
             type: '',
@@ -216,17 +222,17 @@ export const PassengerForm = ({
               <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
                 <Box width={{ xs: '100%', lg: '50%' }}>
                   {initialValues.type === 'ADT' && (
-                    <Field
-                      fullWidth
-                      as={TextField}
-                      name="phoneNumber"
+                    <CountryPhoneField
+                      data-testid="phoneNumberField"
+                      values={[values.phoneCode, values.phoneNumber]}
+                      onChange={(values) => {
+                        setFieldValue('phoneNumber', values[1])
+                        setFieldValue('phoneCode', values[0])
+                      }}
+                      error={errors.phoneNumber ? touched.phoneNumber : false}
+                      helperText={touched.phoneNumber && errors.phoneNumber}
                       label="Téléphone"
                       variant="filled"
-                      error={touched.phoneNumber && errors.phoneNumber}
-                      helperText={touched.phoneNumber && errors.phoneNumber}
-                      inputProps={{
-                        'data-testid': 'phoneNumberField',
-                      }}
                     />
                   )}
                 </Box>
