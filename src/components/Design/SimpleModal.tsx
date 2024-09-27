@@ -5,6 +5,7 @@ type SimpleModalBaseProps = {
   imageUrl: string
   title: string
   children?: React.ReactNode
+  alignItems?: 'center' | 'flex-start' | 'flex-end' | 'stretch' | 'baseline'
 }
 
 type SimpleModalMainActionProps =
@@ -39,6 +40,7 @@ export const SimpleModal = ({
   onMainAction,
   secondaryAction,
   onSecondaryAction,
+  alignItems,
 }: SimpleModalProps) => {
   return (
     <Paper
@@ -53,13 +55,15 @@ export const SimpleModal = ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
       }}>
-      <Stack alignItems="center">
+      <Stack alignItems="center" width={'100%'}>
         <Box width={160} height={160} position="relative" mb={2}>
           <Image src={imageUrl} alt="modal image" fill />
         </Box>
-        <Stack pt={1} pb={2} gap={1.5}>
+        <Stack pt={1} pb={2} gap={1.5} alignItems="center" width={'100%'}>
           <Typography variant="titleLg">{title}</Typography>
-          {children}
+          <Stack gap={1} alignItems={alignItems || 'center'} width={'100%'}>
+            {children}
+          </Stack>
         </Stack>
         <Stack direction="row" gap={1} width="100%" justifyContent="flex-end" pt={2}>
           {onSecondaryAction && (

@@ -19,8 +19,10 @@ const DEFAULT_VALUES = {
   infants: 0,
   from: '',
   fromLabel: '',
+  fromCountry: '',
   to: '',
   toLabel: '',
+  toCountry: '',
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   _type: 'oneWay',
 } as OneWayFlightSearchParams
@@ -31,8 +33,10 @@ const searchParamsSchema = Yup.object().shape({
   infants: Yup.number().min(0).required('Requise'),
   from: Yup.string().required('Requise'),
   fromLabel: Yup.string(),
+  fromCountry: Yup.string(),
   to: Yup.string().required('Requise'),
   toLabel: Yup.string(),
+  toCountry: Yup.string(),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
 })
 

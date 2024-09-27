@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { Box, Drawer, Paper, SxProps, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Drawer, Modal, Paper, SxProps, Tab, Tabs, Typography } from '@mui/material'
 import {
   SearchOneWayFlightsForm,
   SearchRoundTripFlightsForm,
@@ -10,6 +10,8 @@ import {
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
+import { isValidSearch } from '@/utils'
+import { AlertDestinationModal } from './AlertDestinationModal'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
@@ -20,6 +22,7 @@ type SearchFlightsModesProps = {
 export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const { searchParamsCache } = useFlights()
   const { selectedAgencyCode, selectedAgencyName, saveSelectedAgency, setSelectedAgency } =
     useAgencySelector()
@@ -29,7 +32,8 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
   }
   const handleSearch = (values: SearchFlightsParams) => {
     if (selectedAgencyCode) saveSelectedAgency()
-    onSearch({ searchParams: values })
+    if (isValidSearch(values)) onSearch({ searchParams: values })
+    else setModalIsOpen(true)
   }
 
   useEffect(() => {
@@ -99,6 +103,17 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           </a>
         </Typography>
       )}
+      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
+        <AlertDestinationModal
+          onShowAgency={() => {
+            setMapIsOpen(true)
+            setModalIsOpen(false)
+          }}
+          onClose={() => {
+            setModalIsOpen(false)
+          }}
+        />
+      </Modal>
       <Drawer
         open={mapIsOpen}
         onClose={() => setMapIsOpen(false)}
