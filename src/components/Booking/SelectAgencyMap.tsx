@@ -22,7 +22,7 @@ import { env } from 'next-runtime-env'
 import { setDefaults, fromLatLng, OutputFormat } from 'react-geocode'
 import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
 import { useUserLocation } from '@/contexts'
-import { AgencyModal } from './AgencyModal'
+import { AgencyModal } from '@/components'
 
 type SelectAgencyMapProps = {
   onSelectAgency: ({ agency }: { agency: Agency }) => void

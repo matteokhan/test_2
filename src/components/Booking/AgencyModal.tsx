@@ -73,10 +73,10 @@ export const AgencyModal: React.FC<{
     return (
       <Grid container>
         <Grid item xs={4}>
-          {day?.value}
+          <Typography variant="bodyMd">{day?.value}</Typography>
         </Grid>
         <Grid item xs={8}>
-          {result}
+          <Typography variant="bodyMd">{result}</Typography>
         </Grid>
       </Grid>
     )
@@ -103,11 +103,7 @@ export const AgencyModal: React.FC<{
       <Typography variant="bodyMd">Horaire d'ouverture</Typography>
       <Box sx={{ width: '100%' }}>
         {agency?.agency_openings.map((opening, index) => {
-          return (
-            <Typography key={index} variant="bodyMd">
-              {getOpenning(opening)}
-            </Typography>
-          )
+          return <Box key={index}>{getOpenning(opening)}</Box>
         })}
       </Box>
     </SimpleModal>

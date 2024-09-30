@@ -7,11 +7,11 @@ import {
   SearchRoundTripFlightsForm,
   SearchMultiDestFlightsForm,
   SelectAgencyMap,
+  AlertDestinationModal,
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
 import { isValidSearch } from '@/utils'
-import { AlertDestinationModal } from './AlertDestinationModal'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
