@@ -20,8 +20,10 @@ export const DepartureAndDestinationField = ({
   const { errors, touched, setFieldValue, values } = useFormikContext<{
     from: string
     fromLabel: string
+    fromCountry: string
     to: string
     toLabel: string
+    toCountry: string
   }>()
 
   // Departure
@@ -44,6 +46,7 @@ export const DepartureAndDestinationField = ({
     setSelectedDeparture(location)
     setFieldValue('from', location.code)
     setFieldValue('fromLabel', location.name + ' (' + location.code + ')')
+    setFieldValue('fromCountry', location.country_name)
   }
   const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDeparture(null)
@@ -78,6 +81,7 @@ export const DepartureAndDestinationField = ({
     setSelectedDestination(airport)
     setFieldValue('to', airport.code)
     setFieldValue('toLabel', airport.name + ' (' + airport.code + ')')
+    setFieldValue('toCountry', airport.country_name)
   }
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDestination(null)

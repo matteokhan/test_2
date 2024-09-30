@@ -10,6 +10,7 @@ import {
   Button,
   InputAdornment,
   Fab,
+  Modal,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import GpsOff from '@mui/icons-material/GpsOff'
@@ -21,6 +22,7 @@ import { env } from 'next-runtime-env'
 import { setDefaults, fromLatLng, OutputFormat } from 'react-geocode'
 import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
 import { useUserLocation } from '@/contexts'
+import { AgencyModal } from '@/components'
 
 type SelectAgencyMapProps = {
   onSelectAgency: ({ agency }: { agency: Agency }) => void
@@ -32,6 +34,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const [place, setPlace] = React.useState<any>(null)
   const [currentLocation, setCurrentLocation] = React.useState<any>(null)
   const { position: userLocation } = useUserLocation()
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const [agencyToShow, setAgencyToShow] = React.useState<Agency | undefined>(undefined)
 
   const defaultBounds = {
     gps_latitude: userLocation?.lat || 48.866667,
@@ -109,6 +113,11 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
     lat: agency.gps_latitude,
     lng: agency.gps_longitude,
   })
+
+  const onShowAgency = (agency: Agency) => {
+    setAgencyToShow(agency)
+    setModalIsOpen(true)
+  }
 
   const setLocation = () => {
     if ('geolocation' in navigator) {
@@ -255,6 +264,12 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                 <Typography
                   variant="bodySm"
                   color="grey.700"
+                  data-testid="selectAgencyMap-agenciesList-agency-city">
+                  {agency.city}
+                </Typography>
+                <Typography
+                  variant="bodySm"
+                  color="grey.700"
                   data-testid="selectAgencyMap-agenciesList-agency-phone">
                   Tel {agency.phone}
                 </Typography>
@@ -262,7 +277,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                   <Button
                     variant="text"
                     sx={{ px: 3 }}
-                    data-testid="selectAgencyMap-agenciesList-agency-seeDetails">
+                    data-testid="selectAgencyMap-agenciesList-agency-seeDetails"
+                    onClick={() => onShowAgency(agency)}>
                     Voir les infos
                   </Button>
                   <Button
@@ -278,6 +294,18 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
           </Stack>
         </Stack>
       </Stack>
+      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
+        <AgencyModal
+          agency={agencyToShow}
+          onSelectAgency={(agency) => {
+            onSelectAgency({ agency })
+            setModalIsOpen(false)
+          }}
+          onClose={() => {
+            setModalIsOpen(false)
+          }}
+        />
+      </Modal>
     </Stack>
   )
 }

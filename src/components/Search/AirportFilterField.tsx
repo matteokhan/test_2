@@ -24,7 +24,6 @@ export const AirportFilterField = ({
         } else {
           value[index].from.push(airport)
         }
-        setValue([...value])
       } else {
         const index = value.findIndex((v) => v.routeIndex === airportFilter.routeIndex)
         if (value[index].to.includes(airport)) {
@@ -32,8 +31,8 @@ export const AirportFilterField = ({
         } else {
           value[index].to.push(airport)
         }
-        setValue([...value])
       }
+      setValue([...value])
     }
   }
 
