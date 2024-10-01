@@ -6,6 +6,7 @@ export type BookingStepCode =
   | 'passengers'
   | 'contact'
   | 'insurances'
+  // | 'ancillaries'
   | 'summary'
   | 'confirmation'
 

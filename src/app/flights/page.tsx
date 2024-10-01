@@ -104,20 +104,22 @@ export default function FlighsPage() {
         if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
       }
 
-      if (filters?.airportsSelected) {
-        for (let airportFilter of filters.airportsSelected) {
-          const route = solution.routes[airportFilter.routeIndex]
-          if (airportFilter.from.length > 0) {
-            if (!airportFilter.from.includes(route.segments[0].departure)) {
-              return false
-            }
-          }
-          if (airportFilter.to.length > 0) {
-            if (!airportFilter.to.includes(route.segments[route.segments.length - 1].arrival)) {
-              return false
-            }
-          }
-        }
+      if (filters?.routes[0].departureAirports.length > 0) {
+        if (
+          !filters.routes[0].departureAirports.includes(
+            solution.routes[0].segments[0].departureCityCode,
+          )
+        )
+          return false
+      }
+
+      if (
+        filters?.routes[1].arrivalAirports.length > 0 &&
+        (searchParamsDto?.segments?.length || 0) > 1
+      ) {
+        const arrivalCityCode =
+          solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalCityCode
+        if (!filters.routes[1].arrivalAirports.includes(arrivalCityCode)) return false
       }
 
       return true

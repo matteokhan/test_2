@@ -1,5 +1,6 @@
+export type LocationCode = string
 export type LocationData = {
-  code: string
+  code: LocationCode
   name: string
   extension: string
   country_name: string
@@ -9,5 +10,5 @@ export type LocationData = {
 }
 
 export type Locations = {
-  [code: string]: LocationData
+  [code: LocationCode]: LocationData
 }

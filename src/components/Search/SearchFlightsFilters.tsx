@@ -65,6 +65,18 @@ export const SearchFlightsFilters = ({
     flightTimeReturn: null,
     airlinesSelected: [],
     airportsSelected: [],
+    routes: [
+      {
+        routeIndex: 0,
+        departureAirports: [],
+        arrivalAirports: [],
+      },
+      {
+        routeIndex: 1,
+        departureAirports: [],
+        arrivalAirports: [],
+      },
+    ],
   } as SearchFlightFilters
 
   const { data: departureLocationData } = useLocationData({
@@ -118,33 +130,55 @@ export const SearchFlightsFilters = ({
                   />
                 </FormControl>
               </Box>
+
+              {/* Route 1 */}
+              {filterData !== undefined && (
+                <Box pb={1}>
+                  <Stack direction="row" gap={1} alignItems="center">
+                    <Typography variant="titleLg">{locationName(departureLocationData)}</Typography>
+                    <ArrowForwardIcon data-testid={null} />
+                    <Typography variant="titleLg">{locationName(arrivalLocationData)}</Typography>
+                  </Stack>
+                  {/* <Typography variant="bodyMd">
+                    Départ de aeroport de{' '}
+                    {departureLocationData ? locationName(departureLocationData) : departure}
+                  </Typography> */}
+                </Box>
+              )}
+
               <Box pb={1}>
                 <Typography variant="titleMd" pb={1}>
                   Tranche horaire pour le départ
                 </Typography>
-                {filterData !== undefined && (
-                  <Box pb={1}>
-                    <Stack direction="row" gap={1} alignItems="center">
-                      <Typography variant="titleSm">
-                        {locationName(departureLocationData)}
-                      </Typography>
-                      <ArrowForwardIcon data-testid={null} />
-                      <Typography variant="titleSm">{locationName(arrivalLocationData)}</Typography>
-                    </Stack>
-                    <Typography variant="bodySm">
-                      Départ de aeroport de{' '}
-                      {departureLocationData ? locationName(departureLocationData) : departure}
-                    </Typography>
-                  </Box>
-                )}
                 <FlightTimeFilterField name="flightTime" disabled={filterData === undefined} />
               </Box>
               {filterData !== undefined && (
-                <AirportFilterField
-                  airportFilter={filterData.airports.find((a) => a.routeIndex === 0)}
-                  name="airportsSelected"
-                />
+                <>
+                  <Typography variant="titleMd" pb={1}>
+                    Décoller depuis
+                  </Typography>
+                  <AirportFilterField
+                    airports={filterData.airports.find((a) => a.routeIndex === 0)?.from || []}
+                    name="routes[0].departureAirports"
+                  />
+                </>
               )}
+
+              {/* Route 2 */}
+              {filterData !== undefined && (
+                <Box pb={1}>
+                  <Stack direction="row" gap={1} alignItems="center">
+                    <Typography variant="titleLg">{locationName(arrivalLocationData)}</Typography>
+                    <ArrowForwardIcon data-testid={null} />
+                    <Typography variant="titleLg">{locationName(departureLocationData)}</Typography>
+                  </Stack>
+                  {/* <Typography variant="bodyMd">
+                    Départ de aeroport de{' '}
+                    {departureLocationData ? locationName(departureLocationData) : departure}
+                  </Typography> */}
+                </Box>
+              )}
+
               {isRoundTrip && (
                 <Box pb={1}>
                   <Typography variant="titleMd" pb={1}>
@@ -174,11 +208,18 @@ export const SearchFlightsFilters = ({
                 </Box>
               )}
               {isRoundTrip && filterData !== undefined && (
-                <AirportFilterField
-                  airportFilter={filterData.airports.find((a) => a.routeIndex === 1)}
-                  name="airportsSelected"
-                />
+                <>
+                  <Typography variant="titleMd" pb={1}>
+                    Attérir à
+                  </Typography>
+                  <AirportFilterField
+                    airports={filterData.airports.find((a) => a.routeIndex === 1)?.to || []}
+                    name="routes[1].arrivalAirports"
+                  />
+                </>
               )}
+
+              {/* Airlines */}
               {filterData !== undefined && (
                 <Box>
                   <Typography variant="titleMd" pb={1}>

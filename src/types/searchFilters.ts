@@ -13,6 +13,11 @@ export type SearchFlightFilters = {
   flightTimeReturn?: FlightTimeFilterOption
   airlinesSelected?: string[]
   airportsSelected?: AirportFilterData[]
+  routes: {
+    routeIndex: number
+    departureAirports: string[]
+    arrivalAirports: string[]
+  }[]
 }
 export type AirlineFilterData = {
   carrier: string

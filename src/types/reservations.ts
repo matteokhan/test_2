@@ -1,5 +1,7 @@
 import { CorrelationId, RouteId, SolutionId } from '@/types'
 
+export type PNR = string
+
 export type ReservationTokenDto = {
   token: string
   expires_at: string
