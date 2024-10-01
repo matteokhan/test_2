@@ -54,7 +54,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                   key={service.name}>
                   <Typography variant="bodyMd">{service.name}</Typography>
                   <Typography variant="bodyMd" fontWeight={500}>
-                    0 €
+                    inclus
                   </Typography>
                 </Stack>
               ))}
