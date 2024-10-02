@@ -26,7 +26,20 @@ export default function FlighsPage() {
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
-  const [filters, setFilters] = React.useState({} as SearchFlightFilters)
+  const [filters, setFilters] = React.useState<SearchFlightFilters>({
+    routes: [
+      {
+        routeIndex: 0,
+        departureAirports: [],
+        arrivalAirports: [],
+      },
+      {
+        routeIndex: 1,
+        departureAirports: [],
+        arrivalAirports: [],
+      },
+    ],
+  })
 
   const { flightDetailsOpen, setFlightDetailsOpen, setSearchParams, searchParamsDto } = useFlights()
   const { selectFlight, goToStep, setReservation, correlationId } = useBooking()
