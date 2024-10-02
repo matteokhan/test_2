@@ -14,10 +14,9 @@ import {
   SelectedFlightInfoTopbarMobile,
 } from '@/components'
 import { Box, Drawer, Button, Grow, Stack, Typography } from '@mui/material'
-import { useBooking, useFlights } from '@/contexts'
+import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import { SearchFlightsParams, Solution, AirlineFilterData, SearchFlightFilters } from '@/types'
 import { useCreateReservation, useSearchFlights } from '@/services'
-import { getCreateReservationDto } from '@/utils'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
@@ -29,38 +28,44 @@ export default function FlighsPage() {
   const [filters, setFilters] = React.useState({} as SearchFlightFilters)
 
   const { flightDetailsOpen, setFlightDetailsOpen, setSearchParams, searchParamsDto } = useFlights()
-  const { selectFlight, goToStep, setReservation, correlationId } = useBooking()
+  const { selectFlight, goToStep, setReservation, reservation } = useBooking()
+  const { selectedAgency } = useAgencySelector()
   const { mutate: createReservation, isPending: isCreatingReservation } = useCreateReservation()
   const {
     data: response,
     isSuccess,
-    isLoading,
+    isLoading: isSearching,
   } = useSearchFlights({
     params: searchParamsDto,
+    orderId: reservation?.id,
   })
+  const isLoading = isSearching || isCreatingReservation
 
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
-    setSearchParams(searchParams)
-  }
-  const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
-    if (!correlationId) {
+    if (!selectedAgency) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
     }
-    const createReservationDto = getCreateReservationDto({ correlationId, flight })
-    createReservation(createReservationDto, {
-      onSuccess: (reservation) => {
-        setReservation(reservation)
-        selectFlight(flight)
-        setFlightDetailsOpen(false)
-        goToStep(0)
+    createReservation(
+      { agencyId: selectedAgency.id },
+      {
+        onSuccess: (reservation) => {
+          setReservation(reservation)
+          setSearchParams(searchParams)
+        },
+        onError: (error) => {
+          // TODO: log this somewhere
+          // TODO: Warn the user that something went wrong
+        },
       },
-      onError: (error) => {
-        // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
-      },
-    })
+    )
+  }
+  const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
+    // setReservation(reservation)
+    selectFlight(flight)
+    setFlightDetailsOpen(false)
+    goToStep(0)
   }
 
   const filteredDataOne = response?.solutions
@@ -115,7 +120,7 @@ export default function FlighsPage() {
 
       if (
         filters?.routes[1].arrivalAirports.length > 0 &&
-        (searchParamsDto?.segments?.length || 0) > 1
+        (searchParamsDto?.search_data.segments?.length || 0) > 1
       ) {
         const arrivalCityCode =
           solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalCityCode
@@ -207,7 +212,9 @@ export default function FlighsPage() {
                   ]?.arrival
                 }
                 isRoundTrip={
-                  searchParamsDto?.segments?.length ? searchParamsDto.segments.length > 1 : false
+                  searchParamsDto?.search_data.segments?.length
+                    ? searchParamsDto.search_data.segments.length > 1
+                    : false
                 }
                 onSubmit={(values) => setFilters(values)}
               />
@@ -234,10 +241,7 @@ export default function FlighsPage() {
               )}
               {isSuccess && (
                 <>
-                  <SearchResults
-                    results={filteredData?.slice(0, resultsNumber)}
-                    correlationId={response.correlationId}
-                  />
+                  <SearchResults results={filteredData?.slice(0, resultsNumber)} />
                   {hasMoreResults && (
                     <Button
                       onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
@@ -263,7 +267,7 @@ export default function FlighsPage() {
               },
             }}>
             <FlightDetails
-              isLoading={isCreatingReservation}
+              // isLoading={isLoading}
               onClose={() => setFlightDetailsOpen(false)}
               onSelectFlight={handleSelectFlight}
             />
