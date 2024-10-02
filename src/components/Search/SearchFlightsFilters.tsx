@@ -138,18 +138,14 @@ export const SearchFlightsFilters = ({
                       <ArrowForwardIcon data-testid={null} />
                       <Typography variant="titleMd">{locationName(arrivalLocationData)}</Typography>
                     </Stack>
-                    {/* <Typography variant="bodyMd">
-                      Départ de aeroport de{' '}
-                      {departureLocationData ? locationName(departureLocationData) : departure}
-                    </Typography> */}
                   </>
                 )}
                 <Typography variant="labelLg">Tranche horaire pour le départ</Typography>
                 {filterData !== undefined && (
                   <Box pb={1}>
                     <Typography variant="bodySm">
-                      Arrivé à l'aeroport de{' '}
-                      {arrivalLocationData ? locationName(arrivalLocationData) : arrival}
+                      Départ de aeroport de{' '}
+                      {departureLocationData ? locationName(departureLocationData) : departure}
                     </Typography>
                   </Box>
                 )}
@@ -193,10 +189,6 @@ export const SearchFlightsFilters = ({
                         {locationName(departureLocationData)}
                       </Typography>
                     </Stack>
-                    {/* <Typography variant="bodyMd">
-                    Départ de aeroport de{' '}
-                    {departureLocationData ? locationName(departureLocationData) : departure}
-                  </Typography> */}
                   </Box>
                 )}
                 {isRoundTrip && (
