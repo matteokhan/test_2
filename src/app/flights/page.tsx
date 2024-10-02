@@ -113,6 +113,21 @@ export default function FlighsPage() {
           return false
       }
 
+      if (filters?.routes[0].arrivalAirports.length > 0) {
+        const arrivalCityCode =
+          solution.routes[0].segments[solution.routes[0].segments.length - 1].arrivalCityCode
+        if (!filters.routes[0].arrivalAirports.includes(arrivalCityCode)) return false
+      }
+
+      if (
+        filters?.routes[1].departureAirports.length > 0 &&
+        (searchParamsDto?.segments?.length || 0) > 1
+      ) {
+        const departureCityCode =
+          solution.routes[1].segments[solution.routes[1].segments.length - 1].departureCityCode
+        if (!filters.routes[1].departureAirports.includes(departureCityCode)) return false
+      }
+
       if (
         filters?.routes[1].arrivalAirports.length > 0 &&
         (searchParamsDto?.segments?.length || 0) > 1
