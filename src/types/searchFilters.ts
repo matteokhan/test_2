@@ -12,7 +12,6 @@ export type SearchFlightFilters = {
   flightTime?: FlightTimeFilterOption
   flightTimeReturn?: FlightTimeFilterOption
   airlinesSelected?: string[]
-  airportsSelected?: AirportFilterData[]
   routes: {
     routeIndex: number
     departureAirports: string[]
