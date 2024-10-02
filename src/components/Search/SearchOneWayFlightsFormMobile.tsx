@@ -17,8 +17,10 @@ const DEFAULT_VALUES: OneWayFlightSearchParams = {
   infants: 0,
   from: '',
   fromLabel: '',
+  toCountry: '',
   to: '',
   toLabel: '',
+  fromCountry: '',
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   _type: 'oneWay',
 }
