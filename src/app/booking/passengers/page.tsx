@@ -9,10 +9,10 @@ import {
   AtLeastOneYoungAdultPassengerModal,
 } from '@/components'
 import { EmailRequirementProvider, useBooking } from '@/contexts'
-import { PassengerData, ReservationDto, ReservationPassengerDto } from '@/types'
+import { PassengerData, UpdateOrderParams } from '@/types'
 import { FormikProps } from 'formik'
-import { getReservationPassengerDto, ageIsAtLeast } from '@/utils'
-import { useUpdateReservation } from '@/services'
+import { ageIsAtLeast } from '@/utils'
+import { useUpdateOrder } from '@/services'
 import { Box, Modal } from '@mui/material'
 
 export default function PassengersPage() {
@@ -23,17 +23,17 @@ export default function PassengersPage() {
     setPayerIndex,
     goNextStep,
     goPreviousStep,
-    reservation,
-    setReservation,
+    order,
+    setOrder,
   } = useBooking()
   const formRefs = useRef<(FormikProps<PassengerData> | null)[]>([])
   const [isNavigating, setIsNavigating] = useState(false)
   const [oneAdultModalIsOpen, setOneAdultModalIsOpen] = useState(false)
   const [oneYoungAdultModalIsOpen, setOneYoungAdultModalIsOpen] = useState(false)
-  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
+  const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
 
   const handleSubmit = async () => {
-    if (!reservation) {
+    if (!order) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
@@ -59,7 +59,7 @@ export default function PassengersPage() {
 
     let atLeastOneYoungAdultPassenger = false
     let atLeastOneAdultPassenger = false
-    const passengersDto: ReservationPassengerDto[] = []
+    const passengers: PassengerData[] = []
     formRefs.current.forEach((formRef, index) => {
       if (formRef) {
         const passengerDataValidated = formRef.values
@@ -75,12 +75,11 @@ export default function PassengersPage() {
         )
           atLeastOneAdultPassenger = true
 
-        const passengerDto = getReservationPassengerDto({ passenger: passengerDataValidated })
-        passengersDto.push(passengerDto)
+        passengers.push(passengerDataValidated)
         handlePassengerSubmit(passengerDataValidated, index)
       }
     })
-    if (passengersDto.length > 1 && !atLeastOneAdultPassenger) {
+    if (passengers.length > 1 && !atLeastOneAdultPassenger) {
       setOneAdultModalIsOpen(true)
       return
     }
@@ -89,13 +88,13 @@ export default function PassengersPage() {
       return
     }
 
-    const newReservation: ReservationDto = {
-      ...reservation,
-      passengers: passengersDto,
+    const newOrder: UpdateOrderParams = {
+      orderId: order.id,
+      passengers: passengers,
     }
-    updateReservation(newReservation, {
+    updateOrder(newOrder, {
       onSuccess: (data) => {
-        setReservation(data)
+        setOrder(data)
         setIsNavigating(true)
         goNextStep()
       },
@@ -155,14 +154,14 @@ export default function PassengersPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation || isNavigating}
+          isLoading={isUpdatingOrder || isNavigating}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation || isNavigating}
+          isLoading={isUpdatingOrder || isNavigating}
         />
       </Box>
       <Modal open={oneAdultModalIsOpen} onClose={() => setOneAdultModalIsOpen(false)}>

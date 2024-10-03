@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   BookingStepActions,
   BookingStepActionsMobile,
@@ -9,56 +9,58 @@ import {
 } from '@/components'
 import { useBooking } from '@/contexts'
 import { Box, Stack } from '@mui/material'
-import { useBrandedFares } from '@/services'
-import { getSearchBrandedFaresDto } from '@/utils'
+import { useBrandedFares, useUpdateOrder } from '@/services'
+import { UpdateOrderParams } from '@/types'
 
 export default function FaresPage() {
   const {
-    previousStep,
-    currentStep,
     goPreviousStep,
     goNextStep,
     setSelectedFare,
     selectedFare,
     selectedFlight,
     passengers,
-    correlationId,
+    order,
+    setOrder,
   } = useBooking()
+  const [isNavigating, setIsNavigating] = useState(false)
 
-  if (!selectedFlight || !passengers || !correlationId) {
+  if (!selectedFlight || !passengers || !order) {
     // TODO: log this somewhere
     // TODO: Warn the user that something went wrong
     return null
   }
 
-  const searchFaresParams = getSearchBrandedFaresDto({
-    correlationId: correlationId,
-    solution: selectedFlight,
-    passengers: passengers,
+  const { data: brandedFares, isSuccess } = useBrandedFares({
+    orderId: order.id,
+    solutionId: selectedFlight.id,
   })
-  const { data: brandedFares, isSuccess } = useBrandedFares({ params: searchFaresParams })
+  const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
 
-  useEffect(() => {
-    // TODO: Ask for branded fares before rendering this page
-    // Then decide if this step should be skipped
-    // Try to avoid the use of previousStep variable
-    if (isSuccess && brandedFares.length === 0) {
-      if (previousStep > currentStep) {
-        goPreviousStep()
-      } else {
+  const handleSubmit = async () => {
+    const newOrder: UpdateOrderParams = {
+      orderId: order.id,
+      amount: selectedFare?.priceInfo.total || 0,
+    }
+    updateOrder(newOrder, {
+      onSuccess: (data) => {
+        setOrder(data)
+        setIsNavigating(true)
         goNextStep()
-      }
-    }
-    if (!selectedFare && isSuccess && brandedFares.length > 0) {
-      setSelectedFare(brandedFares[0])
-    }
-  }, [brandedFares])
+      },
+      onError: (error) => {
+        // TODO: log this somewhere
+        // TODO: Warn the user that something went wrong
+      },
+    })
+  }
 
   return (
     <>
       <SimpleContainer>
         <Stack gap={2} pt={4} data-testid="faresPage-options">
           {brandedFares &&
+            isSuccess &&
             brandedFares.map((fare) => (
               <FareOption
                 key={fare.id}
@@ -74,10 +76,18 @@ export default function FaresPage() {
         </Stack>
       </SimpleContainer>
       <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions onContinue={goNextStep} onGoBack={goPreviousStep} />
+        <BookingStepActions
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingOrder || isNavigating}
+        />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile onContinue={goNextStep} onGoBack={goPreviousStep} />
+        <BookingStepActionsMobile
+          onContinue={handleSubmit}
+          onGoBack={goPreviousStep}
+          isLoading={isUpdatingOrder || isNavigating}
+        />
       </Box>
     </>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { BookingConfirmation, Navbar, SectionContainer, TopBar } from '@/components'
-import { useReservation } from '@/services'
+import { useOrder } from '@/services'
 import { Box } from '@mui/material'
 import { useSearchParams } from 'next/navigation'
 
@@ -13,7 +13,7 @@ export default function SuccessPage() {
     // TODO: Warn the user that something went wrong
     return null
   }
-  const { data: reservation } = useReservation({ reservationId: order_id })
+  const { data: order } = useOrder({ orderId: order_id })
   return (
     <>
       <TopBar height={60}>
@@ -25,7 +25,7 @@ export default function SuccessPage() {
           display: { xs: 'none', lg: 'block' },
         }}>
         <SectionContainer sx={{ paddingY: 3 }}>
-          {reservation && <BookingConfirmation reservation={reservation} />}
+          {order && <BookingConfirmation order={order} />}
         </SectionContainer>
       </Box>
       <Box
@@ -33,7 +33,7 @@ export default function SuccessPage() {
           display: { xs: 'block', lg: 'none' },
           height: '100vh',
         }}>
-        {reservation && <BookingConfirmation reservation={reservation} />}
+        {order && <BookingConfirmation order={order} />}
       </Box>
     </>
   )

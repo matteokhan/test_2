@@ -16,9 +16,15 @@ export const BookingStepsTopbar = () => {
         direction="row"
         justifyContent="space-between">
         <Box position="absolute" height="1px" width="100%" bgcolor="grey.500" top="4px"></Box>
-        {steps.map((step, index) => (
-          <BookingStep key={step.name} step={step} isActive={index == currentStep} />
-        ))}
+        {steps.current
+          .filter((s) => !s.skip)
+          .map((step) => (
+            <BookingStep
+              key={step.name}
+              step={step}
+              isActive={steps.current[currentStep].code == step.code}
+            />
+          ))}
       </Stack>
     </Stack>
   )

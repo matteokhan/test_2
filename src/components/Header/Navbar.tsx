@@ -13,7 +13,7 @@ import { useAgencySelector } from '@/contexts'
 
 export const Navbar = () => {
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
-  const { setSelectedAgency } = useAgencySelector()
+  const { selectAgency } = useAgencySelector()
 
   return (
     <Box
@@ -106,7 +106,7 @@ export const Navbar = () => {
               <SelectAgencyMap
                 onClose={() => setMapIsOpen(false)}
                 onSelectAgency={({ agency }) => {
-                  setSelectedAgency(agency.code, agency.name, true)
+                  selectAgency(agency)
                   setMapIsOpen(false)
                 }}
               />

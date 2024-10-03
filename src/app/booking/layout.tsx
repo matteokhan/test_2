@@ -22,11 +22,11 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
     getStepIndexByPath,
     setCurrentStep,
     mapIsOpen,
-    currentStepTitle,
     steps,
     currentStep,
     totalPrice,
   } = useBooking()
+  const currentStepTitle = steps.current[currentStep].title
   const { setFlightDetailsOpen, flightDetailsOpen } = useFlights()
   const router = useRouter()
   const pathname = usePathname()
@@ -105,7 +105,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
             alignItems="flex-end">
             <Typography variant="headlineMd">{currentStepTitle}</Typography>
             <Typography variant="bodyMd" color="grey.800" sx={{ textWrap: 'nowrap' }}>
-              Étape {currentStep + 1}/{steps.length}
+              Étape {currentStep + 1}/{steps.current.length}
             </Typography>
           </Stack>
           <Box py={2}>{children}</Box>

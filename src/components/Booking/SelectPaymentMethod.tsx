@@ -1,20 +1,16 @@
 import React from 'react'
-import { useBooking } from '@/contexts'
 import { AgencyContractCode } from '@/types'
 import { getPaymentMethodData } from '@/utils'
 import { Box, Radio, Stack, Typography } from '@mui/material'
-import { useAgency } from '@/services'
+import { useAgencySelector } from '@/contexts'
 
 export const SelectPaymentMethod = ({
   onSelect,
 }: {
   onSelect: (contract: AgencyContractCode) => void
 }) => {
-  // TODO: need to attend to the selected agency
-  // const { selectedAgency } = useBooking()
-
-  const { data: selectedAgency } = useAgency({ agencyId: 9755 }) // TODO: remove this after the demo
   const [selectedMethod, setSelectedMethod] = React.useState<AgencyContractCode | null>(null)
+  const { selectedAgency } = useAgencySelector()
   const availableContracts: AgencyContractCode[] =
     (selectedAgency?.available_contracts
       .split(',')

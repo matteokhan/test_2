@@ -24,6 +24,7 @@ export type AirlineFilterData = {
   currencySymbol: string
 }
 
+// TODO: can we remove this?
 export type AirportFilterData = {
   routeIndex: number
   from: string[]

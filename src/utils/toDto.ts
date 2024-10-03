@@ -1,18 +1,17 @@
 // Here we put utils to convert data to DTOs
 
 import {
-  CorrelationId,
   PassengerData,
   PayerData,
   SearchFlightsParams,
   SearchFlightsParamsDto,
-  Solution,
-  CreateReservationDto,
-  ReservationClientDto,
-  ReservationPassengerDto,
+  CreateOrderDto,
+  OrderClientDto,
+  OrderPassengerDto,
   BrandedFareRequestDto,
+  AgencyId,
+  SolutionId,
 } from '@/types'
-import { getAgencyCodeForRequest } from '@/utils'
 
 export const searchParamsToDto = (
   params: SearchFlightsParams | undefined,
@@ -20,14 +19,15 @@ export const searchParamsToDto = (
   if (!params) return undefined
 
   const searchParamsDto: SearchFlightsParamsDto = {
-    adults: params?.adults || 0,
-    childrens: params?.childrens || 0,
-    infants: params?.infants || 0,
-    segments: [],
-    agencyCode: getAgencyCodeForRequest(),
+    search_data: {
+      adults: params?.adults || 0,
+      childrens: params?.childrens || 0,
+      infant: params?.infants || 0,
+      segments: [],
+    },
   }
   if (params._type === 'oneWay') {
-    searchParamsDto.segments.push({
+    searchParamsDto.search_data.segments.push({
       from: params.from,
       to: params.to,
       date: params.departure,
@@ -35,12 +35,12 @@ export const searchParamsToDto = (
     return searchParamsDto
   }
   if (params._type === 'roundTrip') {
-    searchParamsDto.segments.push({
+    searchParamsDto.search_data.segments.push({
       from: params.from,
       to: params.to,
       date: params.departure,
     })
-    searchParamsDto.segments.push({
+    searchParamsDto.search_data.segments.push({
       from: params.to,
       to: params.from,
       date: params.return,
@@ -48,7 +48,7 @@ export const searchParamsToDto = (
     return searchParamsDto
   }
   if (params._type === 'multiDestinations') {
-    searchParamsDto.segments = params.destinations.map((destination) => ({
+    searchParamsDto.search_data.segments = params.destinations.map((destination) => ({
       from: destination.from,
       to: destination.to,
       date: destination.departure,
@@ -59,31 +59,12 @@ export const searchParamsToDto = (
   return allCasesHandled
 }
 
-export const getCreateReservationDto = ({
-  correlationId,
-  flight,
-}: {
-  correlationId: CorrelationId
-  flight: Solution
-}): CreateReservationDto => {
-  const dto = {
-    ticket: {
-      correlation_id: correlationId,
-      data_object: flight.ticket,
-      verification_price: flight.priceInfo.total,
-      routes: [
-        {
-          solution_id: flight.id,
-          route_ids: flight.routes.map((route) => route.id),
-        },
-      ],
-      trip_end_date: flight.routes.slice(-1)[0].segments.slice(-1)[0].arrivalDateTime,
-    },
-  }
+export const getCreateOrderDto = ({ agencyId }: { agencyId: AgencyId }): CreateOrderDto => {
+  const dto = { agency: agencyId }
   return dto
 }
 
-export const getReservationClientDto = ({ payer }: { payer: PayerData }): ReservationClientDto => {
+export const getOrderClientDto = ({ payer }: { payer: PayerData }): OrderClientDto => {
   const dto = {
     title: payer.salutation ? payer.salutation : '',
     first_name: payer.firstName,
@@ -102,11 +83,11 @@ export const getReservationClientDto = ({ payer }: { payer: PayerData }): Reserv
   return dto
 }
 
-export const getReservationPassengerDto = ({
+export const getOrderPassengerDto = ({
   passenger,
 }: {
   passenger: PassengerData
-}): ReservationPassengerDto => {
+}): OrderPassengerDto => {
   const dto = {
     category: passenger.type,
     title: passenger.salutation ? passenger.salutation : '',
@@ -120,19 +101,11 @@ export const getReservationPassengerDto = ({
 }
 
 export const getSearchBrandedFaresDto = ({
-  correlationId,
-  solution,
-  passengers,
+  solutionId,
 }: {
-  correlationId: CorrelationId
-  solution: Solution
-  passengers: PassengerData[]
+  solutionId: SolutionId
 }): BrandedFareRequestDto => {
   return {
-    correlationId,
-    ticket: solution.ticket,
-    adults: passengers.filter((passenger) => passenger.type === 'ADT').length,
-    childrens: passengers.filter((passenger) => passenger.type === 'CHD').length,
-    infants: passengers.filter((passenger) => passenger.type === 'INF').length,
+    solution_id: solutionId,
   }
 }

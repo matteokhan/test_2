@@ -24,14 +24,12 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const { searchParamsCache } = useFlights()
-  const { selectedAgencyCode, selectedAgencyName, saveSelectedAgency, setSelectedAgency } =
-    useAgencySelector()
+  const { selectedAgency, selectAgency } = useAgencySelector()
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
   }
   const handleSearch = (values: SearchFlightsParams) => {
-    if (selectedAgencyCode) saveSelectedAgency()
     if (isValidSearch(values)) onSearch({ searchParams: values })
     else setModalIsOpen(true)
   }
@@ -88,16 +86,16 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           />
         )} */}
       </Box>
-      {!selectedAgencyCode && (
+      {!selectedAgency && (
         <Typography variant="titleSm" color="grey.600">
           <a onClick={() => setMapIsOpen(true)} style={{ cursor: 'pointer' }}>
             Veuillez sélectionner votre agence en ligne
           </a>
         </Typography>
       )}
-      {selectedAgencyCode && selectedAgencyName && (
+      {selectedAgency && (
         <Typography variant="titleSm" color="grey.600">
-          Agence {selectedAgencyName} -{' '}
+          Agence {selectedAgency.name} -{' '}
           <a onClick={() => setMapIsOpen(true)} style={{ cursor: 'pointer' }}>
             Changer d'agence
           </a>
@@ -126,7 +124,7 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
         <SelectAgencyMap
           onClose={() => setMapIsOpen(false)}
           onSelectAgency={({ agency }) => {
-            setSelectedAgency(agency.code, agency.name, true)
+            selectAgency(agency)
             setMapIsOpen(false)
           }}
         />
