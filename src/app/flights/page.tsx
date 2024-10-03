@@ -15,11 +15,14 @@ import {
 } from '@/components'
 import { Box, Drawer, Button, Grow, Stack, Typography } from '@mui/material'
 import { useBooking, useFlights } from '@/contexts'
+import { useSearch } from '@/hooks'
 import { SearchFlightsParams, Solution, AirlineFilterData, SearchFlightFilters } from '@/types'
-import { useCreateReservation, useSearchFlights } from '@/services'
-import { getCreateReservationDto } from '@/utils'
+import { getBrandedFares } from '@/services'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { QueryClient } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function FlighsPage() {
   const theme = useTheme()
@@ -41,40 +44,10 @@ export default function FlighsPage() {
     ],
   })
 
-  const { flightDetailsOpen, setFlightDetailsOpen, setSearchParams, searchParamsDto } = useFlights()
-  const { selectFlight, goToStep, setReservation, correlationId } = useBooking()
-  const { mutate: createReservation, isPending: isCreatingReservation } = useCreateReservation()
-  const {
-    data: response,
-    isSuccess,
-    isLoading,
-  } = useSearchFlights({
-    params: searchParamsDto,
-  })
-
-  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
-    setSearchParams(searchParams)
-  }
-  const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
-    if (!correlationId) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
-    }
-    const createReservationDto = getCreateReservationDto({ correlationId, flight })
-    createReservation(createReservationDto, {
-      onSuccess: (reservation) => {
-        setReservation(reservation)
-        selectFlight(flight)
-        setFlightDetailsOpen(false)
-        goToStep(0)
-      },
-      onError: (error) => {
-        // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
-      },
-    })
-  }
+  const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto } = useFlights()
+  const { selectFlight, goToFirstStep, order, skipStep } = useBooking()
+  const { searchFlights, isSearching, data: response, isSuccess } = useSearch()
+  const [isNavigating, setIsNavigating] = React.useState(false)
 
   const filteredDataOne = response?.solutions
     .filter((solution) => {
@@ -134,7 +107,7 @@ export default function FlighsPage() {
 
       if (
         filters?.routes[1].departureAirports.length > 0 &&
-        (searchParamsDto?.segments?.length || 0) > 1
+        (searchParamsDto?.search_data.segments?.length || 0) > 1
       ) {
         const departureCityCode =
           solution.routes[1].segments[solution.routes[1].segments.length - 1].departureCityCode
@@ -143,7 +116,7 @@ export default function FlighsPage() {
 
       if (
         filters?.routes[1].arrivalAirports.length > 0 &&
-        (searchParamsDto?.segments?.length || 0) > 1
+        (searchParamsDto?.search_data.segments?.length || 0) > 1
       ) {
         const arrivalCityCode =
           solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalCityCode
@@ -161,6 +134,7 @@ export default function FlighsPage() {
     }
     return true
   })
+  const hasMoreResults = resultsNumber < (filteredData?.length || 0)
 
   const getAirlines = () => {
     const airlines: AirlineFilterData[] = []
@@ -182,7 +156,41 @@ export default function FlighsPage() {
     })
     return airlines.sort((a, b) => a.price - b.price)
   }
-  const hasMoreResults = resultsNumber < (filteredData?.length || 0)
+
+  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
+    searchFlights({ searchParams })
+  }
+
+  const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
+    if (!order) {
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      return
+    }
+    setIsNavigating(true)
+
+    // We can ask more information about the flight to decide which steps to follow
+    try {
+      // TODO: this query should be cached
+      const fares = await queryClient.fetchQuery({
+        queryKey: ['brandedFares', order.id, flight.id],
+        queryFn: () => getBrandedFares({ orderId: order.id, solutionId: flight.id }),
+        gcTime: Infinity, // TODO: this is not true
+        staleTime: Infinity, // TODO: this is not true
+      })
+      if (fares.length === 0) {
+        skipStep('fares')
+      }
+    } catch (error) {
+      setIsNavigating(false)
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      throw error
+    }
+    selectFlight(flight)
+    setFlightDetailsOpen(false)
+    goToFirstStep()
+  }
 
   return (
     <>
@@ -205,10 +213,10 @@ export default function FlighsPage() {
           <SearchFlightsModes
             onSearch={onSearch}
             sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
-            disabled={isLoading}
+            disabled={isSearching}
           />
-          {isLoading && (
-            <Grow in={isLoading}>
+          {isSearching && (
+            <Grow in={isSearching}>
               <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
                 <Stack maxWidth="516px" direction="row" gap={3}>
                   <FlightsLoader />
@@ -235,7 +243,9 @@ export default function FlighsPage() {
                   ]?.arrival
                 }
                 isRoundTrip={
-                  searchParamsDto?.segments?.length ? searchParamsDto.segments.length > 1 : false
+                  searchParamsDto?.search_data.segments?.length
+                    ? searchParamsDto.search_data.segments.length > 1
+                    : false
                 }
                 onSubmit={(values) => setFilters(values)}
               />
@@ -253,7 +263,7 @@ export default function FlighsPage() {
                 disponibilité. Vous pouvez consulter les frais supplémentaires avant le paiement.
                 Les prix ne sont pas définitifs tant que vous n'avez pas finalisé votre achat.
               </Typography>
-              {isLoading && (
+              {isSearching && (
                 <>
                   <FlightResultSkeleton />
                   <FlightResultSkeleton />
@@ -262,10 +272,7 @@ export default function FlighsPage() {
               )}
               {isSuccess && (
                 <>
-                  <SearchResults
-                    results={filteredData?.slice(0, resultsNumber)}
-                    correlationId={response.correlationId}
-                  />
+                  <SearchResults results={filteredData?.slice(0, resultsNumber)} />
                   {hasMoreResults && (
                     <Button
                       onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
@@ -291,7 +298,7 @@ export default function FlighsPage() {
               },
             }}>
             <FlightDetails
-              isLoading={isCreatingReservation}
+              isLoading={isNavigating}
               onClose={() => setFlightDetailsOpen(false)}
               onSelectFlight={handleSelectFlight}
             />

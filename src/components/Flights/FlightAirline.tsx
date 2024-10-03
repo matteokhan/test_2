@@ -2,7 +2,7 @@
 
 import { useAirlinesData } from '@/services'
 import { RouteCarrier, RouteSegmentCarrier } from '@/types'
-import { Skeleton, Stack, SxProps, Typography } from '@mui/material'
+import { Box, Skeleton, Stack, SxProps, Typography } from '@mui/material'
 import Image from 'next/image'
 
 export const FlightAirline = ({
@@ -23,13 +23,18 @@ export const FlightAirline = ({
         alignItems="center"
         justifyContent="center">
         {airlinesData ? (
-          <Image
-            src={airlinesData[carrier]?.logo_small_path || ''}
-            alt={airlinesData ? airlinesData[carrier]?.name : 'Airline logo'}
-            width={35}
-            height={35}
-            unoptimized={true}
-          />
+          <Box>
+            {/* TODO: add default image */}
+            {airlinesData[carrier]?.logo_small_path && (
+              <Image
+                src={airlinesData[carrier]?.logo_small_path || ''}
+                alt={airlinesData ? airlinesData[carrier]?.name : 'Airline logo'}
+                width={35}
+                height={35}
+                unoptimized={true}
+              />
+            )}
+          </Box>
         ) : (
           <Skeleton variant="rectangular" width={35} height={35} />
         )}

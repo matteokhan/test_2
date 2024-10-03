@@ -20,9 +20,10 @@ import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
 import { setDefaults, fromLatLng, OutputFormat } from 'react-geocode'
-import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
+// import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
 import { useUserLocation } from '@/contexts'
-import { AgencyModal } from '@/components'
+import { AgencyInfoModal, CustomTextField } from '@/components'
+import SearchIcon from '@mui/icons-material/Search'
 
 type SelectAgencyMapProps = {
   onSelectAgency: ({ agency }: { agency: Agency }) => void
@@ -33,74 +34,77 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const NEXT_PUBLIC_MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
   const [place, setPlace] = React.useState<any>(null)
   const [currentLocation, setCurrentLocation] = React.useState<any>(null)
-  const { position: userLocation } = useUserLocation()
+  const [searchTerm, setSearchTerm] = React.useState('')
+
+  const { position: userLocation, canAccessPosition, askUserForPermission } = useUserLocation()
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [agencyToShow, setAgencyToShow] = React.useState<Agency | undefined>(undefined)
+  const { data: agencies } = useSearchAgencies({ searchTerm })
 
   const defaultBounds = {
     gps_latitude: userLocation?.lat || 48.866667,
     gps_longitude: userLocation?.lng || 2.333333,
   }
 
-  // TODO: enable geolocation
-  const canAccessPosition = 'geolocation' in navigator
   const map = useMap()
 
-  const toRadians = (degrees: number) => {
-    return degrees * (Math.PI / 180)
-  }
+  // const toRadians = (degrees: number) => {
+  //   return degrees * (Math.PI / 180)
+  // }
 
-  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-    const R = 6371e3 // Rayon de la Terre en mètres
+  // const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+  //   const R = 6371e3 // Rayon de la Terre en mètres
 
-    const φ1 = toRadians(lat1)
-    const φ2 = toRadians(lat2)
-    const Δφ = toRadians(lat2 - lat1)
-    const Δλ = toRadians(lng2 - lng1)
+  //   const φ1 = toRadians(lat1)
+  //   const φ2 = toRadians(lat2)
+  //   const Δφ = toRadians(lat2 - lat1)
+  //   const Δλ = toRadians(lng2 - lng1)
 
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+  //   const a =
+  //     Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+  //     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
-    const distance = R * c // Distance en mètres
+  //   const distance = R * c // Distance en mètres
 
-    return distance
-  }
+  //   return distance
+  // }
 
-  const getDistance = () => {
-    const center = map?.getCenter()
-    const bounds = map?.getBounds()
+  // const getDistance = () => {
+  //   const center = map?.getCenter()
+  //   const bounds = map?.getBounds()
 
-    if (!center || !bounds) return 40000
+  //   if (!center || !bounds) return 40000
 
-    const centerLat = center.lat()
-    const centerLng = center.lng()
+  //   const centerLat = center.lat()
+  //   const centerLng = center.lng()
 
-    const leftLng = bounds.getSouthWest().lng()
+  //   const leftLng = bounds.getSouthWest().lng()
 
-    const distance = calculateDistance(centerLat, centerLng, centerLat, leftLng)
+  //   const distance = calculateDistance(centerLat, centerLng, centerLat, leftLng)
 
-    return distance + 10000
-  }
+  //   return distance + 10000
+  // }
 
-  const { data: nearAgencies } = useNearAgencies({
-    lat: currentLocation?.lat,
-    lng: currentLocation?.lng,
-    distance: getDistance(),
-  })
+  // const { data: nearAgencies } = useNearAgencies({
+  //   lat: currentLocation?.lat,
+  //   lng: currentLocation?.lng,
+  //   // distance: getDistance(),
+  //   distance: 40000,
+  // })
+  // console.log('nearAgencies: ', nearAgencies)
 
-  const getAgencies = () => {
-    if (!nearAgencies || nearAgencies.length == 0) return []
-    return nearAgencies
-  }
+  // const getAgencies = () => {
+  //   if (!nearAgencies || nearAgencies.length == 0) return []
+  //   return nearAgencies
+  // }
 
-  const geolocatedAgencies = React.useMemo(() => {
-    if (nearAgencies && nearAgencies?.length > 0)
-      return nearAgencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
-    return []
-  }, [nearAgencies])
+  // const geolocatedAgencies = React.useMemo(() => {
+  //   if (nearAgencies && nearAgencies?.length > 0)
+  //     return nearAgencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
+  //   return []
+  // }, [nearAgencies])
 
   setDefaults({
     key: env('NEXT_PUBLIC_MAPS_API_KEY'),
@@ -138,15 +142,16 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
     }
   }
 
-  const setPlaceAndFetchAgencies = (place: any) => {
-    setPlace(place)
-    map?.setCenter({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
-    map?.setZoom(11)
-    setCurrentLocation({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
-  }
+  // const setPlaceAndFetchAgencies = (place: any) => {
+  //   // console.log(place)
+  //   setPlace(place)
+  //   map?.setCenter({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
+  //   map?.setZoom(11)
+  //   setCurrentLocation({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
+  // }
 
   const getMarkers = () => {
-    const agenciesToShow = getAgencies()
+    const agenciesToShow = agencies
     return agenciesToShow
       ?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
       ?.map((agency: Agency) => {
@@ -215,9 +220,27 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             borderBottom="1px solid"
             borderColor="grey.400">
             {/* I had to force the className="MuiInputAdornment-hiddenLabel", seems like a bug in MUI */}
-            <PlaceAutocompleteMap
+            {/* <PlaceAutocompleteMap
               onPlaceSelect={(place) => {
                 setPlaceAndFetchAgencies(place)
+              }}
+            /> */}
+            <CustomTextField
+              data-testid="selectAgencyMap-searchField"
+              fullWidth
+              label={null}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+              }}
+              value={searchTerm}
+              InputProps={{
+                placeholder: 'Rechercher',
+                hiddenLabel: true,
+                startAdornment: (
+                  <InputAdornment position="start" className="MuiInputAdornment-hiddenLabel">
+                    <SearchIcon data-testid={null} />
+                  </InputAdornment>
+                ),
               }}
             />
             <Stack justifyContent="center">
@@ -237,75 +260,78 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             </Stack>
           </Stack>
           <Stack overflow="scroll" data-testid="selectAgencyMap-agenciesList">
-            {getAgencies()?.map((agency) => (
-              <Box
-                p={2}
-                borderBottom="1px solid"
-                borderColor="grey.200"
-                key={agency.id}
-                data-testid="selectAgencyMap-agenciesList-agency">
-                <Typography
-                  variant="titleMd"
-                  data-testid="selectAgencyMap-agenciesList-agency-name">
-                  {agency.name}
-                </Typography>
-                <Typography
-                  variant="bodySm"
-                  color="grey.700"
-                  data-testid="selectAgencyMap-agenciesList-agency-address">
-                  {agency.address}
-                </Typography>
-                <Typography
-                  variant="bodySm"
-                  color="grey.700"
-                  data-testid="selectAgencyMap-agenciesList-agency-address2">
-                  {agency.address2}
-                </Typography>
-                <Typography
-                  variant="bodySm"
-                  color="grey.700"
-                  data-testid="selectAgencyMap-agenciesList-agency-city">
-                  {agency.city}
-                </Typography>
-                <Typography
-                  variant="bodySm"
-                  color="grey.700"
-                  data-testid="selectAgencyMap-agenciesList-agency-phone">
-                  Tel {agency.phone}
-                </Typography>
-                <Stack direction="row" pt={2} justifyContent="flex-end" gap={1}>
-                  <Button
-                    variant="text"
-                    sx={{ px: 3 }}
-                    data-testid="selectAgencyMap-agenciesList-agency-seeDetails"
-                    onClick={() => onShowAgency(agency)}>
-                    Voir les infos
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{ px: 3 }}
-                    onClick={() => onSelectAgency({ agency })}
-                    data-testid="selectAgencyMap-agenciesList-agency-selectAgencyButton">
-                    Sélectionner
-                  </Button>
-                </Stack>
-              </Box>
-            ))}
+            {agencies &&
+              agencies.map((agency) => (
+                <Box
+                  p={2}
+                  borderBottom="1px solid"
+                  borderColor="grey.200"
+                  key={agency.id}
+                  data-testid="selectAgencyMap-agenciesList-agency">
+                  <Typography
+                    variant="titleMd"
+                    data-testid="selectAgencyMap-agenciesList-agency-name">
+                    {agency.name}
+                  </Typography>
+                  <Typography
+                    variant="bodySm"
+                    color="grey.700"
+                    data-testid="selectAgencyMap-agenciesList-agency-address">
+                    {agency.address}
+                  </Typography>
+                  <Typography
+                    variant="bodySm"
+                    color="grey.700"
+                    data-testid="selectAgencyMap-agenciesList-agency-address2">
+                    {agency.address2}
+                  </Typography>
+                  <Typography
+                    variant="bodySm"
+                    color="grey.700"
+                    data-testid="selectAgencyMap-agenciesList-agency-city">
+                    {agency.city}
+                  </Typography>
+                  <Typography
+                    variant="bodySm"
+                    color="grey.700"
+                    data-testid="selectAgencyMap-agenciesList-agency-phone">
+                    Tel {agency.phone}
+                  </Typography>
+                  <Stack direction="row" pt={2} justifyContent="flex-end" gap={1}>
+                    <Button
+                      variant="text"
+                      sx={{ px: 3 }}
+                      data-testid="selectAgencyMap-agenciesList-agency-seeDetails"
+                      onClick={() => onShowAgency(agency)}>
+                      Voir les infos
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{ px: 3 }}
+                      onClick={() => onSelectAgency({ agency })}
+                      data-testid="selectAgencyMap-agenciesList-agency-selectAgencyButton">
+                      Sélectionner
+                    </Button>
+                  </Stack>
+                </Box>
+              ))}
           </Stack>
         </Stack>
       </Stack>
-      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
-        <AgencyModal
-          agency={agencyToShow}
-          onSelectAgency={(agency) => {
-            onSelectAgency({ agency })
-            setModalIsOpen(false)
-          }}
-          onClose={() => {
-            setModalIsOpen(false)
-          }}
-        />
-      </Modal>
+      {agencyToShow !== undefined && (
+        <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
+          <AgencyInfoModal
+            agency={agencyToShow}
+            onSelectAgency={(agency) => {
+              onSelectAgency({ agency })
+              setModalIsOpen(false)
+            }}
+            onClose={() => {
+              setModalIsOpen(false)
+            }}
+          />
+        </Modal>
+      )}
     </Stack>
   )
 }

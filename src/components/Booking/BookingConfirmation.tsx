@@ -1,10 +1,10 @@
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import Image from 'next/image'
-import { ReservationDto } from '@/types'
+import { OrderDto } from '@/types'
 import dayjs from 'dayjs'
 
-export const BookingConfirmation = ({ reservation }: { reservation: ReservationDto }) => {
+export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
   return (
     <Paper
       sx={{
@@ -23,8 +23,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
             variant="headlineMd"
             textAlign="center"
             data-testid="bookingConfirmation-confirmationText">
-            Merci {reservation.client?.title}. {reservation.client?.last_name} pour votre
-            réservation,
+            Merci {order.client?.title}. {order.client?.last_name} pour votre réservation,
             <br />
             Votre réservation est confirmée
           </Typography>
@@ -37,7 +36,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                   color="primary"
                   fontWeight={500}
                   data-testid="bookingConfirmation-departure">
-                  {reservation.ticket?.travel_data?.departure_city_name}
+                  {order.ticket?.travel_data?.departure_city_name}
                 </Typography>
                 <SwapHorizIcon
                   sx={{
@@ -50,7 +49,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                   color="primary"
                   fontWeight={500}
                   data-testid="bookingConfirmation-destination">
-                  {reservation.ticket?.travel_data?.return_city_name}
+                  {order.ticket?.travel_data?.return_city_name}
                 </Typography>
               </Stack>
             </Stack>
@@ -61,7 +60,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                 color="primary"
                 fontWeight={500}
                 data-testid="bookingConfirmation-departureDate">
-                {dayjs(reservation.ticket?.travel_data?.trip_start_date).format('DD/MM/YYYY')}
+                {dayjs(order.ticket?.travel_data?.trip_start_date).format('DD/MM/YYYY')}
               </Typography>
             </Stack>
             <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
@@ -71,7 +70,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
                 color="primary"
                 fontWeight={500}
                 data-testid="bookingConfirmation-reference">
-                {reservation.ticket?.travel_data?.passenger_name_record}
+                {order.ticket?.travel_data?.passenger_name_record}
               </Typography>
             </Stack>
           </Box>
@@ -85,7 +84,7 @@ export const BookingConfirmation = ({ reservation }: { reservation: ReservationD
               display="flex"
               height={32}
               data-testid="bookingConfirmation-agencyName">
-              {reservation.agency__name}
+              {order.agency__name}
             </Typography>
             <Typography variant="headlineSm" display="flex" height={32}>
               pour votre réservation.

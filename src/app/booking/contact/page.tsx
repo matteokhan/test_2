@@ -4,17 +4,14 @@ import React, { useRef, useState } from 'react'
 import {
   BookingStepActions,
   PayerForm,
-  SelectAgencyMap,
   SimpleContainer,
-  SelectAgency,
   BookingStepActionsMobile,
 } from '@/components'
-import { useBooking, useUserLocation } from '@/contexts'
-import { Box, Button, Stack, Typography, Drawer } from '@mui/material'
+import { useBooking } from '@/contexts'
+import { Box } from '@mui/material'
 import { FormikProps } from 'formik'
-import { PayerData, ReservationDto } from '@/types'
-import { useUpdateReservation, useNearAgencies } from '@/services'
-import { getReservationClientDto } from '@/utils'
+import { PayerData, UpdateOrderParams } from '@/types'
+import { useUpdateOrder, useReserveOrder } from '@/services'
 
 export default function ContactInfoPage() {
   const formRef = useRef<FormikProps<PayerData> | null>(null)
@@ -25,36 +22,18 @@ export default function ContactInfoPage() {
     passengers,
     payerIndex,
     goPreviousStep,
-    mapIsOpen,
-    setMapIsOpen,
     payer,
-    selectedAgency,
-    setSelectedAgency,
-    reservation,
-    setReservation,
+    order,
+    setOrder,
+    selectedFare,
+    setPnr,
   } = useBooking()
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number
-    longitude: number
-  } | null>(null)
-  // const { position: userLocation, canAccessPosition, askUserForPermission } = useUserLocation()
-  // const { data: arroundAgencies } = useNearAgencies({ ...userLocation })
-  const { data: arroundAgencies } = useNearAgencies({
-    lat: userLocation?.latitude,
-    lng: userLocation?.longitude,
-  })
-  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
-
-  // const handleGeoposition = () => {
-  //   if (!canAccessPosition) {
-  //     askUserForPermission()
-  //   } else {
-  //     // TODO: trigger request for agencies around user position
-  //   }
-  // }
+  const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
+  const { mutate: reserveOrder, isPending: isReservingOrder } = useReserveOrder()
+  const isLoading = isUpdatingOrder || isNavigating || isReservingOrder
 
   const handleSubmit = async () => {
-    if (!formRef.current || !reservation) {
+    if (!formRef.current || !order || !selectedFare) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
@@ -70,17 +49,32 @@ export default function ContactInfoPage() {
     const payerDataValidated = formRef.current.values
     setPayer(payerDataValidated)
 
-    const clientDto = getReservationClientDto({ payer: payerDataValidated })
-    const newReservation: ReservationDto = {
-      ...reservation,
-      client: clientDto,
-      agency: selectedAgency?.id || null,
+    const newOrder: UpdateOrderParams = {
+      orderId: order.id,
+      payer: payerDataValidated,
     }
-    updateReservation(newReservation, {
+    updateOrder(newOrder, {
       onSuccess: (data) => {
-        setReservation(data)
-        setIsNavigating(true)
-        goNextStep()
+        setOrder(data)
+        reserveOrder(
+          { orderId: data.id, solutionId: selectedFare.id },
+          {
+            onSuccess: (data) => {
+              if (data.travel_data?.passenger_name_record) {
+                setPnr(data.travel_data.passenger_name_record)
+                setIsNavigating(true)
+                goNextStep()
+              } else {
+                // TODO: log this somewhere
+                // TODO: Warn the user that something went wrong
+              }
+            },
+            onError: (error) => {
+              // TODO: log this somewhere
+              // TODO: Warn the user that something went wrong
+            },
+          },
+        )
       },
       onError: (error) => {
         // TODO: log this somewhere
@@ -112,80 +106,18 @@ export default function ContactInfoPage() {
           }
         />
       </SimpleContainer>
-
-      {/* TODO: hidden agency selection for the demo */}
-      {/* <SimpleContainer title="Sélectionner votre agence Leclerc Voyages">
-        <Stack gap={2} pt={3} pb={1}>
-          <Typography variant="bodyMd" color="grey.900" maxWidth="535px">
-            Veuillez sélectionner une agence Leclerc Voyages qui suivra votre réservation sur
-            internet. Vous n'aurez pas à vous déplacer
-          </Typography>
-          {selectedAgency ? (
-            <>
-              <Typography variant="titleMd">Agence sélectionnée</Typography>
-              <SelectAgency
-                isSelected
-                agency={selectedAgency}
-                onChange={() => setSelectedAgency(null)}
-              />
-            </>
-          ) : (
-            <Box>
-              <Button
-                data-testid="contactInfoPage-openMapSelectAgency"
-                variant="outlined"
-                sx={{ px: 3 }}
-                onClick={() => setMapIsOpen(true)}>
-                Sélectionner une agence
-              </Button>
-              {arroundAgencies && arroundAgencies?.length > 0 && (
-                <>
-                  <Typography variant="titleMd">
-                    Agences les plus proches de votre adresse
-                  </Typography>
-                  {arroundAgencies
-                    ?.slice(0, 3)
-                    ?.map((agency) => (
-                      <SelectAgency
-                        agency={agency}
-                        onSelect={({ agency }) => setSelectedAgency(agency)}
-                      />
-                    ))}
-                </>
-              )}
-            </Box>
-          )}
-        </Stack>
-      </SimpleContainer>
-      <Drawer
-        open={mapIsOpen}
-        onClose={() => setMapIsOpen(false)}
-        anchor="right"
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-          },
-        }}>
-        <SelectAgencyMap
-          onClose={() => setMapIsOpen(false)}
-          onSelectAgency={({ agency }) => {
-            setSelectedAgency(agency)
-            setMapIsOpen(false)
-          }}
-        />
-      </Drawer> */}
       <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation || isNavigating}
+          isLoading={isLoading}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation || isNavigating}
+          isLoading={isLoading}
         />
       </Box>
     </>

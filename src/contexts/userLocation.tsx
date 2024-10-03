@@ -24,13 +24,17 @@ export const UserLocationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }
 
   const fetchUserPosition = useCallback(() => {
+    // console.log("Fetching user's position")
     navigator.geolocation.getCurrentPosition(
       (position) =>
         setPosition({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         }),
-      (error: GeolocationPositionError) => console.error(`ERROR(${error.code}): ${error.message}`), // TODO: log this somehow
+      (error: GeolocationPositionError) => {
+        console.error(`ERROR(${error.code}): ${error.message}`) // TODO: log this somehow
+        setCanAccessPosition(false)
+      },
       positionOptions,
     )
   }, [])

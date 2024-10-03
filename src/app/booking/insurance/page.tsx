@@ -10,8 +10,8 @@ import {
 } from '@/components'
 import { useBooking } from '@/contexts'
 import { Alert, Grid, Stack, Modal, Button, Box } from '@mui/material'
-import { useInsurances, useUpdateReservation } from '@/services'
-import { ReservationDto } from '@/types'
+import { useInsurances, useUpdateOrder } from '@/services'
+import { UpdateOrderParams } from '@/types'
 import WarningIcon from '@mui/icons-material/Warning'
 
 export default function InsurancesPage() {
@@ -19,19 +19,13 @@ export default function InsurancesPage() {
   const [firstWarning, setFirstWarning] = useState(true)
   const [noInsurance, setNoInsurance] = useState(false)
   const [isNavigating, setIsNavigating] = useState(false)
-  const {
-    goPreviousStep,
-    goNextStep,
-    selectedInsurance,
-    setSelectedInsurance,
-    setReservation,
-    reservation,
-  } = useBooking()
+  const { goPreviousStep, goNextStep, selectedInsurance, setSelectedInsurance, setOrder, order } =
+    useBooking()
   const { data: insuranceOptions, isSuccess } = useInsurances()
-  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
+  const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
 
   const handleSubmit = () => {
-    if (!reservation) {
+    if (!order) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
@@ -47,13 +41,13 @@ export default function InsurancesPage() {
       return
     }
 
-    const newReservation: ReservationDto = {
-      ...reservation,
-      insurance: selectedInsurance?.id || null,
+    const newOrder: UpdateOrderParams = {
+      orderId: order.id,
+      insurance: selectedInsurance?.id,
     }
-    updateReservation(newReservation, {
+    updateOrder(newOrder, {
       onSuccess: (data) => {
-        setReservation(data)
+        setOrder(data)
         setIsNavigating(true)
         goNextStep()
       },
@@ -111,14 +105,14 @@ export default function InsurancesPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation || isNavigating}
+          isLoading={isUpdatingOrder || isNavigating}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingReservation || isNavigating}
+          isLoading={isUpdatingOrder || isNavigating}
         />
       </Box>
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>

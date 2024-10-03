@@ -14,9 +14,9 @@ import {
   AcceptBookingConditionsModal,
   BookingStepActionsMobile,
 } from '@/components'
-import { useBooking } from '@/contexts'
-import { useReservationPaymentInfo, useUpdateReservation } from '@/services'
-import { AgencyContractCode, ReservationDto } from '@/types'
+import { useAgencySelector, useBooking } from '@/contexts'
+import { usePrepareOrderPayment, useUpdateOrder } from '@/services'
+import { AgencyContractCode, UpdateOrderParams } from '@/types'
 import { Box, Modal, Typography } from '@mui/material'
 
 export default function BookingSummaryPage() {
@@ -24,13 +24,14 @@ export default function BookingSummaryPage() {
   const [conditionsAccepted, setConditionsAccepted] = useState(false)
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
-  const { goPreviousStep, goToStep, reservation, selectedAgency } = useBooking()
-  const { mutate: confirmReservation, isPending: isConfirming } = useReservationPaymentInfo()
-  const { mutate: updateReservation, isPending: isUpdatingReservation } = useUpdateReservation()
+  const { goPreviousStep, goToStep, order } = useBooking()
+  const { mutate: prepareOrderPayment, isPending: isPreparingPayment } = usePrepareOrderPayment()
+  const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
+  const { selectedAgency } = useAgencySelector()
+  const isLoading = isPreparingPayment || isUpdatingOrder
 
   const handleSubmit = async () => {
-    // TODO: Need to validate the selectedAgency is set to show the correct payment methods
-    if (!reservation) {
+    if (!order) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
@@ -44,32 +45,35 @@ export default function BookingSummaryPage() {
       return
     }
 
-    const newReservation: ReservationDto = {
-      ...reservation,
-      agency: 9755, // TODO: remove this after the demo
-      agency_contract: paymentMethodCode,
+    const newOrder: UpdateOrderParams = {
+      orderId: order.id,
+      agency: selectedAgency?.id,
+      agencyContract: paymentMethodCode,
     }
-    updateReservation(newReservation, {
-      onSuccess: (data) => {
-        confirmReservation(data.id, {
-          onSuccess: (data) => {
-            if (data.ticket?.is_reserved === false) {
+    updateOrder(newOrder, {
+      onSuccess: (updatedOrder) => {
+        prepareOrderPayment(
+          { orderId: updatedOrder.id },
+          {
+            onSuccess: (data) => {
+              if (data.ticket?.is_reserved === false) {
+                // TODO: log this somewhere
+                // TODO: Warn the user that something went wrong
+                return
+              }
+              if (!data.payment_redirect_url) {
+                // TODO: log this somewhere
+                // TODO: Warn the user that something went wrong
+                return
+              }
+              window.location.replace(data.payment_redirect_url)
+            },
+            onError: (error) => {
               // TODO: log this somewhere
               // TODO: Warn the user that something went wrong
-              return
-            }
-            if (!data.payment_redirect_url) {
-              // TODO: log this somewhere
-              // TODO: Warn the user that something went wrong
-              return
-            }
-            window.location.replace(data.payment_redirect_url)
+            },
           },
-          onError: (error) => {
-            // TODO: log this somewhere
-            // TODO: Warn the user that something went wrong
-          },
-        })
+        )
       },
       onError: (error) => {
         // TODO: log this somewhere
@@ -134,14 +138,14 @@ export default function BookingSummaryPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isConfirming || isUpdatingReservation}
+          isLoading={isLoading}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isConfirming || isUpdatingReservation}
+          isLoading={isLoading}
         />
       </Box>
     </>

@@ -22,13 +22,14 @@ const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
 export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [searchParamsDto, setSearchParamsDto] = useState<SearchFlightsParamsDto | undefined>()
   const [searchParamsCache, setSearchParamsCache] = useState<SearchFlightsParams | undefined>()
-  const firstSegment = searchParamsDto?.segments[0]
-  const lastSegment = searchParamsDto?.segments[searchParamsDto.segments.length - 1]
-  const isOneWay = searchParamsDto?.segments.length === 1
+  const firstSegment = searchParamsDto?.search_data.segments[0]
+  const lastSegment =
+    searchParamsDto?.search_data.segments[searchParamsDto?.search_data.segments.length - 1]
+  const isOneWay = searchParamsDto?.search_data.segments.length === 1
   const totalPassengers: number = +(
-    (searchParamsDto?.adults || 0) +
-    (searchParamsDto?.childrens || 0) +
-    (searchParamsDto?.infants || 0)
+    (searchParamsDto?.search_data.adults || 0) +
+    (searchParamsDto?.search_data.childrens || 0) +
+    (searchParamsDto?.search_data.infant || 0)
   )
   const [flightDetailsOpen, setFlightDetailsOpen] = useState(false)
 

@@ -3,8 +3,8 @@ import { Box, Grid, Typography } from '@mui/material'
 import { SimpleModal } from '@/components'
 import { Agency, AgencyOpening } from '@/types'
 
-export const AgencyModal: React.FC<{
-  agency: Agency | undefined
+export const AgencyInfoModal: React.FC<{
+  agency: Agency
   onSelectAgency: (agency: Agency) => void
   onClose: () => void
 }> = forwardRef((props, ref) => {

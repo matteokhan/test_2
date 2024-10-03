@@ -152,7 +152,7 @@ export const SearchFlightsFilters = ({
                 <Box pb={1}>
                   <FlightTimeFilterField name="flightTime" disabled={filterData === undefined} />
                 </Box>
-                {filterData !== undefined && filterData.airports[0].from.length > 1 && (
+                {filterData !== undefined && filterData.airports[0]?.from.length > 1 && (
                   <>
                     <Typography variant="labelLg" pb={1}>
                       Décoller depuis
@@ -165,7 +165,7 @@ export const SearchFlightsFilters = ({
                     </Box>
                   </>
                 )}
-                {filterData !== undefined && filterData.airports[0].to.length > 1 && (
+                {filterData !== undefined && filterData.airports[0]?.to.length > 1 && (
                   <>
                     <Typography variant="labelLg" pb={1}>
                       Attérir à
@@ -210,7 +210,7 @@ export const SearchFlightsFilters = ({
                 )}
                 {isRoundTrip &&
                   filterData !== undefined &&
-                  filterData.airports[1].from.length > 1 && (
+                  filterData.airports[1]?.from.length > 1 && (
                     <>
                       <Typography variant="labelLg" pb={1}>
                         Décoller depuis
@@ -225,7 +225,7 @@ export const SearchFlightsFilters = ({
                   )}
                 {isRoundTrip &&
                   filterData !== undefined &&
-                  filterData.airports[1].to.length > 1 && (
+                  filterData.airports[1]?.to.length > 1 && (
                     <>
                       <Typography variant="labelLg" pb={1}>
                         Attérir à

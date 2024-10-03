@@ -55,9 +55,10 @@ export type SearchFlightsParams =
   | MultiDestinationsFlightSearchParams
 
 export type SearchFlightsParamsDto = {
-  agencyCode: string
-  adults: number
-  childrens: number
-  infants: number
-  segments: SearchFlightSegment[]
+  search_data: {
+    adults: number
+    childrens: number
+    infant: number
+    segments: SearchFlightSegment[]
+  }
 }

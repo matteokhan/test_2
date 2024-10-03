@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" position="top" />
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
           <GMapsProvider apiKey={NEXT_PUBLIC_MAPS_API_KEY}>
             <UserLocationProvider>

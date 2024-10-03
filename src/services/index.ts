@@ -1,2 +1,1 @@
-export * from './flights'
-export * from './cms'
+export * from './cms/'
