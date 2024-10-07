@@ -254,6 +254,35 @@ export const CruisesIcon = () => {
   )
 }
 
+export const FlightsIcon = () => {
+  return (
+    <SvgIcon sx={{ width: '60px', height: '60px' }}>
+      <svg
+        width="60"
+        height="60"
+        viewBox="0 0 60 60"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="60" transform="translate(0.5)" fill="white" />
+        <path
+          d="M38.5366 28C44.5915 28 49.5 23.299 49.5 17.5C49.5 11.701 44.5915 7 38.5366 7C34.7533 7 31.4177 8.83525 29.4473 11.6269C28.7289 11.4429 27.974 11.3448 27.1951 11.3448C22.3929 11.3448 18.5 15.0732 18.5 19.6724C18.5 24.2716 22.3929 28 27.1951 28H38.5366Z"
+          fill="#E4F3FF"
+        />
+        <path
+          d="M29.5 28H18L15 22H8.5L12 35H29.5L23.5 48.5H30L40.5 35.5H46.25H52.25C54.3211 35.5 56 33.8211 56 31.75V31.75C56 29.6789 54.3211 28 52.25 28H40.75M29.5 28L23.5 14.5H29.5L40.75 28M29.5 28H40.75"
+          stroke="#00A5E1"
+          stroke-width="3"
+        />
+        <path d="M10.5 42H21" stroke="#EF8C24" stroke-width="3" />
+        <path d="M9.5 47H16.5" stroke="#EF8C24" stroke-width="3" />
+        <path d="M12.5 15L19.5 15" stroke="#EF8C24" stroke-width="3" />
+        <path d="M7.5 15L10.5 15" stroke="#EF8C24" stroke-width="3" />
+        <path d="M5.5 42L8.5 42" stroke="#EF8C24" stroke-width="3" />
+      </svg>
+    </SvgIcon>
+  )
+}
+
 export const AncvIcon = () => {
   return (
     <Box
