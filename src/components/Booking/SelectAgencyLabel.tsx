@@ -2,8 +2,7 @@
 
 import React from 'react'
 import { useAgencySelector } from '@/contexts'
-import { SectionContainer } from '@/components'
-import { Box, Stack, Typography } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 
 type SelectAgencyLabelProps = {
   openSelectionAgency: () => void
@@ -13,7 +12,7 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
   const { selectedAgency } = useAgencySelector()
 
   return (
-    <Box>
+    <>
       {!selectedAgency && (
         <Typography
           sx={{
@@ -25,7 +24,7 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
               },
             },
           }}
-          data-testid="selectAgencyLabel-changeAgency"
+          data-testid="selectAgencyLabel-selectAgency"
           variant="titleSm"
           color="grey.600"
           onClick={() => openSelectionAgency()}>
@@ -59,6 +58,6 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
           </Typography>
         </Stack>
       )}
-    </Box>
+    </>
   )
 }

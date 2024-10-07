@@ -54,7 +54,6 @@ export const SearchFlightsModesMobile = ({ onSearch }: SearchFlightsModesMobileP
         )
         return
       }
-      // setSearchParams(formRefRoundTrip.current.values)
       if (isValidSearch(formRefRoundTrip.current.values))
         onSearch({ searchParams: formRefRoundTrip.current.values })
       else setModalIsOpen(true)
@@ -69,7 +68,6 @@ export const SearchFlightsModesMobile = ({ onSearch }: SearchFlightsModesMobileP
       if (isValidSearch(formRefOneWay.current.values))
         onSearch({ searchParams: formRefOneWay.current.values })
       else setModalIsOpen(true)
-      //setSearchParams(formRefOneWay.current.values)
     } else {
       // TODO: log this somewhere
       return
