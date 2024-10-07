@@ -7,6 +7,7 @@ import {
   SectionContainer,
   SearchFlightsModesMobile,
   ResortsStayIcon,
+  FlightsIcon,
   ToursIcon,
   CruisesIcon,
 } from '@/components'
@@ -44,7 +45,7 @@ export const TravelOptionsBanner = () => {
             onClick={() => setFlightSearchOpen(true)}
             data-testid="travelOptionsBanner-travelsButton">
             {/* TODO: this is not the right icon for flights */}
-            <ResortsStayIcon />
+            <FlightsIcon />
             <Typography color="common.black" variant="labelLg">
               Voyages
             </Typography>
