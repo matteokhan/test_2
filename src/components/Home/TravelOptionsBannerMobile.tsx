@@ -12,6 +12,7 @@ import {
 } from '@/components'
 import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/navigation'
+import { useSearch } from '@/hooks'
 
 const TravelOptionButton = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -26,6 +27,7 @@ const TravelOptionButton = styled(Stack)(({ theme }) => ({
 
 export const TravelOptionsBanner = () => {
   const router = useRouter()
+  const { searchFlights } = useSearch()
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
 
   return (
@@ -101,7 +103,8 @@ export const TravelOptionsBanner = () => {
             </IconButton>
           </Stack>
           <SearchFlightsModesMobile
-            onSubmit={() => {
+            onSearch={(searchParams) => {
+              searchFlights(searchParams)
               setFlightSearchOpen(false)
               router.push('/flights')
             }}

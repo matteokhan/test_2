@@ -197,8 +197,12 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
         </Stack>
       </Paper>
 
-      <Stack direction="row" flexGrow={1} overflow="hidden">
-        <Box flexGrow={1} data-testid="selectAgencyMap-map">
+      <Stack
+        direction={{ xs: 'column', lg: 'row' }}
+        position={{ xs: 'relative', lg: 'unset' }}
+        flexGrow={{ xs: 'unset', lg: 1 }}
+        overflow={{ xs: 'visible', lg: 'hidden' }}>
+        <Box flexGrow={1} data-testid="selectAgencyMap-map" height={{ xs: '330px', lg: 'unset' }}>
           <Map
             defaultZoom={8}
             maxZoom={16}
@@ -211,14 +215,21 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             {getMarkers()}
           </Map>
         </Box>
-        <Stack width="420px" overflow="hidden" borderLeft="1px solid" borderColor="grey.400">
+        <Stack
+          width={{ xs: '100%', lg: '420px' }}
+          overflow="hidden"
+          borderLeft={{ xs: 'unset', lg: '1px solid' }}
+          borderColor={{ xs: 'unset', lg: 'grey.400' }}>
           <Stack
             direction="row"
             p={2}
             justifyContent="space-between"
             gap={2}
-            borderBottom="1px solid"
-            borderColor="grey.400">
+            borderBottom={{ xs: 'unset', lg: '1px solid' }}
+            borderColor={{ xs: 'unset', lg: 'grey.400' }}
+            position={{ xs: 'absolute', lg: 'unset' }}
+            top={{ xs: 0, lg: 'unset' }}
+            width={{ xs: '100%', lg: 'unset' }}>
             {/* I had to force the className="MuiInputAdornment-hiddenLabel", seems like a bug in MUI */}
             {/* <PlaceAutocompleteMap
               onPlaceSelect={(place) => {
@@ -232,6 +243,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
               onChange={(e) => {
                 setSearchTerm(e.target.value)
               }}
+              sx={{ bgcolor: { xs: 'common.white', lg: 'unset' } }}
               value={searchTerm}
               InputProps={{
                 placeholder: 'Rechercher',

@@ -194,7 +194,7 @@ export default function FlighsPage() {
 
   return (
     <>
-      <TopBar height={isDesktop ? 60 : 176}>
+      <TopBar height={isDesktop ? 60 : 200}>
         <Navbar />
         <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
           <SelectedFlightInfoTopbarMobile withFilters />

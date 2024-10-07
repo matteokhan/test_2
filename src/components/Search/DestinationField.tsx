@@ -13,6 +13,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
   const { errors, touched, setFieldValue } = useFormikContext<{
     to: string
     toLabel: string
+    toCountry: string
   }>()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -37,6 +38,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
     setSelectedLocation(location)
     setFieldValue('to', location.code)
     setFieldValue('toLabel', location.name + ' (' + location.code + ')')
+    setFieldValue('toCountry', location.country_name)
     setSearchTerm(location.name + ' (' + location.code + ')')
     if (onChange) onChange(location)
   }

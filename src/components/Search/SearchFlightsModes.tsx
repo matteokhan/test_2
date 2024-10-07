@@ -8,6 +8,7 @@ import {
   SearchMultiDestFlightsForm,
   SelectAgencyMap,
   AlertDestinationModal,
+  SelectAgencyLabel,
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
@@ -86,21 +87,7 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           />
         )} */}
       </Box>
-      {!selectedAgency && (
-        <Typography variant="titleSm" color="grey.600">
-          <a onClick={() => setMapIsOpen(true)} style={{ cursor: 'pointer' }}>
-            Veuillez sélectionner votre agence en ligne
-          </a>
-        </Typography>
-      )}
-      {selectedAgency && (
-        <Typography variant="titleSm" color="grey.600">
-          Agence {selectedAgency.name} -{' '}
-          <a onClick={() => setMapIsOpen(true)} style={{ cursor: 'pointer' }}>
-            Changer d'agence
-          </a>
-        </Typography>
-      )}
+      <SelectAgencyLabel openSelectionAgency={() => setMapIsOpen(true)} />
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
         <AlertDestinationModal
           onShowAgency={() => {

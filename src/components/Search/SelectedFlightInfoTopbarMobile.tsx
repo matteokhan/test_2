@@ -1,8 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useFlights } from '@/contexts'
-import { SectionContainer, SearchFlightsModesMobile } from '@/components'
+import { useFlights, useAgencySelector } from '@/contexts'
+import {
+  SectionContainer,
+  SearchFlightsModesMobile,
+  SelectAgencyMap,
+  SelectAgencyLabel,
+} from '@/components'
 import { Box, Drawer, Stack, Typography, IconButton } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import TuneIcon from '@mui/icons-material/Tune'
@@ -12,6 +17,7 @@ import { styled } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useLocationData } from '@/services'
 import { useRouter } from 'next/navigation'
+import { useSearch } from '@/hooks'
 
 type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
@@ -22,6 +28,8 @@ export const SelectedFlightInfoTopbarMobile = ({
 }: SelectedFlightInfoTopbarMobileProps) => {
   const router = useRouter()
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
+  const { selectedAgency, selectAgency } = useAgencySelector()
+  const { searchFlights } = useSearch()
 
   // Depending on whether the flight is round trip or one way, the departure location and
   // destination location will be different'
@@ -37,6 +45,7 @@ export const SelectedFlightInfoTopbarMobile = ({
     locationCode: destinationLocation,
   })
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
+  const [mapIsOpen, setMapIsOpen] = React.useState(false)
 
   const TravelOptionButton = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.grey['100'],
@@ -106,6 +115,7 @@ export const SelectedFlightInfoTopbarMobile = ({
           </TravelOptionButton>
         </Box>
       )}
+      <SelectAgencyLabel openSelectionAgency={() => setMapIsOpen(true)} />
       <Drawer
         open={flightSearchOpen}
         anchor="right"
@@ -133,9 +143,27 @@ export const SelectedFlightInfoTopbarMobile = ({
           </IconButton>
         </Stack>
         <SearchFlightsModesMobile
-          onSubmit={() => {
+          onSearch={(searchParams) => {
+            searchFlights(searchParams)
             setFlightSearchOpen(false)
             router.push('/flights')
+          }}
+        />
+      </Drawer>
+      <Drawer
+        open={mapIsOpen}
+        onClose={() => setMapIsOpen(false)}
+        anchor="right"
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+          },
+        }}>
+        <SelectAgencyMap
+          onClose={() => setMapIsOpen(false)}
+          onSelectAgency={({ agency }) => {
+            selectAgency(agency)
+            setMapIsOpen(false)
           }}
         />
       </Drawer>
