@@ -13,6 +13,7 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
   const { errors, touched, setFieldValue } = useFormikContext<{
     from: string
     fromLabel: string
+    fromCountry: string
   }>()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -37,6 +38,7 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
     setSelectedLocation(location)
     setFieldValue('from', location.code)
     setFieldValue('fromLabel', location.name + ' (' + location.code + ')')
+    setFieldValue('fromCountry', location.country_name)
     setSearchTerm(location.name + ' (' + location.code + ')')
     if (onChange) onChange(location)
   }

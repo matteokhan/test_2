@@ -1,28 +1,34 @@
 'use client'
 
 import React, { useRef, useEffect } from 'react'
-import { Box, Tab, Tabs, Stack, Button } from '@mui/material'
-import { OneWayFlightSearchParams, RoundTripFlightSearchParams } from '@/types'
-import { useFlights } from '@/contexts'
+import { Box, Tab, Tabs, Stack, Button, Modal, Drawer } from '@mui/material'
+import { OneWayFlightSearchParams, RoundTripFlightSearchParams, SearchFlightsParams } from '@/types'
+import { useAgencySelector, useFlights } from '@/contexts'
 import {
   SearchRoundTripFlightsFormMobile,
   SearchOneWayFlightsFormMobile,
   ROUND_TRIP_DEFAULT_VALUES,
   ONE_WAY_DEFAULT_VALUES,
+  AlertDestinationModal,
+  SelectAgencyMap,
 } from '@/components'
 import { FormikProps } from 'formik'
+import { isValidSearch } from '@/utils'
 
 type SearchFlightsModesMobileProps = {
-  onSubmit?: () => void
+  onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
 }
 
-export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileProps) => {
+export const SearchFlightsModesMobile = ({ onSearch }: SearchFlightsModesMobileProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
+  const [modalIsOpen, setModalIsOpen] = React.useState(false)
+  const [mapIsOpen, setMapIsOpen] = React.useState(false)
 
   const formRefOneWay = useRef<FormikProps<OneWayFlightSearchParams> | null>(null)
   const formRefRoundTrip = useRef<FormikProps<RoundTripFlightSearchParams> | null>(null)
 
-  const { setSearchParams, searchParamsCache } = useFlights()
+  const { searchParamsCache } = useFlights()
+  const { selectAgency } = useAgencySelector()
 
   useEffect(() => {
     if (searchParamsCache) {
@@ -48,7 +54,9 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
         )
         return
       }
-      setSearchParams(formRefRoundTrip.current.values)
+      if (isValidSearch(formRefRoundTrip.current.values))
+        onSearch({ searchParams: formRefRoundTrip.current.values })
+      else setModalIsOpen(true)
     } else if (formRefOneWay.current) {
       const errors = await formRefOneWay.current.validateForm()
       if (Object.keys(errors).length !== 0) {
@@ -57,12 +65,13 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
         )
         return
       }
-      setSearchParams(formRefOneWay.current.values)
+      if (isValidSearch(formRefOneWay.current.values))
+        onSearch({ searchParams: formRefOneWay.current.values })
+      else setModalIsOpen(true)
     } else {
       // TODO: log this somewhere
       return
     }
-    if (onSubmit) onSubmit()
   }
 
   return (
@@ -124,6 +133,34 @@ export const SearchFlightsModesMobile = ({ onSubmit }: SearchFlightsModesMobileP
           Rechercher
         </Button>
       </Stack>
+      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
+        <AlertDestinationModal
+          onShowAgency={() => {
+            setMapIsOpen(true)
+            setModalIsOpen(false)
+          }}
+          onClose={() => {
+            setModalIsOpen(false)
+          }}
+        />
+      </Modal>
+      <Drawer
+        open={mapIsOpen}
+        onClose={() => setMapIsOpen(false)}
+        anchor="right"
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+          },
+        }}>
+        <SelectAgencyMap
+          onClose={() => setMapIsOpen(false)}
+          onSelectAgency={({ agency }) => {
+            selectAgency(agency)
+            setMapIsOpen(false)
+          }}
+        />
+      </Drawer>
     </Stack>
   )
 }
