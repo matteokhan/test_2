@@ -28,7 +28,7 @@ export const SelectedFlightInfoTopbarMobile = ({
 }: SelectedFlightInfoTopbarMobileProps) => {
   const router = useRouter()
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
-  const { selectedAgency, selectAgency } = useAgencySelector()
+  const { selectAgency } = useAgencySelector()
   const { searchFlights } = useSearch()
 
   // Depending on whether the flight is round trip or one way, the departure location and
