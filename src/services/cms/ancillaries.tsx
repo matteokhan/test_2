@@ -24,7 +24,13 @@ export const getAncillaries = async ({ orderId }: { orderId: OrderId }) => {
   if (!response.ok) {
     throw new Error('Failed to get ancillaries')
   }
-  return (await response.json()).ancillaries
+
+  const data = await response.json()
+  if (!data.success) {
+    throw new Error('Error when getting ancillaries')
+  }
+
+  return data.ancillaries
 }
 
 export const useAncillaries = ({ orderId }: { orderId: OrderId }) => {

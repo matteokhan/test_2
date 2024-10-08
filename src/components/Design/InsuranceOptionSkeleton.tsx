@@ -1,9 +1,9 @@
 import React from 'react'
 import { Box, Paper, Skeleton, Stack } from '@mui/material'
 
-export const FlightResultSkeleton = () => {
+export const InsuranceOptionSkeleton = () => {
   return (
-    <Paper sx={{ padding: 2 }} data-testid="flightResultSkeleton">
+    <Paper sx={{ padding: 2 }} data-testid="insuranceOptionSkeleton">
       <Stack gap={5.5} direction="row">
         <Stack flexGrow={1}>
           <Stack gap={4} direction="row">

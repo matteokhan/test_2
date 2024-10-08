@@ -172,7 +172,7 @@ export default function FlighsPage() {
     // We can ask more information about the flight to decide which steps to follow
     try {
       // TODO: this query should be cached
-      const fares = await queryClient.fetchQuery({
+      const fares = await queryClient.fetchQuery<Solution[]>({
         queryKey: ['brandedFares', order.id, flight.id],
         queryFn: () => getBrandedFares({ orderId: order.id, solutionId: flight.id }),
         gcTime: Infinity, // TODO: this is not true
