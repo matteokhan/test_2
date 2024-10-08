@@ -153,10 +153,14 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }
 
   const goNextStep = () => {
-    // TODO: bug here bc next can be skipped
     const nextStep = currentStep.current + 1
     if (nextStep === steps.current.length) {
       // TODO: log this somewhere
+      return
+    }
+    if (steps.current[nextStep].skip) {
+      currentStep.current = nextStep
+      goNextStep()
       return
     }
     currentStep.current = nextStep
