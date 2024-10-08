@@ -2,6 +2,7 @@ export type ScalesFilterOption = 'all' | 'direct' | '1-scale' | '2-scale'
 export type ExperienceFilterOption = 'no-night-flight' | 'short-scales' | null
 export type MaxPriceTypeFilterOption = 'per-person' | 'total'
 export type FlightTimeFilterOption = '0-6' | '6-12' | '12-18' | '18-24' | null
+export type SearchFlightsFiltersMobile = 'all' | 'scales' | 'price' | 'routes' | 'airlines'
 
 export type SearchFlightFilters = {
   scales?: ScalesFilterOption

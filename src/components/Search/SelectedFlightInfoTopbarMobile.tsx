@@ -17,14 +17,17 @@ import { styled } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useLocationData } from '@/services'
 import { useRouter } from 'next/navigation'
+import { SearchFlightsFiltersMobile } from '@/types'
 import { useSearch } from '@/hooks'
 
 type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
+  handleOpenFilters?: (filter: SearchFlightsFiltersMobile) => void
 }
 
 export const SelectedFlightInfoTopbarMobile = ({
   withFilters,
+  handleOpenFilters,
 }: SelectedFlightInfoTopbarMobileProps) => {
   const router = useRouter()
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
@@ -94,23 +97,43 @@ export const SelectedFlightInfoTopbarMobile = ({
             sx={{ alignItems: 'center', gap: 1 }}
             data-testid="selectedFlightInfoTopbarMobile-allFiltersButton">
             <TuneIcon />
-            <Typography variant="titleSm" height="fit-content">
+            <Typography
+              variant="titleSm"
+              height="fit-content"
+              onClick={() => handleOpenFilters?.('all')}>
               Tous les filtres
             </Typography>{' '}
           </TravelOptionButton>
-          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-directFlightsButton">
-            <Typography variant="titleSm" height="fit-content">
-              Directs
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-scalesButton">
+            <Typography
+              variant="titleSm"
+              height="fit-content"
+              onClick={() => handleOpenFilters?.('scales')}>
+              Escales
             </Typography>
           </TravelOptionButton>
-          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-theFastestButton">
-            <Typography variant="titleSm" height="fit-content">
-              Les plus rapides
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-priceButton">
+            <Typography
+              variant="titleSm"
+              height="fit-content"
+              onClick={() => handleOpenFilters?.('price')}>
+              Prix
             </Typography>
           </TravelOptionButton>
-          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-theCheapestButton">
-            <Typography variant="titleSm" height="fit-content">
-              Les moins chères
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-routesButton">
+            <Typography
+              variant="titleSm"
+              height="fit-content"
+              onClick={() => handleOpenFilters?.('routes')}>
+              Itinéraires
+            </Typography>
+          </TravelOptionButton>
+          <TravelOptionButton data-testid="selectedFlightInfoTopbarMobile-airlinesButton">
+            <Typography
+              variant="titleSm"
+              height="fit-content"
+              onClick={() => handleOpenFilters?.('airlines')}>
+              Compagnies aériennes
             </Typography>
           </TravelOptionButton>
         </Box>
