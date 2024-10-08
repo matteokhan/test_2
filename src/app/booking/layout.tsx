@@ -17,16 +17,8 @@ import { useRouter, usePathname } from 'next/navigation'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export default function BookingLayout({ children }: { children: React.ReactNode }) {
-  const {
-    preSelectedFlight,
-    getStepIndexByPath,
-    setCurrentStep,
-    mapIsOpen,
-    steps,
-    currentStep,
-    totalPrice,
-  } = useBooking()
-  const currentStepTitle = steps.current[currentStep].title
+  const { preSelectedFlight, getStepIndexByPath, steps, currentStep, totalPrice } = useBooking()
+  const currentStepTitle = steps.current[currentStep.current].title
   const { setFlightDetailsOpen, flightDetailsOpen } = useFlights()
   const router = useRouter()
   const pathname = usePathname()
@@ -44,7 +36,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
     if (pathname) {
       const stepIndex = getStepIndexByPath(pathname)
       if (stepIndex !== -1) {
-        setCurrentStep(stepIndex)
+        currentStep.current = stepIndex
       }
     }
   }, [pathname])
@@ -78,14 +70,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
             <Typography variant="headlineMd" py={3}>
               {currentStepTitle}
             </Typography>
-            {/* The overflow and height hack is to avoid double scrolling while mapIsOpen */}
-            <Stack
-              direction="row"
-              gap={2}
-              sx={{
-                overflow: mapIsOpen ? 'hidden' : 'visible',
-                height: mapIsOpen ? '50vh' : 'auto',
-              }}>
+            <Stack direction="row" gap={2}>
               <Box flexGrow="1">{children}</Box>
               <Box height="fit-content" position="sticky" top="136px">
                 <PurchaseDetails />
@@ -105,7 +90,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
             alignItems="flex-end">
             <Typography variant="headlineMd">{currentStepTitle}</Typography>
             <Typography variant="bodyMd" color="grey.800" sx={{ textWrap: 'nowrap' }}>
-              Étape {currentStep + 1}/{steps.current.length}
+              Étape {currentStep.current + 1}/{steps.current.length}
             </Typography>
           </Stack>
           <Box py={2}>{children}</Box>

@@ -22,7 +22,7 @@ export const BookingStepsTopbar = () => {
             <BookingStep
               key={step.name}
               step={step}
-              isActive={steps.current[currentStep].code == step.code}
+              isActive={steps.current[currentStep.current].code == step.code}
             />
           ))}
       </Stack>

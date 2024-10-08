@@ -42,7 +42,6 @@ export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) =>
   Object.entries(params).forEach(([key, value]) => {
     queryParams.append(key, value as string)
   })
-  console.log('queryParams:', queryParams.toString())
 
   const response = await fetch(
     `${NEXT_PUBLIC_CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`,

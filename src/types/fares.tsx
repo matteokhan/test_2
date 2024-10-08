@@ -5,6 +5,5 @@ export type BrandedFareRequestDto = {
 }
 
 export type BrandedFareResponse = {
-  correlationId: string
   solutions: Solution[]
 }

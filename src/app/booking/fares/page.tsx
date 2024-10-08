@@ -31,11 +31,16 @@ export default function FaresPage() {
     return null
   }
 
-  const { data: brandedFares, isSuccess } = useBrandedFares({
+  const {
+    data: brandedFares,
+    isSuccess,
+    isFetching,
+  } = useBrandedFares({
     orderId: order.id,
     solutionId: selectedFlight.id,
   })
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
+  const isLoading = isFetching || isUpdatingOrder || isNavigating
 
   const handleSubmit = async () => {
     const newOrder: UpdateOrderParams = {
@@ -60,6 +65,7 @@ export default function FaresPage() {
       <SimpleContainer>
         <Stack gap={2} pt={4} data-testid="faresPage-options">
           {brandedFares &&
+            !isFetching &&
             isSuccess &&
             brandedFares.map((fare) => (
               <FareOption
@@ -79,14 +85,14 @@ export default function FaresPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingOrder || isNavigating}
+          isLoading={isLoading}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isUpdatingOrder || isNavigating}
+          isLoading={isLoading}
         />
       </Box>
     </>

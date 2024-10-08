@@ -9,6 +9,7 @@ import {
   BookingStepCode,
   OrderDto,
   InsuranceWithSteps,
+  Ancillary,
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { getInsurancePrice } from '@/utils'
@@ -18,8 +19,7 @@ import { useFlights } from '@/contexts'
 type BookingContextType = {
   // Steps
   steps: React.MutableRefObject<BookingStepType[]>
-  currentStep: number
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  currentStep: React.MutableRefObject<number>
   goToFirstStep: () => void
   goNextStep: () => void
   goPreviousStep: () => void
@@ -45,8 +45,8 @@ type BookingContextType = {
   setPayer: React.Dispatch<React.SetStateAction<PayerData | null>>
 
   // Options
-  mapIsOpen: boolean
-  setMapIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  ancillaries: Ancillary[]
+  setAncillaries: React.Dispatch<React.SetStateAction<Ancillary[]>>
   selectedFare: Solution | null
   setSelectedFare: React.Dispatch<React.SetStateAction<Solution | null>>
   selectedInsurance: InsuranceWithSteps | null
@@ -112,22 +112,26 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const router = useRouter()
   const { totalPassengers, searchParamsCache } = useFlights()
-  const [currentStep, setCurrentStep] = useState(0)
+  const currentStep = useRef(0)
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
   const [preSelectedFlight, setPreSelectedFlight] = useState<Solution | null>(null)
   const [passengers, setPassengers] = useState<PassengerData[]>([])
   const [payerIndex, setPayerIndex] = useState<number | null>(null) // Index of the payer in the passengers array
   const [payer, setPayer] = useState<PayerData | null>(null)
-  const [mapIsOpen, setMapIsOpen] = React.useState(false)
+  const [ancillaries, setAncillaries] = React.useState<Ancillary[]>([])
   const [selectedFare, setSelectedFare] = React.useState<Solution | null>(null)
   const [selectedInsurance, setSelectedInsurance] = React.useState<InsuranceWithSteps | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
   const [order, setOrder] = useState<OrderDto | null>(null)
 
   // Prices calculations
-  const basePrice = selectedFare
-    ? selectedFare.priceInfo.total
-    : selectedFlight?.priceInfo?.total || 0
+  const basePrice =
+    (selectedFare ? selectedFare.priceInfo.total : selectedFlight?.priceInfo?.total || 0) +
+    (ancillaries
+      .flatMap((anc) => anc.segments)
+      .flatMap((seg) => seg.ancillaries)
+      .filter((anc) => anc.selected)
+      .reduce((acc, curr) => acc + curr.price, 0) || 0)
   const selectedInsurancePrice: number = selectedInsurance
     ? getInsurancePrice(basePrice, selectedInsurance, totalPassengers)
     : 0
@@ -144,35 +148,40 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const goToFirstStep = () => {
     const firstStep = steps.current.filter((step) => !step.skip)[0]
-    setCurrentStep(getStepIndexByCode(firstStep.code))
+    currentStep.current = getStepIndexByCode(firstStep.code)
     router.push(firstStep.url)
   }
 
   const goNextStep = () => {
-    const nextStep = currentStep + 1
+    // TODO: bug here bc next can be skipped
+    const nextStep = currentStep.current + 1
     if (nextStep === steps.current.length) {
       // TODO: log this somewhere
       return
     }
-    setCurrentStep(nextStep)
+    currentStep.current = nextStep
     router.push(steps.current[nextStep].url)
   }
 
   const goPreviousStep = () => {
-    // TODO: bug here bc previous can be skipped
-    const previousStep = currentStep - 1
+    const previousStep = currentStep.current - 1
     if (previousStep < 0) {
       router.push('/flights')
       return
     }
-    setCurrentStep(previousStep)
+    if (steps.current[previousStep].skip) {
+      currentStep.current = previousStep
+      goPreviousStep()
+      return
+    }
+    currentStep.current = previousStep
     router.push(steps.current[previousStep].url)
   }
 
   const goToStep = (step: number | BookingStepCode) => {
     let stepIndex = 0
     if (typeof step === 'number') {
-      setCurrentStep(step)
+      currentStep.current = step
       stepIndex = step
     } else {
       stepIndex = getStepIndexByCode(step)
@@ -264,7 +273,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         payerIndex,
         setPayerIndex,
         currentStep,
-        setCurrentStep,
         goNextStep,
         goPreviousStep,
         goToStep,
@@ -275,8 +283,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         totalPrice,
         getStepIndexByPath,
         getStepIndexByCode,
-        mapIsOpen,
-        setMapIsOpen,
         selectedFare,
         setSelectedFare,
         selectedInsurance,
@@ -285,6 +291,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPnr,
         order,
         setOrder,
+        ancillaries,
+        setAncillaries,
       }}>
       {children}
     </BookingContext.Provider>

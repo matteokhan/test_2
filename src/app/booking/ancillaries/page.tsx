@@ -19,18 +19,22 @@ import { AncillaryServiceInfo } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
 
 const AncilliaryService = ({
+  disabled,
   outboundService,
   inboundService,
   onSelectService,
   onUnselectService,
 }: {
+  disabled?: boolean
   outboundService: AncillaryServiceInfo
   inboundService?: AncillaryServiceInfo
   onSelectService: (service: AncillaryServiceInfo) => void
   onUnselectService: (service: AncillaryServiceInfo) => void
 }) => {
-  const [outboundSelected, setOutboundSelected] = React.useState(false)
-  const [inboundSelected, setInboundSelected] = React.useState(false)
+  const [outboundSelected, setOutboundSelected] = React.useState<boolean>(outboundService.selected)
+  const [inboundSelected, setInboundSelected] = React.useState<boolean>(
+    inboundService?.selected || false,
+  )
   const isSelected = outboundSelected || inboundSelected
 
   useEffect(() => {
@@ -63,6 +67,7 @@ const AncilliaryService = ({
           </Typography>
           <Stack pt={1} direction="row" gap={1}>
             <FormControlLabel
+              disabled={disabled}
               control={
                 <Checkbox
                   sx={{ ml: 0 }}
@@ -75,6 +80,7 @@ const AncilliaryService = ({
             />
             {inboundService !== undefined && (
               <FormControlLabel
+                disabled={disabled}
                 control={
                   <Checkbox
                     checked={inboundSelected}
@@ -106,6 +112,7 @@ const AncilliaryService = ({
             </Typography>
           </Box>
           <Button
+            disabled={disabled}
             data-testid="insuranceOption-selectButton"
             sx={{ px: 3 }}
             variant={isSelected ? 'contained' : 'outlined'}
@@ -128,8 +135,9 @@ const AncilliaryService = ({
 }
 
 export default function AncillariesPage() {
-  const { goPreviousStep, goNextStep, passengers, order } = useBooking()
-  const [selectedServices, setSelectedServices] = React.useState<AncillaryServiceInfo[]>([])
+  const [isNavigating, setIsNavigating] = React.useState(false)
+  const { goPreviousStep, goNextStep, passengers, order, ancillaries, setAncillaries } =
+    useBooking()
   const { mutate: selectAncillaries, isPending: isSelectingAncillaries } = useSelectAncillaries()
 
   if (!passengers || !order) {
@@ -137,13 +145,25 @@ export default function AncillariesPage() {
     // TODO: Warn the user that something went wrong
     return null
   }
-  const { data: ancillaries, isSuccess } = useAncillaries({ orderId: order.id })
+  const { data: remoteAncillaries, isSuccess, isFetching } = useAncillaries({ orderId: order.id })
+  const isLoading = isFetching || isSelectingAncillaries || isNavigating
+
+  useEffect(() => {
+    if (remoteAncillaries) setAncillaries(remoteAncillaries)
+  }, [remoteAncillaries])
 
   const handleSubmit = () => {
     selectAncillaries(
-      { orderId: order.id, ancillaries: selectedServices },
+      {
+        orderId: order.id,
+        ancillaries: ancillaries
+          .flatMap((anc) => anc.segments)
+          .flatMap((seg) => seg.ancillaries)
+          .filter((anc) => anc.selected),
+      },
       {
         onSuccess: () => {
+          setIsNavigating(true)
           goNextStep()
         },
         onError: (error) => {
@@ -157,6 +177,7 @@ export default function AncillariesPage() {
   return (
     <>
       {ancillaries &&
+        !isFetching &&
         isSuccess &&
         ancillaries.map((ancillary) => {
           const passengerData = passengers[+ancillary.passenger - 1]
@@ -189,15 +210,37 @@ export default function AncillariesPage() {
                   {outboundServices.length > 0 &&
                     outboundServices.map((service) => (
                       <AncilliaryService
+                        disabled={isLoading}
                         key={service.code}
                         outboundService={service}
                         onSelectService={(service) => {
-                          setSelectedServices((prev) => [...prev, service])
+                          const segmentIndex = ancillary.segments.findIndex((seg) =>
+                            seg.ancillaries.some((anc) => anc.externalId === service.externalId),
+                          )
+                          if (segmentIndex !== -1) {
+                            const ancIndex = ancillary.segments[segmentIndex].ancillaries.findIndex(
+                              (anc) => anc.externalId === service.externalId,
+                            )
+                            if (ancIndex !== -1) {
+                              ancillary.segments[segmentIndex].ancillaries[ancIndex].selected = true
+                              setAncillaries((prev) => [...prev])
+                            }
+                          }
                         }}
                         onUnselectService={(service) => {
-                          setSelectedServices((prev) =>
-                            prev.filter((anc) => anc.externalId !== service.externalId),
+                          const segmentIndex = ancillary.segments.findIndex((seg) =>
+                            seg.ancillaries.some((anc) => anc.externalId === service.externalId),
                           )
+                          if (segmentIndex !== -1) {
+                            const ancIndex = ancillary.segments[segmentIndex].ancillaries.findIndex(
+                              (anc) => anc.externalId === service.externalId,
+                            )
+                            if (ancIndex !== -1) {
+                              ancillary.segments[segmentIndex].ancillaries[ancIndex].selected =
+                                false
+                              setAncillaries((prev) => [...prev])
+                            }
+                          }
                         }}
                         inboundService={inboundServices.find((anc) => anc.code === service.code)}
                       />
@@ -211,14 +254,14 @@ export default function AncillariesPage() {
         <BookingStepActions
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isSelectingAncillaries}
+          isLoading={isLoading}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <BookingStepActionsMobile
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
-          isLoading={isSelectingAncillaries}
+          isLoading={isLoading}
         />
       </Box>
     </>

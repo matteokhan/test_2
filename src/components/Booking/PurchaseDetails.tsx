@@ -5,6 +5,7 @@ import { getFareData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
 import CloseIcon from '@mui/icons-material/Close'
+import React from 'react'
 
 type PurchaseDetailsProps = {
   onClose?: () => void
@@ -12,7 +13,8 @@ type PurchaseDetailsProps = {
 
 export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
-  const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare } = useBooking()
+  const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare, ancillaries } =
+    useBooking()
   return (
     <Paper
       sx={{
@@ -61,16 +63,42 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
             </Stack>
           </>
         )}
-        {/* TODO: make this dynamic when baggages enabled */}
-        {/* <Stack direction="row" width="100%" justifyContent="space-between">
-          <Typography variant="bodyMd" data-testid="purchaseDetails-baggages">
-            1 x bagage(s) à main
-          </Typography>
-          <Typography variant="bodyMd" fontWeight={500} data-testid="purchaseDetails-baggagesPrice">
-            Inclus
-          </Typography>
-        </Stack> */}
-        {/* TODO: make this dynamic when insurances enabled */}
+        {ancillaries.map((ancillary, ancillaryIndex) => (
+          <React.Fragment key={ancillaryIndex}>
+            {ancillary.segments.some((s) => s.ancillaries.some((a) => a.selected)) && (
+              <Typography variant="bodyMd">
+                Passenger {ancillary.passenger} - Ancillaries
+              </Typography>
+            )}
+            {ancillary.segments
+              .filter((segment) => segment.ancillaries.some((a) => a.selected))
+              .map((segment, segmentIndex) => (
+                <React.Fragment key={`${ancillaryIndex}-${segmentIndex}`}>
+                  {segment.ancillaries
+                    .filter((a) => a.selected)
+                    .map((ancillary) => (
+                      <Stack
+                        key={`${ancillaryIndex}-${segmentIndex}-${ancillary.externalId}`}
+                        data-testid="purchaseDetails-ancillary"
+                        ml={2}>
+                        <Stack direction="row" width="100%" justifyContent="space-between">
+                          <Typography variant="bodyMd" data-testid="purchaseDetails-ancillary-name">
+                            {ancillary.name} - {segment.segment == '1' && 'Aller'}{' '}
+                            {segment.segment == '2' && 'Retour'}
+                          </Typography>
+                          <Typography
+                            variant="bodyMd"
+                            fontWeight={500}
+                            data-testid="purchaseDetails-ancillary-price">
+                            {ancillary.price}€
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    ))}
+                </React.Fragment>
+              ))}
+          </React.Fragment>
+        ))}
         {selectedInsurance && (
           <Stack direction="row" width="100%" justifyContent="space-between">
             <Typography variant="bodyMd" data-testid="purchaseDetails-insurances">
@@ -84,24 +112,6 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
             </Typography>
           </Stack>
         )}
-        {/* TODO: make this dynamic when options enabled */}
-        {/* <Stack direction="row" width="100%" justifyContent="space-between">
-          <Typography variant="bodyMd" data-testid="purchaseDetails-options">
-            1 x offre(s) de service Premium
-          </Typography>
-          <Typography variant="bodyMd" fontWeight={500} data-testid="purchaseDetails-optionsPrice">
-            0€
-          </Typography>
-        </Stack> */}
-        {/* TODO: make this dynamic when seats enabled */}
-        {/* <Stack direction="row" width="100%" justifyContent="space-between">
-          <Typography variant="bodyMd" data-testid="purchaseDetails-seats">
-            1x siège(s) (SYD - DEL)
-          </Typography>
-          <Typography variant="bodyMd" fontWeight={500} data-testid="purchaseDetails-seatsPrice">
-            0€
-          </Typography>
-        </Stack> */}
       </Stack>
       <Stack pt={1} gap={1.25}>
         <Stack
