@@ -1,10 +1,3 @@
-import { CorrelationId, PNR } from '@/types'
-
-export type AncillariesRequestDto = {
-  correlationId: CorrelationId
-  pnr: PNR
-}
-
 export type Ancillary = {
   passenger: string
   segments: AncillarySegment[]
@@ -22,7 +15,7 @@ export type AncillaryServiceInfo = {
   type: AncillaryServiceType
   price: number
   currency: string
-  selected: false
+  selected: boolean
 }
 
 export type AncillaryServiceType = 'BAGGAGE'
