@@ -271,13 +271,13 @@ export const FlightsIcon = () => {
         <path
           d="M29.5 28H18L15 22H8.5L12 35H29.5L23.5 48.5H30L40.5 35.5H46.25H52.25C54.3211 35.5 56 33.8211 56 31.75V31.75C56 29.6789 54.3211 28 52.25 28H40.75M29.5 28L23.5 14.5H29.5L40.75 28M29.5 28H40.75"
           stroke="#00A5E1"
-          stroke-width="3"
+          strokeWidth="3"
         />
-        <path d="M10.5 42H21" stroke="#EF8C24" stroke-width="3" />
-        <path d="M9.5 47H16.5" stroke="#EF8C24" stroke-width="3" />
-        <path d="M12.5 15L19.5 15" stroke="#EF8C24" stroke-width="3" />
-        <path d="M7.5 15L10.5 15" stroke="#EF8C24" stroke-width="3" />
-        <path d="M5.5 42L8.5 42" stroke="#EF8C24" stroke-width="3" />
+        <path d="M10.5 42H21" stroke="#EF8C24" strokeWidth="3" />
+        <path d="M9.5 47H16.5" stroke="#EF8C24" strokeWidth="3" />
+        <path d="M12.5 15L19.5 15" stroke="#EF8C24" strokeWidth="3" />
+        <path d="M7.5 15L10.5 15" stroke="#EF8C24" strokeWidth="3" />
+        <path d="M5.5 42L8.5 42" stroke="#EF8C24" strokeWidth="3" />
       </svg>
     </SvgIcon>
   )

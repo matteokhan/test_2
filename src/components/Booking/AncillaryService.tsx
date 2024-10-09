@@ -45,7 +45,7 @@ export const AncilliaryService = ({
   return (
     <Grid item xs={12} sm={6}>
       <Stack border="1px solid" borderColor="grey.400" borderRadius="6px" flexGrow={1} width="100%">
-        <Stack sx={{ p: 2 }} flexGrow={1}>
+        <Stack sx={{ p: 2 }} flexGrow={1} data-testid="ancillaryService-item">
           <Typography variant="headlineMd" sx={{ fontSize: '16px !important', pb: 0.5 }}>
             {outboundService.name}
           </Typography>
@@ -59,7 +59,7 @@ export const AncilliaryService = ({
                 <Checkbox
                   sx={{ ml: 0 }}
                   checked={outboundSelected}
-                  data-testid="bookingConditionsCheckbox"
+                  data-testid="ancillaryService-outboundCheckbox"
                   onChange={(ev) => setOutboundSelected(ev.target.checked)}
                 />
               }
@@ -71,7 +71,7 @@ export const AncilliaryService = ({
                 control={
                   <Checkbox
                     checked={inboundSelected}
-                    data-testid="bookingConditionsCheckbox"
+                    data-testid="ancillaryService-inboundCheckbox"
                     onChange={(ev) => setInboundSelected(ev.target.checked)}
                   />
                 }

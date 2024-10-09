@@ -32,7 +32,7 @@ export const AirlinesFilterField = ({
             alignItems="center">
             <FormControlLabel
               value={airline.carrier}
-              control={<Checkbox />}
+              control={<Checkbox checked={value.includes(airline.carrier)} />}
               name={props.name}
               label={airlineName}
               onChange={() => {

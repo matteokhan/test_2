@@ -10,7 +10,7 @@ const OneNightScaleFilter = ({
   return (
     <FormControlLabel
       {...props}
-      control={<Checkbox data-testid="allowNightScalesField" />}
+      control={<Checkbox data-testid="allowNightScalesField" checked={props.value} />}
       label="Autoriser les escales d'une nuit"
       disabled={disabled}
     />

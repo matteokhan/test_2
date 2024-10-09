@@ -19,7 +19,7 @@ export const AirportFilterField = ({
           <Stack key={airport}>
             <FormControlLabel
               value={airport}
-              control={<Checkbox />}
+              control={<Checkbox checked={value.includes(airport)} />}
               name={props.name}
               label={locationExtensionOrName(locationData) + ' (' + airport + ')'}
               onChange={() => {

@@ -15,6 +15,8 @@ import { useBooking, useFlights } from '@/contexts'
 import { Box, Drawer, Paper, Stack, Typography } from '@mui/material'
 import { useRouter, usePathname } from 'next/navigation'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 export default function BookingLayout({ children }: { children: React.ReactNode }) {
   const { preSelectedFlight, getStepIndexByPath, steps, currentStep, totalPrice } = useBooking()
@@ -22,6 +24,8 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
   const { setFlightDetailsOpen, flightDetailsOpen } = useFlights()
   const router = useRouter()
   const pathname = usePathname()
+  const theme = useTheme()
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
 
   const [totalPriceOpen, setTotalPriceOpen] = useState(false)
 
@@ -47,7 +51,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <TopBar height={120}>
+      <TopBar height={isDesktop ? 120 : 145}>
         <Navbar />
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <SelectedFlightInfoTopbar />

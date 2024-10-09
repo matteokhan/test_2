@@ -13,14 +13,21 @@ import {
   SearchResults,
   SelectedFlightInfoTopbarMobile,
 } from '@/components'
-import { Box, Drawer, Button, Grow, Stack, Typography } from '@mui/material'
+import { Box, Drawer, Button, Grow, Stack, Typography, IconButton, Divider } from '@mui/material'
 import { useBooking, useFlights } from '@/contexts'
 import { useSearch } from '@/hooks'
-import { SearchFlightsParams, Solution, AirlineFilterData, SearchFlightFilters } from '@/types'
+import {
+  SearchFlightsParams,
+  Solution,
+  AirlineFilterData,
+  SearchFlightFilters,
+  SearchFlightsFiltersOptions,
+} from '@/types'
 import { getBrandedFares } from '@/services'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { QueryClient } from '@tanstack/react-query'
+import CloseIcon from '@mui/icons-material/Close'
 
 const queryClient = new QueryClient()
 
@@ -43,6 +50,9 @@ export default function FlighsPage() {
       },
     ],
   })
+
+  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
+  const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
 
   const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto } = useFlights()
   const { selectFlight, goToFirstStep, order, skipStep } = useBooking()
@@ -197,7 +207,13 @@ export default function FlighsPage() {
       <TopBar height={isDesktop ? 60 : 200}>
         <Navbar />
         <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-          <SelectedFlightInfoTopbarMobile withFilters />
+          <SelectedFlightInfoTopbarMobile
+            withFilters
+            onOpenFilters={(filterName) => {
+              setActiveFilter(filterName)
+              setActiveFilterOpen(true)
+            }}
+          />
         </Box>
       </TopBar>
       <Box
@@ -248,6 +264,7 @@ export default function FlighsPage() {
                     : false
                 }
                 onSubmit={(values) => setFilters(values)}
+                activeFilter={activeFilter}
               />
             </Box>
             <Stack gap={2} flexGrow={1}>
@@ -301,6 +318,49 @@ export default function FlighsPage() {
               isLoading={isNavigating}
               onClose={() => setFlightDetailsOpen(false)}
               onSelectFlight={handleSelectFlight}
+            />
+          </Drawer>
+          <Drawer
+            open={activeFilterOpen}
+            onClose={() => {
+              setActiveFilter('all')
+              setActiveFilterOpen(false)
+            }}
+            anchor="bottom"
+            PaperProps={{
+              sx: {
+                borderRadius: 0,
+                maxHeight: 'calc(100% - 200px)',
+                height: 'auto',
+              },
+            }}>
+            <Box py={0.5} px={1}>
+              <IconButton
+                aria-label="close"
+                onClick={() => setActiveFilterOpen(false)}
+                data-testid="searchFlightsDrawerFilters-closeButton"
+                sx={{ float: 'right' }}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Divider />
+            <SearchFlightsFilters
+              filterData={response?.searchFilters}
+              selectedFilters={filters}
+              airlines={getAirlines()}
+              departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
+              arrival={
+                response?.solutions[0]?.routes[0]?.segments[
+                  response.solutions[0]?.routes[0]?.segments?.length - 1
+                ]?.arrival
+              }
+              isRoundTrip={
+                searchParamsDto?.search_data.segments?.length
+                  ? searchParamsDto.search_data.segments.length > 1
+                  : false
+              }
+              onSubmit={(values) => setFilters(values)}
+              activeFilter={activeFilter}
             />
           </Drawer>
         </SectionContainer>
