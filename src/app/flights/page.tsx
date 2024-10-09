@@ -234,7 +234,7 @@ export default function FlighsPage() {
   }
 
   useEffect(() => {
-    if (searchParamsDto) {
+    if (searchParamsDto && !order) {
       searchFlights({})
     }
   }, [])
