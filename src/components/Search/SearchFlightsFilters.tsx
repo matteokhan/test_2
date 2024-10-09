@@ -22,8 +22,6 @@ import {
 import { useLocationData } from '@/services'
 import { locationName } from '@/utils'
 import { AirportFilterField } from './AirportFilterField'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 const AutoSubmit = () => {
   const { values, submitForm } = useFormikContext()
@@ -52,7 +50,7 @@ type SearchFlightsFiltersProps = {
   arrival?: string
   isRoundTrip?: boolean
   activeFilter?: SearchFlightsFiltersMobile
-  currentFilters?: SearchFlightFilters
+  selectedFilters?: SearchFlightFilters
 }
 
 export const SearchFlightsFilters = ({
@@ -63,7 +61,7 @@ export const SearchFlightsFilters = ({
   airlines,
   isRoundTrip,
   activeFilter,
-  currentFilters,
+  selectedFilters,
 }: SearchFlightsFiltersProps) => {
   const DEFAULT_FILTERS = {
     scales: 'all',
@@ -88,9 +86,6 @@ export const SearchFlightsFilters = ({
     ],
   } as SearchFlightFilters
 
-  const theme = useTheme()
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
-
   const { data: departureLocationData } = useLocationData({
     locationCode: departure ? departure : '',
   })
@@ -99,7 +94,7 @@ export const SearchFlightsFilters = ({
   return (
     <Paper sx={{ paddingX: 2, paddingY: { xs: 1, lg: 4 }, height: 'fit-content' }}>
       <Formik
-        initialValues={currentFilters || DEFAULT_FILTERS}
+        initialValues={selectedFilters || DEFAULT_FILTERS}
         validationSchema={filtersSchema}
         onSubmit={onSubmit}
         enableReinitialize>
@@ -108,7 +103,7 @@ export const SearchFlightsFilters = ({
             <Stack gap={3}>
               <AutoSubmit />
               <Typography variant="titleLg">Filtrer par </Typography>
-              {(isDesktop || activeFilter === 'scales' || activeFilter === 'all') && (
+              {(activeFilter === 'all' || activeFilter === 'scales') && (
                 <Box>
                   <Typography variant="titleMd" pb={1}>
                     Escales
@@ -124,7 +119,7 @@ export const SearchFlightsFilters = ({
                   </Box>
                 </Box>
               )}
-              {(isDesktop || activeFilter === 'price' || activeFilter === 'all') && (
+              {(activeFilter === 'all' || activeFilter === 'price') && (
                 <Box pb={1}>
                   <Stack direction="row" justifyContent="space-between" pb={1}>
                     <Typography variant="titleMd">Prix maximum</Typography>
@@ -146,7 +141,7 @@ export const SearchFlightsFilters = ({
                   </FormControl>
                 </Box>
               )}
-              {(isDesktop || activeFilter === 'routes' || activeFilter === 'all') && (
+              {(activeFilter === 'all' || activeFilter === 'routes') && (
                 <>
                   <Box>
                     {filterData !== undefined && (
@@ -182,7 +177,10 @@ export const SearchFlightsFilters = ({
                         <Typography variant="labelLg" pb={1}>
                           Décoller depuis
                         </Typography>
-                        <Box pl={1.5} pb={1}>
+                        <Box
+                          pl={1.5}
+                          pb={1}
+                          data-testid="searchFlightsFilters-route0-departureAirports">
                           <AirportFilterField
                             airports={
                               filterData.airports.find((a) => a.routeIndex === 0)?.from || []
@@ -197,7 +195,7 @@ export const SearchFlightsFilters = ({
                         <Typography variant="labelLg" pb={1}>
                           Attérir à
                         </Typography>
-                        <Box pl={1.5}>
+                        <Box pl={1.5} data-testid="searchFlightsFilters-route0-arrivalAirports">
                           <AirportFilterField
                             airports={filterData.airports.find((a) => a.routeIndex === 0)?.to || []}
                             name="routes[0].arrivalAirports"
@@ -246,7 +244,10 @@ export const SearchFlightsFilters = ({
                           <Typography variant="labelLg" pb={1}>
                             Décoller depuis
                           </Typography>
-                          <Box pl={1.5} pb={1}>
+                          <Box
+                            pl={1.5}
+                            pb={1}
+                            data-testid="searchFlightsFilters-route1-departureAirports">
                             <AirportFilterField
                               airports={
                                 filterData.airports.find((a) => a.routeIndex === 1)?.from || []
@@ -263,7 +264,7 @@ export const SearchFlightsFilters = ({
                           <Typography variant="labelLg" pb={1}>
                             Attérir à
                           </Typography>
-                          <Box pl={1.5}>
+                          <Box pl={1.5} data-testid="searchFlightsFilters-route1-arrivalAirports">
                             <AirportFilterField
                               airports={
                                 filterData.airports.find((a) => a.routeIndex === 1)?.to || []
@@ -276,7 +277,7 @@ export const SearchFlightsFilters = ({
                   </Box>
                 </>
               )}
-              {(isDesktop || activeFilter === 'airlines' || activeFilter === 'all') &&
+              {(activeFilter === 'all' || activeFilter === 'airlines') &&
                 filterData !== undefined && (
                   <Box>
                     <Typography variant="titleMd" pb={1}>

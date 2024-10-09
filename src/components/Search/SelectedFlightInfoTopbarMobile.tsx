@@ -22,12 +22,12 @@ import { useSearch } from '@/hooks'
 
 type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
-  handleOpenFilters?: (filter: SearchFlightsFiltersMobile) => void
+  onOpenFilters?: (filterName: SearchFlightsFiltersMobile) => void
 }
 
 export const SelectedFlightInfoTopbarMobile = ({
   withFilters,
-  handleOpenFilters,
+  onOpenFilters,
 }: SelectedFlightInfoTopbarMobileProps) => {
   const router = useRouter()
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
@@ -100,7 +100,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <Typography
               variant="titleSm"
               height="fit-content"
-              onClick={() => handleOpenFilters?.('all')}>
+              onClick={() => onOpenFilters && onOpenFilters('all')}>
               Tous les filtres
             </Typography>{' '}
           </TravelOptionButton>
@@ -108,7 +108,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <Typography
               variant="titleSm"
               height="fit-content"
-              onClick={() => handleOpenFilters?.('scales')}>
+              onClick={() => onOpenFilters && onOpenFilters('scales')}>
               Escales
             </Typography>
           </TravelOptionButton>
@@ -116,7 +116,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <Typography
               variant="titleSm"
               height="fit-content"
-              onClick={() => handleOpenFilters?.('price')}>
+              onClick={() => onOpenFilters && onOpenFilters('price')}>
               Prix
             </Typography>
           </TravelOptionButton>
@@ -124,7 +124,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <Typography
               variant="titleSm"
               height="fit-content"
-              onClick={() => handleOpenFilters?.('routes')}>
+              onClick={() => onOpenFilters && onOpenFilters('routes')}>
               Itinéraires
             </Typography>
           </TravelOptionButton>
@@ -132,7 +132,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <Typography
               variant="titleSm"
               height="fit-content"
-              onClick={() => handleOpenFilters?.('airlines')}>
+              onClick={() => onOpenFilters && onOpenFilters('airlines')}>
               Compagnies aériennes
             </Typography>
           </TravelOptionButton>

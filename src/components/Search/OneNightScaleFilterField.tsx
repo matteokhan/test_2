@@ -1,16 +1,17 @@
 'use client'
 
 import { Checkbox, FormControlLabel } from '@mui/material'
-import { Field, FieldInputProps } from 'formik'
+import { Field, FieldInputProps, useFormikContext } from 'formik'
 
 const OneNightScaleFilter = ({
   disabled,
   ...props
 }: FieldInputProps<boolean> & { disabled?: boolean }) => {
+  const { values } = useFormikContext<{ oneNightScale: boolean }>()
   return (
     <FormControlLabel
       {...props}
-      control={<Checkbox data-testid="allowNightScalesField" />}
+      control={<Checkbox checked={values.oneNightScale} data-testid="allowNightScalesField" />}
       label="Autoriser les escales d'une nuit"
       disabled={disabled}
     />

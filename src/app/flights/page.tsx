@@ -51,8 +51,7 @@ export default function FlighsPage() {
     ],
   })
 
-  type FilterDrawerType = SearchFlightsFiltersMobile | null
-  const [activeFilter, setActiveFilter] = React.useState<FilterDrawerType>(null)
+  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersMobile>('all')
   const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
 
   const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto } = useFlights()
@@ -210,8 +209,8 @@ export default function FlighsPage() {
         <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
           <SelectedFlightInfoTopbarMobile
             withFilters
-            handleOpenFilters={(filter) => {
-              setActiveFilter(filter)
+            onOpenFilters={(filterName) => {
+              setActiveFilter(filterName)
               setActiveFilterOpen(true)
             }}
           />
@@ -330,10 +329,7 @@ export default function FlighsPage() {
                 maxHeight: 'calc(100% - 64px)',
                 height: 'auto',
               },
-            }}
-            disableAutoFocus // Prevents auto-focusing the drawer
-            disableEnforceFocus // Prevents focus trapping inside the drawer
-          >
+            }}>
             <Box py={0.5} px={1}>
               <IconButton
                 aria-label="close"
@@ -346,7 +342,7 @@ export default function FlighsPage() {
             <Divider />
             <SearchFlightsFilters
               filterData={response?.searchFilters}
-              currentFilters={filters}
+              selectedFilters={filters}
               airlines={getAirlines()}
               departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
               arrival={
@@ -359,12 +355,8 @@ export default function FlighsPage() {
                   ? searchParamsDto.search_data.segments.length > 1
                   : false
               }
-              onSubmit={(values, actions) => {
-                setFilters(values)
-                // console.log(actions)
-                // setActiveFilterOpen(false)
-              }}
-              activeFilter={activeFilter || 'all'}
+              onSubmit={(values) => setFilters(values)}
+              activeFilter={activeFilter}
             />
           </Drawer>
         </SectionContainer>
