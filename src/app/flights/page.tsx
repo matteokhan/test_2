@@ -264,6 +264,7 @@ export default function FlighsPage() {
                     : false
                 }
                 onSubmit={(values) => setFilters(values)}
+                activeFilter={activeFilter}
               />
             </Box>
             <Stack gap={2} flexGrow={1}>

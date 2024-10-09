@@ -33,10 +33,7 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
       )}
       {selectedAgency && (
         <Stack direction="row">
-          <Typography
-            data-testid="selectAgencyLabel-changeAgency"
-            variant="titleSm"
-            color="grey.600">
+          <Typography variant="titleSm" color="grey.600">
             Agence {selectedAgency.name}{' '}
           </Typography>
           <Typography

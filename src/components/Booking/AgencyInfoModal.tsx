@@ -99,7 +99,8 @@ export const AgencyInfoModal: React.FC<{
       onMainAction={handleSelectAgency}
       secondaryAction="Fermer"
       onSecondaryAction={onClose}
-      alignItems="flex-start">
+      alignItems="flex-start"
+      data-testid="agencyInfoModal">
       <Typography variant="bodyMd">Horaire d'ouverture</Typography>
       <Box sx={{ width: '100%' }}>
         {agency?.agency_openings.map((opening, index) => {

@@ -45,7 +45,7 @@ export const AncilliaryService = ({
   return (
     <Grid item xs={12} sm={6}>
       <Stack border="1px solid" borderColor="grey.400" borderRadius="6px" flexGrow={1} width="100%">
-        <Stack sx={{ p: 2 }} flexGrow={1}>
+        <Stack sx={{ p: 2 }} flexGrow={1} data-testid="ancillaryService-item">
           <Typography variant="headlineMd" sx={{ fontSize: '16px !important', pb: 0.5 }}>
             {outboundService.name}
           </Typography>

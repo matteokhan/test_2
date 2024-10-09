@@ -49,7 +49,7 @@ type SearchFlightsFiltersProps = {
   departure?: string
   arrival?: string
   isRoundTrip?: boolean
-  activeFilter?: SearchFlightsFiltersMobile
+  activeFilter: SearchFlightsFiltersMobile
   selectedFilters?: SearchFlightFilters
 }
 
