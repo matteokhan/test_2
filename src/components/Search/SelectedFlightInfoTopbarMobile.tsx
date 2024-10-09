@@ -17,12 +17,12 @@ import { styled } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useLocationData } from '@/services'
 import { useRouter } from 'next/navigation'
-import { SearchFlightsFiltersMobile } from '@/types'
+import { SearchFlightsFiltersOptions } from '@/types'
 import { useSearch } from '@/hooks'
 
 type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
-  onOpenFilters?: (filterName: SearchFlightsFiltersMobile) => void
+  onOpenFilters?: (filterName: SearchFlightsFiltersOptions) => void
 }
 
 export const SelectedFlightInfoTopbarMobile = ({

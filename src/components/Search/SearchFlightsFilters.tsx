@@ -9,7 +9,7 @@ import {
   AirlineFilterData,
   SearchFlightFilters,
   SearchResponseFilterData,
-  SearchFlightsFiltersMobile,
+  SearchFlightsFiltersOptions,
 } from '@/types'
 import {
   ScalesFilterField,
@@ -49,7 +49,7 @@ type SearchFlightsFiltersProps = {
   departure?: string
   arrival?: string
   isRoundTrip?: boolean
-  activeFilter: SearchFlightsFiltersMobile
+  activeFilter: SearchFlightsFiltersOptions
   selectedFilters?: SearchFlightFilters
 }
 

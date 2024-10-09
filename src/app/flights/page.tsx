@@ -21,7 +21,7 @@ import {
   Solution,
   AirlineFilterData,
   SearchFlightFilters,
-  SearchFlightsFiltersMobile,
+  SearchFlightsFiltersOptions,
 } from '@/types'
 import { getBrandedFares } from '@/services'
 import { useTheme } from '@mui/material/styles'
@@ -51,7 +51,7 @@ export default function FlighsPage() {
     ],
   })
 
-  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersMobile>('all')
+  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
   const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
 
   const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto } = useFlights()
