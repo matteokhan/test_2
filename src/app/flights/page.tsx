@@ -322,7 +322,10 @@ export default function FlighsPage() {
           </Drawer>
           <Drawer
             open={activeFilterOpen}
-            onClose={() => setActiveFilterOpen(false)}
+            onClose={() => {
+              setActiveFilter('all')
+              setActiveFilterOpen(false)
+            }}
             anchor="bottom"
             PaperProps={{
               sx: {

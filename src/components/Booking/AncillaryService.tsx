@@ -59,7 +59,7 @@ export const AncilliaryService = ({
                 <Checkbox
                   sx={{ ml: 0 }}
                   checked={outboundSelected}
-                  data-testid="bookingConditionsCheckbox"
+                  data-testid="ancillaryService-outboundCheckbox"
                   onChange={(ev) => setOutboundSelected(ev.target.checked)}
                 />
               }
@@ -71,7 +71,7 @@ export const AncilliaryService = ({
                 control={
                   <Checkbox
                     checked={inboundSelected}
-                    data-testid="bookingConditionsCheckbox"
+                    data-testid="ancillaryService-inboundCheckbox"
                     onChange={(ev) => setInboundSelected(ev.target.checked)}
                   />
                 }
