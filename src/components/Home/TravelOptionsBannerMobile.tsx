@@ -13,7 +13,8 @@ import {
 } from '@/components'
 import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/navigation'
-import { useSearch } from '@/hooks'
+import { useFlights } from '@/contexts'
+import { SearchFlightsParams } from '@/types'
 
 const TravelOptionButton = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -28,8 +29,14 @@ const TravelOptionButton = styled(Stack)(({ theme }) => ({
 
 export const TravelOptionsBanner = () => {
   const router = useRouter()
-  const { searchFlights } = useSearch()
+  const { setSearchParams } = useFlights()
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
+
+  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
+    setSearchParams(searchParams)
+    setFlightSearchOpen(false)
+    router.push('/flights')
+  }
 
   return (
     <SectionContainer sx={{ bgcolor: 'primary.main', justifyContent: 'center' }}>
@@ -103,13 +110,7 @@ export const TravelOptionsBanner = () => {
               <CloseIcon />
             </IconButton>
           </Stack>
-          <SearchFlightsModesMobile
-            onSearch={(searchParams) => {
-              searchFlights(searchParams)
-              setFlightSearchOpen(false)
-              router.push('/flights')
-            }}
-          />
+          <SearchFlightsModesMobile onSearch={onSearch} />
         </Drawer>
       </Stack>
     </SectionContainer>

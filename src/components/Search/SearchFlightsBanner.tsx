@@ -5,15 +5,15 @@ import { Box, Typography } from '@mui/material'
 import { SearchFlightsModes, SectionContainer } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useRouter } from 'next/navigation'
-import { useSearch } from '@/hooks'
+import { useFlights } from '@/contexts'
 
 export const SearchFlightsBanner = () => {
   const router = useRouter()
   const [isNavigating, setIsNavigating] = useState(false)
-  const { searchFlights } = useSearch()
+  const { setSearchParams } = useFlights()
 
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
-    searchFlights({ searchParams })
+    setSearchParams(searchParams)
     setIsNavigating(true)
     router.push('/flights')
   }

@@ -17,8 +17,16 @@ import { styled } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useLocationData } from '@/services'
 import { useRouter } from 'next/navigation'
-import { SearchFlightsFiltersOptions } from '@/types'
-import { useSearch } from '@/hooks'
+import { SearchFlightsFiltersOptions, SearchFlightsParams } from '@/types'
+
+const TravelOptionButton = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.grey['100'],
+  borderRadius: '4px',
+  padding: `${theme.spacing(0.75)} ${theme.spacing(1)}`,
+  textWrap: 'nowrap',
+  display: 'flex',
+  alignItems: 'center',
+}))
 
 type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
@@ -32,7 +40,7 @@ export const SelectedFlightInfoTopbarMobile = ({
   const router = useRouter()
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
   const { selectAgency } = useAgencySelector()
-  const { searchFlights } = useSearch()
+  const { setSearchParams } = useFlights()
 
   // Depending on whether the flight is round trip or one way, the departure location and
   // destination location will be different'
@@ -50,14 +58,11 @@ export const SelectedFlightInfoTopbarMobile = ({
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
 
-  const TravelOptionButton = styled(Box)(({ theme }) => ({
-    backgroundColor: theme.palette.grey['100'],
-    borderRadius: '4px',
-    padding: `${theme.spacing(0.75)} ${theme.spacing(1)}`,
-    textWrap: 'nowrap',
-    display: 'flex',
-    alignItems: 'center',
-  }))
+  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
+    setSearchParams(searchParams)
+    setFlightSearchOpen(false)
+    router.push('/flights')
+  }
 
   return (
     <SectionContainer sx={{ flexDirection: 'column', py: 1, gap: 0.5 }}>
@@ -165,13 +170,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <CloseIcon />
           </IconButton>
         </Stack>
-        <SearchFlightsModesMobile
-          onSearch={(searchParams) => {
-            searchFlights(searchParams)
-            setFlightSearchOpen(false)
-            router.push('/flights')
-          }}
-        />
+        <SearchFlightsModesMobile onSearch={onSearch} />
       </Drawer>
       <Drawer
         open={mapIsOpen}

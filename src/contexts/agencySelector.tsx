@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useUserLocation } from '@/contexts'
-import { getAgency, useAgency, useNearAgencies } from '@/services'
+import { getAgency, useNearAgencies } from '@/services'
 import { Agency, AgencyId } from '@/types'
 
 import { QueryClient } from '@tanstack/react-query'
@@ -10,10 +10,7 @@ import { QueryClient } from '@tanstack/react-query'
 const queryClient = new QueryClient()
 
 type AgencySelectorContextType = {
-  // selectedAgencyCode: string | undefined
-  // selectedAgencyName: string | undefined
-  // setSelectedAgency: (agencyCode: string, agencyName: string, save: boolean) => void
-  // saveSelectedAgency: () => void
+  selectedAgencyId: AgencyId | undefined
   selectedAgency: Agency | undefined
   selectAgency: (agency: Agency) => void
 }
@@ -21,12 +18,9 @@ type AgencySelectorContextType = {
 const AgencySelectorContext = createContext<AgencySelectorContextType | undefined>(undefined)
 
 export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // const [selectedAgencyCode, setSelectedAgencyCode] = useState<string | undefined>(undefined)
-  // const [selectedAgencyName, setSelectedAgencyName] = useState<string | undefined>(undefined)
-  // const [askUserLocation, setAskUserLocation] = useState<boolean>(false)
-
+  const [selectedAgencyId, setSelectedAgencyId] = useState<AgencyId | undefined>()
   const [selectedAgency, setSelectedAgency] = useState<Agency | undefined>()
-  const { position: userLocation, askUserForPermission } = useUserLocation()
+  const { position: userLocation, askUserForPermission, canAccessPosition } = useUserLocation()
 
   const { data: arroundAgencies } = useNearAgencies({
     lat: userLocation?.lat,
@@ -34,46 +28,46 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
     distance: 200000,
   })
 
-  useEffect(() => {
-    const fetchAgency = async (agencyId: AgencyId) => {
-      try {
-        const agency = await queryClient.fetchQuery<Agency>({
-          queryKey: ['agency', agencyId],
-          queryFn: () => getAgency({ agencyId }),
-          staleTime: 0,
-          gcTime: 0,
-        })
-        // console.log('agency:', agency)
-        setSelectedAgency(agency)
-      } catch (error) {
-        console.error('Error fetching user data:', error)
-        throw error
-      }
-    }
-    const agencyCodeStored = localStorage.getItem('agencyId')
-    if (agencyCodeStored) {
-      fetchAgency(+agencyCodeStored)
-    }
-  }, [])
-
   const selectAgency = (agency: Agency) => {
+    setSelectedAgencyId(agency.id)
     setSelectedAgency(agency)
     localStorage.setItem('agencyId', agency.id.toString())
   }
 
-  // const setSelectedAgency = (agencyCode: string, agencyName: string, save: boolean = false) => {
-  //   setSelectedAgencyCode(agencyCode)
-  //   setSelectedAgencyName(agencyName)
-  //   if (save) {
-  //     setCookiesAgency({ code: agencyCode, name: agencyName })
-  //   }
-  // }
+  const fetchAgency = async (agencyId: AgencyId) => {
+    try {
+      const agency = await queryClient.fetchQuery<Agency>({
+        queryKey: ['agency', agencyId],
+        queryFn: () => getAgency({ agencyId }),
+        staleTime: 0,
+        gcTime: 0,
+      })
+      console.log('agency:', agency)
+      selectAgency(agency)
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+      throw error
+    }
+  }
 
-  // const saveSelectedAgency = () => {
-  //   if (selectedAgencyCode && selectedAgencyName) {
-  //     setCookiesAgency({ code: selectedAgencyCode, name: selectedAgencyName })
-  //   }
-  // }
+  useEffect(() => {
+    console.log('Agency fetch at start')
+    // if (!canAccessPosition) {
+    //   askUserForPermission()
+    // }
+    const agencyCodeStored = localStorage.getItem('agencyId')
+    if (agencyCodeStored) {
+      // fetchAgency(+agencyCodeStored)
+      setSelectedAgencyId(+agencyCodeStored)
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log('Near agencies ready:', arroundAgencies)
+    if (!selectAgency && arroundAgencies && arroundAgencies.length > 0) {
+      setSelectedAgency(arroundAgencies[0])
+    }
+  }, [arroundAgencies])
 
   // useEffect(() => {
   //   const agencySelected = getCookiesAgencyCode()
@@ -95,6 +89,7 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
   return (
     <AgencySelectorContext.Provider
       value={{
+        selectedAgencyId,
         selectedAgency,
         selectAgency,
       }}>

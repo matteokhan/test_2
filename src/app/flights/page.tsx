@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Navbar,
   SearchFlightsModes,
@@ -14,8 +14,7 @@ import {
   SelectedFlightInfoTopbarMobile,
 } from '@/components'
 import { Box, Drawer, Button, Grow, Stack, Typography, IconButton, Divider } from '@mui/material'
-import { useBooking, useFlights } from '@/contexts'
-import { useSearch } from '@/hooks'
+import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import {
   SearchFlightsParams,
   Solution,
@@ -23,7 +22,7 @@ import {
   SearchFlightFilters,
   SearchFlightsFiltersOptions,
 } from '@/types'
-import { getBrandedFares } from '@/services'
+import { getBrandedFares, useCreateOrder, useSearchFlights } from '@/services'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { QueryClient } from '@tanstack/react-query'
@@ -35,7 +34,10 @@ export default function FlighsPage() {
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
+  const [isNavigating, setIsNavigating] = React.useState(false)
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
+  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
+  const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
   const [filters, setFilters] = React.useState<SearchFlightFilters>({
     routes: [
       {
@@ -51,13 +53,19 @@ export default function FlighsPage() {
     ],
   })
 
-  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
-  const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
-
-  const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto } = useFlights()
-  const { selectFlight, goToFirstStep, order, skipStep } = useBooking()
-  const { searchFlights, isSearching, data: response, isSuccess } = useSearch()
-  const [isNavigating, setIsNavigating] = React.useState(false)
+  const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto, setSearchParams } = useFlights()
+  const { selectFlight, goToFirstStep, order, skipStep, setOrder, resetSteps } = useBooking()
+  const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
+  const { selectedAgencyId } = useAgencySelector()
+  const {
+    data: response,
+    isSuccess,
+    isLoading: isSearching,
+  } = useSearchFlights({
+    params: searchParamsDto,
+    orderId: order?.id,
+  })
+  const isLoading = isSearching || isCreatingOrder
 
   const filteredDataOne = response?.solutions
     .filter((solution) => {
@@ -167,6 +175,29 @@ export default function FlighsPage() {
     return airlines.sort((a, b) => a.price - b.price)
   }
 
+  const searchFlights = ({ searchParams }: { searchParams?: SearchFlightsParams }) => {
+    if (!selectedAgencyId) {
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      alert('Please select an agency')
+      return
+    }
+    resetSteps()
+    createOrder(
+      { agencyId: selectedAgencyId },
+      {
+        onSuccess: (order) => {
+          setOrder(order)
+          searchParams && setSearchParams(searchParams)
+        },
+        onError: (error) => {
+          // TODO: log this somewhere
+          // TODO: Warn the user that something went wrong
+        },
+      },
+    )
+  }
+
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     searchFlights({ searchParams })
   }
@@ -202,6 +233,12 @@ export default function FlighsPage() {
     goToFirstStep()
   }
 
+  useEffect(() => {
+    if (searchParamsDto) {
+      searchFlights({})
+    }
+  }, [])
+
   return (
     <>
       <TopBar height={isDesktop ? 60 : 200}>
@@ -229,10 +266,10 @@ export default function FlighsPage() {
           <SearchFlightsModes
             onSearch={onSearch}
             sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
-            disabled={isSearching}
+            disabled={isLoading}
           />
-          {isSearching && (
-            <Grow in={isSearching}>
+          {isLoading && (
+            <Grow in={isLoading}>
               <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
                 <Stack maxWidth="516px" direction="row" gap={3}>
                   <FlightsLoader />
@@ -280,7 +317,7 @@ export default function FlighsPage() {
                 disponibilité. Vous pouvez consulter les frais supplémentaires avant le paiement.
                 Les prix ne sont pas définitifs tant que vous n'avez pas finalisé votre achat.
               </Typography>
-              {isSearching && (
+              {isLoading && (
                 <>
                   <FlightResultSkeleton />
                   <FlightResultSkeleton />
