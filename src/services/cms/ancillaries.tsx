@@ -39,7 +39,7 @@ export const useAncillaries = ({ orderId }: { orderId: OrderId }) => {
     queryKey: ['ancillaries', orderId],
     queryFn: () => getAncillaries({ orderId }),
     enabled: !!orderId,
-    staleTime: 0,
+    staleTime: 2 * 1000, // This is requiered to avoid a second request on the Ancillaries page when user came from contact page
     refetchOnWindowFocus: false,
   })
 }

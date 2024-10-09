@@ -12,12 +12,11 @@ import { Box } from '@mui/material'
 import { FormikProps } from 'formik'
 import { Ancillary, PayerData, UpdateOrderParams } from '@/types'
 import { useUpdateOrder, useReserveOrder, getAncillaries } from '@/services'
-import { QueryClient } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function ContactInfoPage() {
   const formRef = useRef<FormikProps<PayerData> | null>(null)
+  const queryClient = useQueryClient()
   const [isNavigating, setIsNavigating] = useState(false)
   const [isCheckingAncillaries, setIsCheckingAncillaries] = useState(false)
   const {
@@ -71,7 +70,6 @@ export default function ContactInfoPage() {
                   await queryClient.fetchQuery<Ancillary[]>({
                     queryKey: ['ancillaries', order.id],
                     queryFn: () => getAncillaries({ orderId: order.id }),
-                    staleTime: 0,
                   })
                 } catch (error) {
                   skipStep('ancillaries')

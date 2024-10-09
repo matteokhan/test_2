@@ -25,13 +25,12 @@ import {
 import { getBrandedFares, useCreateOrder, useSearchFlights } from '@/services'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { QueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import CloseIcon from '@mui/icons-material/Close'
-
-const queryClient = new QueryClient()
 
 export default function FlighsPage() {
   const theme = useTheme()
+  const queryClient = useQueryClient()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
   const [isNavigating, setIsNavigating] = React.useState(false)
@@ -212,7 +211,6 @@ export default function FlighsPage() {
 
     // We can ask more information about the flight to decide which steps to follow
     try {
-      // TODO: this query should be cached
       const fares = await queryClient.fetchQuery<Solution[]>({
         queryKey: ['brandedFares', order.id, flight.id],
         queryFn: () => getBrandedFares({ orderId: order.id, solutionId: flight.id }),
