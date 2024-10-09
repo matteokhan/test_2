@@ -19,7 +19,7 @@ export type BookingStep = {
   skip: boolean
 }
 
-export type SalutationOption = 'Mr' | 'Mme' | null
+export type SalutationOption = 'Mr' | 'Mrs' | 'Ms' | null
 export type PassengerType = 'ADT' | 'CHD' | 'INF'
 
 export type PassengerData = {

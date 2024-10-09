@@ -10,12 +10,16 @@ import {
 import { useBooking } from '@/contexts'
 import { Box } from '@mui/material'
 import { FormikProps } from 'formik'
-import { PayerData, UpdateOrderParams } from '@/types'
-import { useUpdateOrder, useReserveOrder } from '@/services'
+import { Ancillary, PayerData, UpdateOrderParams } from '@/types'
+import { useUpdateOrder, useReserveOrder, getAncillaries } from '@/services'
+import { QueryClient } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function ContactInfoPage() {
   const formRef = useRef<FormikProps<PayerData> | null>(null)
   const [isNavigating, setIsNavigating] = useState(false)
+  const [isCheckingAncillaries, setIsCheckingAncillaries] = useState(false)
   const {
     goNextStep,
     setPayer,
@@ -27,10 +31,11 @@ export default function ContactInfoPage() {
     setOrder,
     selectedFare,
     setPnr,
+    skipStep,
   } = useBooking()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
   const { mutate: reserveOrder, isPending: isReservingOrder } = useReserveOrder()
-  const isLoading = isUpdatingOrder || isNavigating || isReservingOrder
+  const isLoading = isUpdatingOrder || isNavigating || isReservingOrder || isCheckingAncillaries
 
   const handleSubmit = async () => {
     if (!formRef.current || !order || !selectedFare) {
@@ -59,8 +64,20 @@ export default function ContactInfoPage() {
         reserveOrder(
           { orderId: data.id, solutionId: selectedFare.id },
           {
-            onSuccess: (data) => {
+            onSuccess: async (data) => {
               if (data.travel_data?.passenger_name_record) {
+                setIsCheckingAncillaries(true)
+                try {
+                  await queryClient.fetchQuery<Ancillary[]>({
+                    queryKey: ['ancillaries', order.id],
+                    queryFn: () => getAncillaries({ orderId: order.id }),
+                    staleTime: 0,
+                  })
+                } catch (error) {
+                  skipStep('ancillaries')
+                } finally {
+                  setIsCheckingAncillaries(false)
+                }
                 setPnr(data.travel_data.passenger_name_record)
                 setIsNavigating(true)
                 goNextStep()

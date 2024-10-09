@@ -5,6 +5,7 @@ import {
   BookingStepActions,
   BookingStepActionsMobile,
   FareOption,
+  FareOptionSkeleton,
   SimpleContainer,
 } from '@/components'
 import { useBooking } from '@/contexts'
@@ -64,6 +65,12 @@ export default function FaresPage() {
     <>
       <SimpleContainer>
         <Stack gap={2} pt={4} data-testid="faresPage-options">
+          {isFetching && (
+            <>
+              <FareOptionSkeleton />
+              <FareOptionSkeleton />
+            </>
+          )}
           {brandedFares &&
             !isFetching &&
             isSuccess &&
