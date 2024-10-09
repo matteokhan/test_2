@@ -1,7 +1,7 @@
 'use client'
 
 import { Checkbox, FormControlLabel } from '@mui/material'
-import { Field, FieldInputProps, useFormikContext } from 'formik'
+import { Field, FieldInputProps } from 'formik'
 
 const OneNightScaleFilter = ({
   disabled,
