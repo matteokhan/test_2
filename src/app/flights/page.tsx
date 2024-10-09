@@ -330,7 +330,7 @@ export default function FlighsPage() {
             PaperProps={{
               sx: {
                 borderRadius: 0,
-                maxHeight: 'calc(100% - 64px)',
+                maxHeight: 'calc(100% - 200px)',
                 height: 'auto',
               },
             }}>
