@@ -72,7 +72,7 @@ export const SearchOneWayFlightsForm = ({
                   sx={{ width: '100%' }}
                   slots={{ textField: CustomTextField }}
                   data-testid="departureField"
-                  label="Dates"
+                  label="Date"
                   value={dayjs(values.departure)}
                   slotProps={{
                     textField: { helperText: touched.departure && errors.departure },

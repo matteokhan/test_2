@@ -38,9 +38,8 @@ export const SelectedFlightInfoTopbarMobile = ({
   onOpenFilters,
 }: SelectedFlightInfoTopbarMobileProps) => {
   const router = useRouter()
-  const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
+  const { firstSegment, lastSegment, totalPassengers, isOneWay, setSearchParams } = useFlights()
   const { selectAgency } = useAgencySelector()
-  const { setSearchParams } = useFlights()
 
   // Depending on whether the flight is round trip or one way, the departure location and
   // destination location will be different'
@@ -80,10 +79,17 @@ export const SelectedFlightInfoTopbarMobile = ({
             {locationName(arrivalLocationData)} ({destinationLocation})
           </Typography>
         </Stack>
-        <Typography variant="bodyMd">
-          Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')} -{' '}
-          {totalPassengers} voyageurs
-        </Typography>
+        {!isOneWay && (
+          <Typography variant="bodyMd">
+            Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')} -{' '}
+            {totalPassengers} voyageurs
+          </Typography>
+        )}
+        {isOneWay && (
+          <Typography variant="bodyMd">
+            Le {dayjs(departureDate).format('DD-MM')} - {totalPassengers} voyageurs
+          </Typography>
+        )}
       </Stack>
       {withFilters && (
         <Box

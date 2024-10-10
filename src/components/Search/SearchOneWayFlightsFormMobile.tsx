@@ -92,7 +92,7 @@ export const SearchOneWayFlightsFormMobile = ({
               />
               <Field
                 as={TextField}
-                label="Ajouter des dates"
+                label="Ajouter une date"
                 variant="filled"
                 error={touched.departure && errors.departure}
                 helperText={touched.departure && errors.departure}
