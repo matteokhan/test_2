@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Typography, Button, Stack } from '@mui/material'
 import { useFormikContext } from 'formik'
 import AddIcon from '@mui/icons-material/Add'
@@ -13,12 +13,34 @@ export const PassengersControls = () => {
     infants: number
   }>()
 
+  const [maxPassengersReached, setMaxPassengersReached] = useState(false)
+  const [maxInfantsReached, setMaxInfantsReached] = useState(false)
+  const MAX_PASSENGERS = 9
+
+  useEffect(() => {
+    let totalPassengers = values.adults + values.childrens + values.infants
+
+    setMaxPassengersReached(totalPassengers === MAX_PASSENGERS)
+    setMaxInfantsReached(values.infants === values.adults)
+  }, [values.adults, values.childrens, values.infants])
+
+  useEffect(() => {
+    if (maxInfantsReached) {
+      alert(
+        "Le nombre maximum de passagers de type bébé est atteint dans votre dossier, nous vous invitons à contacter votre agence afin de finaliser votre réservation. Vous pouvez afficher les agences autour de chez vous pour plus d'informations.",
+      )
+    }
+  }, [maxInfantsReached])
+
   const updatePassengers = (
     field: 'adults' | 'childrens' | 'infants',
     operation: 'add' | 'subtract',
   ) => {
     const currentValue = values[field]
     const newValue = operation === 'add' ? currentValue + 1 : Math.max(0, currentValue - 1)
+    if (field === 'adults' && operation === 'subtract' && values.adults === values.infants) {
+      setFieldValue('infants', newValue)
+    }
     setFieldValue(field, newValue)
   }
 
@@ -45,7 +67,8 @@ export const PassengersControls = () => {
             data-testid="passengersControls-adults-add"
             variant="outlined"
             onClick={() => updatePassengers('adults', 'add')}
-            sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
+            sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}
+            disabled={maxPassengersReached}>
             <AddIcon sx={{ width: 16, height: 16 }} />
           </Button>
         </Stack>
@@ -71,7 +94,8 @@ export const PassengersControls = () => {
             data-testid="passengersControls-childrens-add"
             variant="outlined"
             onClick={() => updatePassengers('childrens', 'add')}
-            sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
+            sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}
+            disabled={maxPassengersReached}>
             <AddIcon sx={{ width: 16, height: 16 }} />
           </Button>
         </Stack>
@@ -97,7 +121,8 @@ export const PassengersControls = () => {
             data-testid="passengersControls-infants-add"
             variant="outlined"
             onClick={() => updatePassengers('infants', 'add')}
-            sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}>
+            sx={{ width: 32, height: 32, padding: 0, minWidth: 32 }}
+            disabled={maxPassengersReached || maxInfantsReached}>
             <AddIcon sx={{ width: 16, height: 16 }} />
           </Button>
         </Stack>
