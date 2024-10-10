@@ -25,6 +25,8 @@ export const DepartureAndDestinationField = ({
     toLabel: string
     toCountry: string
   }>()
+  const inputRefDeparture = useRef<HTMLInputElement>(null)
+  const inputRefDestination = useRef<HTMLInputElement>(null)
 
   // Departure
   const [departureIsOpen, setDepartureIsOpen] = useState(false)
@@ -37,6 +39,7 @@ export const DepartureAndDestinationField = ({
   const departuresCodes = Object.keys(departures || {})
   const openDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(true)
+    if (inputRefDeparture.current) inputRefDeparture.current.focus()
   }, [])
   const closeDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(false)
@@ -72,6 +75,7 @@ export const DepartureAndDestinationField = ({
   const destinationsCodes = Object.keys(destinations || {})
   const openDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(true)
+    if (inputRefDestination.current) inputRefDestination.current.focus()
   }, [])
   const closeDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(false)
@@ -135,6 +139,7 @@ export const DepartureAndDestinationField = ({
         sx={{ ...sx }}>
         <Box position="relative" flexGrow={1}>
           <Field
+            inputRef={inputRefDeparture}
             onClick={openDepartureSuggestions}
             as={CustomTextField}
             noBorder
@@ -176,6 +181,7 @@ export const DepartureAndDestinationField = ({
         </Button>
         <Box position="relative" flexGrow={1}>
           <Field
+            inputRef={inputRefDestination}
             onClick={openDestinationSuggestions}
             as={CustomTextField}
             noBorder
