@@ -92,7 +92,7 @@ export default function InsurancesPage() {
         </Stack>
         <Stack direction="row" width="100%" justifyContent="center">
           <Button
-            sx={{ mt: 3 }}
+            sx={{ mt: 3, textWrap: { xs: 'unset', lg: 'nowrap' }, height: { xs: 'auto', lg: '40px' } }}
             variant={noInsurance ? 'contained' : 'outlined'}
             onClick={() => {
               noInsurance ? setNoInsurance(false) : setNoInsurance(true)
