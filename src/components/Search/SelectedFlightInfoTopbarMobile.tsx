@@ -63,34 +63,37 @@ export const SelectedFlightInfoTopbarMobile = ({
     router.push('/flights')
   }
 
+  console.log(arrivalLocationData, departureLocationData)
+
   return (
     <SectionContainer sx={{ flexDirection: 'column', py: 1, gap: 0.5 }}>
-      <Stack
-        onClick={() => setFlightSearchOpen(true)}
-        data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
-        gap={0.25}>
-        {' '}
-        <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="titleMd">
-            {locationName(departureLocationData)} ({departureLocation})
-          </Typography>
-          <SwapHorizIcon data-testid={null} />
-          <Typography variant="titleMd">
-            {locationName(arrivalLocationData)} ({destinationLocation})
-          </Typography>
+      {!departureLocation && !destinationLocation && (
+        <Stack
+          onClick={() => setFlightSearchOpen(true)}
+          data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
+          gap={0.25}>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="titleMd">
+              {locationName(departureLocationData)} ({departureLocation})
+            </Typography>
+            <SwapHorizIcon data-testid={null} />
+            <Typography variant="titleMd">
+              {locationName(arrivalLocationData)} ({destinationLocation})
+            </Typography>
+          </Stack>
+          {!isOneWay && (
+            <Typography variant="bodyMd">
+              Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')}{' '}
+              - {totalPassengers} voyageurs
+            </Typography>
+          )}
+          {isOneWay && (
+            <Typography variant="bodyMd">
+              Le {dayjs(departureDate).format('DD-MM')} - {totalPassengers} voyageurs
+            </Typography>
+          )}
         </Stack>
-        {!isOneWay && (
-          <Typography variant="bodyMd">
-            Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')} -{' '}
-            {totalPassengers} voyageurs
-          </Typography>
-        )}
-        {isOneWay && (
-          <Typography variant="bodyMd">
-            Le {dayjs(departureDate).format('DD-MM')} - {totalPassengers} voyageurs
-          </Typography>
-        )}
-      </Stack>
+      )}
       {withFilters && (
         <Box
           sx={{
