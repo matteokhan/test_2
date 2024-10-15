@@ -208,6 +208,7 @@ export default function FlighsPage() {
       return
     }
     setIsNavigating(true)
+    resetSteps()
 
     // We can ask more information about the flight to decide which steps to follow
     try {
