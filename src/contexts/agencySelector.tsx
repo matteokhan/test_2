@@ -1,13 +1,10 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useUserLocation } from '@/contexts'
-import { getAgency, useNearAgencies } from '@/services'
+import { getAgency } from '@/services'
 import { Agency, AgencyId } from '@/types'
 
-import { QueryClient } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import { useQueryClient } from '@tanstack/react-query'
 
 type AgencySelectorContextType = {
   selectedAgencyId: AgencyId | undefined
@@ -20,13 +17,7 @@ const AgencySelectorContext = createContext<AgencySelectorContextType | undefine
 export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedAgencyId, setSelectedAgencyId] = useState<AgencyId | undefined>()
   const [selectedAgency, setSelectedAgency] = useState<Agency | undefined>()
-  const { position: userLocation, askUserForPermission, canAccessPosition } = useUserLocation()
-
-  const { data: arroundAgencies } = useNearAgencies({
-    lat: userLocation?.lat,
-    lng: userLocation?.lng,
-    distance: 200000,
-  })
+  const queryClient = useQueryClient()
 
   const selectAgency = (agency: Agency) => {
     setSelectedAgencyId(agency.id)
@@ -42,49 +33,20 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
         staleTime: 0,
         gcTime: 0,
       })
-      console.log('agency:', agency)
       selectAgency(agency)
     } catch (error) {
-      console.error('Error fetching user data:', error)
+      // TODO: log this somewhere
       throw error
     }
   }
 
   useEffect(() => {
-    console.log('Agency fetch at start')
-    // if (!canAccessPosition) {
-    //   askUserForPermission()
-    // }
-    const agencyCodeStored = localStorage.getItem('agencyId')
-    if (agencyCodeStored) {
-      // fetchAgency(+agencyCodeStored)
-      setSelectedAgencyId(+agencyCodeStored)
+    const agencyIdStored = localStorage.getItem('agencyId')
+    if (agencyIdStored) {
+      fetchAgency(+agencyIdStored)
+      setSelectedAgencyId(+agencyIdStored)
     }
   }, [])
-
-  useEffect(() => {
-    console.log('Near agencies ready:', arroundAgencies)
-    if (!selectAgency && arroundAgencies && arroundAgencies.length > 0) {
-      setSelectedAgency(arroundAgencies[0])
-    }
-  }, [arroundAgencies])
-
-  // useEffect(() => {
-  //   const agencySelected = getCookiesAgencyCode()
-  //   if (agencySelected && !selectedAgencyCode) {
-  //     setSelectedAgencyCode(agencySelected)
-  //     setSelectedAgencyName(getCookiesAgencyName())
-  //   } else if (userLocation && !selectedAgencyCode) {
-  //     if (arroundAgencies && arroundAgencies.length > 0) {
-  //       setSelectedAgency(arroundAgencies[0].code, arroundAgencies[0].name)
-  //     }
-  //   } else {
-  //     if (!askUserLocation) {
-  //       setAskUserLocation(true)
-  //       askUserForPermission()
-  //     }
-  //   }
-  // })
 
   return (
     <AgencySelectorContext.Provider
