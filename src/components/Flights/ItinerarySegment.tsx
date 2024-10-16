@@ -59,7 +59,7 @@ export const ItinerarySegment = ({
 
   return (
     <Stack direction="row" gap={3}>
-      <Stack gap={1} width={126}>
+      <Stack gap={1} width={40} minWidth={40}>
         <FlightAirline carrier={carrier} />
         {tags && (
           <Stack direction="row" data-testid="flightRouteDetails-tags">
