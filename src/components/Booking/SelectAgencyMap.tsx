@@ -21,7 +21,7 @@ import { Agency } from '@/types'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
 import { useUserLocation } from '@/contexts'
-import { AgencyInfoModal, CustomTextField } from '@/components'
+import { AgencyInfoModal, AgencySkeleton, CustomTextField } from '@/components'
 import { useMapsLibrary } from '@vis.gl/react-google-maps'
 import { useDebounce } from '@uidotdev/usehooks'
 
@@ -102,13 +102,10 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
 
   useEffect(() => {
     if (searchNearUser && userLocation) {
-      console.log('Search by user location')
       setSearchLocation(userLocation)
     } else if (matchedLocation) {
-      console.log('Search by location')
       setSearchLocation(matchedLocation)
     } else {
-      console.log('Search by default')
       setSearchLocation({
         lat: undefined,
         lng: undefined,
@@ -156,12 +153,13 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   }, [debouncedSearchTerm])
 
   useEffect(() => {
-    if (agencies?.length) {
+    let ag = agencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
+    if (ag?.length) {
       map?.fitBounds({
-        east: Math.max(...agencies.map((agency) => agency.gps_longitude)),
-        north: Math.max(...agencies.map((agency) => agency.gps_latitude)),
-        south: Math.min(...agencies.map((agency) => agency.gps_latitude)),
-        west: Math.min(...agencies.map((agency) => agency.gps_longitude)),
+        east: Math.max(...ag.map((agency) => agency.gps_longitude)),
+        north: Math.max(...ag.map((agency) => agency.gps_latitude)),
+        south: Math.min(...ag.map((agency) => agency.gps_latitude)),
+        west: Math.min(...ag.map((agency) => agency.gps_longitude)),
       })
     }
   }, [map, agencies])
@@ -226,7 +224,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
         position={{ xs: 'relative', lg: 'unset' }}
         flexGrow={{ xs: 'unset', lg: 1 }}
         overflow={{ xs: 'visible', lg: 'hidden' }}>
-        <Box flexGrow={1} data-testid="selectAgencyMap-map" height={{ xs: '330px', lg: 'unset' }}>
+        <Box flexGrow={1} data-testid="selectAgencyMap-map" height={{ xs: '430px', lg: 'unset' }}>
           <Map
             defaultZoom={8}
             maxZoom={16}
@@ -299,8 +297,18 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
           </Stack>
           <Stack overflow="scroll" data-testid="selectAgencyMap-agenciesList">
             {/* TODO: Styles needed here */}
-            {isLoading && <p>Loading</p>}
-            {!isLoading && agencies.length === 0 && <p>No agencies to show</p>}
+            {isLoading && (
+              <>
+                <AgencySkeleton />
+                <AgencySkeleton />
+                <AgencySkeleton />
+              </>
+            )}
+            {!isLoading && agencies.length === 0 && (
+              <Typography p={2} variant="headlineXs">
+                Aucune agence à afficher
+              </Typography>
+            )}
             {agencies &&
               !isLoading &&
               agencies.map((agency) => (

@@ -238,6 +238,12 @@ export default function FlighsPage() {
     }
   }, [])
 
+  useEffect(() => {
+    if (searchParamsDto && !order) {
+      searchFlights({})
+    }
+  }, [searchParamsDto])
+
   return (
     <>
       <TopBar height={isDesktop ? 60 : 200}>

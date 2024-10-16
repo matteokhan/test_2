@@ -3,8 +3,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getAgency } from '@/services'
 import { Agency, AgencyId } from '@/types'
-
 import { useQueryClient } from '@tanstack/react-query'
+import { env } from 'next-runtime-env'
+
+const DEFAULT_AGENCY_ID = env('NEXT_PUBLIC_DEFAULT_AGENCY_ID') || ''
 
 type AgencySelectorContextType = {
   selectedAgencyId: AgencyId | undefined
@@ -41,11 +43,12 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
   }
 
   useEffect(() => {
-    const agencyIdStored = localStorage.getItem('agencyId')
-    if (agencyIdStored) {
-      fetchAgency(+agencyIdStored)
-      setSelectedAgencyId(+agencyIdStored)
+    let agencyIdStored = localStorage.getItem('agencyId')
+    if (!agencyIdStored) {
+      agencyIdStored = DEFAULT_AGENCY_ID
     }
+    fetchAgency(+agencyIdStored)
+    setSelectedAgencyId(+agencyIdStored)
   }, [])
 
   return (
