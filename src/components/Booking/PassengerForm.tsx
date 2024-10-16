@@ -11,6 +11,7 @@ import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
 import { useEmailRequirement } from '@/contexts'
+import { getMaxBirthDate, getMinBirthDate } from '@/utils'
 
 // When atLeastOneEmail changes, it resets all the passenger form errors.
 // This is necessary because the form errors are not reset when the email condition is
@@ -126,7 +127,8 @@ export const PassengerForm = ({
   return (
     <Box pt={2}>
       <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
-        Les noms des voyageurs doivent être identiques à ceux indiqués sur les pièces d'identité
+        Les nom/prénom du voyageur doivent correspondre à ceux indiqués sur la pièce d’identité
+        utilisée pour voyager.
       </Alert>
       <Formik
         innerRef={formRef}
@@ -190,6 +192,8 @@ export const PassengerForm = ({
               <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
                 <Box width={{ xs: '100%', lg: '50%' }}>
                   <DatePicker
+                    maxDate={getMaxBirthDate(initialValues.type)}
+                    minDate={getMinBirthDate(initialValues.type)}
                     slotProps={{
                       textField: {
                         fullWidth: true,
