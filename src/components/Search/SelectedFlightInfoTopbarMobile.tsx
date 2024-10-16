@@ -65,32 +65,43 @@ export const SelectedFlightInfoTopbarMobile = ({
 
   return (
     <SectionContainer sx={{ flexDirection: 'column', py: 1, gap: 0.5 }}>
-      <Stack
-        onClick={() => setFlightSearchOpen(true)}
-        data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
-        gap={0.25}>
-        {' '}
-        <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="titleMd">
-            {locationName(departureLocationData)} ({departureLocation})
-          </Typography>
-          <SwapHorizIcon data-testid={null} />
-          <Typography variant="titleMd">
-            {locationName(arrivalLocationData)} ({destinationLocation})
-          </Typography>
+      {departureLocation && destinationLocation && (
+        <Stack
+          onClick={() => setFlightSearchOpen(true)}
+          data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
+          gap={0.25}>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="titleMd">
+              {locationName(departureLocationData)} ({departureLocation})
+            </Typography>
+            <SwapHorizIcon data-testid={null} />
+            <Typography variant="titleMd">
+              {locationName(arrivalLocationData)} ({destinationLocation})
+            </Typography>
+          </Stack>
+          {!isOneWay && (
+            <Typography variant="bodyMd">
+              Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')}{' '}
+              - {totalPassengers} voyageurs
+            </Typography>
+          )}
+          {isOneWay && (
+            <Typography variant="bodyMd">
+              Le {dayjs(departureDate).format('DD-MM')} - {totalPassengers} voyageurs
+            </Typography>
+          )}
         </Stack>
-        {!isOneWay && (
-          <Typography variant="bodyMd">
-            Du {dayjs(departureDate).format('DD-MM')} au {dayjs(destinationDate).format('DD-MM')} -{' '}
-            {totalPassengers} voyageurs
-          </Typography>
-        )}
-        {isOneWay && (
-          <Typography variant="bodyMd">
-            Le {dayjs(departureDate).format('DD-MM')} - {totalPassengers} voyageurs
-          </Typography>
-        )}
-      </Stack>
+      )}
+      {!departureLocation && !destinationLocation && (
+        <Stack
+          onClick={() => setFlightSearchOpen(true)}
+          data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
+          height="45px"
+          justifyContent="center"
+          color="grey.600">
+          <Typography variant="bodyMd">Rechercher à nouveau</Typography>
+        </Stack>
+      )}
       {withFilters && (
         <Box
           sx={{

@@ -4,7 +4,8 @@ import { Box, Paper, Skeleton, Stack } from '@mui/material'
 export const FlightResultSkeleton = () => {
   return (
     <Paper sx={{ padding: 2 }} data-testid="flightResultSkeleton">
-      <Stack gap={5.5} direction="row">
+      {/* Desktop */}
+      <Stack gap={5.5} direction="row" display={{ xs: 'none', lg: 'flex' }}>
         <Stack flexGrow={1}>
           <Stack gap={4} direction="row">
             <Box minWidth="25%" maxWidth="25%">
@@ -32,6 +33,13 @@ export const FlightResultSkeleton = () => {
         <Stack gap={1} minWidth="23%" alignSelf="flex-end">
           <Skeleton variant="rectangular" width={167} height={154} />
         </Stack>
+      </Stack>
+
+      {/* Mobile */}
+      <Stack gap={1} display={{ xs: 'flex', lg: 'none' }}>
+        <Skeleton variant="rectangular" height={64} />
+        <Skeleton variant="rectangular" height={64} />
+        <Skeleton variant="rectangular" height={64} />
       </Stack>
     </Paper>
   )
