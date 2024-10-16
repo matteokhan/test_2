@@ -184,7 +184,7 @@ export const SearchOneWayFlightsFormMobile = ({
                     <ArrowBackIcon />
                   </Box>
                   <Typography variant="titleMd" color="#49454F">
-                    Ajouter des dates
+                    Ajouter une date
                   </Typography>
                 </Stack>
               </Paper>
@@ -229,7 +229,7 @@ export const SearchOneWayFlightsFormMobile = ({
                       size="medium"
                       data-testid="departureDrawer-submitButton"
                       onClick={() => setDatesIsOpen(false)}>
-                      Valider les dates
+                      Valider la date
                     </Button>
                   </Stack>
                 </Stack>
