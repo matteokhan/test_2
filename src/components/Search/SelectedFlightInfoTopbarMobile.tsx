@@ -18,7 +18,6 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useLocationData } from '@/services'
 import { useRouter } from 'next/navigation'
 import { SearchFlightsFiltersOptions, SearchFlightsParams } from '@/types'
-import SearchIcon from '@mui/icons-material/Search'
 
 const TravelOptionButton = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.grey['100'],
@@ -98,11 +97,9 @@ export const SelectedFlightInfoTopbarMobile = ({
           onClick={() => setFlightSearchOpen(true)}
           data-testid="selectedFlightInfoTopbarMobile-searchFlightButton"
           height="45px"
-          justifyContent="center">
-          <Stack direction="row" alignItems="flex-end" gap={1} color="grey.600">
-            <SearchIcon data-testid={null} />
-            <Typography variant="bodyMd">Rechercher à nouveau</Typography>
-          </Stack>
+          justifyContent="center"
+          color="grey.600">
+          <Typography variant="bodyMd">Rechercher à nouveau</Typography>
         </Stack>
       )}
       {withFilters && (
