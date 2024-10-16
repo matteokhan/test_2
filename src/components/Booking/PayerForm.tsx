@@ -6,7 +6,7 @@ import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import {
   CountryPhoneField,
-  CreateAccountOptInField,
+  // CreateAccountOptInField,
   SalutationField,
   SubscribeNewsletterOptInField,
 } from '@/components'
@@ -183,7 +183,8 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                   'data-testid': 'countryField',
                 }}
               />
-              <CreateAccountOptInField name="createAccountOptIn" />
+              {/* Disabled until the functionality is created */}
+              {/* <CreateAccountOptInField name="createAccountOptIn" /> */}
               <Box pt={2} sx={{ display: { xs: 'none', lg: 'block' } }}>
                 <SubscribeNewsletterOptInField name="subscribeNewsletterOptIn" />
               </Box>
