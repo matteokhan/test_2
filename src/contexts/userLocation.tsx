@@ -24,7 +24,6 @@ export const UserLocationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }
 
   const fetchUserPosition = useCallback(() => {
-    // console.log("Fetching user's position")
     navigator.geolocation.getCurrentPosition(
       (position) =>
         setPosition({
