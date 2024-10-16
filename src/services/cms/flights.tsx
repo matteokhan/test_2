@@ -48,5 +48,7 @@ export const useSearchFlights = ({
     queryFn: () => searchFlights({ params, orderId }),
     refetchOnWindowFocus: false,
     enabled: !!params && !!orderId,
+    staleTime: Infinity,
+    gcTime: Infinity,
   })
 }
