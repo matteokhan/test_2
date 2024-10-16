@@ -14,8 +14,7 @@ import { useField } from 'formik'
 
 const options: { value: SalutationOption; label: string; testId: string }[] = [
   { value: 'Mr', label: 'Mr', testId: 'salutationField-mr' },
-  { value: 'Mrs', label: 'Mrs', testId: 'salutationField-mrs' },
-  { value: 'Ms', label: 'Ms', testId: 'salutationField-ms' },
+  { value: 'Mrs', label: 'Mme', testId: 'salutationField-mrs' },
 ]
 
 export const SalutationField = ({ name }: { name: string }) => {
