@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useAgencySelector } from '@/contexts'
-import { Stack, Typography } from '@mui/material'
+import { Skeleton, Stack, Typography } from '@mui/material'
 
 type SelectAgencyLabelProps = {
   openSelectionAgency: () => void
@@ -13,28 +13,11 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
 
   return (
     <>
-      {!selectedAgency && (
-        <Typography
-          sx={{
-            cursor: {
-              xs: 'none',
-              lg: 'pointer',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
-            },
-          }}
-          data-testid="selectAgencyLabel-selectAgency"
-          variant="titleSm"
-          color="grey.600"
-          onClick={() => openSelectionAgency()}>
-          Veuillez sélectionner votre agence en ligne
-        </Typography>
-      )}
+      {!selectedAgency && <Skeleton variant="text" width={280} height={20} />}
       {selectedAgency && (
         <Stack direction="row">
           <Typography variant="titleSm" color="grey.600" data-testid="selectAgencyLabel-agencyName">
-            Agence {selectedAgency.name}{' '}
+            Agence {selectedAgency.name} -{' '}
           </Typography>
           <Typography
             data-testid="selectAgencyLabel-changeAgency"
@@ -43,15 +26,15 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
             sx={{
               cursor: {
                 xs: 'none',
-                lg: 'pointer',
                 '&:hover': {
                   textDecoration: 'underline',
                 },
               },
-            }}
-            onClick={() => openSelectionAgency()}>
+            }}>
             {' '}
-            - Changer d'agence
+            <span style={{ cursor: 'pointer' }} onClick={() => openSelectionAgency()}>
+              Changer d'agence
+            </span>
           </Typography>
         </Stack>
       )}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   IconButton,
@@ -14,16 +14,56 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import GpsOff from '@mui/icons-material/GpsOff'
+import SearchIcon from '@mui/icons-material/Search'
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
 import { useNearAgencies, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
-import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
-import { setDefaults, fromLatLng, OutputFormat } from 'react-geocode'
-// import { PlaceAutocompleteMap } from './PlaceAutocompleteMap'
 import { useUserLocation } from '@/contexts'
 import { AgencyInfoModal, CustomTextField } from '@/components'
-import SearchIcon from '@mui/icons-material/Search'
+import { useMapsLibrary } from '@vis.gl/react-google-maps'
+import { useDebounce } from '@uidotdev/usehooks'
+
+const NEXT_PUBLIC_MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
+const DEBOUNCE_TIME = 300 // 300 ms
+const DEFAULT_BOUNDS = {
+  gps_latitude: 48.866667,
+  gps_longitude: 2.333333,
+}
+
+const mergeAgencies = (
+  nearAgencies: Agency[] | undefined,
+  agenciesByTerm: Agency[] | undefined,
+  onlyNear: boolean = false,
+) => {
+  let agencies: Agency[] = []
+  const uniqueSet = new Set()
+  if (onlyNear) {
+    if (!nearAgencies) return []
+    agencies = [...agencies, ...nearAgencies]
+  } else {
+    if (!nearAgencies && !agenciesByTerm) return []
+    if (nearAgencies) agencies = [...agencies, ...nearAgencies]
+    if (agenciesByTerm) agencies = [...agencies, ...agenciesByTerm]
+  }
+  agencies = agencies.filter((ag) => {
+    const duplicate = uniqueSet.has(ag.id)
+    uniqueSet.add(ag.id)
+    return !duplicate
+  })
+  return agencies
+}
+
+const getAgencyPosition = (agency: Agency) => ({
+  lat: agency.gps_latitude,
+  lng: agency.gps_longitude,
+})
+
+type Position = {
+  lat: number | undefined
+  lng: number | undefined
+}
 
 type SelectAgencyMapProps = {
   onSelectAgency: ({ agency }: { agency: Agency }) => void
@@ -31,158 +71,142 @@ type SelectAgencyMapProps = {
 }
 
 export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProps) => {
-  const NEXT_PUBLIC_MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
-  const [place, setPlace] = React.useState<any>(null)
-  const [currentLocation, setCurrentLocation] = React.useState<any>(null)
+  const [searchLocation, setSearchLocation] = useState<Position>({
+    lat: undefined,
+    lng: undefined,
+  })
+  const [matchedLocation, setMatchedLocation] = useState<Position | null>(null)
   const [searchTerm, setSearchTerm] = React.useState('')
-
-  const { position: userLocation, canAccessPosition, askUserForPermission } = useUserLocation()
+  const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_TIME)
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [agencyToShow, setAgencyToShow] = React.useState<Agency | undefined>(undefined)
-  const { data: agencies } = useSearchAgencies({ searchTerm })
+  const [searchNearUser, setSearchNearUser] = React.useState(false)
 
-  const defaultBounds = {
-    gps_latitude: userLocation?.lat || 48.866667,
-    gps_longitude: userLocation?.lng || 2.333333,
-  }
+  const { position: userLocation, canAccessPosition, askUserForPermission } = useUserLocation()
+  const { data: agenciesByTerm, isFetching: isFetchingByTerm } = useSearchAgencies({
+    searchTerm: debouncedSearchTerm,
+  })
+  const { data: nearAgencies, isFetching: isFetchingByLocation } = useNearAgencies({
+    lat: searchLocation?.lat,
+    lng: searchLocation?.lng,
+    distance: 40000,
+  })
+  const agencies = mergeAgencies(nearAgencies, agenciesByTerm, searchNearUser)
+  const isLoading = isFetchingByTerm || isFetchingByLocation
 
+  const [autocompleteService, setAutocompleteService] =
+    useState<google.maps.places.AutocompleteService | null>(null)
+  const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
+  const places = useMapsLibrary('places')
   const map = useMap()
 
-  // const toRadians = (degrees: number) => {
-  //   return degrees * (Math.PI / 180)
-  // }
+  useEffect(() => {
+    if (searchNearUser && userLocation) {
+      console.log('Search by user location')
+      setSearchLocation(userLocation)
+    } else if (matchedLocation) {
+      console.log('Search by location')
+      setSearchLocation(matchedLocation)
+    } else {
+      console.log('Search by default')
+      setSearchLocation({
+        lat: undefined,
+        lng: undefined,
+      })
+    }
+  }, [matchedLocation, userLocation, searchNearUser])
 
-  // const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-  //   const R = 6371e3 // Rayon de la Terre en mètres
+  useEffect(() => {
+    if (!places || !map) return
+    setAutocompleteService(new places.AutocompleteService())
+    setPlacesService(new places.PlacesService(map))
+  }, [places, map])
 
-  //   const φ1 = toRadians(lat1)
-  //   const φ2 = toRadians(lat2)
-  //   const Δφ = toRadians(lat2 - lat1)
-  //   const Δλ = toRadians(lng2 - lng1)
+  useEffect(() => {
+    if (!autocompleteService || !placesService || debouncedSearchTerm.length < 3) {
+      clearMatchedLocation()
+      return
+    }
+    autocompleteService.getPlacePredictions(
+      { input: debouncedSearchTerm },
+      (predictions, status) => {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          predictions &&
+          predictions.length > 0
+        ) {
+          placesService.getDetails(
+            { placeId: predictions[0].place_id, fields: ['geometry'] },
+            (result, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK && result) {
+                setMatchedLocation({
+                  lat: result.geometry?.location?.lat(),
+                  lng: result.geometry?.location?.lng(),
+                })
+              } else {
+                clearMatchedLocation()
+              }
+            },
+          )
+        } else {
+          clearMatchedLocation()
+        }
+      },
+    )
+  }, [debouncedSearchTerm])
 
-  //   const a =
-  //     Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-  //     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+  useEffect(() => {
+    if (agencies?.length) {
+      map?.fitBounds({
+        east: Math.max(...agencies.map((agency) => agency.gps_longitude)),
+        north: Math.max(...agencies.map((agency) => agency.gps_latitude)),
+        south: Math.min(...agencies.map((agency) => agency.gps_latitude)),
+        west: Math.min(...agencies.map((agency) => agency.gps_longitude)),
+      })
+    }
+  }, [map, agencies])
 
-  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  useEffect(() => {
+    if (!canAccessPosition && searchNearUser) {
+      askUserForPermission()
+    }
+  }, [searchNearUser, canAccessPosition])
 
-  //   const distance = R * c // Distance en mètres
-
-  //   return distance
-  // }
-
-  // const getDistance = () => {
-  //   const center = map?.getCenter()
-  //   const bounds = map?.getBounds()
-
-  //   if (!center || !bounds) return 40000
-
-  //   const centerLat = center.lat()
-  //   const centerLng = center.lng()
-
-  //   const leftLng = bounds.getSouthWest().lng()
-
-  //   const distance = calculateDistance(centerLat, centerLng, centerLat, leftLng)
-
-  //   return distance + 10000
-  // }
-
-  // const { data: nearAgencies } = useNearAgencies({
-  //   lat: currentLocation?.lat,
-  //   lng: currentLocation?.lng,
-  //   // distance: getDistance(),
-  //   distance: 40000,
-  // })
-  // console.log('nearAgencies: ', nearAgencies)
-
-  // const getAgencies = () => {
-  //   if (!nearAgencies || nearAgencies.length == 0) return []
-  //   return nearAgencies
-  // }
-
-  // const geolocatedAgencies = React.useMemo(() => {
-  //   if (nearAgencies && nearAgencies?.length > 0)
-  //     return nearAgencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
-  //   return []
-  // }, [nearAgencies])
-
-  setDefaults({
-    key: env('NEXT_PUBLIC_MAPS_API_KEY'),
-    language: 'fr',
-    region: 'fr',
-    outputFormat: OutputFormat.JSON,
-  })
-
-  const getAgencyPosition = (agency: Agency) => ({
-    lat: agency.gps_latitude,
-    lng: agency.gps_longitude,
-  })
+  const clearMatchedLocation = () => {
+    setMatchedLocation(null)
+  }
 
   const onShowAgency = (agency: Agency) => {
     setAgencyToShow(agency)
     setModalIsOpen(true)
   }
 
-  const setLocation = () => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        fromLatLng(position.coords.latitude, position.coords.longitude)
-          .then(({ results }) => {
-            const locality = results[0].address_components.find((component: any) =>
-              component.types.includes('locality'),
-            )
-            setPlace(results[0])
-          })
-          .catch(console.error)
-
-        map?.setCenter({ lat: position.coords.latitude, lng: position.coords.longitude })
-        map?.setZoom(11)
-        setCurrentLocation({ lat: position.coords.latitude, lng: position.coords.longitude })
-      })
+  const handleLocationButtonClick = () => {
+    if (!canAccessPosition) {
+      askUserForPermission()
+      return
     }
+    setSearchNearUser(!searchNearUser)
   }
 
-  // const setPlaceAndFetchAgencies = (place: any) => {
-  //   // console.log(place)
-  //   setPlace(place)
-  //   map?.setCenter({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
-  //   map?.setZoom(11)
-  //   setCurrentLocation({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() })
-  // }
-
   const getMarkers = () => {
-    const agenciesToShow = agencies
-    return agenciesToShow
+    return agencies
       ?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
-      ?.map((agency: Agency) => {
+      ?.map((agency) => {
         const leclercLogo = document.createElement('img')
         leclercLogo.src = '/leclerc_imagetype.svg'
         return (
           <React.Fragment key={agency.id}>
             <AdvancedMarker
               position={getAgencyPosition(agency)}
-              data-testid="selectAgencyMap-map-locationMarker">
+              data-testid="selectAgencyMap-map-locationMarker"
+              onClick={() => onShowAgency(agency)}>
               <Pin glyph={leclercLogo} background={'#0066CC'} borderColor={'#0066CC'} />
             </AdvancedMarker>
           </React.Fragment>
         )
       })
   }
-
-  map?.addListener('dragend', () => {
-    const center = map.getCenter()
-    if (!center) return
-    setCurrentLocation({ lat: center.lat(), lng: center.lng() })
-  })
-
-  useEffect(() => {
-    if (!currentLocation) {
-      const center = map?.getCenter()
-      if (center) {
-        setCurrentLocation({ lat: center.lat(), lng: center.lng() })
-      }
-    }
-  }, [map])
 
   return (
     <Stack width="100vw" height="100vh" zIndex={10}>
@@ -207,8 +231,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             defaultZoom={8}
             maxZoom={16}
             defaultCenter={{
-              lat: defaultBounds.gps_latitude,
-              lng: defaultBounds.gps_longitude,
+              lat: DEFAULT_BOUNDS.gps_latitude,
+              lng: DEFAULT_BOUNDS.gps_longitude,
             }}
             disableDefaultUI={true}
             mapId={NEXT_PUBLIC_MAPS_MAP_ID}>
@@ -230,12 +254,6 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             position={{ xs: 'absolute', lg: 'unset' }}
             top={{ xs: 0, lg: 'unset' }}
             width={{ xs: '100%', lg: 'unset' }}>
-            {/* I had to force the className="MuiInputAdornment-hiddenLabel", seems like a bug in MUI */}
-            {/* <PlaceAutocompleteMap
-              onPlaceSelect={(place) => {
-                setPlaceAndFetchAgencies(place)
-              }}
-            /> */}
             <CustomTextField
               data-testid="selectAgencyMap-searchField"
               fullWidth
@@ -250,6 +268,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                 hiddenLabel: true,
                 startAdornment: (
                   <InputAdornment position="start" className="MuiInputAdornment-hiddenLabel">
+                    {/* I had to force the className="MuiInputAdornment-hiddenLabel", seems like a bug in MUI */}
                     <SearchIcon data-testid={null} />
                   </InputAdornment>
                 ),
@@ -261,10 +280,17 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                 size="medium"
                 color="primary"
                 aria-label="Géolocalisation"
-                onClick={setLocation}
-                sx={{ boxShadow: 'none' }}>
+                onClick={() => handleLocationButtonClick()}
+                sx={{
+                  boxShadow: 'none',
+                  bgcolor: canAccessPosition ? 'primary.main' : 'grey.200',
+                }}>
                 {canAccessPosition ? (
-                  <LocationSearchingIcon data-testid={null} />
+                  searchNearUser ? (
+                    <LocationSearchingIcon data-testid={null} />
+                  ) : (
+                    <GpsOff data-testid={null} />
+                  )
                 ) : (
                   <GpsOff data-testid={null} />
                 )}
@@ -272,7 +298,11 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             </Stack>
           </Stack>
           <Stack overflow="scroll" data-testid="selectAgencyMap-agenciesList">
+            {/* TODO: Styles needed here */}
+            {isLoading && <p>Loading</p>}
+            {!isLoading && agencies.length === 0 && <p>No agencies to show</p>}
             {agencies &&
+              !isLoading &&
               agencies.map((agency) => (
                 <Box
                   p={2}

@@ -30,9 +30,10 @@ export const useAgency = ({ agencyId }: { agencyId: AgencyId }) => {
 }
 
 export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) => {
-  const params: PagesAPIBaseParams = {
+  const params: PagesAPIBaseParams & { status: Agency['status'] } = {
     type: 'agency.AgencyPage',
     fields: '*',
+    status: 'open',
   }
   if (searchTerm) {
     params.search = searchTerm
@@ -44,7 +45,7 @@ export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) =>
   })
 
   const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`,
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-agency-simple/?${queryParams.toString()}`,
     {
       method: 'GET',
       headers: {
@@ -52,10 +53,10 @@ export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) =>
       },
     },
   )
-  if (response.ok) {
-    return (await response.json()).items
+  if (!response.ok) {
+    throw new Error('Failed to fetch agencies')
   }
-  throw new Error('Failed to fetch agencies')
+  return (await response.json()).results
 }
 
 export const useSearchAgencies = ({ searchTerm }: { searchTerm?: string }) => {

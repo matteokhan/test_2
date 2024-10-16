@@ -65,4 +65,5 @@ export type Agency = {
   gps_longitude: number
   agency_openings: AgencyOpening[]
   available_contracts: string
+  status: 'open' | 'closed'
 }
