@@ -85,7 +85,7 @@ export const useLocationData = ({ locationCode }: { locationCode: string }) => {
 
 export const searchLocationsByName = async ({ searchTerm }: { searchTerm: string }) => {
   const params = {
-    name__icontains: searchTerm,
+    search: searchTerm,
     ordering: '-category,code',
     page_size: 10,
   }
