@@ -12,9 +12,9 @@ export const SelectPaymentMethod = ({
   const [selectedMethod, setSelectedMethod] = React.useState<AgencyContractCode | null>(null)
   const { selectedAgency } = useAgencySelector()
   const availableContracts: AgencyContractCode[] =
-    (selectedAgency?.available_contracts
-      .split(',')
-      .map((contractCode) => contractCode.replace(/\s/g, '')) as AgencyContractCode[]) || []
+    (selectedAgency?.available_contracts.map((contractCode) =>
+      contractCode.replace(/\s/g, ''),
+    ) as AgencyContractCode[]) || []
 
   return (
     <Box pt={3} pb={2} data-testid="selectPaymentMethod" maxWidth={590}>
