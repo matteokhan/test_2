@@ -81,6 +81,7 @@ export const getNearAgencies = async ({
     lat: lat,
     lng: lng,
     fields: '*',
+    status: 'open',
     distance__lte: distance ? distance : 40000,
   }
 
