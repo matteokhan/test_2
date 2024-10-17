@@ -81,7 +81,6 @@ const passengerSchema = ({
         try {
           const parsedNumber = parsePhoneNumber(phoneNumberWithCountryCode)
           const validationResult = validatePhoneNumberLength(value || '', parsedNumber.country)
-          console.log(validationResult)
           let message = ''
           switch (validationResult) {
             case 'TOO_SHORT':
