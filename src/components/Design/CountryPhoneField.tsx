@@ -71,7 +71,7 @@ export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, Countr
       <FormControl fullWidth>
         <Stack direction="row">
           <FormControl variant="filled" sx={{ width: 160 }}>
-            <InputLabel>Pais</InputLabel>
+            <InputLabel>Pays</InputLabel>
             <Select
               sx={{
                 borderTopRightRadius: 0,

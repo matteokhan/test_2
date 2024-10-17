@@ -12,6 +12,8 @@ import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
 import { useEmailRequirement } from '@/contexts'
 import { getMaxBirthDate, getMinBirthDate } from '@/utils'
+import { getExampleNumber, validatePhoneNumberLength, parsePhoneNumber } from 'libphonenumber-js'
+import examples from 'libphonenumber-js/examples.mobile.json'
 
 // When atLeastOneEmail changes, it resets all the passenger form errors.
 // This is necessary because the form errors are not reset when the email condition is
@@ -66,11 +68,46 @@ const passengerSchema = ({
       then: (schema) => schema.required('Le numéro de téléphone est requis'),
       otherwise: (schema) => schema.optional(),
     }),
-    phoneNumber: Yup.string().when('type', {
-      is: (type: PassengerType) => type === 'ADT' && !atLeastOnePhone,
-      then: (schema) => schema.required('Le numéro de téléphone est requis'),
-      otherwise: (schema) => schema.optional(),
-    }),
+    phoneNumber: Yup.string()
+      .when('type', {
+        is: (type: PassengerType) => type === 'ADT' && !atLeastOnePhone,
+        then: (schema) => schema.required('Le numéro de téléphone est requis'),
+        otherwise: (schema) => schema.optional(),
+      })
+      .test('length-check', function (value) {
+        const { phoneCode: countryCode } = this.options.context || {}
+        let phoneNumberWithCountryCode = `+${countryCode}${value}`
+
+        try {
+          const parsedNumber = parsePhoneNumber(phoneNumberWithCountryCode)
+          const validationResult = validatePhoneNumberLength(value || '', parsedNumber.country)
+          console.log(validationResult)
+          let message = ''
+          switch (validationResult) {
+            case 'TOO_SHORT':
+              message = 'Le numéro de téléphone est trop court.'
+              break
+            case 'TOO_LONG':
+              message = 'Le numéro de téléphone est trop long.'
+              break
+            case 'INVALID_COUNTRY':
+              message = 'Le code pays est invalide.'
+              break
+            case undefined:
+              return true
+          }
+
+          if (parsedNumber.country) {
+            const exampleNumber = getExampleNumber(parsedNumber.country, examples)
+            if (exampleNumber) {
+              message += `Un numéro typique de +${countryCode} (${parsedNumber.country}) a ${exampleNumber.nationalNumber.length} chiffres.`
+            }
+          }
+          return this.createError({ message })
+        } catch (error) {
+          return this.createError({ message: "Le numéro de téléphone n'est pas valide" })
+        }
+      }),
     email: Yup.string()
       .email('E-mail invalide')
       .when(['type'], {
