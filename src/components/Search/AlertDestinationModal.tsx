@@ -17,7 +17,7 @@ export const AlertDestinationModal: React.FC<{
       onSecondaryAction={onClose}>
       <Typography variant="bodyMd">
         Pour ce type de trajet, vous devez prendre contact avec une de nos agences directement. Vous
-        pouvez affichez les agences autour de chez vous pour plus d'informations.
+        pouvez afficher les agences autour de chez vous pour plus d'informations.
       </Typography>
     </SimpleModal>
   )
