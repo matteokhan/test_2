@@ -10,8 +10,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
-import { useEmailRequirement } from '@/contexts'
-import { getMaxBirthDate, getMinBirthDate } from '@/utils'
+import { useBooking, useEmailRequirement } from '@/contexts'
+import { getPassengerMaxBirthDate, getPassengerMinBirthDate } from '@/utils'
 
 // When atLeastOneEmail changes, it resets all the passenger form errors.
 // This is necessary because the form errors are not reset when the email condition is
@@ -106,6 +106,12 @@ export const PassengerForm = ({
     setIsPhoneProvided,
     atLeastOnePhone,
   } = useEmailRequirement()
+  const { departureDatetime } = useBooking()
+
+  if (!departureDatetime) {
+    // TODO: log this somewhere
+    return
+  }
 
   useEffect(() => {
     if (initialValues.type === 'ADT' && initialValues.email) {
@@ -192,8 +198,14 @@ export const PassengerForm = ({
               <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
                 <Box width={{ xs: '100%', lg: '50%' }}>
                   <DatePicker
-                    maxDate={getMaxBirthDate(initialValues.type)}
-                    minDate={getMinBirthDate(initialValues.type)}
+                    maxDate={getPassengerMaxBirthDate({
+                      type: initialValues.type,
+                      flightDatetime: departureDatetime,
+                    })}
+                    minDate={getPassengerMinBirthDate({
+                      type: initialValues.type,
+                      flightDatetime: departureDatetime,
+                    })}
                     slotProps={{
                       textField: {
                         fullWidth: true,

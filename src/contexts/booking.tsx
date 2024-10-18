@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import { getInsurancePrice } from '@/utils'
 import { CountryCallingCode } from 'libphonenumber-js'
 import { useFlights } from '@/contexts'
+import dayjs from 'dayjs'
 
 type BookingContextType = {
   // Steps
@@ -35,6 +36,9 @@ type BookingContextType = {
   preSelectedFlight: Solution | null
   setPreSelectedFlight: (flight: Solution | null) => void
   selectFlight: (flight: Solution | null) => void
+  selectedFare: Solution | null
+  setSelectedFare: React.Dispatch<React.SetStateAction<Solution | null>>
+  departureDatetime: dayjs.Dayjs | null
 
   // Passengers
   passengers: PassengerData[]
@@ -47,8 +51,6 @@ type BookingContextType = {
   // Options
   ancillaries: Ancillary[]
   setAncillaries: React.Dispatch<React.SetStateAction<Ancillary[]>>
-  selectedFare: Solution | null
-  setSelectedFare: React.Dispatch<React.SetStateAction<Solution | null>>
   selectedInsurance: InsuranceWithSteps | null
   setSelectedInsurance: React.Dispatch<React.SetStateAction<InsuranceWithSteps | null>>
 
@@ -123,6 +125,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [selectedInsurance, setSelectedInsurance] = React.useState<InsuranceWithSteps | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
   const [order, setOrder] = useState<OrderDto | null>(null)
+  const departureDatetime = selectedFare
+    ? dayjs(selectedFare.routes[0].segments[0].departureDateTime)
+    : null
 
   // Prices calculations
   const basePrice =
@@ -268,6 +273,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         preSelectedFlight,
         setPreSelectedFlight,
         selectFlight,
+        departureDatetime,
         steps,
         skipStep,
         resetSteps,
