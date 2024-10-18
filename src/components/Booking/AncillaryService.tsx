@@ -11,16 +11,20 @@ export const AncilliaryService = ({
   inboundService,
   onSelectService,
   onUnselectService,
+  selectedByDefault,
 }: {
   disabled?: boolean
   outboundService: AncillaryServiceInfo
   inboundService?: AncillaryServiceInfo
   onSelectService: (service: AncillaryServiceInfo) => void
   onUnselectService: (service: AncillaryServiceInfo) => void
+  selectedByDefault?: boolean
 }) => {
-  const [outboundSelected, setOutboundSelected] = React.useState<boolean>(outboundService.selected)
+  const [outboundSelected, setOutboundSelected] = React.useState<boolean>(
+    selectedByDefault || outboundService.selected,
+  )
   const [inboundSelected, setInboundSelected] = React.useState<boolean>(
-    inboundService?.selected || false,
+    selectedByDefault || inboundService?.selected || false,
   )
   const isSelected = outboundSelected || inboundSelected
 
@@ -49,9 +53,10 @@ export const AncilliaryService = ({
           <Typography variant="headlineMd" sx={{ fontSize: '16px !important', pb: 0.5 }}>
             {outboundService.name}
           </Typography>
-          <Typography variant="bodySm" color="grey.700">
+          {/* TODO: This will be included on further phases */}
+          {/* <Typography variant="bodySm" color="grey.700">
             À placer dans le compartiment supérieur - Max 158 cm ( hauteur + largeur + longueur)
-          </Typography>
+          </Typography> */}
           <Stack pt={1} direction="row" gap={1}>
             <FormControlLabel
               disabled={disabled}
@@ -92,10 +97,7 @@ export const AncilliaryService = ({
           flexShrink={0}>
           <Box>
             <Typography variant="titleLg" color="primary" data-testid="insuranceOption-price">
-              +{outboundService.price}€
-            </Typography>
-            <Typography variant="bodySm" noWrap>
-              par trajet
+              +{(outboundService.price + (inboundService?.price || 0)).toFixed(2)}€
             </Typography>
           </Box>
           <Button

@@ -28,7 +28,7 @@ type BookingContextType = {
   getStepIndexByPath: (pathname: string) => number
   getStepIndexByCode: (code: BookingStepCode) => number
   skipStep: (step: BookingStepCode) => void
-  resetSteps: () => void
+  resetBooking: () => void
 
   // Select flight
   selectedFlight: Solution | null
@@ -49,6 +49,8 @@ type BookingContextType = {
   setPayer: React.Dispatch<React.SetStateAction<PayerData | null>>
 
   // Options
+  wereAncillariesSelected: boolean
+  setWereAncillariesSelected: React.Dispatch<React.SetStateAction<boolean>>
   ancillaries: Ancillary[]
   setAncillaries: React.Dispatch<React.SetStateAction<Ancillary[]>>
   selectedInsurance: InsuranceWithSteps | null
@@ -121,6 +123,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [payerIndex, setPayerIndex] = useState<number | null>(null) // Index of the payer in the passengers array
   const [payer, setPayer] = useState<PayerData | null>(null)
   const [ancillaries, setAncillaries] = React.useState<Ancillary[]>([])
+  const [wereAncillariesSelected, setWereAncillariesSelected] = React.useState(false)
   const [selectedFare, setSelectedFare] = React.useState<Solution | null>(null)
   const [selectedInsurance, setSelectedInsurance] = React.useState<InsuranceWithSteps | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
@@ -208,6 +211,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     steps.current = steps.current.map((step) => ({ ...step, skip: false }))
   }
 
+  const resetBooking = () => {
+    resetSteps()
+    setWereAncillariesSelected(false)
+  }
+
   const selectFlight = (flight: Solution | null) => {
     setSelectedFlight(flight)
     setPassengers((prev) => [])
@@ -276,7 +284,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         departureDatetime,
         steps,
         skipStep,
-        resetSteps,
+        resetBooking,
         goToFirstStep,
         passengers,
         setPassengers,
@@ -303,6 +311,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setOrder,
         ancillaries,
         setAncillaries,
+        wereAncillariesSelected,
+        setWereAncillariesSelected,
       }}>
       {children}
     </BookingContext.Provider>
