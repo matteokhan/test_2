@@ -6,9 +6,10 @@ import {
   PayerForm,
   SimpleContainer,
   BookingStepActionsMobile,
+  ReservationErrorModal,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Box } from '@mui/material'
+import { Box, Modal } from '@mui/material'
 import { FormikProps } from 'formik'
 import { Ancillary, PayerData, UpdateOrderParams } from '@/types'
 import { useUpdateOrder, useReserveOrder, getAncillaries } from '@/services'
@@ -18,6 +19,7 @@ export default function ContactInfoPage() {
   const formRef = useRef<FormikProps<PayerData> | null>(null)
   const queryClient = useQueryClient()
   const [isNavigating, setIsNavigating] = useState(false)
+  const [reservationErrorModalIsOpen, setReservationErrorModalIsOpen] = useState(false)
   const [isCheckingAncillaries, setIsCheckingAncillaries] = useState(false)
   const {
     goNextStep,
@@ -81,19 +83,19 @@ export default function ContactInfoPage() {
                 goNextStep()
               } else {
                 // TODO: log this somewhere
-                // TODO: Warn the user that something went wrong
+                setReservationErrorModalIsOpen(true)
               }
             },
             onError: (error) => {
               // TODO: log this somewhere
-              // TODO: Warn the user that something went wrong
+              setReservationErrorModalIsOpen(true)
             },
           },
         )
       },
       onError: (error) => {
         // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
+        setReservationErrorModalIsOpen(true)
       },
     })
   }
@@ -135,6 +137,11 @@ export default function ContactInfoPage() {
           isLoading={isLoading}
         />
       </Box>
+      <Modal
+        open={reservationErrorModalIsOpen}
+        onClose={() => setReservationErrorModalIsOpen(false)}>
+        <ReservationErrorModal onClose={() => setReservationErrorModalIsOpen(false)} />
+      </Modal>
     </>
   )
 }
