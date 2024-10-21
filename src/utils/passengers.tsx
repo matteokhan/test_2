@@ -13,12 +13,18 @@ export const ageIsAtLeast = (dateOfBirth: Dayjs, yearsOld: number) => {
   return dayjs().diff(dateOfBirth, 'year') >= yearsOld
 }
 
-export const getMaxBirthDate = (type: PassengerType) => {
+export const getPassengerMaxBirthDate = ({
+  type,
+  flightDatetime,
+}: {
+  type: PassengerType
+  flightDatetime: Dayjs
+}) => {
   if (type === 'ADT') {
-    return dayjs().subtract(12, 'year')
+    return flightDatetime.subtract(12, 'year')
   }
   if (type === 'CHD') {
-    return dayjs().subtract(2, 'year')
+    return flightDatetime.subtract(2, 'year')
   }
   if (type === 'INF') {
     return dayjs()
@@ -27,15 +33,21 @@ export const getMaxBirthDate = (type: PassengerType) => {
   return allCasesHandled
 }
 
-export const getMinBirthDate = (type: PassengerType) => {
+export const getPassengerMinBirthDate = ({
+  type,
+  flightDatetime,
+}: {
+  type: PassengerType
+  flightDatetime: Dayjs
+}) => {
   if (type === 'ADT') {
     return undefined
   }
   if (type === 'CHD') {
-    return dayjs().subtract(12, 'year')
+    return flightDatetime.subtract(12, 'year')
   }
   if (type === 'INF') {
-    return dayjs().subtract(2, 'year')
+    return flightDatetime.subtract(2, 'year')
   }
   const allCasesHandled: never = type
   return allCasesHandled

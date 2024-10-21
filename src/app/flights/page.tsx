@@ -53,7 +53,7 @@ export default function FlighsPage() {
   })
 
   const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto, setSearchParams } = useFlights()
-  const { selectFlight, goToFirstStep, order, skipStep, setOrder, resetSteps } = useBooking()
+  const { selectFlight, goToFirstStep, order, skipStep, setOrder, resetBooking } = useBooking()
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
   const { selectedAgencyId } = useAgencySelector()
   const {
@@ -181,7 +181,6 @@ export default function FlighsPage() {
       alert('Please select an agency')
       return
     }
-    resetSteps()
     createOrder(
       { agencyId: selectedAgencyId },
       {
@@ -208,7 +207,7 @@ export default function FlighsPage() {
       return
     }
     setIsNavigating(true)
-    resetSteps()
+    resetBooking()
 
     // We can ask more information about the flight to decide which steps to follow
     try {
