@@ -75,8 +75,8 @@ export default function InsurancesPage() {
       <SimpleContainer>
         <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
           <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
-            Pour votre confort, nous vous recommandons de sélectionner une des assurances proposées.
-            Il ne sera plus possible d’y souscrire après votre réservation.
+            Pour votre confort nous vous recommandons de souscrire une des assurances proposées. Il
+            ne sera plus possible de souscrire la garantie annulation après votre réservation.
           </Alert>
           <Grid container spacing={2} data-testid="insurancesPage-options">
             {isSuccess &&
