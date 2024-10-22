@@ -17,7 +17,7 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
       {selectedAgency && (
         <Stack direction="row">
           <Typography variant="titleSm" color="grey.600" data-testid="selectAgencyLabel-agencyName">
-            Agence {selectedAgency.name} -{' '}
+            Agence {selectedAgency.name} -&nbsp;
           </Typography>
           <Typography
             data-testid="selectAgencyLabel-changeAgency"
@@ -31,7 +31,6 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
                 },
               },
             }}>
-            {' '}
             <span style={{ cursor: 'pointer' }} onClick={() => openSelectionAgency()}>
               Changer d'agence
             </span>
