@@ -13,15 +13,17 @@ import {
 } from '@/components'
 import { useBooking, useFlights } from '@/contexts'
 import { Box, Drawer, Paper, Stack, Typography } from '@mui/material'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 export default function BookingLayout({ children }: { children: React.ReactNode }) {
-  const { preSelectedFlight, getStepIndexByPath, steps, currentStep, totalPrice } = useBooking()
+  const { selectedFlight, getStepIndexByPath, steps, currentStep, totalPrice } = useBooking()
   const currentStepTitle = steps.current[currentStep.current].title
   const { setFlightDetailsOpen, flightDetailsOpen } = useFlights()
+  const searchParams = useSearchParams()
+  const orderId = searchParams.get('order_id')
   const router = useRouter()
   const pathname = usePathname()
   const theme = useTheme()
@@ -30,10 +32,10 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
   const [totalPriceOpen, setTotalPriceOpen] = useState(false)
 
   useEffect(() => {
-    if (!preSelectedFlight) {
+    if (!selectedFlight && !orderId) {
       router.push('/flights')
     }
-  }, [preSelectedFlight, router])
+  }, [router])
 
   // Check url, set the step accordingly
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
     }
   }, [pathname])
 
-  if (!preSelectedFlight) {
+  if (!selectedFlight && !orderId) {
     return null // TODO: Add loading state
   }
 

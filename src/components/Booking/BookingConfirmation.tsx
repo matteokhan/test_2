@@ -10,6 +10,7 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
       sx={{
         width: '100%',
         p: { xs: 2, lg: 4 },
+        pt: { xs: 3, lg: 4 },
         height: { xs: '100%', lg: 'unset' },
         borderRadius: { xs: 0, lg: '6px' },
       }}

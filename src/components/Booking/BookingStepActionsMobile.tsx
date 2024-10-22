@@ -4,10 +4,12 @@ export const BookingStepActionsMobile = ({
   onContinue,
   onGoBack,
   isLoading,
+  goBackDisabled,
 }: {
   onContinue: React.MouseEventHandler<HTMLButtonElement>
   onGoBack: React.MouseEventHandler<HTMLButtonElement>
   isLoading?: boolean
+  goBackDisabled?: boolean
 }) => {
   return (
     <Stack pt={2} px={{ xs: 2, md: 5 }} pb={8} justifyContent="center" gap={1}>
@@ -20,7 +22,7 @@ export const BookingStepActionsMobile = ({
         Continuer
       </Button>
       <Button
-        disabled={isLoading}
+        disabled={isLoading || goBackDisabled}
         onClick={onGoBack}
         variant="text"
         size="medium"

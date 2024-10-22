@@ -1,40 +1,93 @@
 'use client'
 
 import { BookingConfirmation, Navbar, SectionContainer, TopBar } from '@/components'
-import { useOrder } from '@/services'
+import { getOrder } from '@/services'
+import { OrderDto } from '@/types'
 import { Box } from '@mui/material'
-import { useSearchParams } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function SuccessPage() {
+  const [isLoading, setIsLoading] = useState(true)
   const searchParams = useSearchParams()
-  const order_id = searchParams.get('order_id')
-  if (!order_id) {
+  const orderId = searchParams.get('order_id')
+  const queryClient = useQueryClient()
+  const [order, setOrder] = useState<OrderDto | null>(null)
+  const router = useRouter()
+
+  if (!orderId) {
     // TODO: log this somewhere
     // TODO: Warn the user that something went wrong
     return null
   }
-  const { data: order } = useOrder({ orderId: order_id })
+
+  const confirmPayment = async () => {
+    try {
+      let orderIsReady = false
+      do {
+        // Fetch until the order is ready
+        const orderData = await queryClient.fetchQuery<OrderDto>({
+          queryKey: ['order', orderId],
+          queryFn: () => getOrder({ orderId: orderId }),
+          staleTime: 0,
+        })
+        if (
+          !orderData.is_paid &&
+          (orderData.payment_status_code === '00000' || !orderData.payment_status_code)
+        ) {
+          // wait 2 seconds before retrying
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+        } else {
+          orderIsReady = true
+          if (orderData.is_paid) {
+            setOrder(orderData)
+          } else {
+            router.push(`/booking/summary?order_id=${orderId}`)
+          }
+          setIsLoading(false)
+        }
+      } while (!orderIsReady)
+      return order
+    } catch (error) {
+      // TODO: log this somewhere
+      // TODO: Warn the user that something went wrong
+      throw error
+    }
+  }
+
+  useEffect(() => {
+    confirmPayment()
+  }, [])
+
   return (
     <>
       <TopBar height={60}>
         <Navbar />
       </TopBar>
-      <Box
-        sx={{
-          backgroundColor: 'grey.200',
-          display: { xs: 'none', lg: 'block' },
-        }}>
-        <SectionContainer sx={{ paddingY: 3 }}>
-          {order && <BookingConfirmation order={order} />}
-        </SectionContainer>
-      </Box>
-      <Box
-        sx={{
-          display: { xs: 'block', lg: 'none' },
-          height: '100vh',
-        }}>
-        {order && <BookingConfirmation order={order} />}
-      </Box>
+      {isLoading && (
+        <SectionContainer sx={{ paddingY: 3 }}>Nous confirmons le paiement ...</SectionContainer>
+      )}
+      {!isLoading && order?.is_paid == true && (
+        <>
+          <Box
+            sx={{
+              backgroundColor: 'grey.200',
+              display: { xs: 'none', lg: 'block' },
+            }}>
+            <SectionContainer sx={{ paddingY: 3 }}>
+              {order && <BookingConfirmation order={order} />}
+            </SectionContainer>
+          </Box>
+          <Box
+            sx={{
+              display: { xs: 'block', lg: 'none' },
+              height: '100vh',
+            }}>
+            {order && <BookingConfirmation order={order} />}
+          </Box>
+        </>
+      )}
     </>
   )
 }

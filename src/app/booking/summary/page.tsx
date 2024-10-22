@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   BookingStepActions,
   InsuranceSummary,
@@ -17,14 +17,20 @@ import {
 import { useAgencySelector, useBooking } from '@/contexts'
 import { usePrepareOrderPayment, useUpdateOrder } from '@/services'
 import { AgencyContractCode, UpdateOrderParams } from '@/types'
-import { Box, Modal, Typography } from '@mui/material'
+import { Alert, Box, Modal, Typography } from '@mui/material'
+import { useSearchParams } from 'next/navigation'
+import WarningIcon from '@mui/icons-material/Warning'
 
 export default function BookingSummaryPage() {
+  const searchParams = useSearchParams()
+  const orderId = searchParams.get('order_id')
+  const errorAlertRef = React.useRef<HTMLDivElement>(null)
+  const [paymentWasFailed, setPaymentWasFailed] = useState(false)
   const [paymentMethodCode, setPaymentMethodCode] = useState<AgencyContractCode | null>(null)
   const [conditionsAccepted, setConditionsAccepted] = useState(false)
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
-  const { goPreviousStep, goToStep, order } = useBooking()
+  const { goPreviousStep, goToStep, order, saveBookingState, loadBookingState } = useBooking()
   const { mutate: prepareOrderPayment, isPending: isPreparingPayment } = usePrepareOrderPayment()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
   const { selectedAgency } = useAgencySelector()
@@ -45,6 +51,7 @@ export default function BookingSummaryPage() {
       return
     }
 
+    saveBookingState()
     const newOrder: UpdateOrderParams = {
       orderId: order.id,
       agency: selectedAgency?.id,
@@ -82,6 +89,22 @@ export default function BookingSummaryPage() {
     })
   }
 
+  useEffect(() => {
+    if (orderId) {
+      loadBookingState()
+      setPaymentWasFailed(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (paymentWasFailed && errorAlertRef.current) {
+      errorAlertRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
+  }, [paymentWasFailed])
+
   return (
     <>
       <SimpleContainer title="Itinéraire">
@@ -90,6 +113,7 @@ export default function BookingSummaryPage() {
       <SimpleContainer
         title="Passagers"
         sx={{ pb: 3 }}
+        disabled={paymentWasFailed}
         action="Modifier"
         onAction={() => goToStep('passengers')}>
         <PassengersSummary />
@@ -97,6 +121,7 @@ export default function BookingSummaryPage() {
       <SimpleContainer
         title="Coordonnées de facturation"
         sx={{ pb: 3 }}
+        disabled={paymentWasFailed}
         action="Modifier"
         onAction={() => goToStep('contact')}>
         <PayerSummary />
@@ -104,11 +129,22 @@ export default function BookingSummaryPage() {
       <SimpleContainer
         title="Assurances"
         sx={{ pb: 3 }}
+        disabled={paymentWasFailed}
         action="Modifier"
         onAction={() => goToStep('insurances')}>
         <InsuranceSummary />
       </SimpleContainer>
       <SimpleContainer title="Payer avec" sx={{ pb: 3 }}>
+        {paymentWasFailed && (
+          <Alert
+            ref={errorAlertRef}
+            severity="error"
+            sx={{ mt: 3 }}
+            icon={<WarningIcon fontSize="inherit" sx={{ color: 'leclerc.red.main' }} />}>
+            Votre paiement a été annulé ou rejeté. Vous pouvez choisir un autre moyen de paiement et
+            essayer à nouveau.
+          </Alert>
+        )}
         <SelectPaymentMethod onSelect={(contractCode) => setPaymentMethodCode(contractCode)} />
         <Typography variant="bodySm" color="grey.700" pb={1} pr={2}>
           Nous protégeons vos données à l’aide des méthodes de cryptage de paiement les plus
@@ -139,6 +175,7 @@ export default function BookingSummaryPage() {
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
           isLoading={isLoading}
+          goBackDisabled={paymentWasFailed}
         />
       </Box>
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
@@ -146,6 +183,7 @@ export default function BookingSummaryPage() {
           onContinue={handleSubmit}
           onGoBack={goPreviousStep}
           isLoading={isLoading}
+          goBackDisabled={paymentWasFailed}
         />
       </Box>
     </>

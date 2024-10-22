@@ -4,15 +4,17 @@ export const BookingStepActions = ({
   onContinue,
   onGoBack,
   isLoading,
+  goBackDisabled,
 }: {
   onContinue: React.MouseEventHandler<HTMLButtonElement>
   onGoBack: React.MouseEventHandler<HTMLButtonElement>
+  goBackDisabled?: boolean
   isLoading?: boolean
 }) => {
   return (
     <Stack pt={2} px={4} pb={11} direction="row" justifyContent="flex-end" gap={1}>
       <Button
-        disabled={isLoading}
+        disabled={isLoading || goBackDisabled}
         onClick={onGoBack}
         variant="text"
         size="large"
