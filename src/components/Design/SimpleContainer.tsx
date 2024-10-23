@@ -4,6 +4,7 @@ type BaseSimpleContainerProps = {
   children: React.ReactNode
   title?: string
   sx?: SxProps
+  disabled?: boolean
 }
 
 type SimpleContainerWithoutAction = BaseSimpleContainerProps & {
@@ -24,6 +25,7 @@ export const SimpleContainer = ({
   sx,
   action,
   onAction,
+  disabled,
 }: SimpleContainerProps) => {
   return (
     <Paper sx={{ pb: { xs: 3, lg: 4 }, borderRadius: { xs: 0, lg: '6px' }, mb: 2, ...sx }}>
@@ -39,7 +41,7 @@ export const SimpleContainer = ({
           sx={{ pt: action ? 2 : 3, px: { xs: 2, md: 5, lg: 4 } }}>
           <Typography variant="titleLg">{title}</Typography>
           {action && (
-            <Button onClick={onAction} variant="outlined" sx={{ px: 3 }}>
+            <Button onClick={onAction} variant="outlined" sx={{ px: 3 }} disabled={disabled}>
               {action}
             </Button>
           )}

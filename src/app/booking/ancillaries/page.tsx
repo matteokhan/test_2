@@ -96,6 +96,7 @@ export default function AncillariesPage() {
           }
           return (
             <SimpleContainer
+              key={ancillary.passenger}
               title={`Passenger ${ancillary.passenger} : ${passengerData.firstName} ${passengerData.lastName}`}>
               <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
                 <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>

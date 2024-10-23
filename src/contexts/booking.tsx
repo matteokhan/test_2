@@ -64,6 +64,8 @@ type BookingContextType = {
   setPnr: React.Dispatch<React.SetStateAction<string | null>>
   order: OrderDto | null
   setOrder: React.Dispatch<React.SetStateAction<OrderDto | null>>
+  saveBookingState: () => void
+  loadBookingState: () => void
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -115,7 +117,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   ])
 
   const router = useRouter()
-  const { totalPassengers, searchParamsCache } = useFlights()
+  const { totalPassengers, searchParamsCache, setSearchParams } = useFlights()
   const currentStep = useRef(0)
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
   const [preSelectedFlight, setPreSelectedFlight] = useState<Solution | null>(null)
@@ -214,10 +216,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const resetBooking = () => {
     resetSteps()
     setWereAncillariesSelected(false)
-  }
-
-  const selectFlight = (flight: Solution | null) => {
-    setSelectedFlight(flight)
     setPassengers((prev) => [])
     for (let i = 0; i < (searchParamsCache?.adults || 0); i++) {
       setPassengers((prev) => [
@@ -269,8 +267,63 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     setPayerIndex(null)
     setPayer(null)
-    setSelectedFare(flight)
     setSelectedInsurance(null)
+    setAncillaries([])
+  }
+
+  const selectFlight = (flight: Solution | null) => {
+    setSelectedFlight(flight)
+    setSelectedFare(flight)
+    resetBooking()
+  }
+
+  const saveBookingState = () => {
+    localStorage.setItem(
+      'booking',
+      JSON.stringify({
+        selectedFlight,
+        passengers,
+        payer,
+        selectedFare,
+        selectedInsurance,
+        pnr,
+        ancillaries,
+        searchParamsCache,
+        order,
+      }),
+    )
+  }
+
+  const loadBookingState = () => {
+    const booking = localStorage.getItem('booking')
+    if (booking) {
+      let {
+        selectedFlight,
+        passengers,
+        payer,
+        selectedFare,
+        selectedInsurance,
+        pnr,
+        ancillaries,
+        searchParamsCache,
+        order,
+      } = JSON.parse(booking)
+      let parsedPassengers: PassengerData[] = passengers.map((passenger: any) => ({
+        ...passenger,
+        dateOfBirth: dayjs(passenger.dateOfBirth),
+      }))
+      let parsedPayer: PayerData = { ...payer, dateOfBirth: dayjs(payer.dateOfBirth) }
+      setSelectedFlight(selectedFlight)
+      setPreSelectedFlight(selectedFlight)
+      setPassengers(parsedPassengers)
+      setPayer(parsedPayer)
+      setSelectedFare(selectedFare)
+      setSelectedInsurance(selectedInsurance)
+      setPnr(pnr)
+      setAncillaries(ancillaries)
+      setSearchParams(searchParamsCache)
+      setOrder(order)
+    }
   }
 
   return (
@@ -313,6 +366,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setAncillaries,
         wereAncillariesSelected,
         setWereAncillariesSelected,
+        saveBookingState,
+        loadBookingState,
       }}>
       {children}
     </BookingContext.Provider>
