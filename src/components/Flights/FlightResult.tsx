@@ -22,7 +22,10 @@ export const FlightResult = ({ result }: { result: Solution }) => {
   return (
     <>
       {/* Desktop */}
-      <Paper sx={{ padding: 2, display: { xs: 'none', lg: 'block' } }} data-testid="flightResult">
+      <Paper
+        sx={{ padding: 2, display: { xs: 'none', lg: 'block' } }}
+        data-testid="flightResult"
+        className="desktop">
         <Stack gap={5.5} direction="row">
           <Stack flexGrow={1}>
             {result.routes.map((route, index, routes) => (
@@ -94,7 +97,10 @@ export const FlightResult = ({ result }: { result: Solution }) => {
       </Paper>
 
       {/* Mobile */}
-      <Paper sx={{ py: 2, display: { xs: 'block', lg: 'none' } }} data-testid="flightResult">
+      <Paper
+        sx={{ py: 2, display: { xs: 'block', lg: 'none' } }}
+        data-testid="flightResult"
+        className="mobile">
         <Stack gap={1.5}>
           <Stack flexGrow={1}>
             {result.routes.map((route, index, routes) => (

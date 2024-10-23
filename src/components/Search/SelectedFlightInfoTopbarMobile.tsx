@@ -16,7 +16,6 @@ import dayjs from 'dayjs'
 import { styled } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useLocationData } from '@/services'
-import { useRouter } from 'next/navigation'
 import { SearchFlightsFiltersOptions, SearchFlightsParams } from '@/types'
 
 const TravelOptionButton = styled(Box)(({ theme }) => ({
@@ -29,16 +28,17 @@ const TravelOptionButton = styled(Box)(({ theme }) => ({
 }))
 
 type SelectedFlightInfoTopbarMobileProps = {
+  onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
   withFilters?: boolean
   onOpenFilters?: (filterName: SearchFlightsFiltersOptions) => void
 }
 
 export const SelectedFlightInfoTopbarMobile = ({
+  onSearch,
   withFilters,
   onOpenFilters,
 }: SelectedFlightInfoTopbarMobileProps) => {
-  const router = useRouter()
-  const { firstSegment, lastSegment, totalPassengers, isOneWay, setSearchParams } = useFlights()
+  const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
   const { selectAgency } = useAgencySelector()
 
   // Depending on whether the flight is round trip or one way, the departure location and
@@ -57,10 +57,9 @@ export const SelectedFlightInfoTopbarMobile = ({
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
 
-  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
-    setSearchParams(searchParams)
+  const handleOnSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setFlightSearchOpen(false)
-    router.push('/flights')
+    onSearch({ searchParams })
   }
 
   return (
@@ -187,7 +186,7 @@ export const SelectedFlightInfoTopbarMobile = ({
             <CloseIcon />
           </IconButton>
         </Stack>
-        <SearchFlightsModesMobile onSearch={onSearch} />
+        <SearchFlightsModesMobile onSearch={handleOnSearch} />
       </Drawer>
       <Drawer
         open={mapIsOpen}

@@ -1,15 +1,9 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import {
-  BookingStepActions,
-  PayerForm,
-  SimpleContainer,
-  BookingStepActionsMobile,
-  ReservationErrorModal,
-} from '@/components'
+import { BookingStepActions, PayerForm, SimpleContainer, ReservationErrorModal } from '@/components'
 import { useBooking } from '@/contexts'
-import { Box, Modal } from '@mui/material'
+import { Modal } from '@mui/material'
 import { FormikProps } from 'formik'
 import { Ancillary, PayerData, UpdateOrderParams } from '@/types'
 import { useUpdateOrder, useReserveOrder, getAncillaries } from '@/services'
@@ -123,20 +117,11 @@ export default function ContactInfoPage() {
           }
         />
       </SimpleContainer>
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isLoading}
+      />
       <Modal
         open={reservationErrorModalIsOpen}
         onClose={() => setReservationErrorModalIsOpen(false)}>

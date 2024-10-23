@@ -3,13 +3,12 @@
 import React, { useEffect } from 'react'
 import {
   BookingStepActions,
-  BookingStepActionsMobile,
   SimpleContainer,
   AncilliaryService,
   PassengerAncillariesSkeleton,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Alert, Box, Stack, Grid } from '@mui/material'
+import { Alert, Stack, Grid } from '@mui/material'
 import { useAncillaries, useSelectAncillaries } from '@/services'
 import WarningIcon from '@mui/icons-material/Warning'
 import { AncillaryServiceInfo } from '@/types'
@@ -148,20 +147,11 @@ export default function AncillariesPage() {
             </SimpleContainer>
           )
         })}
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isLoading}
+      />
     </>
   )
 }

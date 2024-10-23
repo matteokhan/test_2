@@ -237,12 +237,6 @@ export default function FlighsPage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (searchParamsDto && !order) {
-      searchFlights({})
-    }
-  }, [searchParamsDto])
-
   return (
     <>
       <TopBar height={isDesktop ? 60 : 200}>
@@ -254,6 +248,7 @@ export default function FlighsPage() {
               setActiveFilter(filterName)
               setActiveFilterOpen(true)
             }}
+            onSearch={onSearch}
           />
         </Box>
       </TopBar>

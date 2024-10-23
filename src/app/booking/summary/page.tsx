@@ -12,7 +12,6 @@ import {
   NoPaymentMethodConfirmationModal,
   BookingConditionsCheckbox,
   AcceptBookingConditionsModal,
-  BookingStepActionsMobile,
 } from '@/components'
 import { useAgencySelector, useBooking } from '@/contexts'
 import { usePrepareOrderPayment, useUpdateOrder } from '@/services'
@@ -170,22 +169,12 @@ export default function BookingSummaryPage() {
         onClose={() => setAcceptConditionsModalIsOpen(false)}>
         <AcceptBookingConditionsModal onClose={() => setAcceptConditionsModalIsOpen(false)} />
       </Modal>
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-          goBackDisabled={paymentWasFailed}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-          goBackDisabled={paymentWasFailed}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isLoading}
+        goBackDisabled={paymentWasFailed}
+      />
     </>
   )
 }

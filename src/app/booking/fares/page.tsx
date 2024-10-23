@@ -1,15 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import {
-  BookingStepActions,
-  BookingStepActionsMobile,
-  FareOption,
-  FareOptionSkeleton,
-  SimpleContainer,
-} from '@/components'
+import { BookingStepActions, FareOption, FareOptionSkeleton, SimpleContainer } from '@/components'
 import { useBooking } from '@/contexts'
-import { Box, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { useBrandedFares, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
 
@@ -88,20 +82,11 @@ export default function FaresPage() {
             ))}
         </Stack>
       </SimpleContainer>
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isLoading}
+      />
     </>
   )
 }
