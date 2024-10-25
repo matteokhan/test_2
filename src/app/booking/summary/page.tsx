@@ -36,7 +36,6 @@ export default function BookingSummaryPage() {
     usePrepareLccOrderPayment()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
   const { selectedAgency } = useAgencySelector()
-  console.log(selectedAgency)
   const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment
 
   const handleSubmit = async () => {

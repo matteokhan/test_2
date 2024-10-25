@@ -15,16 +15,8 @@ import { AncillaryServiceInfo } from '@/types'
 
 export default function AncillariesPage() {
   const [isNavigating, setIsNavigating] = React.useState(false)
-  const {
-    goPreviousStep,
-    goNextStep,
-    passengers,
-    order,
-    ancillaries,
-    setAncillaries,
-    wereAncillariesSelected,
-    setWereAncillariesSelected,
-  } = useBooking()
+  const { goPreviousStep, goNextStep, passengers, order, ancillaries, setAncillaries } =
+    useBooking()
   const { mutate: selectAncillaries, isPending: isSelectingAncillaries } = useSelectAncillaries()
 
   if (!passengers || !order) {
@@ -40,7 +32,6 @@ export default function AncillariesPage() {
   }, [remoteAncillaries])
 
   const handleSubmit = () => {
-    setWereAncillariesSelected(true)
     selectAncillaries(
       {
         orderId: order.id,
@@ -106,7 +97,6 @@ export default function AncillariesPage() {
                   {outboundServices.length > 0 &&
                     outboundServices.map((service) => (
                       <AncilliaryService
-                        selectedByDefault={!wereAncillariesSelected}
                         disabled={isLoading}
                         key={service.externalId}
                         outboundService={service}

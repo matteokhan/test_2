@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Box, Stack, Grid, Typography, Button, Checkbox, FormControlLabel } from '@mui/material'
 import { AncillaryServiceInfo } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
@@ -11,40 +11,14 @@ export const AncilliaryService = ({
   inboundService,
   onSelectService,
   onUnselectService,
-  selectedByDefault,
 }: {
   disabled?: boolean
   outboundService: AncillaryServiceInfo
   inboundService?: AncillaryServiceInfo
   onSelectService: (service: AncillaryServiceInfo) => void
   onUnselectService: (service: AncillaryServiceInfo) => void
-  selectedByDefault?: boolean
 }) => {
-  const [outboundSelected, setOutboundSelected] = React.useState<boolean>(
-    selectedByDefault || outboundService.selected,
-  )
-  const [inboundSelected, setInboundSelected] = React.useState<boolean>(
-    selectedByDefault || inboundService?.selected || false,
-  )
-  const isSelected = outboundSelected || inboundSelected
-
-  useEffect(() => {
-    if (outboundSelected) {
-      onSelectService(outboundService)
-    } else {
-      onUnselectService(outboundService)
-    }
-  }, [outboundSelected])
-
-  useEffect(() => {
-    if (inboundService) {
-      if (inboundSelected) {
-        onSelectService(inboundService)
-      } else {
-        onUnselectService(inboundService)
-      }
-    }
-  }, [inboundSelected])
+  const isSelected = outboundService.selected || inboundService?.selected
 
   return (
     <Grid item xs={12} sm={6}>
@@ -63,9 +37,15 @@ export const AncilliaryService = ({
               control={
                 <Checkbox
                   sx={{ ml: 0 }}
-                  checked={outboundSelected}
+                  checked={outboundService.selected}
                   data-testid="ancillaryService-outboundCheckbox"
-                  onChange={(ev) => setOutboundSelected(ev.target.checked)}
+                  onClick={() => {
+                    if (!outboundService.selected) {
+                      onSelectService(outboundService)
+                    } else {
+                      onUnselectService(outboundService)
+                    }
+                  }}
                 />
               }
               label="Aller"
@@ -75,9 +55,15 @@ export const AncilliaryService = ({
                 disabled={disabled}
                 control={
                   <Checkbox
-                    checked={inboundSelected}
+                    checked={inboundService.selected}
                     data-testid="ancillaryService-inboundCheckbox"
-                    onChange={(ev) => setInboundSelected(ev.target.checked)}
+                    onChange={() => {
+                      if (!inboundService.selected) {
+                        onSelectService(inboundService)
+                      } else {
+                        onUnselectService(inboundService)
+                      }
+                    }}
                   />
                 }
                 label="Retour"
@@ -107,11 +93,11 @@ export const AncilliaryService = ({
             variant={isSelected ? 'contained' : 'outlined'}
             onClick={() => {
               if (isSelected) {
-                setInboundSelected(false)
-                setOutboundSelected(false)
+                inboundService && onUnselectService(inboundService)
+                onUnselectService(outboundService)
               } else {
-                setInboundSelected(true)
-                setOutboundSelected(true)
+                inboundService && onSelectService(inboundService)
+                onSelectService(outboundService)
               }
             }}
             startIcon={isSelected ? <CheckIcon /> : null}>
