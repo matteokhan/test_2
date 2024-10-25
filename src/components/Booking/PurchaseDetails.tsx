@@ -1,7 +1,7 @@
 'use client'
 
-import { useBooking, useFlights } from '@/contexts'
-import { getFareData } from '@/utils'
+import { useAgencySelector, useBooking, useFlights } from '@/contexts'
+import { getFareData, getPaymentMethodData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
 import CloseIcon from '@mui/icons-material/Close'
@@ -15,6 +15,8 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
   const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare, ancillaries } =
     useBooking()
+  const { selectedAgency } = useAgencySelector()
+
   return (
     <Paper
       sx={{
@@ -153,31 +155,17 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
           Tous frais, taxes, suppléments et frais de service Leclerc Voyages inclus
         </Typography>
         <Stack direction="row" pt={1} gap={0.75}>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 23,
-              width: 36,
-            }}>
-            <Image src="/ancv_logo.svg" alt="ancv logo" fill />
-          </Box>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 23,
-              width: 36,
-            }}>
-            <Image src="/ob_logo.svg" alt="ob logo" fill />
-          </Box>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 23,
-              width: 36,
-              display: 'none',
-            }}>
-            <Image src="/floa_logo_2.svg" alt="floa logo" fill />
-          </Box>
+          {selectedAgency?.available_contracts.map((contract) => {
+            const { icon } = getPaymentMethodData({ contractCode: contract })
+            return (
+              <Box
+                sx={{
+                  position: 'relative',
+                }}>
+                {icon}
+              </Box>
+            )
+          })}
         </Stack>
       </Stack>
     </Paper>
