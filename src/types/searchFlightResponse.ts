@@ -24,6 +24,11 @@ export type SearchResponseDto = {
   searchFilters: SearchResponseFilterData
 }
 
+export enum GDSType {
+  REGULAR = 0,
+  LOW_COST_CARRIER = 1,
+}
+
 export type Solution = {
   id: SolutionId
   routes: Route[]
@@ -34,6 +39,7 @@ export type Solution = {
   infants?: PassengerTypeInfo | null
   provider: string
   platingCarrier: string
+  gdsType: GDSType
 }
 
 export type RouteCarrier = string

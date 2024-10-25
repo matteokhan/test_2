@@ -161,6 +161,9 @@ export const DepartureAndDestinationField = ({
               position="absolute"
               top="27px"
               left="13px"
+              textOverflow="ellipsis"
+              noWrap
+              maxWidth="90%"
               bgcolor="white">
               {values.fromLabel}
             </Typography>
@@ -203,6 +206,9 @@ export const DepartureAndDestinationField = ({
               position="absolute"
               top="27px"
               left="13px"
+              textOverflow="ellipsis"
+              noWrap
+              maxWidth="90%"
               bgcolor="white">
               {values.toLabel}
             </Typography>

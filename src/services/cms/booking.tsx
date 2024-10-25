@@ -228,3 +228,44 @@ export const usePrepareOrderPayment = () => {
     mutationFn: prepareOrderPayment,
   })
 }
+
+// Fetches the payment information for an order from the CMS API using the reservation token and an order ID.
+// The reservation token is required to fetch the payment information.
+// Use this endpoint when gdsType = 1 (LowCostCarrier)
+export const prepareLccOrderPayment = async ({
+  orderId,
+  solutionId,
+}: {
+  orderId: OrderId
+  solutionId: SolutionId
+}) => {
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+
+  const payload = { solution_id: solutionId }
+  const response = await fetch(
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${orderId}/payment/prepare/low-cost-carrier`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Token ${token}`,
+      },
+    },
+  )
+  if (!response.ok) {
+    throw new Error('Failed to get LCC payment data')
+  }
+  return await response.json()
+}
+
+// Hook to fetch the payment information for an order.
+// We asume the reservation token is already in local storage.
+export const usePrepareLccOrderPayment = () => {
+  return useMutation<OrderDto, Error, { orderId: OrderId; solutionId: SolutionId }>({
+    mutationFn: prepareLccOrderPayment,
+  })
+}

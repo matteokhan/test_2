@@ -5,7 +5,7 @@ import { BookingStepActions, PayerForm, SimpleContainer, ReservationErrorModal }
 import { useBooking } from '@/contexts'
 import { Modal } from '@mui/material'
 import { FormikProps } from 'formik'
-import { Ancillary, PayerData, UpdateOrderParams } from '@/types'
+import { Ancillary, GDSType, PayerData, UpdateOrderParams } from '@/types'
 import { useUpdateOrder, useReserveOrder, getAncillaries } from '@/services'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -56,36 +56,45 @@ export default function ContactInfoPage() {
     updateOrder(newOrder, {
       onSuccess: (data) => {
         setOrder(data)
-        reserveOrder(
-          { orderId: data.id, solutionId: selectedFare.id },
-          {
-            onSuccess: async (data) => {
-              if (data.travel_data?.passenger_name_record) {
-                setIsCheckingAncillaries(true)
-                try {
-                  await queryClient.fetchQuery<Ancillary[]>({
-                    queryKey: ['ancillaries', order.id],
-                    queryFn: () => getAncillaries({ orderId: order.id }),
-                  })
-                } catch (error) {
-                  skipStep('ancillaries')
-                } finally {
-                  setIsCheckingAncillaries(false)
+        if (selectedFare.gdsType == GDSType.REGULAR) {
+          reserveOrder(
+            { orderId: data.id, solutionId: selectedFare.id },
+            {
+              onSuccess: async (data) => {
+                if (data.travel_data?.passenger_name_record) {
+                  setIsCheckingAncillaries(true)
+                  try {
+                    await queryClient.fetchQuery<Ancillary[]>({
+                      queryKey: ['ancillaries', order.id],
+                      queryFn: () => getAncillaries({ orderId: order.id }),
+                    })
+                  } catch (error) {
+                    skipStep('ancillaries')
+                  } finally {
+                    setIsCheckingAncillaries(false)
+                  }
+                  setPnr(data.travel_data.passenger_name_record)
+                  setIsNavigating(true)
+                  goNextStep()
+                } else {
+                  // TODO: log this somewhere
+                  setReservationErrorModalIsOpen(true)
                 }
-                setPnr(data.travel_data.passenger_name_record)
-                setIsNavigating(true)
-                goNextStep()
-              } else {
+              },
+              onError: (error) => {
                 // TODO: log this somewhere
                 setReservationErrorModalIsOpen(true)
-              }
+              },
             },
-            onError: (error) => {
-              // TODO: log this somewhere
-              setReservationErrorModalIsOpen(true)
-            },
-          },
-        )
+          )
+        } else if (selectedFare.gdsType === GDSType.LOW_COST_CARRIER) {
+          skipStep('ancillaries')
+          setIsNavigating(true)
+          goNextStep()
+        } else {
+          // TODO: log this somewhere
+          // TODO: warn the user
+        }
       },
       onError: (error) => {
         // TODO: log this somewhere
