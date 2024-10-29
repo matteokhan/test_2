@@ -6,7 +6,7 @@ import { SearchTextField, Location } from '@/components'
 import { Field, useFormikContext } from 'formik'
 import { useLocationsByName } from '@/services'
 import { useDebounce } from '@uidotdev/usehooks'
-import { LocationData } from '@/types'
+import { LocationData, SearchFlightSegmentType } from '@/types'
 
 export const DepartureField = ({ onChange }: { onChange?: (location: LocationData) => void }) => {
   const anchorRef = useRef<HTMLInputElement>(null)
@@ -14,6 +14,7 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
     from: string
     fromLabel: string
     fromCountry: string
+    fromType: SearchFlightSegmentType
   }>()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -39,6 +40,10 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
     setFieldValue('from', location.code)
     setFieldValue('fromLabel', location.name + ' (' + location.code + ')')
     setFieldValue('fromCountry', location.country_name)
+    setFieldValue(
+      'fromType',
+      location.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
+    )
     setSearchTerm(location.name + ' (' + location.code + ')')
     if (onChange) onChange(location)
   }
@@ -46,6 +51,8 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
     setSelectedLocation(null)
     setFieldValue('from', null)
     setFieldValue('fromLabel', null)
+    setFieldValue('fromCountry', null)
+    setFieldValue('fromType', null)
     setSearchTerm(e.target.value)
   }
   const handleBlur = () => {

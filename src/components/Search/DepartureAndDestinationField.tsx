@@ -7,7 +7,7 @@ import { Field, useFormikContext } from 'formik'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { useLocationsByName } from '@/services'
 import { useDebounce } from '@uidotdev/usehooks'
-import { LocationData } from '@/types'
+import { LocationData, SearchFlightSegmentType } from '@/types'
 
 export const DepartureAndDestinationField = ({
   labels,
@@ -21,9 +21,11 @@ export const DepartureAndDestinationField = ({
     from: string
     fromLabel: string
     fromCountry: string
+    fromType: SearchFlightSegmentType
     to: string
     toLabel: string
     toCountry: string
+    toType: SearchFlightSegmentType
   }>()
   const inputRefDeparture = useRef<HTMLInputElement>(null)
   const inputRefDestination = useRef<HTMLInputElement>(null)
@@ -50,11 +52,17 @@ export const DepartureAndDestinationField = ({
     setFieldValue('from', location.code)
     setFieldValue('fromLabel', location.name + ' (' + location.code + ')')
     setFieldValue('fromCountry', location.country_name)
+    setFieldValue(
+      'fromType',
+      location.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
+    )
   }
   const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDeparture(null)
     setFieldValue('from', null)
     setFieldValue('fromLabel', null)
+    setFieldValue('fromCountry', null)
+    setFieldValue('fromType', null)
     setDepartureSearchTerm(e.target.value)
   }
   const handleDepartureBlur = () => {
@@ -80,12 +88,16 @@ export const DepartureAndDestinationField = ({
   const closeDestinationSuggestions = useCallback(() => {
     setDestinationIsOpen(false)
   }, [])
-  const selectDestination = (airport: LocationData) => {
+  const selectDestination = (location: LocationData) => {
     setDestinationIsOpen(false)
-    setSelectedDestination(airport)
-    setFieldValue('to', airport.code)
-    setFieldValue('toLabel', airport.name + ' (' + airport.code + ')')
-    setFieldValue('toCountry', airport.country_name)
+    setSelectedDestination(location)
+    setFieldValue('to', location.code)
+    setFieldValue('toLabel', location.name + ' (' + location.code + ')')
+    setFieldValue('toCountry', location.country_name)
+    setFieldValue(
+      'toType',
+      location.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
+    )
   }
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDestination(null)
@@ -113,6 +125,16 @@ export const DepartureAndDestinationField = ({
     setFieldValue('to', from.code)
     setFieldValue('fromLabel', to.name + ' (' + to.code + ')')
     setFieldValue('toLabel', from.name + ' (' + from.code + ')')
+    setFieldValue('fromCountry', to.country_name)
+    setFieldValue('toCountry', from.country_name)
+    setFieldValue(
+      'fromType',
+      to.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
+    )
+    setFieldValue(
+      'toType',
+      from.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
+    )
     setDepartureSearchTerm(to.name + ' (' + to.code + ')')
     setDestinationSearchTerm(from.name + ' (' + from.code + ')')
   }

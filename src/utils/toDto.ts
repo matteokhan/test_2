@@ -31,6 +31,8 @@ export const searchParamsToDto = (
       from: params.from,
       to: params.to,
       date: params.departure,
+      fromType: params.fromType,
+      toType: params.toType,
     })
     return searchParamsDto
   }
@@ -39,11 +41,15 @@ export const searchParamsToDto = (
       from: params.from,
       to: params.to,
       date: params.departure,
+      fromType: params.fromType,
+      toType: params.toType,
     })
     searchParamsDto.search_data.segments.push({
       from: params.to,
       to: params.from,
       date: params.return,
+      fromType: params.toType,
+      toType: params.fromType,
     })
     return searchParamsDto
   }
@@ -52,6 +58,8 @@ export const searchParamsToDto = (
       from: destination.from,
       to: destination.to,
       date: destination.departure,
+      fromType: destination.fromType,
+      toType: destination.toType,
     }))
     return searchParamsDto
   }

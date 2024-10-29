@@ -22,12 +22,13 @@ const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
 // always be the same until the token is cleared.
 export const getReservationToken = async () => {
   const token = localStorage.getItem('reservationToken')
-  if (token) {
-    return { token }
-  }
-  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/api/v2/session/token', {
+  let options: { method: string; headers?: { authorization: string } } = {
     method: 'GET',
-  })
+  }
+  if (token) {
+    options['headers'] = { authorization: `Token ${token}` }
+  }
+  const response = await fetch(NEXT_PUBLIC_CMS_API_URL + '/api/v2/session/token', options)
   if (!response.ok) {
     throw new Error('Failed to fetch reservation token')
   }

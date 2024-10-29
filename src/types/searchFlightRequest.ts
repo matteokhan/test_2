@@ -1,7 +1,13 @@
+export enum SearchFlightSegmentType {
+  PLACE = 0, // Airports, train stations. Everything that's not a city
+  CITY = 1,
+}
 export type SearchFlightSegment = {
   from: string
   to: string
   date: string
+  fromType: SearchFlightSegmentType
+  toType: SearchFlightSegmentType
 }
 
 export type OneWayFlightSearchParams = {
@@ -9,9 +15,11 @@ export type OneWayFlightSearchParams = {
   from: string
   fromLabel: string
   fromCountry: string
+  fromType: SearchFlightSegmentType
   to: string
   toLabel: string
   toCountry: string
+  toType: SearchFlightSegmentType
   departure: string
   adults: number
   childrens: number
@@ -23,9 +31,11 @@ export type RoundTripFlightSearchParams = {
   from: string
   fromLabel: string
   fromCountry: string
+  fromType: SearchFlightSegmentType
   to: string
   toLabel: string
   toCountry: string
+  toType: SearchFlightSegmentType
   departure: string
   return: string
   adults: number
@@ -39,9 +49,11 @@ export type MultiDestinationsFlightSearchParams = {
     from: string
     fromLabel: string
     fromCountry: string
+    fromType: SearchFlightSegmentType
     to: string
     toLabel: string
     toCountry: string
+    toType: SearchFlightSegmentType
     departure: string
   }[]
   adults: number
