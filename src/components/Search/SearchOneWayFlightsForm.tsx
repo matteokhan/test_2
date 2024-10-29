@@ -3,8 +3,8 @@
 import React from 'react'
 import * as Yup from 'yup'
 import { Box, Button, Stack } from '@mui/material'
-import { Form, Formik, FormikHelpers, Field } from 'formik'
-import { OneWayFlightSearchParams } from '@/types'
+import { Form, Formik, FormikHelpers } from 'formik'
+import { OneWayFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import {
   DatePicker,
   CustomTextField,
@@ -13,19 +13,21 @@ import {
 } from '@/components'
 import dayjs from 'dayjs'
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: OneWayFlightSearchParams = {
   adults: 1,
   childrens: 0,
   infants: 0,
   from: '',
   fromLabel: '',
   fromCountry: '',
+  fromType: SearchFlightSegmentType.PLACE,
   to: '',
   toLabel: '',
   toCountry: '',
+  toType: SearchFlightSegmentType.PLACE,
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   _type: 'oneWay',
-} as OneWayFlightSearchParams
+}
 
 const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),

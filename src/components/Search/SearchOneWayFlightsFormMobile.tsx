@@ -2,7 +2,7 @@
 
 import React, { MutableRefObject, useState } from 'react'
 import { Form, Formik, Field, FormikProps } from 'formik'
-import { OneWayFlightSearchParams } from '@/types'
+import { OneWayFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import * as Yup from 'yup'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
@@ -17,10 +17,12 @@ const DEFAULT_VALUES: OneWayFlightSearchParams = {
   infants: 0,
   from: '',
   fromLabel: '',
-  toCountry: '',
+  fromCountry: '',
+  fromType: SearchFlightSegmentType.PLACE,
   to: '',
   toLabel: '',
-  fromCountry: '',
+  toCountry: '',
+  toType: SearchFlightSegmentType.PLACE,
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   _type: 'oneWay',
 }
