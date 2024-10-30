@@ -31,7 +31,11 @@ export const InsuranceOption = ({
           </Typography>
           <Box data-testid="insuranceOption-description">
             <div
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(insurance.description) }}></div>
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(insurance.description, {
+                  ADD_ATTR: ['target'],
+                }),
+              }}></div>
           </Box>
         </Stack>
         <Stack
