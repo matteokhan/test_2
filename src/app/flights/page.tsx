@@ -241,7 +241,7 @@ export default function FlighsPage() {
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 200}>
+      <TopBar height={isDesktop ? 120 : 200} fixed={isDesktop ? false : true}>
         <Navbar />
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <OldNavbar />
