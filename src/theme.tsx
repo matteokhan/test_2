@@ -74,6 +74,11 @@ declare module '@mui/material/Typography' {
     labelSm: true
   }
 }
+declare module '@mui/material/styles' {
+  interface ZIndex {
+    searchBar: number
+  }
+}
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 const roboto = Roboto({
@@ -96,6 +101,9 @@ let theme = createTheme({
       lg: 1280, // Changed from 1200
       xl: 1536,
     },
+  },
+  zIndex: {
+    searchBar: 500,
   },
   palette: {
     leclerc: {

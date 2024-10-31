@@ -1,11 +1,19 @@
 import { Box, Paper } from '@mui/material'
 
-export const TopBar = ({ children, height }: { children: React.ReactNode; height: number }) => {
+export const TopBar = ({
+  children,
+  height,
+  fixed,
+}: {
+  children: React.ReactNode
+  height: number
+  fixed?: boolean
+}) => {
   return (
     <>
       <Paper
         sx={{
-          position: 'fixed',
+          position: fixed ? 'fixed' : 'unset',
           width: '100%',
           zIndex: 'appBar',
           borderRadius: 0,
@@ -13,7 +21,7 @@ export const TopBar = ({ children, height }: { children: React.ReactNode; height
         elevation={2}>
         {children}
       </Paper>
-      <Box sx={{ height: height }}></Box>
+      {fixed && <Box sx={{ height: height }}></Box>}
     </>
   )
 }
