@@ -24,7 +24,7 @@ export const ItinerarySegmentDatetime = ({
       {daysSinceTravelStart != undefined && daysSinceTravelStart > 0 && (
         <Typography
           variant="bodySm"
-          color="grey.700"
+          color="leclerc.red.main"
           data-testid="flightRouteDetails-daysSinceTravelStart">
           J+{daysSinceTravelStart}
         </Typography>

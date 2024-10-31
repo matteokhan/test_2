@@ -57,9 +57,6 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                   justifyContent="space-between"
                   key={service.name}>
                   <Typography variant="bodyMd">{service.name}</Typography>
-                  <Typography variant="bodyMd" fontWeight={500}>
-                    inclus
-                  </Typography>
                 </Stack>
               ))}
             </Stack>

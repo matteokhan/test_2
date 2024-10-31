@@ -80,7 +80,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
             {daysToArrival > 0 && (
               <Typography
                 variant="bodySm"
-                color="grey.700"
+                color="leclerc.red.main"
                 data-testid="flightRouteDetails-daysToArrival">
                 J+{daysToArrival}
               </Typography>
@@ -237,7 +237,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
                   {' '}
                   <Typography
                     variant="bodySm"
-                    color="grey.700"
+                    color="leclerc.red.main"
                     data-testid="flightRouteDetails-daysToArrival">
                     J+{daysToArrival}
                   </Typography>
