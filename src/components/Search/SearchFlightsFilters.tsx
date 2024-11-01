@@ -124,7 +124,7 @@ export const SearchFlightsFilters = ({
                   <Stack direction="row" justifyContent="space-between" pb={1}>
                     <Typography variant="titleMd">Prix maximum</Typography>
                     <Typography variant="bodyLg" data-testid="searchFlightsFilters-maxPriceLabel">
-                      {values.maxPrice}€
+                      {values.maxPrice?.toFixed(2)}€
                     </Typography>
                   </Stack>
                   <MaxPriceFilterField

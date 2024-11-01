@@ -50,7 +50,7 @@ export const InsuranceOption = ({
           flexShrink={0}>
           <Box>
             <Typography variant="titleLg" color="primary" data-testid="insuranceOption-price">
-              +{perPersonInsurancePrice}€
+              +{perPersonInsurancePrice.toFixed(2)}€
             </Typography>
             <Typography variant="bodySm" noWrap>
               par personne

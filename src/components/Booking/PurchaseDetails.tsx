@@ -46,16 +46,12 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                 variant="bodyMd"
                 fontWeight={500}
                 data-testid="purchaseDetails-passengersPrice">
-                {selectedFare.priceInfo.total} €
+                {selectedFare.priceInfo.total.toFixed(2)} €
               </Typography>
             </Stack>
             <Stack ml={2} gap={1}>
-              {getFareData(selectedFare).services.map((service) => (
-                <Stack
-                  direction="row"
-                  width="100%"
-                  justifyContent="space-between"
-                  key={service.name}>
+              {getFareData(selectedFare).services.map((service, index) => (
+                <Stack direction="row" width="100%" justifyContent="space-between" key={index}>
                   <Typography variant="bodyMd">{service.name}</Typography>
                 </Stack>
               ))}
@@ -89,7 +85,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                             variant="bodyMd"
                             fontWeight={500}
                             data-testid="purchaseDetails-ancillary-price">
-                            {ancillary.price}€
+                            {ancillary.price.toFixed()}€
                           </Typography>
                         </Stack>
                       </Stack>
@@ -107,7 +103,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
               variant="bodyMd"
               fontWeight={500}
               data-testid="purchaseDetails-insurancesPrice">
-              {totalInsurancePrice}€
+              {totalInsurancePrice.toFixed(2)}€
             </Typography>
           </Stack>
         )}
@@ -126,27 +122,8 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
             variant="headlineSm"
             color="primary.main"
             data-testid="purchaseDetails-totalPrice">
-            {totalPrice} €
+            {totalPrice.toFixed(2)} €
           </Typography>
-        </Stack>
-        <Stack
-          px={1}
-          py={0.75}
-          borderRadius={1}
-          bgcolor="leclerc.blueNotif.main"
-          direction="row"
-          gap={0.75}
-          alignItems="center"
-          display="none">
-          <Typography variant="bodySm">Payez en plusieurs fois avec</Typography>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 20,
-              width: 55,
-            }}>
-            <Image src="/floa_logo.svg" alt="floa logo" fill />
-          </Box>
         </Stack>
         <Typography variant="bodySm" color="grey.700">
           Tous frais, taxes, suppléments et frais de service Leclerc Voyages inclus

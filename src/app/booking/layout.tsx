@@ -128,7 +128,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
                 variant="headlineMd"
                 color="common.white"
                 data-testid="checkoutBottomBar-totalPrice">
-                {totalPrice} €
+                {totalPrice.toFixed(2)} €
               </Typography>
               <Typography variant="bodySm" color="common.white">
                 Voir le détail
