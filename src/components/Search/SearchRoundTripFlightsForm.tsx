@@ -4,25 +4,27 @@ import React from 'react'
 import * as Yup from 'yup'
 import { Box, Button, Stack } from '@mui/material'
 import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import { Form, Formik, FormikHelpers, Field } from 'formik'
-import { RoundTripFlightSearchParams } from '@/types'
+import { Form, Formik, FormikHelpers } from 'formik'
+import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
 import dayjs from 'dayjs'
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   adults: 1,
   childrens: 0,
   infants: 0,
   from: '',
   fromLabel: '',
   fromCountry: '',
+  fromType: SearchFlightSegmentType.PLACE,
   to: '',
   toLabel: '',
   toCountry: '',
+  toType: SearchFlightSegmentType.PLACE,
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   return: dayjs().add(3, 'day').format('YYYY-MM-DD'),
   _type: 'roundTrip',
-} as RoundTripFlightSearchParams
+}
 
 const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),

@@ -1,7 +1,7 @@
 'use client'
 
-import { useBooking, useFlights } from '@/contexts'
-import { getFareData } from '@/utils'
+import { useAgencySelector, useBooking, useFlights } from '@/contexts'
+import { getFareData, getPaymentMethodData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import Image from 'next/image'
 import CloseIcon from '@mui/icons-material/Close'
@@ -15,6 +15,8 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
   const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare, ancillaries } =
     useBooking()
+  const { selectedAgency } = useAgencySelector()
+
   return (
     <Paper
       sx={{
@@ -44,20 +46,13 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                 variant="bodyMd"
                 fontWeight={500}
                 data-testid="purchaseDetails-passengersPrice">
-                {selectedFare.priceInfo.total} €
+                {selectedFare.priceInfo.total.toFixed(2)} €
               </Typography>
             </Stack>
             <Stack ml={2} gap={1}>
-              {getFareData(selectedFare).services.map((service) => (
-                <Stack
-                  direction="row"
-                  width="100%"
-                  justifyContent="space-between"
-                  key={service.name}>
+              {getFareData(selectedFare).services.map((service, index) => (
+                <Stack direction="row" width="100%" justifyContent="space-between" key={index}>
                   <Typography variant="bodyMd">{service.name}</Typography>
-                  <Typography variant="bodyMd" fontWeight={500}>
-                    inclus
-                  </Typography>
                 </Stack>
               ))}
             </Stack>
@@ -90,7 +85,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                             variant="bodyMd"
                             fontWeight={500}
                             data-testid="purchaseDetails-ancillary-price">
-                            {ancillary.price}€
+                            {ancillary.price.toFixed()}€
                           </Typography>
                         </Stack>
                       </Stack>
@@ -108,7 +103,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
               variant="bodyMd"
               fontWeight={500}
               data-testid="purchaseDetails-insurancesPrice">
-              {totalInsurancePrice}€
+              {totalInsurancePrice.toFixed(2)}€
             </Typography>
           </Stack>
         )}
@@ -127,57 +122,24 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
             variant="headlineSm"
             color="primary.main"
             data-testid="purchaseDetails-totalPrice">
-            {totalPrice} €
+            {totalPrice.toFixed(2)} €
           </Typography>
-        </Stack>
-        <Stack
-          px={1}
-          py={0.75}
-          borderRadius={1}
-          bgcolor="leclerc.blueNotif.main"
-          direction="row"
-          gap={0.75}
-          alignItems="center"
-          display="none">
-          <Typography variant="bodySm">Payez en plusieurs fois avec</Typography>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 20,
-              width: 55,
-            }}>
-            <Image src="/floa_logo.svg" alt="floa logo" fill />
-          </Box>
         </Stack>
         <Typography variant="bodySm" color="grey.700">
           Tous frais, taxes, suppléments et frais de service Leclerc Voyages inclus
         </Typography>
         <Stack direction="row" pt={1} gap={0.75}>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 23,
-              width: 36,
-            }}>
-            <Image src="/ancv_logo.svg" alt="ancv logo" fill />
-          </Box>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 23,
-              width: 36,
-            }}>
-            <Image src="/ob_logo.svg" alt="ob logo" fill />
-          </Box>
-          <Box
-            sx={{
-              position: 'relative',
-              height: 23,
-              width: 36,
-              display: 'none',
-            }}>
-            <Image src="/floa_logo_2.svg" alt="floa logo" fill />
-          </Box>
+          {selectedAgency?.available_contracts.map((contract) => {
+            const { icon } = getPaymentMethodData({ contractCode: contract })
+            return (
+              <Box
+                sx={{
+                  position: 'relative',
+                }}>
+                {icon}
+              </Box>
+            )
+          })}
         </Stack>
       </Stack>
     </Paper>

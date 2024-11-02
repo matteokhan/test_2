@@ -3,29 +3,20 @@
 import React, { useEffect } from 'react'
 import {
   BookingStepActions,
-  BookingStepActionsMobile,
   SimpleContainer,
   AncilliaryService,
   PassengerAncillariesSkeleton,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Alert, Box, Stack, Grid } from '@mui/material'
+import { Alert, Stack, Grid } from '@mui/material'
 import { useAncillaries, useSelectAncillaries } from '@/services'
 import WarningIcon from '@mui/icons-material/Warning'
 import { AncillaryServiceInfo } from '@/types'
 
 export default function AncillariesPage() {
   const [isNavigating, setIsNavigating] = React.useState(false)
-  const {
-    goPreviousStep,
-    goNextStep,
-    passengers,
-    order,
-    ancillaries,
-    setAncillaries,
-    wereAncillariesSelected,
-    setWereAncillariesSelected,
-  } = useBooking()
+  const { goPreviousStep, goNextStep, passengers, order, ancillaries, setAncillaries } =
+    useBooking()
   const { mutate: selectAncillaries, isPending: isSelectingAncillaries } = useSelectAncillaries()
 
   if (!passengers || !order) {
@@ -41,7 +32,6 @@ export default function AncillariesPage() {
   }, [remoteAncillaries])
 
   const handleSubmit = () => {
-    setWereAncillariesSelected(true)
     selectAncillaries(
       {
         orderId: order.id,
@@ -107,7 +97,6 @@ export default function AncillariesPage() {
                   {outboundServices.length > 0 &&
                     outboundServices.map((service) => (
                       <AncilliaryService
-                        selectedByDefault={!wereAncillariesSelected}
                         disabled={isLoading}
                         key={service.externalId}
                         outboundService={service}
@@ -148,20 +137,11 @@ export default function AncillariesPage() {
             </SimpleContainer>
           )
         })}
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isLoading}
+      />
     </>
   )
 }

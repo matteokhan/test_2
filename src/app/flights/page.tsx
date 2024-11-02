@@ -12,6 +12,8 @@ import {
   SearchFlightsFilters,
   SearchResults,
   SelectedFlightInfoTopbarMobile,
+  OldNavbar,
+  Footer,
 } from '@/components'
 import { Box, Drawer, Button, Grow, Stack, Typography, IconButton, Divider } from '@mui/material'
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
@@ -237,16 +239,13 @@ export default function FlighsPage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (searchParamsDto && !order) {
-      searchFlights({})
-    }
-  }, [searchParamsDto])
-
   return (
     <>
-      <TopBar height={isDesktop ? 60 : 200}>
+      <TopBar height={isDesktop ? 120 : 200} fixed={isDesktop ? false : true}>
         <Navbar />
+        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <OldNavbar />
+        </Box>
         <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
           <SelectedFlightInfoTopbarMobile
             withFilters
@@ -254,6 +253,7 @@ export default function FlighsPage() {
               setActiveFilter(filterName)
               setActiveFilterOpen(true)
             }}
+            onSearch={onSearch}
           />
         </Box>
       </TopBar>
@@ -261,7 +261,7 @@ export default function FlighsPage() {
         sx={{
           backgroundColor: 'grey.200',
         }}>
-        <SectionContainer
+        <Stack
           sx={{
             justifyContent: 'space-between',
             paddingY: { xs: 2, lg: 3 },
@@ -272,140 +272,146 @@ export default function FlighsPage() {
             sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
             disabled={isLoading}
           />
-          {isLoading && (
-            <Grow in={isLoading}>
-              <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
-                <Stack maxWidth="516px" direction="row" gap={3}>
-                  <FlightsLoader />
-                  <Box>
-                    <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                    <Typography variant="bodyMd" pt={1.5}>
-                      Merci de patienter quelques secondes le temps que nous trouvions les
-                      meilleures offres du moment !
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Stack>
-            </Grow>
-          )}
-          <Stack direction="row" spacing={isDesktop ? 2 : 0}>
-            <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-              <SearchFlightsFilters
-                filterData={response?.searchFilters}
-                airlines={getAirlines()}
-                departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
-                arrival={
-                  response?.solutions[0]?.routes[0]?.segments[
-                    response.solutions[0]?.routes[0]?.segments?.length - 1
-                  ]?.arrival
-                }
-                isRoundTrip={
-                  searchParamsDto?.search_data.segments?.length
-                    ? searchParamsDto.search_data.segments.length > 1
-                    : false
-                }
-                onSubmit={(values) => setFilters(values)}
-                activeFilter={activeFilter}
-              />
-            </Box>
-            <Stack gap={2} flexGrow={1}>
-              {/* TODO: Implement date alternatives */}
-              {/* <Stack gap={1}>
+          <SectionContainer>
+            <Stack direction="column">
+              {isLoading && (
+                <Grow in={isLoading}>
+                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
+                    <Stack maxWidth="516px" direction="row" gap={3}>
+                      <FlightsLoader />
+                      <Box>
+                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                        <Typography variant="bodyMd" pt={1.5}>
+                          Merci de patienter quelques secondes le temps que nous trouvions les
+                          meilleures offres du moment !
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </Grow>
+              )}
+              <Stack direction="row" spacing={isDesktop ? 2 : 0}>
+                <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+                  <SearchFlightsFilters
+                    filterData={response?.searchFilters}
+                    airlines={getAirlines()}
+                    departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
+                    arrival={
+                      response?.solutions[0]?.routes[0]?.segments[
+                        response.solutions[0]?.routes[0]?.segments?.length - 1
+                      ]?.arrival
+                    }
+                    isRoundTrip={
+                      searchParamsDto?.search_data.segments?.length
+                        ? searchParamsDto.search_data.segments.length > 1
+                        : false
+                    }
+                    onSubmit={(values) => setFilters(values)}
+                    activeFilter={activeFilter}
+                  />
+                </Box>
+                <Stack gap={2} flexGrow={1}>
+                  {/* TODO: Implement date alternatives */}
+                  {/* <Stack gap={1}>
             <Typography variant="titleMd" pb={1}>
               Ajustez la date de votre départ
             </Typography>
             <FlightDateAlternatives />
           </Stack> */}
-              <Typography variant="bodySm" color="grey.600">
-                Les prix affichés incluent les taxes et peuvent changer en fonction de la
-                disponibilité. Vous pouvez consulter les frais supplémentaires avant le paiement.
-                Les prix ne sont pas définitifs tant que vous n'avez pas finalisé votre achat.
-              </Typography>
-              {isLoading && (
-                <>
-                  <FlightResultSkeleton />
-                  <FlightResultSkeleton />
-                  <FlightResultSkeleton />
-                </>
-              )}
-              {isSuccess && (
-                <>
-                  <SearchResults results={filteredData?.slice(0, resultsNumber)} />
-                  {hasMoreResults && (
-                    <Button
-                      onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
-                      data-testid="searchFlights-viewMoreResultsButton">
-                      Voir plus
-                    </Button>
+                  <Typography variant="bodySm" color="grey.600">
+                    Les prix affichés incluent les taxes et peuvent changer en fonction de la
+                    disponibilité. Vous pouvez consulter les frais supplémentaires avant le
+                    paiement. Les prix ne sont pas définitifs tant que vous n'avez pas finalisé
+                    votre achat.
+                  </Typography>
+                  {isLoading && (
+                    <>
+                      <FlightResultSkeleton />
+                      <FlightResultSkeleton />
+                      <FlightResultSkeleton />
+                    </>
                   )}
-                </>
-              )}
+                  {isSuccess && (
+                    <>
+                      <SearchResults results={filteredData?.slice(0, resultsNumber)} />
+                      {hasMoreResults && (
+                        <Button
+                          onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
+                          data-testid="searchFlights-viewMoreResultsButton">
+                          Voir plus
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </Stack>
+              </Stack>
             </Stack>
-          </Stack>
-          <Drawer
-            open={flightDetailsOpen}
-            onClose={() => setFlightDetailsOpen(false)}
-            anchor="right"
-            PaperProps={{
-              sx: {
-                borderRadius: 0,
-                height: { xs: 'calc(100% - 64px)', lg: '100%' },
-                top: 'unset',
-                bottom: 0,
-                width: { xs: '100%', lg: 'unset' },
-              },
-            }}>
-            <FlightDetails
-              isLoading={isNavigating}
-              onClose={() => setFlightDetailsOpen(false)}
-              onSelectFlight={handleSelectFlight}
-            />
-          </Drawer>
-          <Drawer
-            open={activeFilterOpen}
-            onClose={() => {
-              setActiveFilter('all')
-              setActiveFilterOpen(false)
-            }}
-            anchor="bottom"
-            PaperProps={{
-              sx: {
-                borderRadius: 0,
-                maxHeight: 'calc(100% - 200px)',
-                height: 'auto',
-              },
-            }}>
-            <Box py={0.5} px={1}>
-              <IconButton
-                aria-label="close"
-                onClick={() => setActiveFilterOpen(false)}
-                data-testid="searchFlightsDrawerFilters-closeButton"
-                sx={{ float: 'right' }}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Divider />
-            <SearchFlightsFilters
-              filterData={response?.searchFilters}
-              selectedFilters={filters}
-              airlines={getAirlines()}
-              departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
-              arrival={
-                response?.solutions[0]?.routes[0]?.segments[
-                  response.solutions[0]?.routes[0]?.segments?.length - 1
-                ]?.arrival
-              }
-              isRoundTrip={
-                searchParamsDto?.search_data.segments?.length
-                  ? searchParamsDto.search_data.segments.length > 1
-                  : false
-              }
-              onSubmit={(values) => setFilters(values)}
-              activeFilter={activeFilter}
-            />
-          </Drawer>
-        </SectionContainer>
+          </SectionContainer>
+        </Stack>
+        <Footer />
       </Box>
+      <Drawer
+        open={flightDetailsOpen}
+        onClose={() => setFlightDetailsOpen(false)}
+        anchor="right"
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+            height: { xs: 'calc(100% - 64px)', lg: '100%' },
+            top: 'unset',
+            bottom: 0,
+            width: { xs: '100%', lg: 'unset' },
+          },
+        }}>
+        <FlightDetails
+          isLoading={isNavigating}
+          onClose={() => setFlightDetailsOpen(false)}
+          onSelectFlight={handleSelectFlight}
+        />
+      </Drawer>
+      <Drawer
+        open={activeFilterOpen}
+        onClose={() => {
+          setActiveFilter('all')
+          setActiveFilterOpen(false)
+        }}
+        anchor="bottom"
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+            maxHeight: 'calc(100% - 200px)',
+            height: 'auto',
+          },
+        }}>
+        <Box py={0.5} px={1}>
+          <IconButton
+            aria-label="close"
+            onClick={() => setActiveFilterOpen(false)}
+            data-testid="searchFlightsDrawerFilters-closeButton"
+            sx={{ float: 'right' }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Divider />
+        <SearchFlightsFilters
+          filterData={response?.searchFilters}
+          selectedFilters={filters}
+          airlines={getAirlines()}
+          departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
+          arrival={
+            response?.solutions[0]?.routes[0]?.segments[
+              response.solutions[0]?.routes[0]?.segments?.length - 1
+            ]?.arrival
+          }
+          isRoundTrip={
+            searchParamsDto?.search_data.segments?.length
+              ? searchParamsDto.search_data.segments.length > 1
+              : false
+          }
+          onSubmit={(values) => setFilters(values)}
+          activeFilter={activeFilter}
+        />
+      </Drawer>
     </>
   )
 }

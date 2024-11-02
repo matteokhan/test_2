@@ -36,10 +36,12 @@ const passengerSchema = ({
   type,
   atLeastOneEmail,
   atLeastOnePhone,
+  departureDatetime,
 }: {
   type: PassengerType
   atLeastOneEmail: boolean
   atLeastOnePhone: boolean
+  departureDatetime: dayjs.Dayjs
 }) =>
   Yup.object().shape({
     type: Yup.string(),
@@ -51,16 +53,16 @@ const passengerSchema = ({
       .required('La date de naissance est requise')
       .test('is-adult', 'Le passager doit être âgé de 12 ans ou plus', function (value) {
         if (type !== 'ADT') return true
-        return dayjs().diff(dayjs(value), 'year') >= 12
+        return departureDatetime.diff(dayjs(value), 'year') >= 12
       })
       .test('is-child', "L'âge de l'enfant doit être entre 2 et 11 ans", function (value) {
         if (type !== 'CHD') return true
-        const age = dayjs().diff(dayjs(value), 'year')
+        const age = departureDatetime.diff(dayjs(value), 'year')
         return age >= 2 && age < 12
       })
       .test('is-infant', "L'âge de l'enfant doit être inférieur à 2 ans", function (value) {
         if (type !== 'INF') return true
-        const age = dayjs().diff(dayjs(value), 'year')
+        const age = departureDatetime.diff(dayjs(value), 'year')
         return age < 2
       }),
     phoneCode: Yup.string().when('type', {
@@ -191,6 +193,7 @@ export const PassengerForm = ({
           type: initialValues.type,
           atLeastOneEmail: atLeastOneEmail,
           atLeastOnePhone: atLeastOnePhone,
+          departureDatetime: departureDatetime,
         })}
         onSubmit={onSubmit}
         enableReinitialize={false}>

@@ -17,11 +17,12 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { SearchFlightsParams } from '@/types'
 
 export default function BookingLayout({ children }: { children: React.ReactNode }) {
   const { selectedFlight, getStepIndexByPath, steps, currentStep, totalPrice } = useBooking()
   const currentStepTitle = steps.current[currentStep.current].title
-  const { setFlightDetailsOpen, flightDetailsOpen } = useFlights()
+  const { setFlightDetailsOpen, flightDetailsOpen, setSearchParams } = useFlights()
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
   const router = useRouter()
@@ -30,6 +31,11 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
 
   const [totalPriceOpen, setTotalPriceOpen] = useState(false)
+
+  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
+    setSearchParams(searchParams)
+    router.push('/flights')
+  }
 
   useEffect(() => {
     if (!selectedFlight && !orderId) {
@@ -53,13 +59,13 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 145}>
+      <TopBar height={isDesktop ? 120 : 145} fixed>
         <Navbar />
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <SelectedFlightInfoTopbar />
         </Box>
         <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-          <SelectedFlightInfoTopbarMobile />
+          <SelectedFlightInfoTopbarMobile onSearch={onSearch} />
         </Box>
       </TopBar>
       <Box sx={{ backgroundColor: 'grey.200' }}>
@@ -122,7 +128,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
                 variant="headlineMd"
                 color="common.white"
                 data-testid="checkoutBottomBar-totalPrice">
-                {totalPrice} €
+                {totalPrice.toFixed(2)} €
               </Typography>
               <Typography variant="bodySm" color="common.white">
                 Voir le détail

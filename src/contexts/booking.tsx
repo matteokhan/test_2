@@ -274,7 +274,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const selectFlight = (flight: Solution | null) => {
     setSelectedFlight(flight)
     setSelectedFare(flight)
-    resetBooking()
   }
 
   const saveBookingState = () => {

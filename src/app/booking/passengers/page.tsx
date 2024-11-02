@@ -3,7 +3,6 @@
 import React, { useRef, useState } from 'react'
 import {
   BookingStepActions,
-  BookingStepActionsMobile,
   PassengerInfo,
   AtLeastOneAdultPassengerModal,
   AtLeastOneYoungAdultPassengerModal,
@@ -13,7 +12,7 @@ import { PassengerData, UpdateOrderParams } from '@/types'
 import { FormikProps } from 'formik'
 import { ageIsAtLeast } from '@/utils'
 import { useUpdateOrder } from '@/services'
-import { Box, Modal } from '@mui/material'
+import { Modal } from '@mui/material'
 
 export default function PassengersPage() {
   const {
@@ -150,20 +149,12 @@ export default function PassengersPage() {
           />
         ))}
       </EmailRequirementProvider>
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isUpdatingOrder || isNavigating}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isUpdatingOrder || isNavigating}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isUpdatingOrder || isNavigating}
+      />
+
       <Modal open={oneAdultModalIsOpen} onClose={() => setOneAdultModalIsOpen(false)}>
         <AtLeastOneAdultPassengerModal onClose={() => setOneAdultModalIsOpen(false)} />
       </Modal>

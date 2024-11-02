@@ -6,10 +6,9 @@ import {
   InsuranceOption,
   SimpleContainer,
   NoInsuranceConfirmationModal,
-  BookingStepActionsMobile,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Alert, Grid, Stack, Modal, Button, Box } from '@mui/material'
+import { Alert, Grid, Stack, Modal, Button } from '@mui/material'
 import { useInsurances, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
 import WarningIcon from '@mui/icons-material/Warning'
@@ -105,20 +104,11 @@ export default function InsurancesPage() {
           </Button>
         </Stack>
       </SimpleContainer>
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isUpdatingOrder || isNavigating}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isUpdatingOrder || isNavigating}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isUpdatingOrder || isNavigating}
+      />
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
         <NoInsuranceConfirmationModal
           onChooseInsurance={() => setModalIsOpen(false)}

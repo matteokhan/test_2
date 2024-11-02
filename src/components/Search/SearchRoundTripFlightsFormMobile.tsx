@@ -2,7 +2,7 @@
 
 import React, { MutableRefObject, useState } from 'react'
 import { Form, Formik, Field, FormikProps } from 'formik'
-import { RoundTripFlightSearchParams } from '@/types'
+import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import * as Yup from 'yup'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
@@ -18,9 +18,11 @@ const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   from: '',
   fromLabel: '',
   fromCountry: '',
+  fromType: SearchFlightSegmentType.PLACE,
   to: '',
   toLabel: '',
   toCountry: '',
+  toType: SearchFlightSegmentType.PLACE,
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   return: dayjs().add(3, 'day').format('YYYY-MM-DD'),
   _type: 'roundTrip',
@@ -34,8 +36,10 @@ const searchParamsSchema = Yup.object().shape({
   infants: Yup.number().min(0).required('Requise'),
   from: Yup.string().required('Requise'),
   fromLabel: Yup.string(),
+  fromType: Yup.number(),
   to: Yup.string().required('Requise'),
   toLabel: Yup.string(),
+  toType: Yup.number(),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
   return: Yup.date().typeError('Date invalide').required('Requise'),
 })

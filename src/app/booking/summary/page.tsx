@@ -12,11 +12,10 @@ import {
   NoPaymentMethodConfirmationModal,
   BookingConditionsCheckbox,
   AcceptBookingConditionsModal,
-  BookingStepActionsMobile,
 } from '@/components'
 import { useAgencySelector, useBooking } from '@/contexts'
-import { usePrepareOrderPayment, useUpdateOrder } from '@/services'
-import { AgencyContractCode, UpdateOrderParams } from '@/types'
+import { usePrepareLccOrderPayment, usePrepareOrderPayment, useUpdateOrder } from '@/services'
+import { AgencyContractCode, GDSType, UpdateOrderParams } from '@/types'
 import { Alert, Box, Modal, Typography } from '@mui/material'
 import { useSearchParams } from 'next/navigation'
 import WarningIcon from '@mui/icons-material/Warning'
@@ -30,14 +29,17 @@ export default function BookingSummaryPage() {
   const [conditionsAccepted, setConditionsAccepted] = useState(false)
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
-  const { goPreviousStep, goToStep, order, saveBookingState, loadBookingState } = useBooking()
+  const { goPreviousStep, goToStep, order, saveBookingState, loadBookingState, selectedFare } =
+    useBooking()
   const { mutate: prepareOrderPayment, isPending: isPreparingPayment } = usePrepareOrderPayment()
+  const { mutate: prepareLccOrderPayment, isPending: isPreparingLccPayment } =
+    usePrepareLccOrderPayment()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
   const { selectedAgency } = useAgencySelector()
-  const isLoading = isPreparingPayment || isUpdatingOrder
+  const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment
 
   const handleSubmit = async () => {
-    if (!order) {
+    if (!order || !selectedFare) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       return
@@ -59,28 +61,48 @@ export default function BookingSummaryPage() {
     }
     updateOrder(newOrder, {
       onSuccess: (updatedOrder) => {
-        prepareOrderPayment(
-          { orderId: updatedOrder.id },
-          {
-            onSuccess: (data) => {
-              if (data.ticket?.is_reserved === false) {
+        if (selectedFare.gdsType == GDSType.REGULAR) {
+          prepareOrderPayment(
+            { orderId: updatedOrder.id },
+            {
+              onSuccess: (data) => {
+                if (data.ticket?.is_reserved === false) {
+                  // TODO: log this somewhere
+                  // TODO: Warn the user that something went wrong
+                  return
+                }
+                if (!data.payment_redirect_url) {
+                  // TODO: log this somewhere
+                  // TODO: Warn the user that something went wrong
+                  return
+                }
+                window.location.replace(data.payment_redirect_url)
+              },
+              onError: (error) => {
                 // TODO: log this somewhere
                 // TODO: Warn the user that something went wrong
-                return
-              }
-              if (!data.payment_redirect_url) {
+              },
+            },
+          )
+        } else if (selectedFare.gdsType === GDSType.LOW_COST_CARRIER) {
+          prepareLccOrderPayment(
+            { orderId: updatedOrder.id, solutionId: selectedFare.id },
+            {
+              onSuccess: (data) => {
+                if (!data.payment_redirect_url) {
+                  // TODO: log this somewhere
+                  // TODO: Warn the user that something went wrong
+                  return
+                }
+                window.location.replace(data.payment_redirect_url)
+              },
+              onError: (error) => {
                 // TODO: log this somewhere
                 // TODO: Warn the user that something went wrong
-                return
-              }
-              window.location.replace(data.payment_redirect_url)
+              },
             },
-            onError: (error) => {
-              // TODO: log this somewhere
-              // TODO: Warn the user that something went wrong
-            },
-          },
-        )
+          )
+        }
       },
       onError: (error) => {
         // TODO: log this somewhere
@@ -170,22 +192,12 @@ export default function BookingSummaryPage() {
         onClose={() => setAcceptConditionsModalIsOpen(false)}>
         <AcceptBookingConditionsModal onClose={() => setAcceptConditionsModalIsOpen(false)} />
       </Modal>
-      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-        <BookingStepActions
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-          goBackDisabled={paymentWasFailed}
-        />
-      </Box>
-      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-        <BookingStepActionsMobile
-          onContinue={handleSubmit}
-          onGoBack={goPreviousStep}
-          isLoading={isLoading}
-          goBackDisabled={paymentWasFailed}
-        />
-      </Box>
+      <BookingStepActions
+        onContinue={handleSubmit}
+        onGoBack={goPreviousStep}
+        isLoading={isLoading}
+        goBackDisabled={paymentWasFailed}
+      />
     </>
   )
 }

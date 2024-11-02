@@ -31,7 +31,11 @@ export const InsuranceOption = ({
           </Typography>
           <Box data-testid="insuranceOption-description">
             <div
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(insurance.description) }}></div>
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(insurance.description, {
+                  ADD_ATTR: ['target'],
+                }),
+              }}></div>
           </Box>
         </Stack>
         <Stack
@@ -46,7 +50,7 @@ export const InsuranceOption = ({
           flexShrink={0}>
           <Box>
             <Typography variant="titleLg" color="primary" data-testid="insuranceOption-price">
-              +{perPersonInsurancePrice}€
+              +{perPersonInsurancePrice.toFixed(2)}€
             </Typography>
             <Typography variant="bodySm" noWrap>
               par personne

@@ -1,6 +1,6 @@
 import { Dayjs } from 'dayjs'
 import { CountryCallingCode } from 'libphonenumber-js'
-import { AgencyId, CorrelationId, RouteId, SolutionId } from '@/types'
+import { AgencyId, CorrelationId, RouteId, SearchFlightsParamsDto, SolutionId } from '@/types'
 
 export type BookingStepCode =
   | 'fares'
@@ -106,6 +106,12 @@ export type OrderDto = {
   insurance: number | null
   agency_contract: string | null
   agency__name: string | null
+  search: SearchFlightsParamsDto & {
+    correlation_id: CorrelationId
+    number_of_searches: number
+    searched_at: string
+    solution_id: SolutionId
+  }
 }
 
 export type OrderTicketDto = {
@@ -138,6 +144,10 @@ export type OrderTransportDto = {
   departure_city: string
   departure_city_name: string
   flight_number: string
+  service_period: {
+    end: string
+    start: string
+  }
 }
 
 export type OrderRouteDto = {
