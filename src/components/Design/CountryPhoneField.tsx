@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   TextField,
   TextFieldProps,
@@ -47,25 +47,47 @@ type CountryPhoneFieldProps = Omit<TextFieldProps, 'onChange'> & {
   onChange: (values: [CountryCallingCode, string]) => void
 }
 
-export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, CountryPhoneFieldProps>(
-  (props, ref) => {
-    const { values, onChange } = props
-    const [selectedCountry, setSelectedCountry] = useState<CountryCode>('FR')
-    const [phoneNumber, setPhoneNumber] = useState<string>('')
-    const parsedPhone = new AsYouType(selectedCountry).input(phoneNumber)
+export const CountryPhoneField = React.forwardRef<HTMLDivElement, CountryPhoneFieldProps>(
+  (props) => {
+    const { values, onChange, ...textFieldProps } = props
+    const [localState, setLocalState] = useState({
+      country: 'FR' as CountryCode,
+      phone: '',
+      initialized: false,
+    })
 
+    // Initialize values only once
     useEffect(() => {
-      if (values[1]) {
-        setPhoneNumber(values[1])
+      if (!localState.initialized && values[1]) {
+        setLocalState({
+          country: phoneCodeMap[values[0]] || 'FR',
+          phone: values[1],
+          initialized: true,
+        })
       }
-      if (values[0]) {
-        setSelectedCountry(phoneCodeMap[values[0]])
-      }
-    }, [])
+    }, [values, localState.initialized])
 
-    useEffect(() => {
-      onChange([getPhoneCode(selectedCountry), phoneNumber])
-    }, [selectedCountry, phoneNumber])
+    // Format phone number
+    const formatter = new AsYouType(localState.country)
+    const formattedPhone = formatter.input(localState.phone)
+
+    const handlePhoneChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newPhone = e.target.value
+        setLocalState((prev) => ({ ...prev, phone: newPhone }))
+        onChange([getPhoneCode(localState.country), newPhone])
+      },
+      [localState.country, onChange],
+    )
+
+    const handleCountryChange = useCallback(
+      (e: React.ChangeEvent<{ value: unknown }>) => {
+        const newCountry = e.target.value as CountryCode
+        setLocalState((prev) => ({ ...prev, country: newCountry }))
+        onChange([getPhoneCode(newCountry), localState.phone])
+      },
+      [localState.phone, onChange],
+    )
 
     return (
       <FormControl fullWidth>
@@ -76,8 +98,8 @@ export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, Countr
               sx={{
                 borderTopRightRadius: 0,
               }}
-              value={selectedCountry ? selectedCountry : 'FR'}
-              onChange={(ev) => setSelectedCountry(ev.target.value as CountryCode)}>
+              value={localState.country}
+              onChange={handleCountryChange}>
               {countryList.map((country) => (
                 <MenuItem value={country.code} key={country.code}>
                   <Stack direction="row" gap={1} alignItems="center">
@@ -89,14 +111,16 @@ export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, Countr
             </Select>
           </FormControl>
           <TextField
+            {...textFieldProps}
             fullWidth
             sx={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0 } }}
-            {...props}
-            value={parsedPhone}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            value={formattedPhone}
+            onChange={handlePhoneChange}
           />
         </Stack>
       </FormControl>
     )
   },
 )
+
+CountryPhoneField.displayName = 'CountryPhoneField'
