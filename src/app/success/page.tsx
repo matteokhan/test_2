@@ -1,9 +1,9 @@
 'use client'
 
-import { BookingConfirmation, Navbar, SectionContainer, TopBar } from '@/components'
+import { BookingConfirmation, FlightsLoader, Navbar, SectionContainer, TopBar } from '@/components'
 import { getOrder } from '@/services'
 import { OrderDto } from '@/types'
-import { Box } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -66,7 +66,18 @@ export default function SuccessPage() {
         <Navbar />
       </TopBar>
       {isLoading && (
-        <SectionContainer sx={{ paddingY: 3 }}>Nous confirmons le paiement ...</SectionContainer>
+        <SectionContainer sx={{ paddingY: 3, justifyContent: 'center' }}>
+          <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
+            <Stack maxWidth="516px" direction="row" gap={3} alignItems="center">
+              <FlightsLoader />
+              <Box>
+                <Typography variant="titleLg">
+                  Nous attendons la confirmation de votre paiement ...
+                </Typography>
+              </Box>
+            </Stack>
+          </Stack>
+        </SectionContainer>
       )}
       {!isLoading && order?.is_paid == true && (
         <>

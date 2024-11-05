@@ -127,16 +127,54 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
             <Typography variant="headlineSm" display="flex" height={32}>
               pour votre réservation.
             </Typography>
-            {/* <Stack direction="row" justifyContent="center" height={24} gap={1} alignItems="center">
+            <Stack
+              direction="row"
+              justifyContent="center"
+              height={24}
+              gap={1}
+              alignItems="center"
+              pt={2}>
               <Typography variant="bodyMd">Address :</Typography>
               <Typography
                 variant="bodyMd"
                 color="primary"
                 fontWeight={500}
-                data-testid="bookingConfirmation-reference">
-                {}
+                data-testid="bookingConfirmation-address">
+                {order.agency_data?.address} - {order.agency_data?.city}
               </Typography>
-            </Stack> */}
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              height={24}
+              gap={1}
+              alignItems="center"
+              pt={1}>
+              <Typography variant="bodyMd">Code postal :</Typography>
+              <Typography
+                variant="bodyMd"
+                color="primary"
+                fontWeight={500}
+                data-testid="bookingConfirmation-postalCode">
+                {order.agency_data?.postal_code}
+              </Typography>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              height={24}
+              gap={1}
+              alignItems="center"
+              pt={1}>
+              <Typography variant="bodyMd">Téléphone :</Typography>
+              <Typography
+                variant="bodyMd"
+                color="primary"
+                fontWeight={500}
+                data-testid="bookingConfirmation-phone">
+                {order.agency_data?.phone}
+              </Typography>
+            </Stack>
           </Stack>
           <Typography variant="bodyMd" textAlign="center">
             Pour toute demande relative à votre dossier,
