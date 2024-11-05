@@ -41,7 +41,7 @@ export const getFareData = (solution: Solution): Fare => {
           switch (option.indicator) {
             case 'IncludedInBrand':
               if (brand.baggagePieces) {
-                let name = `${brand.baggagePieces} bagages enregistrés inclus`
+                let name = `${brand.baggagePieces} bagage(s) enregistré(s) inclus`
                 if (brand.baggageWeight) {
                   name = name + ` (${brand.baggageWeight} kg)`
                 }
