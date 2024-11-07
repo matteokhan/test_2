@@ -11,59 +11,11 @@ import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
 import { useBooking, useEmailRequirement } from '@/contexts'
-import { getPassengerMaxBirthDate, getPassengerMinBirthDate } from '@/utils'
-import { getExampleNumber, validatePhoneNumberLength, parsePhoneNumber } from 'libphonenumber-js'
-import examples from 'libphonenumber-js/examples.mobile.json'
-
-// Helper function to validate phone number
-const validatePhoneWithCountry = (
-  phoneNumber: string,
-  countryCode: string,
-): { isValid: boolean; message?: string } => {
-  if (!phoneNumber || !countryCode) return { isValid: false }
-
-  try {
-    const phoneNumberWithCountryCode = `+${countryCode}${phoneNumber}`
-    const parsedNumber = parsePhoneNumber(phoneNumberWithCountryCode)
-
-    if (!parsedNumber.country) {
-      return {
-        isValid: false,
-        message: 'Le code pays est invalide.',
-      }
-    }
-
-    const validationResult = validatePhoneNumberLength(phoneNumber, parsedNumber.country)
-    let message = ''
-
-    switch (validationResult) {
-      case 'TOO_SHORT':
-        message = 'Le numéro de téléphone est trop court.'
-        break
-      case 'TOO_LONG':
-        message = 'Le numéro de téléphone est trop long.'
-        break
-      case 'INVALID_COUNTRY':
-        message = 'Le code pays est invalide.'
-        break
-      case undefined:
-        return { isValid: true }
-    }
-
-    // Add example number information if available
-    const exampleNumber = getExampleNumber(parsedNumber.country, examples)
-    if (exampleNumber) {
-      message += ` Un numéro typique de +${countryCode} (${parsedNumber.country}) a ${exampleNumber.nationalNumber.length} chiffres.`
-    }
-
-    return { isValid: false, message }
-  } catch (error) {
-    return {
-      isValid: false,
-      message: "Le numéro de téléphone n'est pas valide",
-    }
-  }
-}
+import {
+  getPassengerMaxBirthDate,
+  getPassengerMinBirthDate,
+  validatePhoneWithCountry,
+} from '@/utils'
 
 // When atLeastOneEmail changes, it resets all the passenger form errors.
 // This is necessary because the form errors are not reset when the email condition is
@@ -81,7 +33,6 @@ const FormErrorResetter = () => {
 }
 
 const emailSchema = Yup.string().email('E-mail invalide')
-// const phoneSchema = Yup.string().required('Le numéro de téléphone est requis')
 const passengerSchema = ({
   type,
   atLeastOneEmail,
@@ -127,15 +78,10 @@ const passengerSchema = ({
         otherwise: (schema) => schema.optional(),
       })
       .test('phone-validation', function (value) {
-        // Skip validation if the field is not required and empty
         if (!value && this.parent.type !== 'ADT') {
           return true
         }
-
-        // Get the country code from the form values
         const countryCode = this.parent.phoneCode
-
-        // Validate the phone number
         const { isValid, message } = validatePhoneWithCountry(value || '', countryCode)
 
         if (!isValid && message) {
@@ -232,7 +178,7 @@ export const PassengerForm = ({
         })}
         onSubmit={onSubmit}
         enableReinitialize={false}>
-        {({ errors, touched, setFieldValue, values, validateForm }) => (
+        {({ errors, touched, setFieldValue, values }) => (
           <Form data-testid="passengerForm">
             <FormErrorResetter />
             <Stack direction="row" pt={0.5} pb={0.5}>
@@ -332,26 +278,16 @@ export const PassengerForm = ({
                   {initialValues.type === 'ADT' && (
                     <CountryPhoneField
                       data-testid="phoneNumberField"
-                      values={[values.phoneCode, values.phoneNumber]}
-                      onChange={async (values) => {
+                      name="phoneNumber"
+                      countryCodeName="phoneCode"
+                      label="Téléphone"
+                      variant="filled"
+                      onPhoneChange={async (values) => {
                         const [countryCode, phoneNumber] = values
-
-                        // Just update the form values
-                        await setFieldValue('phoneNumber', phoneNumber)
-                        await setFieldValue('phoneCode', countryCode)
-
-                        // Update phone provided state based on presence of values
                         const newIsPhoneProvided = [...isPhoneProvided]
                         newIsPhoneProvided[passengerIndex] = Boolean(phoneNumber && countryCode)
                         setIsPhoneProvided(newIsPhoneProvided)
-
-                        // Formik handle the validation
-                        await validateForm()
                       }}
-                      error={errors.phoneNumber ? touched.phoneNumber : false}
-                      helperText={touched.phoneNumber && errors.phoneNumber}
-                      label="Téléphone"
-                      variant="filled"
                     />
                   )}
                 </Box>

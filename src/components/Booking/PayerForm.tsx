@@ -14,6 +14,7 @@ import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import { CountryCallingCode } from 'libphonenumber-js'
+import { validatePhoneWithCountry } from '@/utils'
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
@@ -25,7 +26,21 @@ const payerSchema = Yup.object().shape({
     .test('is-adult', 'Le payeur doit être âgé de 18 ans ou plus', function (value) {
       return dayjs().diff(dayjs(value), 'year') >= 18
     }),
-  phoneNumber: Yup.string().required('Le numéro de téléphone est requis'),
+  phoneNumber: Yup.string()
+    .required('Le numéro de téléphone est requis')
+    .test('phone-validation', function (value) {
+      if (!value && this.parent.type !== 'ADT') {
+        return true
+      }
+      const countryCode = this.parent.phoneCode
+      const { isValid, message } = validatePhoneWithCountry(value || '', countryCode)
+
+      if (!isValid && message) {
+        return this.createError({ message })
+      }
+
+      return true
+    }),
   phoneCode: Yup.string().required('Le numéro de téléphone est requis'),
   email: Yup.string().email('E-mail invalide').required("L'e-mail est requis"),
   address: Yup.string().required('L’adresse est requise'),
@@ -110,13 +125,8 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
               />
               <CountryPhoneField
                 data-testid="phoneNumberField"
-                values={[values.phoneCode, values.phoneNumber]}
-                onChange={(values) => {
-                  setFieldValue('phoneNumber', values[1])
-                  setFieldValue('phoneCode', values[0])
-                }}
-                error={errors.phoneNumber ? touched.phoneNumber : false}
-                helperText={touched.phoneNumber && errors.phoneNumber}
+                name="phoneNumber"
+                countryCodeName="phoneCode"
                 label="Téléphone"
                 variant="filled"
               />

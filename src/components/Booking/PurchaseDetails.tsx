@@ -3,7 +3,6 @@
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import { getFareData, getPaymentMethodData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
-import Image from 'next/image'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
 
@@ -133,6 +132,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
             const { icon } = getPaymentMethodData({ contractCode: contract })
             return (
               <Box
+                key={contract}
                 sx={{
                   position: 'relative',
                 }}>
