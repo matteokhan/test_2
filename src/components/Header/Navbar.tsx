@@ -83,12 +83,13 @@ export const Navbar = () => {
                   sm: 'flex',
                 },
               }}>
-              <Button href="/newsletter" color="primary" data-testid="navbar-newsletterButton">
+              {/* TODO: enable this when the time comes ... */}
+              {/* <Button href="/newsletter" color="primary" data-testid="navbar-newsletterButton">
                 Newsletter
               </Button>
               <Button href="/help" color="primary" variant="text" data-testid="navbar-helpButton">
                 Aide
-              </Button>
+              </Button> */}
               <Button
                 onClick={() => setMapIsOpen(true)}
                 color="primary"
@@ -115,12 +116,13 @@ export const Navbar = () => {
               />
             </Drawer>
             <Stack direction="row">
-              <IconButton
+              {/* TODO: enable this when the time comes ... */}
+              {/* <IconButton
                 aria-label="favorites"
                 color="primary"
                 data-testid="navbar-favoriteButton">
                 <FavoriteBorderOutlinedIcon data-testid={null} />
-              </IconButton>
+              </IconButton> */}
               <IconButton aria-label="account" color="primary" data-testid="navbar-accountButton">
                 <AccountCircleOutlinedIcon data-testid={null} />
               </IconButton>
