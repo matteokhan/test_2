@@ -10,6 +10,9 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { SectionContainer, SelectAgencyMap } from '@/components'
 import Link from 'next/link'
 import { useAgencySelector } from '@/contexts'
+import { env } from 'next-runtime-env'
+
+const LOGO_REDIRECTION_URL = env('NEXT_PUBLIC_LOGO_REDIRECTION_URL') || ''
 
 export const Navbar = () => {
   const [mapIsOpen, setMapIsOpen] = React.useState(false)
@@ -25,7 +28,7 @@ export const Navbar = () => {
       }}>
       <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>
         <Stack gap={5} alignItems="center" direction="row">
-          <Link href="/">
+          <Link href={LOGO_REDIRECTION_URL}>
             <Box
               data-testid="navbar-leclercLogo"
               sx={{
