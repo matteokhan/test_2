@@ -24,14 +24,6 @@ export const PassengersControls = () => {
     setMaxInfantsReached(values.infants === values.adults)
   }, [values.adults, values.childrens, values.infants])
 
-  useEffect(() => {
-    if (maxInfantsReached) {
-      alert(
-        "Le nombre maximum de passagers de type bébé est atteint dans votre dossier, nous vous invitons à contacter votre agence afin de finaliser votre réservation. Vous pouvez afficher les agences autour de chez vous pour plus d'informations.",
-      )
-    }
-  }, [maxInfantsReached])
-
   const updatePassengers = (
     field: 'adults' | 'childrens' | 'infants',
     operation: 'add' | 'subtract',
