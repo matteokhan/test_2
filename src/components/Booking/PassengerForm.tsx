@@ -11,7 +11,11 @@ import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
 import { useBooking, useEmailRequirement } from '@/contexts'
-import { getPassengerMaxBirthDate, getPassengerMinBirthDate } from '@/utils'
+import {
+  getPassengerMaxBirthDate,
+  getPassengerMinBirthDate,
+  validatePhoneWithCountry,
+} from '@/utils'
 
 // When atLeastOneEmail changes, it resets all the passenger form errors.
 // This is necessary because the form errors are not reset when the email condition is
@@ -29,7 +33,6 @@ const FormErrorResetter = () => {
 }
 
 const emailSchema = Yup.string().email('E-mail invalide')
-const phoneSchema = Yup.string().required('Le numéro de téléphone est requis')
 const passengerSchema = ({
   type,
   atLeastOneEmail,
@@ -68,11 +71,25 @@ const passengerSchema = ({
       then: (schema) => schema.required('Le numéro de téléphone est requis'),
       otherwise: (schema) => schema.optional(),
     }),
-    phoneNumber: Yup.string().when('type', {
-      is: (type: PassengerType) => type === 'ADT' && !atLeastOnePhone,
-      then: (schema) => schema.required('Le numéro de téléphone est requis'),
-      otherwise: (schema) => schema.optional(),
-    }),
+    phoneNumber: Yup.string()
+      .when('type', {
+        is: (type: PassengerType) => type === 'ADT' && !atLeastOnePhone,
+        then: (schema) => schema.required('Le numéro de téléphone est requis'),
+        otherwise: (schema) => schema.optional(),
+      })
+      .test('phone-validation', function (value) {
+        if (!value && this.parent.type !== 'ADT') {
+          return true
+        }
+        const countryCode = this.parent.phoneCode
+        const { isValid, message } = validatePhoneWithCountry(value || '', countryCode)
+
+        if (!isValid && message) {
+          return this.createError({ message })
+        }
+
+        return true
+      }),
     email: Yup.string()
       .email('E-mail invalide')
       .when(['type'], {
@@ -261,29 +278,16 @@ export const PassengerForm = ({
                   {initialValues.type === 'ADT' && (
                     <CountryPhoneField
                       data-testid="phoneNumberField"
-                      values={[values.phoneCode, values.phoneNumber]}
-                      onChange={async (values) => {
-                        setFieldValue('phoneNumber', values[1])
-                        setFieldValue('phoneCode', values[0])
-                        const newIsPhoneProvided = [...isPhoneProvided]
-                        try {
-                          if (
-                            (await phoneSchema.validate(values[1])) &&
-                            (await phoneSchema.validate(values[0]))
-                          ) {
-                            newIsPhoneProvided[passengerIndex] = true
-                          } else {
-                            newIsPhoneProvided[passengerIndex] = false
-                          }
-                        } catch (e) {
-                          newIsPhoneProvided[passengerIndex] = false
-                        }
-                        setIsPhoneProvided(newIsPhoneProvided)
-                      }}
-                      error={errors.phoneNumber ? touched.phoneNumber : false}
-                      helperText={touched.phoneNumber && errors.phoneNumber}
+                      name="phoneNumber"
+                      countryCodeName="phoneCode"
                       label="Téléphone"
                       variant="filled"
+                      onPhoneChange={async (values) => {
+                        const [countryCode, phoneNumber] = values
+                        const newIsPhoneProvided = [...isPhoneProvided]
+                        newIsPhoneProvided[passengerIndex] = Boolean(phoneNumber && countryCode)
+                        setIsPhoneProvided(newIsPhoneProvided)
+                      }}
                     />
                   )}
                 </Box>

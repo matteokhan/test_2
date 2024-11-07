@@ -19,6 +19,7 @@ import {
 } from 'libphonenumber-js'
 import ReactCountryFlag from 'react-country-flag'
 import countries from 'i18n-iso-countries'
+import { useField, useFormikContext } from 'formik'
 
 countries.registerLocale(require('i18n-iso-countries/langs/fr.json'))
 
@@ -42,42 +43,60 @@ const phoneCodeMap = countryList.reduce(
   {} as Record<CountryCallingCode, CountryCode>,
 )
 
-type CountryPhoneFieldProps = Omit<TextFieldProps, 'onChange'> & {
-  values: [CountryCallingCode, string]
-  onChange: (values: [CountryCallingCode, string]) => void
+type CountryPhoneFieldProps = Omit<TextFieldProps, 'onChange' | 'value' | 'name'> & {
+  name: string
+  countryCodeName: string
+  onPhoneChange?: (values: [CountryCallingCode, string]) => void
 }
 
-export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, CountryPhoneFieldProps>(
-  (props, ref) => {
-    const { values, onChange } = props
+export const CountryPhoneField = React.forwardRef<HTMLDivElement, CountryPhoneFieldProps>(
+  ({ name, countryCodeName, onPhoneChange, ...props }, ref) => {
+    const { setFieldValue, setFieldTouched, validateForm } = useFormikContext()
+    const [phoneField, phoneMeta, _phoneHelpers] = useField(name)
+    const [countryField, countryMeta, _countryHelpers] = useField(countryCodeName)
+
     const [selectedCountry, setSelectedCountry] = useState<CountryCode>('FR')
     const [phoneNumber, setPhoneNumber] = useState<string>('')
     const parsedPhone = new AsYouType(selectedCountry).input(phoneNumber)
 
     useEffect(() => {
-      if (values[1]) {
-        setPhoneNumber(values[1])
+      if (phoneField.value) {
+        setPhoneNumber(phoneField.value)
       }
-      if (values[0]) {
-        setSelectedCountry(phoneCodeMap[values[0]])
+      if (countryField.value) {
+        setSelectedCountry(phoneCodeMap[countryField.value])
       }
     }, [])
 
-    useEffect(() => {
-      onChange([getPhoneCode(selectedCountry), phoneNumber])
-    }, [selectedCountry, phoneNumber])
+    const handleCountryChange = async (newCountry: CountryCode) => {
+      setSelectedCountry(newCountry)
+      const phoneCode = getPhoneCode(newCountry)
+      await setFieldValue(countryCodeName, phoneCode)
+      await setFieldTouched(countryCodeName, true, true)
+      onPhoneChange && onPhoneChange([phoneCode, phoneNumber])
+      await validateForm()
+    }
+
+    const handlePhoneChange = async (newPhone: string) => {
+      setPhoneNumber(newPhone)
+      await setFieldValue(name, newPhone)
+      await setFieldTouched(name, true, true)
+      onPhoneChange && onPhoneChange([getPhoneCode(selectedCountry), newPhone])
+      await validateForm()
+    }
 
     return (
       <FormControl fullWidth>
         <Stack direction="row">
           <FormControl variant="filled" sx={{ width: 160 }}>
-            <InputLabel>Pais</InputLabel>
+            <InputLabel>Pays</InputLabel>
             <Select
               sx={{
                 borderTopRightRadius: 0,
               }}
-              value={selectedCountry ? selectedCountry : 'FR'}
-              onChange={(ev) => setSelectedCountry(ev.target.value as CountryCode)}>
+              value={selectedCountry}
+              onChange={(ev) => handleCountryChange(ev.target.value as CountryCode)}
+              error={countryMeta.touched && Boolean(countryMeta.error)}>
               {countryList.map((country) => (
                 <MenuItem value={country.code} key={country.code}>
                   <Stack direction="row" gap={1} alignItems="center">
@@ -92,11 +111,16 @@ export const CountryPhoneField = React.forwardRef<CountryPhoneFieldProps, Countr
             fullWidth
             sx={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0 } }}
             {...props}
+            {...phoneField}
             value={parsedPhone}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            onChange={(e) => handlePhoneChange(e.target.value)}
+            error={phoneMeta.touched && Boolean(phoneMeta.error)}
+            helperText={phoneMeta.touched && phoneMeta.error}
           />
         </Stack>
       </FormControl>
     )
   },
 )
+
+CountryPhoneField.displayName = 'CountryPhoneField'
