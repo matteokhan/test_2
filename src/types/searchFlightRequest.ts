@@ -1,3 +1,5 @@
+import { Prettify } from '@/types'
+
 export enum SearchFlightSegmentType {
   PLACE = 0, // Airports, train stations. Everything that's not a city
   CITY = 1,
@@ -10,52 +12,53 @@ export type SearchFlightSegment = {
   toType: SearchFlightSegmentType
 }
 
-export type OneWayFlightSearchParams = {
-  _type: 'oneWay'
+export type DepartureData = {
   from: string
   fromLabel: string
   fromCountry: string
   fromType: SearchFlightSegmentType
-  to: string
-  toLabel: string
-  toCountry: string
-  toType: SearchFlightSegmentType
-  departure: string
-  adults: number
-  childrens: number
-  infants: number
+  fromInputValue: string
 }
 
-export type RoundTripFlightSearchParams = {
-  _type: 'roundTrip'
-  from: string
-  fromLabel: string
-  fromCountry: string
-  fromType: SearchFlightSegmentType
+export type DestinationData = {
   to: string
   toLabel: string
   toCountry: string
   toType: SearchFlightSegmentType
-  departure: string
-  return: string
-  adults: number
-  childrens: number
-  infants: number
+  toInputValue: string
 }
+
+export type OneWayFlightSearchParams = Prettify<
+  DepartureData &
+    DestinationData & {
+      _type: 'oneWay'
+      departure: string
+      adults: number
+      childrens: number
+      infants: number
+    }
+>
+
+export type RoundTripFlightSearchParams = Prettify<
+  DepartureData &
+    DestinationData & {
+      _type: 'roundTrip'
+      departure: string
+      return: string
+      adults: number
+      childrens: number
+      infants: number
+    }
+>
 
 export type MultiDestinationsFlightSearchParams = {
   _type: 'multiDestinations'
-  destinations: {
-    from: string
-    fromLabel: string
-    fromCountry: string
-    fromType: SearchFlightSegmentType
-    to: string
-    toLabel: string
-    toCountry: string
-    toType: SearchFlightSegmentType
-    departure: string
-  }[]
+  destinations: Prettify<
+    DepartureData &
+      DestinationData & {
+        departure: string
+      }
+  >[]
   adults: number
   childrens: number
   infants: number

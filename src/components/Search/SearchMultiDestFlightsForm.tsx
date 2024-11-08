@@ -6,17 +6,31 @@ import { Button, Stack, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { Form, Formik, FormikHelpers, Field, FieldArray } from 'formik'
-import { MultiDestinationsFlightSearchParams } from '@/types'
+import { MultiDestinationsFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { DatePicker, CustomTextField, PassengersField } from '@/components'
 import dayjs from 'dayjs'
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: MultiDestinationsFlightSearchParams = {
   adults: 1,
   childrens: 0,
   infants: 0,
-  destinations: [{ from: '', to: '', departure: dayjs().add(2, 'day').format('YYYY-MM-DD') }],
+  destinations: [
+    {
+      from: '',
+      fromLabel: '',
+      fromCountry: '',
+      fromInputValue: '',
+      fromType: SearchFlightSegmentType.PLACE,
+      to: '',
+      toCountry: '',
+      toInputValue: '',
+      toLabel: '',
+      toType: SearchFlightSegmentType.PLACE,
+      departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
+    },
+  ],
   _type: 'multiDestinations',
-} as MultiDestinationsFlightSearchParams
+}
 
 type DestinationErrors = {
   from?: string

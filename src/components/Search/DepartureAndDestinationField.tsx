@@ -17,15 +17,17 @@ export const DepartureAndDestinationField = ({
   sx?: SxProps
 }) => {
   const anchorRef = useRef<HTMLInputElement>(null)
-  const { errors, touched, setFieldValue, values } = useFormikContext<{
+  const { errors, touched, setFieldValue, values, validateForm, setValues } = useFormikContext<{
     from: string
     fromLabel: string
     fromCountry: string
     fromType: SearchFlightSegmentType
+    fromInputValue: string
     to: string
     toLabel: string
     toCountry: string
     toType: SearchFlightSegmentType
+    toInputValue: string
   }>()
   const inputRefDeparture = useRef<HTMLInputElement>(null)
   const inputRefDestination = useRef<HTMLInputElement>(null)
@@ -49,13 +51,21 @@ export const DepartureAndDestinationField = ({
   const selectDeparture = (location: LocationData) => {
     setDepartureIsOpen(false)
     setSelectedDeparture(location)
-    setFieldValue('from', location.code)
-    setFieldValue('fromLabel', location.name + ' (' + location.code + ')')
-    setFieldValue('fromCountry', location.country_name)
-    setFieldValue(
-      'fromType',
-      location.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
-    )
+    setValues(
+      {
+        ...values,
+        from: location.code,
+        fromLabel: `${location.name} (${location.code})`,
+        fromCountry: location.country_name,
+        fromType:
+          location.category === 'City'
+            ? SearchFlightSegmentType.CITY
+            : SearchFlightSegmentType.PLACE,
+      },
+      false,
+    ).then(() => {
+      validateForm()
+    })
   }
   const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDeparture(null)
@@ -63,6 +73,7 @@ export const DepartureAndDestinationField = ({
     setFieldValue('fromLabel', null)
     setFieldValue('fromCountry', null)
     setFieldValue('fromType', null)
+    setFieldValue('fromInputValue', e.target.value)
     setDepartureSearchTerm(e.target.value)
   }
   const handleDepartureBlur = () => {
@@ -91,18 +102,29 @@ export const DepartureAndDestinationField = ({
   const selectDestination = (location: LocationData) => {
     setDestinationIsOpen(false)
     setSelectedDestination(location)
-    setFieldValue('to', location.code)
-    setFieldValue('toLabel', location.name + ' (' + location.code + ')')
-    setFieldValue('toCountry', location.country_name)
-    setFieldValue(
-      'toType',
-      location.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
-    )
+    setValues(
+      {
+        ...values,
+        to: location.code,
+        toLabel: `${location.name} (${location.code})`,
+        toCountry: location.country_name,
+        toType:
+          location.category === 'City'
+            ? SearchFlightSegmentType.CITY
+            : SearchFlightSegmentType.PLACE,
+      },
+      false,
+    ).then(() => {
+      validateForm()
+    })
   }
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDestination(null)
     setFieldValue('to', null)
     setFieldValue('toLabel', null)
+    setFieldValue('toCountry', null)
+    setFieldValue('toType', null)
+    setFieldValue('toInputValue', e.target.value)
     setDestinationSearchTerm(e.target.value)
   }
   const handleDestinationBlur = () => {
@@ -150,92 +172,109 @@ export const DepartureAndDestinationField = ({
 
   return (
     <>
-      <Stack
-        border={departureIsOpen || destinationIsOpen ? '2px solid' : '1px solid'}
-        borderColor={departureIsOpen || destinationIsOpen ? 'primary.main' : 'grey.500'}
-        borderRadius="4px"
-        direction="row"
-        alignItems="flex-start"
-        height={58}
-        ref={anchorRef}
-        sx={{ ...sx }}>
-        <Box position="relative" flexGrow={1}>
-          <Field
-            inputRef={inputRefDeparture}
-            onClick={openDepartureSuggestions}
-            as={CustomTextField}
-            noBorder
-            label={labels ? labels[0] : 'Vol au départ de'}
-            sx={{ flexGrow: 1 }}
-            error={touched.from && errors.from}
-            helperText={touched.from && errors.from}
-            inputProps={{
-              'data-testid': 'fromField',
-            }}
-            onChange={handleDepartureChange}
-            onBlur={handleDepartureBlur}
-            value={departureSearchTerm}
-          />
-          {!departureIsOpen && (
-            <Typography
+      <Stack direction="column" width="100%">
+        <Stack
+          border={departureIsOpen || destinationIsOpen ? '2px solid' : '1px solid'}
+          borderColor={departureIsOpen || destinationIsOpen ? 'primary.main' : 'grey.500'}
+          borderRadius="4px"
+          direction="row"
+          alignItems="flex-start"
+          height={58}
+          ref={anchorRef}
+          sx={{ ...sx }}>
+          <Box position="relative" flexGrow={1} flexBasis="min-content">
+            <Field
+              inputRef={inputRefDeparture}
               onClick={openDepartureSuggestions}
-              variant="bodyLg"
-              position="absolute"
-              top="27px"
-              left="13px"
-              textOverflow="ellipsis"
-              noWrap
-              maxWidth="90%"
-              bgcolor="white">
-              {values.fromLabel}
-            </Typography>
-          )}
-        </Box>
-        <Button
-          disabled={!selectedDeparture || !selectedDestination}
-          onClick={swapLocations}
-          variant="outlined"
-          sx={{ width: 32, height: 32, padding: 0, minWidth: 32, alignSelf: 'center' }}>
-          <SwapHorizIcon
-            sx={{
-              width: 24,
-              height: 24,
-              color: !selectedDeparture || !selectedDestination ? 'grey' : 'black',
-            }}
-          />
-        </Button>
-        <Box position="relative" flexGrow={1}>
-          <Field
-            inputRef={inputRefDestination}
-            onClick={openDestinationSuggestions}
-            as={CustomTextField}
-            noBorder
-            label={labels ? labels[1] : 'Vol à destination de'}
-            sx={{ flexGrow: 1 }}
-            error={touched.to && errors.to}
-            helperText={touched.to && errors.to}
-            inputProps={{
-              'data-testid': 'toField',
-            }}
-            onChange={handleDestinationChange}
-            onBlur={handleDestinationBlur}
-            value={destinationSearchTerm}
-          />
-          {!destinationIsOpen && (
-            <Typography
+              as={CustomTextField}
+              noBorder
+              label={labels ? labels[0] : 'Vol au départ de'}
+              sx={{ flexGrow: 1 }}
+              inputProps={{
+                'data-testid': 'fromField',
+              }}
+              onChange={handleDepartureChange}
+              onBlur={handleDepartureBlur}
+              value={departureSearchTerm}
+            />
+            {!departureIsOpen && (
+              <Typography
+                onClick={openDepartureSuggestions}
+                variant="bodyLg"
+                position="absolute"
+                top="27px"
+                left="13px"
+                textOverflow="ellipsis"
+                noWrap
+                maxWidth="90%"
+                bgcolor="white">
+                {values.fromLabel}
+              </Typography>
+            )}
+          </Box>
+          <Button
+            disabled={!selectedDeparture || !selectedDestination}
+            onClick={swapLocations}
+            variant="outlined"
+            sx={{ width: 32, height: 32, padding: 0, minWidth: 32, alignSelf: 'center' }}>
+            <SwapHorizIcon
+              sx={{
+                width: 24,
+                height: 24,
+                color: !selectedDeparture || !selectedDestination ? 'grey' : 'black',
+              }}
+            />
+          </Button>
+          <Box position="relative" flexGrow={1} flexBasis="min-content">
+            <Field
+              inputRef={inputRefDestination}
               onClick={openDestinationSuggestions}
-              variant="bodyLg"
-              position="absolute"
-              top="27px"
-              left="13px"
-              textOverflow="ellipsis"
-              noWrap
-              maxWidth="90%"
-              bgcolor="white">
-              {values.toLabel}
-            </Typography>
-          )}
-        </Box>
+              as={CustomTextField}
+              noBorder
+              label={labels ? labels[1] : 'Vol à destination de'}
+              sx={{ flexGrow: 1 }}
+              inputProps={{
+                'data-testid': 'toField',
+              }}
+              onChange={handleDestinationChange}
+              onBlur={handleDestinationBlur}
+              value={destinationSearchTerm}
+            />
+            {!destinationIsOpen && (
+              <Typography
+                onClick={openDestinationSuggestions}
+                variant="bodyLg"
+                position="absolute"
+                top="27px"
+                left="13px"
+                textOverflow="ellipsis"
+                noWrap
+                maxWidth="90%"
+                bgcolor="white">
+                {values.toLabel}
+              </Typography>
+            )}
+          </Box>
+        </Stack>
+        {((touched.from && errors.from) || (touched.to && errors.to)) && (
+          <Stack direction="row" alignItems="flex-start">
+            <Box flexGrow={1} width="50%" pt={0.5} px={1.8}>
+              {touched.from && errors.from && (
+                <Typography variant="bodySm" letterSpacing={0.15} color="leclerc.red.main">
+                  {errors.from}
+                </Typography>
+              )}
+            </Box>
+            <Box sx={{ width: 32, padding: 0, minWidth: 32, alignSelf: 'center' }}></Box>
+            <Box flexGrow={1} width="50%" pt={0.5} px={1.8}>
+              {touched.to && errors.to && (
+                <Typography variant="bodySm" letterSpacing={0.15} color="leclerc.red.main">
+                  {errors.to}
+                </Typography>
+              )}
+            </Box>
+          </Stack>
+        )}
       </Stack>
       <Popover
         sx={{ mt: 1.2 }}

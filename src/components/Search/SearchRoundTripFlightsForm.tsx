@@ -17,10 +17,12 @@ const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   fromLabel: '',
   fromCountry: '',
   fromType: SearchFlightSegmentType.PLACE,
+  fromInputValue: '',
   to: '',
   toLabel: '',
   toCountry: '',
   toType: SearchFlightSegmentType.PLACE,
+  toInputValue: '',
   departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
   return: dayjs().add(3, 'day').format('YYYY-MM-DD'),
   _type: 'roundTrip',
@@ -30,9 +32,41 @@ const searchParamsSchema = Yup.object().shape({
   adults: Yup.number().min(1).required('Requise'),
   childrens: Yup.number().min(0).required('Requise'),
   infants: Yup.number().min(0).required('Requise'),
-  from: Yup.string().required('Requise'),
+  from: Yup.string()
+    .nullable()
+    .test('from-validation', function (value) {
+      const hasInput = Boolean(this.parent.fromInputValue) // Check if user has typed something
+      const userClickedLocation = Boolean(this.parent.fromLabel)
+      if (!userClickedLocation && hasInput) {
+        return this.createError({
+          message: 'Veuillez sélectionner une ville de départ dans la liste proposée',
+        })
+      }
+      if (!value) {
+        return this.createError({
+          message: 'Requise',
+        })
+      }
+      return true
+    }),
+  to: Yup.string()
+    .nullable()
+    .test('to-validation', function (value) {
+      const hasInput = Boolean(this.parent.toInputValue) // Check if user has typed something
+      const userClickedLocation = Boolean(this.parent.toLabel)
+      if (!userClickedLocation && hasInput) {
+        return this.createError({
+          message: 'Veuillez sélectionner une ville de destination dans la liste proposée',
+        })
+      }
+      if (!value) {
+        return this.createError({
+          message: 'Requise',
+        })
+      }
+      return true
+    }),
   fromLabel: Yup.string(),
-  to: Yup.string().required('Requise'),
   toLabel: Yup.string(),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
   return: Yup.date().typeError('Date invalide').required('Requise'),
