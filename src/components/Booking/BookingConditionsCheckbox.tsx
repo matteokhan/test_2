@@ -40,7 +40,10 @@ export const BookingConditionsCheckbox = ({
           </li>
           {destination && (
             <li onClick={onFormalitiesClick}>
-              <Typography variant="bodySm" color="grey.800">
+              <Typography
+                variant="bodySm"
+                color="grey.800"
+                sx={{ cursor: 'pointer', textDecoration: 'underline' }}>
                 Les formalités {destination}
               </Typography>
             </li>
