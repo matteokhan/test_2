@@ -6,9 +6,13 @@ import './BookingConditionsCheckbox.css'
 export const BookingConditionsCheckbox = ({
   checked,
   onChange,
+  destination,
+  onFormalitiesClick,
 }: {
   checked: boolean
   onChange: (checked: boolean) => void
+  destination?: string
+  onFormalitiesClick?: () => void
 }) => {
   return (
     <Stack direction="row" alignItems="flex-start">
@@ -34,11 +38,13 @@ export const BookingConditionsCheckbox = ({
               Les conditions particulières de vente de l’organisateur technique
             </Typography>
           </li>
-          <li>
-            <Typography variant="bodySm" color="grey.800">
-              Les formalités Tunisie
-            </Typography>
-          </li>
+          {destination && (
+            <li onClick={onFormalitiesClick}>
+              <Typography variant="bodySm" color="grey.800">
+                Les formalités {destination}
+              </Typography>
+            </li>
+          )}
         </ul>
       </Box>
     </Stack>

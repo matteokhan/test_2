@@ -1,6 +1,6 @@
 'use client'
 
-import { Airlines, LocationData, Locations } from '@/types'
+import { Airlines, Formality, LocationData, Locations } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
@@ -115,5 +115,62 @@ export const useLocationsByName = ({ searchTerm }: { searchTerm: string }) => {
     queryFn: () => searchLocationsByName({ searchTerm }),
     refetchOnWindowFocus: false,
     enabled: !!searchTerm,
+  })
+}
+
+export const getFormalities = async ({
+  countryCode,
+  areaCode,
+}: {
+  countryCode?: string
+  areaCode?: string
+}) => {
+  const params: {
+    type: string
+    fields: string
+    country_code?: string
+    area_code?: string
+  } = {
+    type: 'airport.FormalityPage',
+    fields: '*',
+  }
+  if (countryCode) {
+    params.country_code = countryCode
+  }
+  if (areaCode) {
+    params.area_code = areaCode
+  }
+  const queryParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    queryParams.append(key, value as string)
+  })
+
+  const response = await fetch(
+    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    },
+  )
+  if (!response.ok) {
+    throw new Error('Failed to fetch locations data')
+  }
+  return (await response.json()).items
+}
+
+export const useFormalities = ({
+  countryCode,
+  areaCode,
+}: {
+  countryCode?: string
+  areaCode?: string
+}) => {
+  return useQuery<Formality[]>({
+    queryKey: ['formalitiesByCountry', countryCode],
+    queryFn: () => getFormalities({ countryCode, areaCode }),
+    refetchOnWindowFocus: false,
+    enabled: !!countryCode || !!areaCode,
   })
 }

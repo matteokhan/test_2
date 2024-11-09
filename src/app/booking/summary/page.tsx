@@ -12,9 +12,16 @@ import {
   NoPaymentMethodConfirmationModal,
   BookingConditionsCheckbox,
   AcceptBookingConditionsModal,
+  FormalitiesModal,
 } from '@/components'
-import { useAgencySelector, useBooking } from '@/contexts'
-import { usePrepareLccOrderPayment, usePrepareOrderPayment, useUpdateOrder } from '@/services'
+import { useAgencySelector, useBooking, useFlights } from '@/contexts'
+import {
+  useFormalities,
+  useLocationData,
+  usePrepareLccOrderPayment,
+  usePrepareOrderPayment,
+  useUpdateOrder,
+} from '@/services'
 import { AgencyContractCode, GDSType, UpdateOrderParams } from '@/types'
 import { Alert, Box, Modal, Typography } from '@mui/material'
 import { useSearchParams } from 'next/navigation'
@@ -29,6 +36,7 @@ export default function BookingSummaryPage() {
   const [conditionsAccepted, setConditionsAccepted] = useState(false)
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
+  const [formalitiesModalIsOpen, setFormalitiesModalIsOpen] = useState(false)
   const { goPreviousStep, goToStep, order, saveBookingState, loadBookingState, selectedFare } =
     useBooking()
   const { mutate: prepareOrderPayment, isPending: isPreparingPayment } = usePrepareOrderPayment()
@@ -36,6 +44,23 @@ export default function BookingSummaryPage() {
     usePrepareLccOrderPayment()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
   const { selectedAgency } = useAgencySelector()
+  const { lastSegment, isOneWay } = useFlights()
+  const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
+  const { data: formalities1 } = useFormalities({ countryCode: destinationLocation })
+  const { data: formalities2 } = useFormalities({
+    areaCode: formalities1
+      ? formalities1.length > 0
+        ? formalities1[0].area_code
+        : undefined
+      : undefined,
+  })
+  const formalities = [
+    ...(formalities1 || []),
+    ...(formalities2?.filter((f) => f.country_code === null) || []),
+  ]
+  const { data: destinationData } = useLocationData({
+    locationCode: destinationLocation,
+  })
   const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment
 
   const handleSubmit = async () => {
@@ -177,6 +202,12 @@ export default function BookingSummaryPage() {
           <BookingConditionsCheckbox
             onChange={(checked) => setConditionsAccepted(checked)}
             checked={conditionsAccepted}
+            destination={destinationData?.name}
+            onFormalitiesClick={() => {
+              if (formalities.length > 0) {
+                setFormalitiesModalIsOpen(true)
+              }
+            }}
           />
         </Box>
       </SimpleContainer>
@@ -185,6 +216,12 @@ export default function BookingSummaryPage() {
         onClose={() => setNoMethodSelectedModalIsOpen(false)}>
         <NoPaymentMethodConfirmationModal
           onChoosePaymentMethod={() => setNoMethodSelectedModalIsOpen(false)}
+        />
+      </Modal>
+      <Modal open={formalitiesModalIsOpen} onClose={() => setFormalitiesModalIsOpen(false)}>
+        <FormalitiesModal
+          onClose={() => setFormalitiesModalIsOpen(false)}
+          formalities={formalities}
         />
       </Modal>
       <Modal
