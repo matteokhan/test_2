@@ -1,3 +1,5 @@
+import { Currency } from '@/types'
+
 export type Ancillary = {
   passenger: string
   segments: AncillarySegment[]
@@ -18,4 +20,16 @@ export type AncillaryServiceInfo = {
   selected: boolean
 }
 
-export type AncillaryServiceType = 'BAGGAGE'
+export type AncillaryServiceType = 'BAGGAGE' // TODO: add more types
+
+export type LCCAncillaryCode = 'BaggageFee' // TODO: add more types
+
+export type LCCAncillary = {
+  code: LCCAncillaryCode
+  baggagePieces: string
+  baggageWeight: number
+  price: string
+  currency: Currency
+  checkInType: number
+  legIndex: number
+}

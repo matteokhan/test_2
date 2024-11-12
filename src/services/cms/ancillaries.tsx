@@ -1,26 +1,31 @@
 'use client'
 
-import { Ancillary, AncillaryServiceInfo, OrderId, OrderTicketDto } from '@/types'
+import {
+  Ancillary,
+  AncillaryServiceInfo,
+  GDSType,
+  LCCAncillary,
+  OrderId,
+  OrderTicketDto,
+  SolutionId,
+} from '@/types'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
-const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
 
 export const getAncillaries = async ({ orderId }: { orderId: OrderId }) => {
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
   }
-  const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${orderId}/ticket/ancillaries`,
-    {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Token ${token}`,
-      },
+  const response = await fetch(`${CMS_API_URL}/api/v2/order/${orderId}/ticket/ancillaries`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Token ${token}`,
     },
-  )
+  })
   if (!response.ok) {
     throw new Error('Failed to get ancillaries')
   }
@@ -63,17 +68,14 @@ export const selectAncillaries = async ({
     })),
   }
 
-  const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${orderId}/ticket/ancillaries`,
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Token ${token}`,
-      },
+  const response = await fetch(`${CMS_API_URL}/api/v2/order/${orderId}/ticket/ancillaries`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Token ${token}`,
     },
-  )
+  })
   if (!response.ok) {
     throw new Error('Failed to select ancillaries')
   }
@@ -94,5 +96,53 @@ export const useSelectAncillaries = () => {
     { orderId: OrderId; ancillaries: AncillaryServiceInfo[] }
   >({
     mutationFn: selectAncillaries,
+  })
+}
+
+export const getLCCAncillaries = async ({
+  orderId,
+  solutionId,
+}: {
+  orderId?: OrderId
+  solutionId?: SolutionId
+}) => {
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+  const response = await fetch(
+    `${CMS_API_URL}/api/v2/order/${orderId}/ticket/ancillaries/low-cost-carrier`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ solution_id: solutionId }),
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Token ${token}`,
+      },
+    },
+  )
+  if (!response.ok) {
+    throw new Error('Failed to get LCC ancillaries')
+  }
+
+  const data = await response.json()
+  return data
+}
+
+export const useLCCAncillaries = ({
+  orderId,
+  solutionId,
+  gdsType,
+}: {
+  orderId?: OrderId
+  solutionId?: SolutionId
+  gdsType?: GDSType
+}) => {
+  return useQuery<LCCAncillary[]>({
+    queryKey: ['lcc-ancillaries', orderId, solutionId],
+    queryFn: () => getLCCAncillaries({ orderId, solutionId }),
+    enabled: !!orderId && !!solutionId && gdsType === GDSType.LOW_COST_CARRIER,
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
   })
 }

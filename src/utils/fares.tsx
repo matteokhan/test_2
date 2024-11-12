@@ -1,10 +1,10 @@
-import { Fare, FareService, Solution } from '@/types'
+import { Fare, FareService, LCCAncillary, Solution } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
 import PaymentsIcon from '@mui/icons-material/Payments'
 import CloseIcon from '@mui/icons-material/Close'
 import { FlightClass } from '@mui/icons-material'
 
-export const getFareData = (solution: Solution): Fare => {
+export const getFareDataFromSolution = (solution: Solution): Fare => {
   const brand = solution.routes[0].segments[0].fare
   const services: FareService[] = brand.options
     .filter((option) => option.indicator !== 'Unknown')
@@ -91,6 +91,29 @@ export const getFareData = (solution: Solution): Fare => {
     description:
       'Nous gérons votre enregistrement et l’envoi des cartes d’embarquement par e-mail est automatique',
     price: Number(solution.priceInfo.total),
+    services: services,
+  }
+}
+
+export const getFareDataFromLccAncillaries = (ancillaries: LCCAncillary[]): Fare => {
+  const services: FareService[] = []
+  ancillaries
+    .filter((ancillary) => Number(ancillary.price) === 0)
+    .forEach((ancillary) => {
+      switch (ancillary.code) {
+        case 'BaggageFee':
+          services.push({
+            name: `${ancillary.baggagePieces} bagage(s) enregistré(s) (${ancillary.baggageWeight} kg)`,
+            icon: <CheckIcon color="primary" />,
+          })
+          break
+      }
+    })
+  return {
+    id: 'lcc',
+    name: 'Bagage enregistré',
+    description: 'Bagage enregistré',
+    price: Number(0.0),
     services: services,
   }
 }

@@ -1,14 +1,14 @@
 'use client'
 
-import { Box, Button, IconButton, Paper, Stack, Typography } from '@mui/material'
+import { Box, Button, IconButton, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import CloseIcon from '@mui/icons-material/Close'
 import ArrowBack from '@mui/icons-material/ArrowBack'
-import { FareOption, FareServices, ItineraryRoute } from '@/components'
-import { useBooking, useFlights } from '@/contexts'
+import { FareServices, ItineraryRoute } from '@/components'
+import { useBooking } from '@/contexts'
 import { MouseEventHandler } from 'react'
-import { useLocationData } from '@/services'
-import { getFareData, locationName } from '@/utils'
+import { useLCCAncillaries, useLocationData } from '@/services'
+import { getFareDataFromLccAncillaries, getFareDataFromSolution, locationName } from '@/utils'
 import { GDSType, Solution } from '@/types'
 
 type BaseFlightDetailsProps = {
@@ -35,7 +35,7 @@ export const FlightDetails = ({
   onSelectFlight,
   withControls = true,
 }: FlightDetailsProps) => {
-  const { preSelectedFlight } = useBooking()
+  const { preSelectedFlight, order } = useBooking()
 
   const departure = preSelectedFlight?.routes[0]?.segments[0]?.departure
   const arrival =
@@ -46,6 +46,11 @@ export const FlightDetails = ({
     locationCode: departure ? departure : '',
   })
   const { data: arrivalLocationData } = useLocationData({ locationCode: arrival ? arrival : '' })
+  const { data: lccAncillaries, isLoading: isLoadingLccAncillaries } = useLCCAncillaries({
+    orderId: order?.id,
+    solutionId: preSelectedFlight?.id,
+    gdsType: preSelectedFlight?.gdsType,
+  })
 
   return (
     <>
@@ -96,9 +101,27 @@ export const FlightDetails = ({
                     borderRadius="6px"
                     p={2}
                     bgcolor="white">
-                    <FareServices services={getFareData(preSelectedFlight).services} />
+                    <FareServices services={getFareDataFromSolution(preSelectedFlight).services} />
                   </Box>
                 )}
+                {preSelectedFlight.gdsType === GDSType.LOW_COST_CARRIER &&
+                  isLoadingLccAncillaries && (
+                    <Skeleton variant="rectangular" width="100%" height={80} />
+                  )}
+                {preSelectedFlight.gdsType === GDSType.LOW_COST_CARRIER &&
+                  lccAncillaries &&
+                  !isLoadingLccAncillaries && (
+                    <Box
+                      border="1px solid"
+                      borderColor="grey.400"
+                      borderRadius="6px"
+                      p={2}
+                      bgcolor="white">
+                      <FareServices
+                        services={getFareDataFromLccAncillaries(lccAncillaries).services}
+                      />
+                    </Box>
+                  )}
               </Stack>
             </Stack>
             {withControls && onSelectFlight && (
@@ -169,6 +192,34 @@ export const FlightDetails = ({
                     <ItineraryRoute key={route.id} route={route} />
                   ))}
                 </Stack>
+                {preSelectedFlight.gdsType === GDSType.REGULAR && (
+                  <Box
+                    border="1px solid"
+                    borderColor="grey.400"
+                    borderRadius="6px"
+                    p={2}
+                    bgcolor="white">
+                    <FareServices services={getFareDataFromSolution(preSelectedFlight).services} />
+                  </Box>
+                )}
+                {preSelectedFlight.gdsType === GDSType.LOW_COST_CARRIER &&
+                  isLoadingLccAncillaries && (
+                    <Skeleton variant="rectangular" width="100%" height={80} />
+                  )}
+                {preSelectedFlight.gdsType === GDSType.LOW_COST_CARRIER &&
+                  lccAncillaries &&
+                  !isLoadingLccAncillaries && (
+                    <Box
+                      border="1px solid"
+                      borderColor="grey.400"
+                      borderRadius="6px"
+                      p={2}
+                      bgcolor="white">
+                      <FareServices
+                        services={getFareDataFromLccAncillaries(lccAncillaries).services}
+                      />
+                    </Box>
+                  )}
               </Stack>
             </Stack>
             {withControls && onSelectFlight && (

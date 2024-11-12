@@ -64,7 +64,7 @@ export const FlightResult = ({ result }: { result: Solution }) => {
                 variant="headlineSm"
                 color="primary"
                 data-testid="flightResult-totalPrice">
-                {result.priceInfo.total}
+                {result.priceInfo.total.toFixed(2)}
                 {result.priceInfo.currencySymbol}
               </Typography>
               {result.priceInfo.passengerNumber > 1 && (
@@ -141,7 +141,7 @@ export const FlightResult = ({ result }: { result: Solution }) => {
                 variant="headlineSm"
                 color="primary"
                 data-testid="flightResult-totalPrice">
-                {result.priceInfo.total}
+                {result.priceInfo.total.toFixed(2)}
                 {result.priceInfo.currencySymbol}
               </Typography>
               {result.priceInfo.passengerNumber > 1 && (

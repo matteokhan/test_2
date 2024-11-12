@@ -1,7 +1,7 @@
 'use client'
 
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
-import { getFareData, getPaymentMethodData } from '@/utils'
+import { getFareDataFromSolution, getPaymentMethodData } from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
@@ -49,7 +49,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
               </Typography>
             </Stack>
             <Stack ml={2} gap={1}>
-              {getFareData(selectedFare).services.map((service, index) => (
+              {getFareDataFromSolution(selectedFare).services.map((service, index) => (
                 <Stack direction="row" width="100%" justifyContent="space-between" key={index}>
                   <Typography variant="bodyMd">{service.name}</Typography>
                 </Stack>

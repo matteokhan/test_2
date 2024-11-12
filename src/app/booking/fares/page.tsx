@@ -6,7 +6,7 @@ import { useBooking } from '@/contexts'
 import { Stack } from '@mui/material'
 import { useBrandedFares, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
-import { getFareData } from '@/utils'
+import { getFareDataFromSolution } from '@/utils'
 
 export default function FaresPage() {
   const {
@@ -70,7 +70,7 @@ export default function FaresPage() {
             !isFetching &&
             isSuccess &&
             solutions.map((solution) => {
-              const fare = getFareData(solution)
+              const fare = getFareDataFromSolution(solution)
               return (
                 <FareOption
                   key={fare.id}
