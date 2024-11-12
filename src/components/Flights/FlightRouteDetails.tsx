@@ -50,7 +50,11 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
   return (
     <>
       {/* Desktop */}
-      <Stack gap={4} direction="row" sx={{ display: { xs: 'none', lg: 'flex' } }}>
+      <Stack
+        gap={4}
+        direction="row"
+        sx={{ display: { xs: 'none', lg: 'flex' } }}
+        className="desktop">
         <Stack gap={1} minWidth="25%" maxWidth="25%">
           <FlightAirline carrier={route.carrier} />
           {tags && (
@@ -160,7 +164,7 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
       </Stack>
 
       {/* Mobile */}
-      <Stack gap={1.5} sx={{ display: { xs: 'flex', lg: 'none' } }}>
+      <Stack gap={1.5} sx={{ display: { xs: 'flex', lg: 'none' } }} className="mobile">
         <Stack gap={1} direction="row" justifyContent="space-between" alignItems="center">
           <FlightAirline
             carrier={route.carrier}

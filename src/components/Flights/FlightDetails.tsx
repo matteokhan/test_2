@@ -4,12 +4,12 @@ import { Box, Button, IconButton, Paper, Stack, Typography } from '@mui/material
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import CloseIcon from '@mui/icons-material/Close'
 import ArrowBack from '@mui/icons-material/ArrowBack'
-import { ItineraryRoute } from '@/components'
+import { FareOption, FareServices, ItineraryRoute } from '@/components'
 import { useBooking, useFlights } from '@/contexts'
 import { MouseEventHandler } from 'react'
 import { useLocationData } from '@/services'
-import { locationName } from '@/utils'
-import { Solution } from '@/types'
+import { getFareData, locationName } from '@/utils'
+import { GDSType, Solution } from '@/types'
 
 type BaseFlightDetailsProps = {
   isLoading?: boolean
@@ -53,6 +53,7 @@ export const FlightDetails = ({
         <>
           {/* Desktop */}
           <Stack
+            className="desktop"
             width="544px"
             bgcolor="grey.200"
             height="100%"
@@ -88,6 +89,16 @@ export const FlightDetails = ({
                     <ItineraryRoute key={route.id} route={route} />
                   ))}
                 </Stack>
+                {preSelectedFlight.gdsType === GDSType.REGULAR && (
+                  <Box
+                    border="1px solid"
+                    borderColor="grey.400"
+                    borderRadius="6px"
+                    p={2}
+                    bgcolor="white">
+                    <FareServices services={getFareData(preSelectedFlight).services} />
+                  </Box>
+                )}
               </Stack>
             </Stack>
             {withControls && onSelectFlight && (
@@ -122,6 +133,7 @@ export const FlightDetails = ({
 
           {/* Mobile */}
           <Stack
+            className="mobile"
             sx={{ display: { xs: 'flex', lg: 'none' } }}
             width="100%"
             bgcolor="grey.200"

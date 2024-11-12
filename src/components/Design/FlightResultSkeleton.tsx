@@ -5,7 +5,7 @@ export const FlightResultSkeleton = () => {
   return (
     <Paper sx={{ padding: 2 }} data-testid="flightResultSkeleton">
       {/* Desktop */}
-      <Stack gap={5.5} direction="row" display={{ xs: 'none', lg: 'flex' }}>
+      <Stack gap={5.5} direction="row" display={{ xs: 'none', lg: 'flex' }} className="desktop">
         <Stack flexGrow={1}>
           <Stack gap={4} direction="row">
             <Box minWidth="25%" maxWidth="25%">
@@ -36,7 +36,7 @@ export const FlightResultSkeleton = () => {
       </Stack>
 
       {/* Mobile */}
-      <Stack gap={1} display={{ xs: 'flex', lg: 'none' }}>
+      <Stack gap={1} display={{ xs: 'flex', lg: 'none' }} className="mobile">
         <Skeleton variant="rectangular" height={64} />
         <Skeleton variant="rectangular" height={64} />
         <Skeleton variant="rectangular" height={64} />

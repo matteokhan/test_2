@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Typography } from '@mui/material'
 import { Fare } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
+import { FareServices } from '@/components'
 
 export const FareOption = ({
   basePrice,
@@ -24,20 +25,7 @@ export const FareOption = ({
             {fare.description}
           </Typography>
         </Box>
-        <Stack gap={1} width={{ xs: '100%', lg: '50%' }} py={0.5} data-testid="fareOption-services">
-          {fare.services.map((service) => (
-            <Stack
-              key={service.name}
-              direction="row"
-              alignItems="center"
-              data-testid="fareOption-service">
-              {service.icon}
-              <Typography sx={{ ml: 1 }} variant="bodyMd" data-testid="fareOption-serviceName">
-                {service.name}
-              </Typography>
-            </Stack>
-          ))}
-        </Stack>
+        <FareServices sx={{ width: { xs: '100%', lg: '50%' } }} services={fare.services} />
       </Stack>
       <Stack
         borderTop="1px solid"

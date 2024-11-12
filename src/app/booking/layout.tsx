@@ -71,6 +71,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
       <Box sx={{ backgroundColor: 'grey.200' }}>
         {/* Desktop */}
         <SectionContainer
+          className="desktop"
           sx={{
             justifyContent: 'space-between',
             paddingY: 3,
@@ -92,7 +93,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
         </SectionContainer>
 
         {/* Mobile */}
-        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+        <Box className="mobile" sx={{ display: { xs: 'block', lg: 'none' } }}>
           <Stack
             direction="row"
             justifyContent="space-between"
