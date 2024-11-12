@@ -6,6 +6,7 @@ import { useBooking } from '@/contexts'
 import { Stack } from '@mui/material'
 import { useBrandedFares, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
+import { getFareData } from '@/utils'
 
 export default function FaresPage() {
   const {
@@ -27,7 +28,7 @@ export default function FaresPage() {
   }
 
   const {
-    data: brandedFares,
+    data: solutions,
     isSuccess,
     isFetching,
   } = useBrandedFares({
@@ -65,21 +66,24 @@ export default function FaresPage() {
               <FareOptionSkeleton />
             </>
           )}
-          {brandedFares &&
+          {solutions &&
             !isFetching &&
             isSuccess &&
-            brandedFares.map((fare) => (
-              <FareOption
-                key={fare.id}
-                basePrice={selectedFlight.priceInfo.total}
-                fare={fare}
-                onSelect={setSelectedFare}
-                isSelected={
-                  selectedFare?.routes[0].segments[0].fare.name ===
-                  fare?.routes[0].segments[0].fare.name
-                }
-              />
-            ))}
+            solutions.map((solution) => {
+              const fare = getFareData(solution)
+              return (
+                <FareOption
+                  key={fare.id}
+                  basePrice={selectedFlight.priceInfo.total}
+                  fare={fare}
+                  onSelect={() => setSelectedFare(solution)}
+                  isSelected={
+                    selectedFare?.routes[0].segments[0].fare.name ===
+                    solution?.routes[0].segments[0].fare.name
+                  }
+                />
+              )
+            })}
         </Stack>
       </SimpleContainer>
       <BookingStepActions

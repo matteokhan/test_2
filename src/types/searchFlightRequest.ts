@@ -73,7 +73,7 @@ export type SearchFlightsParamsDto = {
   search_data: {
     adults: number
     childrens: number
-    infant: number
+    infants: number
     segments: SearchFlightSegment[]
   }
 }

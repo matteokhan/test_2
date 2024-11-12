@@ -22,7 +22,7 @@ export const searchParamsToDto = (
     search_data: {
       adults: params?.adults || 0,
       childrens: params?.childrens || 0,
-      infant: params?.infants || 0,
+      infants: params?.infants || 0,
       segments: [],
     },
   }

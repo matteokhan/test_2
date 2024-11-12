@@ -40,7 +40,7 @@ export const AirlinesFilterField = ({
               }}
             />
             <Typography variant="bodyMd">
-              {airline.price}
+              {airline.price.toFixed(2)}
               {airline.currencySymbol}
             </Typography>
           </Stack>
