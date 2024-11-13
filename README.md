@@ -25,16 +25,41 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
 
-## Run with docker
+## How to contribute
 
-Make sure to set environment variables in the `.env` file according before creating the container image.
+We follow a simple git flow process:
+
+1. Create new branches from `main`
+2. Work on your feature or bug fix
+3. Create a pull request to merge your branch into `main`
+4. Request code review from the team
+5. After successful merge, delete the branch
+
+## How to deploy
+
+### Build an image
+
+Checkout to `main` branch. All the container images are created from this branch. Then create a image.
+
+Notice this image is a production build, not intended for local development.
 
 ```bash
 docker build -t leclerc-website --platform linux/amd64 .
-docker run -p 80:3000 leclerc-website
 ```
 
-## Create container image and publish to registry
+### Run locally with Docker
+
+This build will ignore the `.env` file. So you need to set environment variables when running the container.
+
+```bash
+docker run -p 80:8080 -e <ENV_VAR1=VALUE> -e <ENV_VAR2=VALUE2> leclerc-website
+```
+
+### Publish to registry
+
+In order to run this image on a cloud environment, it needs to be published to our registry.
+
+Assign a `VERSION` number. Use semver.
 
 ```bash
 gcloud auth login
