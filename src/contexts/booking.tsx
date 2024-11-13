@@ -230,6 +230,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           email: '',
           type: 'ADT',
           isPayer: false,
+          ancillaries: [],
         },
       ])
     }
@@ -246,6 +247,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           email: '',
           type: 'CHD',
           isPayer: false,
+          ancillaries: [],
         },
       ])
     }
@@ -262,6 +264,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           email: '',
           type: 'INF',
           isPayer: false,
+          ancillaries: [],
         },
       ])
     }

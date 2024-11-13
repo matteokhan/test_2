@@ -5,8 +5,14 @@ import { BookingStepActions, PayerForm, SimpleContainer, ReservationErrorModal }
 import { useBooking } from '@/contexts'
 import { Modal } from '@mui/material'
 import { FormikProps } from 'formik'
-import { Ancillary, GDSType, PayerData, UpdateOrderParams } from '@/types'
-import { useUpdateOrder, useReserveOrder, getAncillaries } from '@/services'
+import {
+  GDSType,
+  PayerData,
+  UpdateOrderParams,
+  AncillariesQueryResult,
+  LCCAncillary,
+} from '@/types'
+import { useUpdateOrder, useReserveOrder, getAncillaries, getLCCAncillaries } from '@/services'
 import { useQueryClient } from '@tanstack/react-query'
 
 export default function ContactInfoPage() {
@@ -54,17 +60,17 @@ export default function ContactInfoPage() {
       payer: payerDataValidated,
     }
     updateOrder(newOrder, {
-      onSuccess: (data) => {
-        setOrder(data)
+      onSuccess: async (orderRes) => {
+        setOrder(orderRes)
         if (selectedFare.gdsType == GDSType.REGULAR) {
           reserveOrder(
-            { orderId: data.id, solutionId: selectedFare.id },
+            { orderId: order.id, solutionId: selectedFare.id },
             {
-              onSuccess: async (data) => {
-                if (data.travel_data?.passenger_name_record) {
+              onSuccess: async (reservationData) => {
+                if (reservationData.travel_data?.passenger_name_record) {
                   setIsCheckingAncillaries(true)
                   try {
-                    await queryClient.fetchQuery<Ancillary[]>({
+                    await queryClient.fetchQuery<AncillariesQueryResult>({
                       queryKey: ['ancillaries', order.id],
                       queryFn: () => getAncillaries({ orderId: order.id }),
                     })
@@ -73,7 +79,7 @@ export default function ContactInfoPage() {
                   } finally {
                     setIsCheckingAncillaries(false)
                   }
-                  setPnr(data.travel_data.passenger_name_record)
+                  setPnr(reservationData.travel_data.passenger_name_record)
                   setIsNavigating(true)
                   goNextStep()
                 } else {
@@ -88,7 +94,20 @@ export default function ContactInfoPage() {
             },
           )
         } else if (selectedFare.gdsType === GDSType.LOW_COST_CARRIER) {
-          skipStep('ancillaries')
+          setIsCheckingAncillaries(true)
+          try {
+            const lccAncillaries = await queryClient.fetchQuery<LCCAncillary[]>({
+              queryKey: ['lcc-ancillaries', order.id, selectedFare.id],
+              queryFn: () => getLCCAncillaries({ orderId: order.id, solutionId: selectedFare.id }),
+            })
+            if (lccAncillaries.filter((a) => Number(a.price) > 0).length === 0) {
+              skipStep('ancillaries')
+            }
+          } catch (error) {
+            skipStep('ancillaries')
+          } finally {
+            setIsCheckingAncillaries(false)
+          }
           setIsNavigating(true)
           goNextStep()
         } else {

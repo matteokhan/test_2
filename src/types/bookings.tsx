@@ -4,6 +4,7 @@ import {
   Agency,
   AgencyId,
   CorrelationId,
+  LCCAncillary,
   RouteId,
   SearchFlightsParamsDto,
   SolutionId,
@@ -39,6 +40,7 @@ export type PassengerData = {
   phoneCode: CountryCallingCode
   email: string
   type: PassengerType
+  ancillaries: LCCAncillary[]
 }
 
 export type PayerData = {
@@ -187,4 +189,5 @@ export type OrderPassengerDto = {
   email: string
   birth_date: string
   phone: string
+  ancillaries: LCCAncillary[]
 }

@@ -1,8 +1,7 @@
 'use client'
 
 import {
-  Ancillary,
-  AncillaryPassengerInfo,
+  AncillariesQueryResult,
   AncillaryServiceInfo,
   GDSType,
   LCCAncillary,
@@ -14,8 +13,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
 const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
-
-type AncillariesQueryResult = { ancillaries: Ancillary[]; passengers: AncillaryPassengerInfo[] }
 
 export const getAncillaries = async ({
   orderId,
@@ -45,12 +42,12 @@ export const getAncillaries = async ({
   return { ancillaries: data.ancillaries, passengers: data.passengerList }
 }
 
-export const useAncillaries = ({ orderId }: { orderId: OrderId }) => {
+export const useAncillaries = ({ orderId, gdsType }: { orderId: OrderId; gdsType?: GDSType }) => {
   return useQuery<AncillariesQueryResult>({
     // TODO: can we get rid of the staleTime?
     queryKey: ['ancillaries', orderId],
     queryFn: () => getAncillaries({ orderId }),
-    enabled: !!orderId,
+    enabled: !!orderId && gdsType === GDSType.REGULAR,
     staleTime: 5 * 1000, // This is requiered to avoid a second request on the Ancillaries page when user came from contact page
     refetchOnWindowFocus: false,
   })

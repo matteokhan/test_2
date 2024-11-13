@@ -104,6 +104,7 @@ export const getOrderPassengerDto = ({
     birth_date: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
     email: passenger.email,
     phone: `${passenger.phoneCode}${passenger.phoneNumber}`,
+    ancillaries: passenger.ancillaries,
   }
   return dto
 }

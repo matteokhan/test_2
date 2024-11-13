@@ -49,4 +49,10 @@ export type LCCAncillary = {
   currency: Currency
   checkInType: number
   legIndex: number
+  selected: boolean
+}
+
+export type AncillariesQueryResult = {
+  ancillaries: Ancillary[]
+  passengers: AncillaryPassengerInfo[]
 }
