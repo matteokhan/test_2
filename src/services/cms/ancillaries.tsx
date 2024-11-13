@@ -2,6 +2,7 @@
 
 import {
   Ancillary,
+  AncillaryPassengerInfo,
   AncillaryServiceInfo,
   GDSType,
   LCCAncillary,
@@ -14,7 +15,13 @@ import { env } from 'next-runtime-env'
 
 const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
 
-export const getAncillaries = async ({ orderId }: { orderId: OrderId }) => {
+type AncillariesQueryResult = { ancillaries: Ancillary[]; passengers: AncillaryPassengerInfo[] }
+
+export const getAncillaries = async ({
+  orderId,
+}: {
+  orderId: OrderId
+}): Promise<AncillariesQueryResult> => {
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
@@ -35,11 +42,11 @@ export const getAncillaries = async ({ orderId }: { orderId: OrderId }) => {
     throw new Error('Error when getting ancillaries')
   }
 
-  return data.ancillaries
+  return { ancillaries: data.ancillaries, passengers: data.passengerList }
 }
 
 export const useAncillaries = ({ orderId }: { orderId: OrderId }) => {
-  return useQuery<Ancillary[]>({
+  return useQuery<AncillariesQueryResult>({
     // TODO: can we get rid of the staleTime?
     queryKey: ['ancillaries', orderId],
     queryFn: () => getAncillaries({ orderId }),

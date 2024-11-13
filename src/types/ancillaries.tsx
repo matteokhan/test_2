@@ -1,4 +1,4 @@
-import { Currency } from '@/types'
+import { Currency, PassengerType } from '@/types'
 
 export type Ancillary = {
   passenger: string
@@ -18,6 +18,23 @@ export type AncillaryServiceInfo = {
   price: number
   currency: string
   selected: boolean
+}
+
+export type AncillaryPassengerInfo = {
+  externalKey: null
+  firstName: string
+  gender: null
+  id: number
+  lastName: string
+  passengerTypeCode: PassengerType
+  priceList: []
+  surchargeInfoList: null
+  title: string
+  dateOfBirth: {
+    day: number
+    month: number
+    year: number
+  }
 }
 
 export type AncillaryServiceType = 'BAGGAGE' // TODO: add more types

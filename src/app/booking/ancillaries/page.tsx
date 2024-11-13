@@ -28,7 +28,7 @@ export default function AncillariesPage() {
   const isLoading = isFetching || isSelectingAncillaries || isNavigating
 
   useEffect(() => {
-    if (remoteAncillaries) setAncillaries(remoteAncillaries)
+    if (remoteAncillaries) setAncillaries(remoteAncillaries.ancillaries)
   }, [remoteAncillaries])
 
   const handleSubmit = () => {
@@ -66,7 +66,20 @@ export default function AncillariesPage() {
         !isFetching &&
         isSuccess &&
         ancillaries.map((ancillary) => {
-          const passengerData = passengers[+ancillary.passenger - 1]
+          const remotePassengerData = remoteAncillaries.passengers.find(
+            (p) => p.id === Number(ancillary.passenger),
+          )
+          if (!remotePassengerData)
+            throw Error("Can't find passenger index in remote passengers info")
+          const passengerData = passengers.find(
+            (p) =>
+              p.firstName.toLowerCase() === remotePassengerData.firstName.toLowerCase() &&
+              p.lastName.toLowerCase() === remotePassengerData.lastName.toLowerCase() &&
+              p.dateOfBirth?.year() === remotePassengerData.dateOfBirth.year &&
+              p.dateOfBirth?.month() + 1 === remotePassengerData.dateOfBirth.month &&
+              p.dateOfBirth?.date() === remotePassengerData.dateOfBirth.day,
+          )
+          if (!passengerData) throw Error("Can't find passenger index in local passengers info")
           const totalSegments = ancillary.segments.length
           let outboundServices: AncillaryServiceInfo[] = []
           if (totalSegments > 0) {
@@ -87,7 +100,7 @@ export default function AncillariesPage() {
           return (
             <SimpleContainer
               key={ancillary.passenger}
-              title={`Passenger ${ancillary.passenger} : ${passengerData.firstName} ${passengerData.lastName}`}>
+              title={`Passenger : ${passengerData?.firstName} ${passengerData?.lastName}`}>
               <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
                 <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
                   L’achat de bagages après la réservation revient plus cher. Ajoutez-les maintenant
