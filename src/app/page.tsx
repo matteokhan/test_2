@@ -11,8 +11,11 @@ import {
   TopBar,
   TravelOptionsBanner,
 } from '@/components'
+import { use } from 'react'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function Home() {
+  useMetadata("Réservation vol - billets d'avion Voyages E. Leclerc aux meilleurs prix")
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
 

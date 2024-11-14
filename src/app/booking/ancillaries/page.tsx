@@ -13,8 +13,10 @@ import { Alert, Stack, Grid } from '@mui/material'
 import { useAncillaries, useLCCAncillaries, useSelectAncillaries, useUpdateOrder } from '@/services'
 import WarningIcon from '@mui/icons-material/Warning'
 import { AncillaryServiceInfo, GDSType, UpdateOrderParams } from '@/types'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function AncillariesPage() {
+  useMetadata('Options')
   const [isNavigating, setIsNavigating] = React.useState(false)
   const {
     goPreviousStep,
