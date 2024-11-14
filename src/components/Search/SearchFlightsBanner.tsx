@@ -26,7 +26,8 @@ export const SearchFlightsBanner = () => {
       <SectionContainer
         sx={{ justifyContent: 'space-between', paddingY: 6, flexDirection: 'column' }}>
         <Typography color="common.white" variant="titleLg" sx={{ marginBottom: '5px' }}>
-          Votre agence Voyages E.Leclerc en ligne
+          Recherchez vos billets d'avion parmi des milliers d'offres <br />
+          et trouvez celle qui vous mènera vers vos plus belles vacances !
         </Typography>
         <SearchFlightsModes sx={{ mt: 4 }} onSearch={onSearch} disabled={isNavigating} />
       </SectionContainer>
