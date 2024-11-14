@@ -205,7 +205,7 @@ export const SearchFlightsFilters = ({
                     )}
                   </Box>
                   <Box>
-                    {filterData !== undefined && (
+                    {isRoundTrip && filterData !== undefined && (
                       <Box>
                         <Stack direction="row" gap={1} alignItems="center" pb={1}>
                           <Typography variant="titleMd">
