@@ -25,7 +25,9 @@ export const Location = ({
       onClick={() => onClick(location)}>
       <>
         {location.category == 'City' && <PinDropOutlinedIcon />}
-        {['Airport', 'International airport'].includes(location.category) && (
+        {['Airport', 'International airport', 'Airport international'].includes(
+          location.category,
+        ) && (
           <Stack sx={{ rotate: '180deg' }} justifyContent="center">
             <AirplaneIcon />
           </Stack>
@@ -41,7 +43,9 @@ export const Location = ({
               {location.name} ({location.code} - Tous les aéroports)
             </Typography>
           )}
-          {['Airport', 'Rail station', 'International airport'].includes(location.category) && (
+          {['Airport', 'Rail station', 'International airport', 'Airport international'].includes(
+            location.category,
+          ) && (
             <Typography variant="titleSm">
               {location.name} ({location.code}) {location.extension}
             </Typography>
