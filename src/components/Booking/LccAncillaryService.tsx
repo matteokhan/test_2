@@ -4,17 +4,7 @@ import React from 'react'
 import { Box, Stack, Grid, Typography, Button } from '@mui/material'
 import { LCCAncillary } from '@/types'
 import CheckIcon from '@mui/icons-material/Check'
-
-const getLccAncillaryRouteCoverage = (ancillaryService: LCCAncillary) => {
-  switch (ancillaryService.legIndex) {
-    case 0:
-      return 'Aller - Retour'
-    case 1:
-      return 'Aller uniquement'
-    default:
-      return 'Retour uniquement'
-  }
-}
+import { getLccAncillaryDescription, getLccAncillaryRouteCoverage } from '@/utils'
 
 export const LccAncilliaryService = ({
   disabled,
@@ -34,7 +24,7 @@ export const LccAncilliaryService = ({
       <Stack border="1px solid" borderColor="grey.400" borderRadius="6px" flexGrow={1} width="100%">
         <Stack sx={{ p: 2 }} flexGrow={1} data-testid="ancillaryService-item">
           <Typography variant="headlineMd" sx={{ fontSize: '16px !important', pb: 0.5 }}>
-            {`${ancillaryService.baggagePieces} baggages pour ${ancillaryService.baggageWeight}kg maximum`}
+            {getLccAncillaryDescription(ancillaryService)}
           </Typography>
           <Stack pt={1} direction="row" gap={1}>
             <Typography>{getLccAncillaryRouteCoverage(ancillaryService)}</Typography>

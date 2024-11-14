@@ -141,7 +141,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       .flatMap((anc) => anc.segments)
       .flatMap((seg) => seg.ancillaries)
       .filter((anc) => anc.selected)
-      .reduce((acc, curr) => acc + curr.price, 0) || 0)
+      .reduce((acc, curr) => acc + curr.price, 0) || 0) +
+    (passengers.flatMap((p) => p.ancillaries).reduce((acc, curr) => acc + Number(curr.price), 0) ||
+      0)
   const selectedInsurancePrice: number = selectedInsurance
     ? getInsurancePrice(basePrice, selectedInsurance, totalPassengers)
     : 0

@@ -1,7 +1,12 @@
 'use client'
 
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
-import { getFareDataFromSolution, getPaymentMethodData } from '@/utils'
+import {
+  getFareDataFromSolution,
+  getLccAncillaryDescription,
+  getLccAncillaryRouteCoverage,
+  getPaymentMethodData,
+} from '@/utils'
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
@@ -12,8 +17,14 @@ type PurchaseDetailsProps = {
 
 export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
   const { totalPassengers } = useFlights()
-  const { totalPrice, totalInsurancePrice, selectedInsurance, selectedFare, ancillaries } =
-    useBooking()
+  const {
+    totalPrice,
+    totalInsurancePrice,
+    selectedInsurance,
+    selectedFare,
+    ancillaries,
+    passengers,
+  } = useBooking()
   const { selectedAgency } = useAgencySelector()
 
   return (
@@ -37,7 +48,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
       <Stack pt={1} gap={1} pb={2}>
         {selectedFare && (
           <>
-            <Stack direction="row" width="100%" justifyContent="space-between">
+            <Stack direction="row" width="100%" justifyContent="space-between" gap={3}>
               <Typography variant="bodyMd" data-testid="purchaseDetails-totalPassengers">
                 {totalPassengers} x passager(s)
               </Typography>
@@ -75,7 +86,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                         key={`${ancillaryIndex}-${segmentIndex}-${ancillary.externalId}`}
                         data-testid="purchaseDetails-ancillary"
                         ml={2}>
-                        <Stack direction="row" width="100%" justifyContent="space-between">
+                        <Stack direction="row" width="100%" justifyContent="space-between" gap={3}>
                           <Typography variant="bodyMd" data-testid="purchaseDetails-ancillary-name">
                             {ancillary.name} - {segment.segment == '1' && 'Aller'}{' '}
                             {segment.segment == '2' && 'Retour'}
@@ -91,6 +102,32 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                     ))}
                 </React.Fragment>
               ))}
+          </React.Fragment>
+        ))}
+        {passengers.map((passenger, index) => (
+          <React.Fragment key={index}>
+            {passenger.ancillaries.length > 0 && (
+              <Typography variant="bodyMd">Passenger {index + 1} - Ancillaries</Typography>
+            )}
+            {passenger.ancillaries.map((ancillary, ancillaryIndex) => (
+              <Stack
+                key={`${index}-${ancillaryIndex}`}
+                data-testid="purchaseDetails-lccAncillary"
+                ml={2}>
+                <Stack direction="row" width="100%" justifyContent="space-between" gap={3}>
+                  <Typography variant="bodyMd" data-testid="purchaseDetails-lccAncillary-name">
+                    {getLccAncillaryDescription(ancillary)} -{' '}
+                    {getLccAncillaryRouteCoverage(ancillary)}
+                  </Typography>
+                  <Typography
+                    variant="bodyMd"
+                    fontWeight={500}
+                    data-testid="purchaseDetails-lccAncillary-price">
+                    {Number(ancillary.price).toFixed(2)}€
+                  </Typography>
+                </Stack>
+              </Stack>
+            ))}
           </React.Fragment>
         ))}
         {selectedInsurance && (

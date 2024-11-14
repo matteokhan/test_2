@@ -6,7 +6,7 @@ export type LocationData = {
   country_name: string
   region_name: string
   area_name: string
-  category: 'City' | 'Airport' | 'Rail station' | 'International airport'
+  category: 'City' | 'Airport' | 'Rail station' | 'International airport' | 'Airport international'
 }
 
 export type Locations = {
