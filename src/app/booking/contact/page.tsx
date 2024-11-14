@@ -14,8 +14,10 @@ import {
 } from '@/types'
 import { useUpdateOrder, useReserveOrder, getAncillaries, getLCCAncillaries } from '@/services'
 import { useQueryClient } from '@tanstack/react-query'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function ContactInfoPage() {
+  useMetadata('Informations facturation')
   const formRef = useRef<FormikProps<PayerData> | null>(null)
   const queryClient = useQueryClient()
   const [isNavigating, setIsNavigating] = useState(false)

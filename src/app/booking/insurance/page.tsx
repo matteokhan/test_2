@@ -12,8 +12,10 @@ import { Alert, Grid, Stack, Modal, Button } from '@mui/material'
 import { useInsurances, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
 import WarningIcon from '@mui/icons-material/Warning'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function InsurancesPage() {
+  useMetadata('Assurances')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [firstWarning, setFirstWarning] = useState(true)
   const [noInsurance, setNoInsurance] = useState(false)

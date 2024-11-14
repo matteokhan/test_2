@@ -29,8 +29,10 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useQueryClient } from '@tanstack/react-query'
 import CloseIcon from '@mui/icons-material/Close'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function FlighsPage() {
+  useMetadata('Rechercher des vols')
   const theme = useTheme()
   const queryClient = useQueryClient()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))

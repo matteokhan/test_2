@@ -1,6 +1,7 @@
 'use client'
 
 import { BookingConfirmation, FlightsLoader, Navbar, SectionContainer, TopBar } from '@/components'
+import useMetadata from '@/contexts/useMetadata'
 import { getOrder } from '@/services'
 import { OrderDto } from '@/types'
 import { Box, Stack, Typography } from '@mui/material'
@@ -9,6 +10,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function SuccessPage() {
+  useMetadata('Confirmation')
   const [isLoading, setIsLoading] = useState(true)
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')

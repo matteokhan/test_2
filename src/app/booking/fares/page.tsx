@@ -7,8 +7,10 @@ import { Stack } from '@mui/material'
 import { useBrandedFares, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
 import { getFareDataFromSolution } from '@/utils'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function FaresPage() {
+  useMetadata('Choix du tarif')
   const {
     goPreviousStep,
     goNextStep,

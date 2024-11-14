@@ -26,8 +26,10 @@ import { AgencyContractCode, GDSType, UpdateOrderParams } from '@/types'
 import { Alert, Box, Modal, Typography } from '@mui/material'
 import { useSearchParams } from 'next/navigation'
 import WarningIcon from '@mui/icons-material/Warning'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function BookingSummaryPage() {
+  useMetadata('Résumé et paiement')
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
   const errorAlertRef = React.useRef<HTMLDivElement>(null)

@@ -13,8 +13,10 @@ import { FormikProps } from 'formik'
 import { ageIsAtLeast } from '@/utils'
 import { useUpdateOrder } from '@/services'
 import { Modal } from '@mui/material'
+import useMetadata from '@/contexts/useMetadata'
 
 export default function PassengersPage() {
+  useMetadata('Détails des passagers')
   const {
     passengers,
     setPassengers,
