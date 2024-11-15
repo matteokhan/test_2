@@ -70,6 +70,7 @@ export type Fare = {
 export type FareService = {
   name: string
   icon: JSX.Element
+  isIncluded: boolean
 }
 
 export type PNR = string
