@@ -21,9 +21,6 @@ export const Navbar = () => {
   return (
     <Box
       sx={{
-        borderBottom: 1,
-        borderColor: 'grey.200',
-        boxSizing: 'border-box',
         bgcolor: 'common.white',
       }}>
       <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>

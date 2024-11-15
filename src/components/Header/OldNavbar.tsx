@@ -28,7 +28,7 @@ export const OldNavbar = () => {
   return (
     <Box
       sx={{
-        borderBottom: 1,
+        borderTop: 1,
         borderColor: 'grey.200',
         boxSizing: 'border-box',
         bgcolor: 'common.white',

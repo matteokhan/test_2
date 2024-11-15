@@ -11,7 +11,6 @@ import {
   TopBar,
   TravelOptionsBanner,
 } from '@/components'
-import { use } from 'react'
 import useMetadata from '@/contexts/useMetadata'
 
 export default function Home() {
