@@ -48,13 +48,10 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
           <Stack pt={1} pb={3} direction="column" gap={2}>
             {order.ticket?.travel_data?.transports?.map((transport, index) => (
               <Box>
-                <Stack
-                  direction="row"
-                  justifyContent="center"
-                  height={24}
-                  alignItems="center"
-                  gap={1}>
-                  <Typography variant="bodyMd">Itinéraire :</Typography>
+                <Stack direction="row" justifyContent="center" alignItems="center" gap={1}>
+                  <Typography variant="bodyMd" noWrap>
+                    Itinéraire :
+                  </Typography>
 
                   <Stack direction="row" alignItems="center">
                     <Typography
@@ -79,13 +76,10 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
                     </Typography>
                   </Stack>
                 </Stack>
-                <Stack
-                  direction="row"
-                  justifyContent="center"
-                  height={24}
-                  gap={1}
-                  alignItems="center">
-                  <Typography variant="bodyMd">Heure de départ :</Typography>
+                <Stack direction="row" justifyContent="center" gap={1} alignItems="center">
+                  <Typography variant="bodyMd" noWrap>
+                    Heure de départ :
+                  </Typography>
                   <Typography
                     variant="bodyMd"
                     color="primary"
@@ -100,7 +94,9 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
                   height={24}
                   gap={1}
                   alignItems="center">
-                  <Typography variant="bodyMd">Heure d'arrivée :</Typography>
+                  <Typography variant="bodyMd" noWrap>
+                    Heure d'arrivée :
+                  </Typography>
                   <Typography
                     variant="bodyMd"
                     color="primary"
@@ -120,7 +116,7 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
               variant="headlineSm"
               color="primary"
               display="flex"
-              height={32}
+              textAlign="center"
               data-testid="bookingConfirmation-agencyName">
               {order.agency__name}
             </Typography>
@@ -130,12 +126,22 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
             <Stack
               direction="row"
               justifyContent="center"
-              height={24}
               gap={1}
               alignItems="center"
-              pt={2}>
-              <Typography variant="bodyMd">Address :</Typography>
+              pt={2}
+              width="100%">
               <Typography
+                variant="bodyMd"
+                noWrap
+                textOverflow="unset"
+                maxWidth="50%"
+                width="50%"
+                textAlign="right">
+                Address :
+              </Typography>
+              <Typography
+                maxWidth="50%"
+                width="50%"
                 variant="bodyMd"
                 color="primary"
                 fontWeight={500}
@@ -146,12 +152,16 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
             <Stack
               direction="row"
               justifyContent="center"
-              height={24}
               gap={1}
               alignItems="center"
-              pt={1}>
-              <Typography variant="bodyMd">Code postal :</Typography>
+              pt={1}
+              width="100%">
+              <Typography variant="bodyMd" noWrap maxWidth="50%" width="50%" textAlign="right">
+                Code postal :
+              </Typography>
               <Typography
+                maxWidth="50%"
+                width="50%"
                 variant="bodyMd"
                 color="primary"
                 fontWeight={500}
@@ -162,12 +172,16 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
             <Stack
               direction="row"
               justifyContent="center"
-              height={24}
               gap={1}
               alignItems="center"
-              pt={1}>
-              <Typography variant="bodyMd">Téléphone :</Typography>
+              pt={1}
+              width="100%">
+              <Typography variant="bodyMd" noWrap maxWidth="50%" width="50%" textAlign="right">
+                Téléphone :
+              </Typography>
               <Typography
+                maxWidth="50%"
+                width="50%"
                 variant="bodyMd"
                 color="primary"
                 fontWeight={500}
