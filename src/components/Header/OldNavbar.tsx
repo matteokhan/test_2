@@ -47,7 +47,11 @@ export const OldNavbar = () => {
               }}
               onMouseEnter={() => setIsFlashSalesHovered(true)}
               onMouseLeave={() => setIsFlashSalesHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #BE003C',
+                }}>
                 <a href="https://www.leclercvoyages.com/ventes-flash/Offres-Speciales">
                   <strong>
                     Ventes
@@ -67,7 +71,11 @@ export const OldNavbar = () => {
               }}
               onMouseEnter={() => setIsLastMinuteHovered(true)}
               onMouseLeave={() => setIsLastMinuteHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #BE003C',
+                }}>
                 <a href="https://www.leclercvoyages.com/Derniere_Minute">
                   <strong>
                     Dernière
@@ -87,7 +95,11 @@ export const OldNavbar = () => {
               }}
               onMouseEnter={() => setIsPromosHovered(true)}
               onMouseLeave={() => setIsPromosHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #BE003C',
+                }}>
                 <a href="https://www.leclercvoyages.com/promo">
                   <strong>Promos</strong>
                 </a>
@@ -103,7 +115,11 @@ export const OldNavbar = () => {
               }}
               onMouseEnter={() => setIsHolidaysHovered(true)}
               onMouseLeave={() => setIsHolidaysHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #BE003C',
+                }}>
                 <span>
                   <strong style={{ position: 'relative' }}>
                     <strong>
@@ -115,7 +131,7 @@ export const OldNavbar = () => {
                 </span>
               </div>
 
-              <div className="sub-panel" style={{ backgroundColor: '#FFF' }}>
+              <div className="sub-panel" style={{ backgroundColor: '#FFF', top: '57px' }}>
                 <div id="Menu_Vacances_Hiver">
                   <div
                     className="col-x-6 left clearfix border-right"
@@ -224,7 +240,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsSkisHovered(true)}
               onMouseLeave={() => setIsSkisHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/vacances_ski_neige">&nbsp;Ski&nbsp;</a>
               </div>
             </li>
@@ -234,7 +254,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsFranceLinkHovered(true)}
               onMouseLeave={() => setIsFranceLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/france">France</a>
               </div>
             </li>
@@ -244,7 +268,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsClubLinkHovered(true)}
               onMouseLeave={() => setIsClubLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/sejour">
                   Séjours
                   <br />
@@ -258,7 +286,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsWeekendLinkHovered(true)}
               onMouseLeave={() => setIsWeekendLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/weekend">Week-end</a>
               </div>
             </li>
@@ -268,7 +300,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsDisneylandLinkHovered(true)}
               onMouseLeave={() => setIsDisneylandLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/parcs_attractions">
                   Disneyland
                   <br />& Parcs
@@ -281,7 +317,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsLocationsLinkHovered(true)}
               onMouseLeave={() => setIsLocationsLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/location">
                   Locations &<br />
                   Campings
@@ -294,7 +334,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsCircuitsLinkHovered(true)}
               onMouseLeave={() => setIsCircuitsLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/circuit">
                   Circuits
                   <br />
@@ -308,7 +352,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsInspirationLinkHovered(true)}
               onMouseLeave={() => setIsInspirationLinkHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <a href="https://www.leclercvoyages.com/inspiration-voyage">
                   Inspirez
                   <br />
@@ -322,7 +370,11 @@ export const OldNavbar = () => {
               style={{ borderBottomColor: '#00A5E1' }}
               onMouseEnter={() => setIsDestinationsHovered(true)}
               onMouseLeave={() => setIsDestinationsHovered(false)}>
-              <div className="tab">
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
                 <span>
                   Toutes nos
                   <br />
@@ -330,7 +382,9 @@ export const OldNavbar = () => {
                 </span>
               </div>
 
-              <div className="sub-nav-redoutable" style={{ backgroundColor: '#00A5E1' }}>
+              <div
+                className="sub-nav-redoutable"
+                style={{ backgroundColor: '#00A5E1', top: '57px' }}>
                 <ul className="reset-list clearfix">
                   <li
                     className={`sub-tab-item ${isFranceHovered ? 'hovered' : ''}`}
