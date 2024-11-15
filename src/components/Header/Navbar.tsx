@@ -124,7 +124,9 @@ export const Navbar = () => {
                 <FavoriteBorderOutlinedIcon data-testid={null} />
               </IconButton> */}
               <IconButton aria-label="account" color="primary" data-testid="navbar-accountButton">
-                <AccountCircleOutlinedIcon data-testid={null} />
+                <a href="https://www.leclercvoyages.com/account/" target="blank">
+                  <AccountCircleOutlinedIcon data-testid={null} />
+                </a>
               </IconButton>
             </Stack>
             <Stack
