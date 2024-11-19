@@ -25,11 +25,13 @@ export const UserLocationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const fetchUserPosition = useCallback(() => {
     navigator.geolocation.getCurrentPosition(
-      (position) =>
+      (position) => {
+        setCanAccessPosition(true)
         setPosition({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
-        }),
+        })
+      },
       (error: GeolocationPositionError) => {
         console.error(`ERROR(${error.code}): ${error.message}`) // TODO: log this somehow
         setCanAccessPosition(false)
@@ -64,7 +66,7 @@ export const UserLocationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } else {
       console.warn('Geolocation IS NOT available') // TODO: log this somehow
     }
-  })
+  }, [])
 
   useEffect(() => {
     if (canAccessPosition) {

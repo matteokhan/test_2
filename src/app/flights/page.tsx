@@ -14,8 +14,19 @@ import {
   SelectedFlightInfoTopbarMobile,
   OldNavbar,
   Footer,
+  NoAgencyWarningModal,
 } from '@/components'
-import { Box, Drawer, Button, Grow, Stack, Typography, IconButton, Divider } from '@mui/material'
+import {
+  Box,
+  Drawer,
+  Button,
+  Grow,
+  Stack,
+  Typography,
+  IconButton,
+  Divider,
+  Modal,
+} from '@mui/material'
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import {
   SearchFlightsParams,
@@ -37,6 +48,7 @@ export default function FlighsPage() {
   const queryClient = useQueryClient()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
+  const [isAgencyWarningOpen, setIsAgencyWarningOpen] = React.useState(false)
   const [isNavigating, setIsNavigating] = React.useState(false)
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
@@ -59,7 +71,7 @@ export default function FlighsPage() {
   const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto, setSearchParams } = useFlights()
   const { selectFlight, goToFirstStep, order, skipStep, setOrder, resetBooking } = useBooking()
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
-  const { selectedAgencyId } = useAgencySelector()
+  const { selectedAgencyId, setIsAgencySelectorOpen } = useAgencySelector()
   const {
     data: response,
     isSuccess,
@@ -182,7 +194,7 @@ export default function FlighsPage() {
     if (!selectedAgencyId) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
-      alert('Please select an agency')
+      setIsAgencyWarningOpen(true)
       return
     }
     createOrder(
@@ -414,6 +426,14 @@ export default function FlighsPage() {
           activeFilter={activeFilter}
         />
       </Drawer>
+      <Modal open={isAgencyWarningOpen} onClose={() => setIsAgencyWarningOpen(false)}>
+        <NoAgencyWarningModal
+          onShowAgency={() => {
+            setIsAgencySelectorOpen(true)
+            setIsAgencyWarningOpen(false)
+          }}
+        />
+      </Modal>
     </>
   )
 }

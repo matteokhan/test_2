@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect } from 'react'
-import { Box, Tab, Tabs, Stack, Button, Modal, Drawer } from '@mui/material'
+import { Box, Tab, Tabs, Stack, Button, Modal } from '@mui/material'
 import { OneWayFlightSearchParams, RoundTripFlightSearchParams, SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
 import {
@@ -10,7 +10,6 @@ import {
   ROUND_TRIP_DEFAULT_VALUES,
   ONE_WAY_DEFAULT_VALUES,
   AlertDestinationModal,
-  SelectAgencyMap,
 } from '@/components'
 import { FormikProps } from 'formik'
 import { isValidSearch } from '@/utils'
@@ -22,13 +21,12 @@ type SearchFlightsModesMobileProps = {
 export const SearchFlightsModesMobile = ({ onSearch }: SearchFlightsModesMobileProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
-  const [mapIsOpen, setMapIsOpen] = React.useState(false)
 
   const formRefOneWay = useRef<FormikProps<OneWayFlightSearchParams> | null>(null)
   const formRefRoundTrip = useRef<FormikProps<RoundTripFlightSearchParams> | null>(null)
 
   const { searchParamsCache } = useFlights()
-  const { selectAgency } = useAgencySelector()
+  const { setIsAgencySelectorOpen } = useAgencySelector()
 
   useEffect(() => {
     if (searchParamsCache) {
@@ -136,7 +134,7 @@ export const SearchFlightsModesMobile = ({ onSearch }: SearchFlightsModesMobileP
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
         <AlertDestinationModal
           onShowAgency={() => {
-            setMapIsOpen(true)
+            setIsAgencySelectorOpen(true)
             setModalIsOpen(false)
           }}
           onClose={() => {
@@ -144,23 +142,6 @@ export const SearchFlightsModesMobile = ({ onSearch }: SearchFlightsModesMobileP
           }}
         />
       </Modal>
-      <Drawer
-        open={mapIsOpen}
-        onClose={() => setMapIsOpen(false)}
-        anchor="right"
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-          },
-        }}>
-        <SelectAgencyMap
-          onClose={() => setMapIsOpen(false)}
-          onSelectAgency={({ agency }) => {
-            selectAgency(agency)
-            setMapIsOpen(false)
-          }}
-        />
-      </Drawer>
     </Stack>
   )
 }

@@ -2,12 +2,7 @@
 
 import React, { useState } from 'react'
 import { useFlights, useAgencySelector } from '@/contexts'
-import {
-  SectionContainer,
-  SearchFlightsModesMobile,
-  SelectAgencyMap,
-  SelectAgencyLabel,
-} from '@/components'
+import { SectionContainer, SearchFlightsModesMobile, SelectAgencyLabel } from '@/components'
 import { Box, Drawer, Stack, Typography, IconButton } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import TuneIcon from '@mui/icons-material/Tune'
@@ -39,7 +34,7 @@ export const SelectedFlightInfoTopbarMobile = ({
   onOpenFilters,
 }: SelectedFlightInfoTopbarMobileProps) => {
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
-  const { selectAgency } = useAgencySelector()
+  const { setIsAgencySelectorOpen } = useAgencySelector()
 
   // Depending on whether the flight is round trip or one way, the departure location and
   // destination location will be different'
@@ -55,7 +50,6 @@ export const SelectedFlightInfoTopbarMobile = ({
     locationCode: destinationLocation,
   })
   const [flightSearchOpen, setFlightSearchOpen] = useState(false)
-  const [mapIsOpen, setMapIsOpen] = React.useState(false)
 
   const handleOnSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setFlightSearchOpen(false)
@@ -159,7 +153,7 @@ export const SelectedFlightInfoTopbarMobile = ({
           </TravelOptionButton>
         </Box>
       )}
-      <SelectAgencyLabel openSelectionAgency={() => setMapIsOpen(true)} />
+      <SelectAgencyLabel openSelectionAgency={() => setIsAgencySelectorOpen(true)} />
       <Drawer
         open={flightSearchOpen}
         anchor="right"
@@ -187,23 +181,6 @@ export const SelectedFlightInfoTopbarMobile = ({
           </IconButton>
         </Stack>
         <SearchFlightsModesMobile onSearch={handleOnSearch} />
-      </Drawer>
-      <Drawer
-        open={mapIsOpen}
-        onClose={() => setMapIsOpen(false)}
-        anchor="right"
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-          },
-        }}>
-        <SelectAgencyMap
-          onClose={() => setMapIsOpen(false)}
-          onSelectAgency={({ agency }) => {
-            selectAgency(agency)
-            setMapIsOpen(false)
-          }}
-        />
       </Drawer>
     </SectionContainer>
   )

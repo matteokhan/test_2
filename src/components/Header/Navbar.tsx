@@ -3,21 +3,20 @@
 import React from 'react'
 import Image from 'next/image'
 import { Box, Button, Stack, Typography, IconButton, Drawer } from '@mui/material'
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
-// import ExpandMore from '@mui/icons-material/ExpandMore'
 import MenuIcon from '@mui/icons-material/Menu'
-import { SectionContainer, SelectAgencyMap } from '@/components'
+import { SectionContainer } from '@/components'
 import Link from 'next/link'
 import { useAgencySelector } from '@/contexts'
 import { env } from 'next-runtime-env'
+// TODO: enable this when the time comes ...
+// import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
+// import ExpandMore from '@mui/icons-material/ExpandMore'
 
 const LOGO_REDIRECTION_URL = env('NEXT_PUBLIC_LOGO_REDIRECTION_URL') || ''
 
 export const Navbar = () => {
-  const [mapIsOpen, setMapIsOpen] = React.useState(false)
-  const { selectAgency } = useAgencySelector()
-
+  const { setIsAgencySelectorOpen } = useAgencySelector()
   return (
     <Box
       sx={{
@@ -88,30 +87,13 @@ export const Navbar = () => {
                 Aide
               </Button> */}
               <Button
-                onClick={() => setMapIsOpen(true)}
+                onClick={() => setIsAgencySelectorOpen(true)}
                 color="primary"
                 variant="text"
                 data-testid="navbar-ourAgenciesButton">
                 Nos agences
               </Button>
             </Stack>
-            <Drawer
-              open={mapIsOpen}
-              onClose={() => setMapIsOpen(false)}
-              anchor="right"
-              PaperProps={{
-                sx: {
-                  borderRadius: 0,
-                },
-              }}>
-              <SelectAgencyMap
-                onClose={() => setMapIsOpen(false)}
-                onSelectAgency={({ agency }) => {
-                  selectAgency(agency)
-                  setMapIsOpen(false)
-                }}
-              />
-            </Drawer>
             <Stack direction="row">
               {/* TODO: enable this when the time comes ... */}
               {/* <IconButton

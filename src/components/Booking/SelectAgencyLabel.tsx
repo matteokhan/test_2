@@ -9,12 +9,12 @@ type SelectAgencyLabelProps = {
 }
 
 export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProps) => {
-  const { selectedAgency } = useAgencySelector()
+  const { selectedAgency, isFetchingAgency } = useAgencySelector()
 
   return (
     <>
-      {!selectedAgency && <Skeleton variant="text" width={280} height={20} />}
-      {selectedAgency && (
+      {isFetchingAgency && <Skeleton variant="text" width={280} height={20} />}
+      {selectedAgency && !isFetchingAgency && (
         <Stack direction="row">
           <Typography variant="titleSm" color="grey.600" data-testid="selectAgencyLabel-agencyName">
             Agence {selectedAgency.name} -&nbsp;
@@ -36,6 +36,16 @@ export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProp
             </span>
           </Typography>
         </Stack>
+      )}
+      {!selectedAgency && !isFetchingAgency && (
+        <Typography
+          variant="titleSm"
+          color="grey.600"
+          data-testid="selectAgencyLabel-noAgencyLabel"
+          style={{ cursor: 'pointer' }}
+          onClick={() => openSelectionAgency()}>
+          Veuillez sélectionner votre agence en ligne
+        </Typography>
       )}
     </>
   )

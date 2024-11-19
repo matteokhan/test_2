@@ -1,12 +1,10 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
-import { Box, Drawer, Modal, Paper, Stack, SxProps, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Modal, Paper, Stack, SxProps, Tab, Tabs } from '@mui/material'
 import {
   SearchOneWayFlightsForm,
   SearchRoundTripFlightsForm,
-  SearchMultiDestFlightsForm,
-  SelectAgencyMap,
   AlertDestinationModal,
   SelectAgencyLabel,
   SectionContainer,
@@ -23,10 +21,9 @@ type SearchFlightsModesProps = {
 
 export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = useState(0)
-  const [mapIsOpen, setMapIsOpen] = useState(false)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const { searchParamsCache } = useFlights()
-  const { selectAgency } = useAgencySelector()
+  const { setIsAgencySelectorOpen } = useAgencySelector()
   const [isSticky, setIsSticky] = useState<boolean>(false)
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -139,7 +136,7 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           />
         )} */}
               </Box>
-              <SelectAgencyLabel openSelectionAgency={() => setMapIsOpen(true)} />
+              <SelectAgencyLabel openSelectionAgency={() => setIsAgencySelectorOpen(true)} />
             </Stack>
           </SectionContainer>
         </Paper>
@@ -147,7 +144,7 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
       <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
         <AlertDestinationModal
           onShowAgency={() => {
-            setMapIsOpen(true)
+            setIsAgencySelectorOpen(true)
             setModalIsOpen(false)
           }}
           onClose={() => {
@@ -155,23 +152,6 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
           }}
         />
       </Modal>
-      <Drawer
-        open={mapIsOpen}
-        onClose={() => setMapIsOpen(false)}
-        anchor="right"
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-          },
-        }}>
-        <SelectAgencyMap
-          onClose={() => setMapIsOpen(false)}
-          onSelectAgency={({ agency }) => {
-            selectAgency(agency)
-            setMapIsOpen(false)
-          }}
-        />
-      </Drawer>
     </>
   )
 }
