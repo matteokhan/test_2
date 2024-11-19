@@ -23,10 +23,10 @@ export const getPassengerMaxBirthDate = ({
   flightDatetime: Dayjs
 }) => {
   if (type === 'ADT') {
-    return flightDatetime.subtract(12, 'year')
+    return flightDatetime.subtract(12, 'year').subtract(1, 'day')
   }
   if (type === 'CHD') {
-    return flightDatetime.subtract(2, 'year')
+    return flightDatetime.subtract(2, 'year').subtract(1, 'day')
   }
   if (type === 'INF') {
     return dayjs()
@@ -46,10 +46,10 @@ export const getPassengerMinBirthDate = ({
     return undefined
   }
   if (type === 'CHD') {
-    return flightDatetime.subtract(12, 'year')
+    return flightDatetime.subtract(12, 'year').subtract(1, 'day')
   }
   if (type === 'INF') {
-    return flightDatetime.subtract(2, 'year')
+    return flightDatetime.subtract(2, 'year').subtract(1, 'day')
   }
   const allCasesHandled: never = type
   return allCasesHandled
