@@ -60,13 +60,11 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
               </Typography>
             </Stack>
             <Stack ml={2} gap={1}>
-              {getFareDataFromSolution(selectedFare)
-                .services.filter((s) => s.isIncluded)
-                .map((service, index) => (
-                  <Stack direction="row" width="100%" justifyContent="space-between" key={index}>
-                    <Typography variant="bodyMd">{service.name}</Typography>
-                  </Stack>
-                ))}
+              {getFareDataFromSolution(selectedFare).services.map((service, index) => (
+                <Stack direction="row" width="100%" justifyContent="space-between" key={index}>
+                  <Typography variant="bodyMd">{service.name}</Typography>
+                </Stack>
+              ))}
             </Stack>
           </>
         )}
