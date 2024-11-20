@@ -105,7 +105,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
         {passengers.map((passenger, index) => (
           <React.Fragment key={index}>
             {passenger.ancillaries.length > 0 && (
-              <Typography variant="bodyMd">Passenger {index + 1} - Ancillaries</Typography>
+              <Typography variant="bodyMd">Passager {index + 1} - Option</Typography>
             )}
             {passenger.ancillaries.map((ancillary, ancillaryIndex) => (
               <Stack
