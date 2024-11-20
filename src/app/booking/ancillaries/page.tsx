@@ -149,7 +149,7 @@ export default function AncillariesPage() {
           return (
             <SimpleContainer
               key={ancillary.passenger}
-              title={`Passenger : ${passengerData?.firstName} ${passengerData?.lastName}`}>
+              title={`Passager : ${passengerData?.firstName} ${passengerData?.lastName}`}>
               <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
                 <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
                   L’achat de bagages après la réservation revient plus cher. Ajoutez-les maintenant
@@ -210,7 +210,7 @@ export default function AncillariesPage() {
             return (
               <SimpleContainer
                 key={index}
-                title={`Passenger : ${passengerData?.firstName} ${passengerData?.lastName}`}>
+                title={`Passager : ${passengerData?.firstName} ${passengerData?.lastName}`}>
                 <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
                   <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
                     L’achat de bagages après la réservation revient plus cher. Ajoutez-les
