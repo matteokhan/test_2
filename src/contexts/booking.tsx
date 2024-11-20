@@ -81,7 +81,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     },
     {
       code: 'passengers',
-      name: 'Passagers et bagages',
+      name: 'Passagers',
       url: '/booking/passengers',
       title: 'Qui sont les passagers ?',
       skip: false,
