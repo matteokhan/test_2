@@ -32,15 +32,23 @@ export default function BookingSummaryPage() {
   useMetadata('Résumé et paiement')
   const searchParams = useSearchParams()
   const orderId = searchParams.get('order_id')
+  const paymentWasFailed = searchParams.get('status') === 'failed'
   const errorAlertRef = React.useRef<HTMLDivElement>(null)
-  const [paymentWasFailed, setPaymentWasFailed] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
   const [paymentMethodCode, setPaymentMethodCode] = useState<AgencyContractCode | null>(null)
   const [conditionsAccepted, setConditionsAccepted] = useState(false)
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
   const [formalitiesModalIsOpen, setFormalitiesModalIsOpen] = useState(false)
-  const { goPreviousStep, goToStep, order, saveBookingState, loadBookingState, selectedFare } =
-    useBooking()
+  const {
+    goPreviousStep,
+    goToStep,
+    order,
+    saveBookingState,
+    loadBookingState,
+    selectedFare,
+    isBookingActive,
+  } = useBooking()
   const { mutate: prepareOrderPayment, isPending: isPreparingPayment } = usePrepareOrderPayment()
   const { mutate: prepareLccOrderPayment, isPending: isPreparingLccPayment } =
     usePrepareLccOrderPayment()
@@ -48,22 +56,28 @@ export default function BookingSummaryPage() {
   const { selectedAgency } = useAgencySelector()
   const { lastSegment, isOneWay } = useFlights()
   const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
-  const { data: formalities1 } = useFormalities({ countryCode: destinationLocation })
-  const { data: formalities2 } = useFormalities({
-    areaCode: formalities1
-      ? formalities1.length > 0
-        ? formalities1[0].area_code
+  const { data: countryFormalities } = useFormalities({ countryCode: destinationLocation })
+  const { data: areaFormalities } = useFormalities({
+    areaCode: countryFormalities
+      ? countryFormalities.length > 0
+        ? countryFormalities[0].area_code
         : undefined
       : undefined,
   })
   const formalities = [
-    ...(formalities1 || []),
-    ...(formalities2?.filter((f) => f.country_code === null) || []),
+    ...(countryFormalities || []),
+    ...(areaFormalities?.filter((f) => f.country_code === null) || []),
   ]
   const { data: destinationData } = useLocationData({
     locationCode: destinationLocation,
   })
-  const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment
+  const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment || isNavigating
+  const isBookingEditable = !paymentWasFailed && isBookingActive
+
+  const goToPayment = (payment_url: string) => {
+    setIsNavigating(true)
+    window.location.href = payment_url
+  }
 
   const handleSubmit = async () => {
     if (!order || !selectedFare) {
@@ -103,7 +117,7 @@ export default function BookingSummaryPage() {
                   // TODO: Warn the user that something went wrong
                   return
                 }
-                window.location.replace(data.payment_redirect_url)
+                goToPayment(data.payment_redirect_url)
               },
               onError: (error) => {
                 // TODO: log this somewhere
@@ -121,7 +135,7 @@ export default function BookingSummaryPage() {
                   // TODO: Warn the user that something went wrong
                   return
                 }
-                window.location.replace(data.payment_redirect_url)
+                goToPayment(data.payment_redirect_url)
               },
               onError: (error) => {
                 // TODO: log this somewhere
@@ -139,9 +153,8 @@ export default function BookingSummaryPage() {
   }
 
   useEffect(() => {
-    if (orderId) {
+    if (orderId && !isBookingActive) {
       loadBookingState()
-      setPaymentWasFailed(true)
     }
   }, [])
 
@@ -162,7 +175,7 @@ export default function BookingSummaryPage() {
       <SimpleContainer
         title="Passagers"
         sx={{ pb: 3 }}
-        disabled={paymentWasFailed}
+        disabled={!isBookingEditable}
         action="Modifier"
         onAction={() => goToStep('passengers')}>
         <PassengersSummary />
@@ -170,7 +183,7 @@ export default function BookingSummaryPage() {
       <SimpleContainer
         title="Coordonnées de facturation"
         sx={{ pb: 3 }}
-        disabled={paymentWasFailed}
+        disabled={!isBookingEditable}
         action="Modifier"
         onAction={() => goToStep('contact')}>
         <PayerSummary />
@@ -178,7 +191,7 @@ export default function BookingSummaryPage() {
       <SimpleContainer
         title="Assurances"
         sx={{ pb: 3 }}
-        disabled={paymentWasFailed}
+        disabled={!isBookingEditable}
         action="Modifier"
         onAction={() => goToStep('insurances')}>
         <InsuranceSummary />
@@ -235,7 +248,7 @@ export default function BookingSummaryPage() {
         onContinue={handleSubmit}
         onGoBack={goPreviousStep}
         isLoading={isLoading}
-        goBackDisabled={paymentWasFailed}
+        goBackDisabled={!isBookingEditable}
       />
     </>
   )

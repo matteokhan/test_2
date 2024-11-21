@@ -95,7 +95,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                             variant="bodyMd"
                             fontWeight={500}
                             data-testid="purchaseDetails-ancillary-price">
-                            {ancillary.price.toFixed()}€
+                            {ancillary.price.toFixed(2)}€
                           </Typography>
                         </Stack>
                       </Stack>

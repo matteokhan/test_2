@@ -45,7 +45,7 @@ export default function SuccessPage() {
           if (orderData.is_paid) {
             setOrder(orderData)
           } else {
-            router.push(`/booking/summary?order_id=${orderId}`)
+            router.push(`/booking/summary?order_id=${orderId}&status=failed`)
           }
           setIsLoading(false)
         }

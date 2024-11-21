@@ -66,6 +66,8 @@ type BookingContextType = {
   setOrder: React.Dispatch<React.SetStateAction<OrderDto | null>>
   saveBookingState: () => void
   loadBookingState: () => void
+  isBookingActive: boolean
+  setIsBookingActive: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -130,6 +132,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [selectedInsurance, setSelectedInsurance] = React.useState<InsuranceWithSteps | null>(null)
   const [pnr, setPnr] = useState<string | null>(null)
   const [order, setOrder] = useState<OrderDto | null>(null)
+  const [isBookingActive, setIsBookingActive] = useState(false)
   const departureDatetime = selectedFare
     ? dayjs(selectedFare.routes[0].segments[0].departureDateTime)
     : null
@@ -159,6 +162,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }
 
   const goToFirstStep = () => {
+    setIsBookingActive(true)
     const firstStep = steps.current.filter((step) => !step.skip)[0]
     currentStep.current = getStepIndexByCode(firstStep.code)
     router.push(firstStep.url)
@@ -176,7 +180,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return
     }
     currentStep.current = nextStep
-    router.push(steps.current[nextStep].url)
+    router.push(steps.current[nextStep].url + `?order_id=${order?.id}`)
   }
 
   const goPreviousStep = () => {
@@ -372,6 +376,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setWereAncillariesSelected,
         saveBookingState,
         loadBookingState,
+        isBookingActive,
+        setIsBookingActive,
       }}>
       {children}
     </BookingContext.Provider>
