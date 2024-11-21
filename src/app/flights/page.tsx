@@ -15,6 +15,7 @@ import {
   OldNavbar,
   Footer,
   NoAgencyWarningModal,
+  NoResultsErrorModal,
 } from '@/components'
 import {
   Box,
@@ -49,6 +50,7 @@ export default function FlighsPage() {
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
   const [isAgencyWarningOpen, setIsAgencyWarningOpen] = React.useState(false)
+  const [isNoResultsModalOpen, setIsNoResultsModalOpen] = React.useState(false)
   const [isNavigating, setIsNavigating] = React.useState(false)
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
@@ -253,6 +255,12 @@ export default function FlighsPage() {
     }
   }, [])
 
+  useEffect(() => {
+    if (response?.solutions.length === 0) {
+      setIsNoResultsModalOpen(true)
+    }
+  }, [response])
+
   return (
     <>
       <TopBar height={isDesktop ? 120 : 200} fixed={isDesktop ? false : true}>
@@ -436,6 +444,9 @@ export default function FlighsPage() {
             setIsAgencyWarningOpen(false)
           }}
         />
+      </Modal>
+      <Modal open={isNoResultsModalOpen} onClose={() => setIsNoResultsModalOpen(false)}>
+        <NoResultsErrorModal onClose={() => setIsNoResultsModalOpen(false)} />
       </Modal>
     </>
   )
