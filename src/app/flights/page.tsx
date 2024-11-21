@@ -287,7 +287,23 @@ export default function FlighsPage() {
             disabled={isLoading}
           />
           <SectionContainer>
-            <Stack direction="column" style={{ width: 'inherit' }}>
+            <Stack direction="column" width="100%">
+              {isLoading && (
+                <Grow in={isLoading}>
+                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">
+                    <Stack maxWidth="516px" direction="row" gap={3}>
+                      <FlightsLoader />
+                      <Box>
+                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                        <Typography variant="bodyMd" pt={1.5}>
+                          Merci de patienter quelques secondes le temps que nous trouvions les
+                          meilleures offres du moment !
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </Grow>
+              )}
               <Stack direction="row" spacing={isDesktop ? 2 : 0}>
                 <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
                   <SearchFlightsFilters
@@ -317,39 +333,15 @@ export default function FlighsPage() {
             <FlightDateAlternatives />
           </Stack> */}
                   {isLoading && (
-                    <div style={{ width: '100%' }}>
-                      <Grow in={isLoading}>
-                        <Stack
-                          sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }}
-                          alignItems="center">
-                          <Stack maxWidth="516px" direction="row" gap={3}>
-                            <FlightsLoader />
-                            <Box>
-                              <Typography variant="titleLg">
-                                Votre recherche est en cours...
-                              </Typography>
-                              <Typography variant="bodyMd" pt={1.5}>
-                                Merci de patienter quelques secondes le temps que nous trouvions les
-                                meilleures offres du moment !
-                              </Typography>
-                            </Box>
-                          </Stack>
-                        </Stack>
-                      </Grow>
+                    <>
                       <FlightResultSkeleton />
                       <FlightResultSkeleton />
                       <FlightResultSkeleton />
-                    </div>
+                    </>
                   )}
                   {isSuccess && (
                     <>
                       <SearchResults results={filteredData?.slice(0, resultsNumber)} />
-                      <Typography variant="bodySm" color="grey.600">
-                        Les prix affichés incluent les taxes et peuvent changer en fonction de la
-                        disponibilité. Vous pouvez consulter les frais supplémentaires avant le
-                        paiement. Les prix ne sont pas définitifs tant que vous n'avez pas finalisé
-                        votre achat.
-                      </Typography>
                       {hasMoreResults && (
                         <Button
                           onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
@@ -357,6 +349,15 @@ export default function FlighsPage() {
                           Voir plus
                         </Button>
                       )}
+                      <Typography
+                        variant="bodySm"
+                        color="grey.600"
+                        textAlign={isDesktop ? 'left' : 'center'}>
+                        Les prix affichés incluent les taxes et peuvent changer en fonction de la
+                        disponibilité. Vous pouvez consulter les frais supplémentaires avant le
+                        paiement. Les prix ne sont pas définitifs tant que vous n'avez pas finalisé
+                        votre achat.
+                      </Typography>
                     </>
                   )}
                 </Stack>
