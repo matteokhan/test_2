@@ -71,9 +71,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
         {ancillaries.map((ancillary, ancillaryIndex) => (
           <React.Fragment key={ancillaryIndex}>
             {ancillary.segments.some((s) => s.ancillaries.some((a) => a.selected)) && (
-              <Typography variant="bodyMd">
-                Passenger {ancillary.passenger} - Ancillaries
-              </Typography>
+              <Typography variant="bodyMd">Passager {ancillary.passenger} - Option</Typography>
             )}
             {ancillary.segments
               .filter((segment) => segment.ancillaries.some((a) => a.selected))
@@ -107,7 +105,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
         {passengers.map((passenger, index) => (
           <React.Fragment key={index}>
             {passenger.ancillaries.length > 0 && (
-              <Typography variant="bodyMd">Passenger {index + 1} - Ancillaries</Typography>
+              <Typography variant="bodyMd">Passager {index + 1} - Option</Typography>
             )}
             {passenger.ancillaries.map((ancillary, ancillaryIndex) => (
               <Stack

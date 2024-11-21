@@ -12,5 +12,5 @@ export const getLccAncillaryRouteCoverage = (ancillaryService: LCCAncillary) => 
 }
 
 export const getLccAncillaryDescription = (ancillaryService: LCCAncillary) => {
-  return `${ancillaryService.baggagePieces} baggages pour ${ancillaryService.baggageWeight}kg maximum`
+  return `${ancillaryService.baggagePieces} baggage(s) pour ${ancillaryService.baggageWeight}kg maximum`
 }
