@@ -13,6 +13,7 @@ import {
   BookingConditionsCheckbox,
   AcceptBookingConditionsModal,
   FormalitiesModal,
+  PreparePaymentErrorModal,
 } from '@/components'
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import {
@@ -40,6 +41,7 @@ export default function BookingSummaryPage() {
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
   const [formalitiesModalIsOpen, setFormalitiesModalIsOpen] = useState(false)
+  const [paymentErrorModalIsOpen, setPaymentErrorModalIsOpen] = useState(false)
   const {
     goPreviousStep,
     goToStep,
@@ -109,19 +111,19 @@ export default function BookingSummaryPage() {
               onSuccess: (data) => {
                 if (data.ticket?.is_reserved === false) {
                   // TODO: log this somewhere
-                  // TODO: Warn the user that something went wrong
+                  setPaymentErrorModalIsOpen(true)
                   return
                 }
                 if (!data.payment_redirect_url) {
                   // TODO: log this somewhere
-                  // TODO: Warn the user that something went wrong
+                  setPaymentErrorModalIsOpen(true)
                   return
                 }
                 goToPayment(data.payment_redirect_url)
               },
               onError: (error) => {
                 // TODO: log this somewhere
-                // TODO: Warn the user that something went wrong
+                setPaymentErrorModalIsOpen(true)
               },
             },
           )
@@ -132,14 +134,14 @@ export default function BookingSummaryPage() {
               onSuccess: (data) => {
                 if (!data.payment_redirect_url) {
                   // TODO: log this somewhere
-                  // TODO: Warn the user that something went wrong
+                  setPaymentErrorModalIsOpen(true)
                   return
                 }
                 goToPayment(data.payment_redirect_url)
               },
               onError: (error) => {
                 // TODO: log this somewhere
-                // TODO: Warn the user that something went wrong
+                setPaymentErrorModalIsOpen(true)
               },
             },
           )
@@ -147,7 +149,7 @@ export default function BookingSummaryPage() {
       },
       onError: (error) => {
         // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
+        setPaymentErrorModalIsOpen(true)
       },
     })
   }
@@ -243,6 +245,9 @@ export default function BookingSummaryPage() {
         open={acceptConditionsModalIsOpen}
         onClose={() => setAcceptConditionsModalIsOpen(false)}>
         <AcceptBookingConditionsModal onClose={() => setAcceptConditionsModalIsOpen(false)} />
+      </Modal>
+      <Modal open={paymentErrorModalIsOpen} onClose={() => setPaymentErrorModalIsOpen(false)}>
+        <PreparePaymentErrorModal onClose={() => setPaymentErrorModalIsOpen(false)} />
       </Modal>
       <BookingStepActions
         onContinue={handleSubmit}
