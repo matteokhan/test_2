@@ -205,7 +205,7 @@ export default function AncillariesPage() {
         lccIsSuccess &&
         lccAncillaries &&
         passengers
-          .filter((p) => p.type === 'ADT')
+          .filter((p) => ['ADT', 'CHD'].includes(p.type))
           .map((passengerData, index) => {
             return (
               <SimpleContainer
