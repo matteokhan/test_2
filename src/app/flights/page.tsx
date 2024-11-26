@@ -352,9 +352,10 @@ export default function FlighsPage() {
                       <SearchResults results={filteredData?.slice(0, resultsNumber)} />
                       {hasMoreResults && (
                         <Button
+                          variant="contained"
                           onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
                           data-testid="searchFlights-viewMoreResultsButton">
-                          Voir plus
+                          Résultats suivants
                         </Button>
                       )}
                       <Typography
