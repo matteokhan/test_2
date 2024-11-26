@@ -95,12 +95,7 @@ export const FlightDetails = ({
                   ))}
                 </Stack>
                 {preSelectedFlight.gdsType === GDSType.REGULAR && (
-                  <Box
-                    border="1px solid"
-                    borderColor="grey.400"
-                    borderRadius="6px"
-                    p={2}
-                    bgcolor="white">
+                  <Box borderRadius="6px" p={2} bgcolor="white">
                     <FareServices services={getFareDataFromSolution(preSelectedFlight).services} />
                   </Box>
                 )}
@@ -111,12 +106,7 @@ export const FlightDetails = ({
                 {preSelectedFlight.gdsType === GDSType.LOW_COST_CARRIER &&
                   lccAncillaries &&
                   !isLoadingLccAncillaries && (
-                    <Box
-                      border="1px solid"
-                      borderColor="grey.400"
-                      borderRadius="6px"
-                      p={2}
-                      bgcolor="white">
+                    <Box borderRadius="6px" p={2} bgcolor="white">
                       <FareServices
                         services={getFareDataFromLccAncillaries(lccAncillaries).services}
                       />
@@ -193,12 +183,7 @@ export const FlightDetails = ({
                   ))}
                 </Stack>
                 {preSelectedFlight.gdsType === GDSType.REGULAR && (
-                  <Box
-                    border="1px solid"
-                    borderColor="grey.400"
-                    borderRadius="6px"
-                    p={2}
-                    bgcolor="white">
+                  <Box borderRadius="6px" p={2} bgcolor="white">
                     <FareServices services={getFareDataFromSolution(preSelectedFlight).services} />
                   </Box>
                 )}
@@ -209,12 +194,7 @@ export const FlightDetails = ({
                 {preSelectedFlight.gdsType === GDSType.LOW_COST_CARRIER &&
                   lccAncillaries &&
                   !isLoadingLccAncillaries && (
-                    <Box
-                      border="1px solid"
-                      borderColor="grey.400"
-                      borderRadius="6px"
-                      p={2}
-                      bgcolor="white">
+                    <Box borderRadius="6px" p={2} bgcolor="white">
                       <FareServices
                         services={getFareDataFromLccAncillaries(lccAncillaries).services}
                       />
