@@ -37,6 +37,11 @@ export type AncillaryPassengerInfo = {
   }
 }
 
+export type AncillarySegmentInfo = {
+  id: string
+  flightNumber: number
+}
+
 export type AncillaryServiceType = 'BAGGAGE' // TODO: add more types
 
 export type LCCAncillaryCode = 'BaggageFee' // TODO: add more types
@@ -55,4 +60,5 @@ export type LCCAncillary = {
 export type AncillariesQueryResult = {
   ancillaries: Ancillary[]
   passengers: AncillaryPassengerInfo[]
+  segments: AncillarySegmentInfo[]
 }

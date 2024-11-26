@@ -58,7 +58,12 @@ export default function BookingSummaryPage() {
   const { selectedAgency } = useAgencySelector()
   const { lastSegment, isOneWay } = useFlights()
   const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
-  const { data: countryFormalities } = useFormalities({ countryCode: destinationLocation })
+  const { data: destinationData } = useLocationData({
+    locationCode: destinationLocation,
+  })
+  const { data: countryFormalities } = useFormalities({
+    countryCode: destinationData?.country_code,
+  })
   const { data: areaFormalities } = useFormalities({
     areaCode: countryFormalities
       ? countryFormalities.length > 0
@@ -70,9 +75,6 @@ export default function BookingSummaryPage() {
     ...(countryFormalities || []),
     ...(areaFormalities?.filter((f) => f.country_code === null) || []),
   ]
-  const { data: destinationData } = useLocationData({
-    locationCode: destinationLocation,
-  })
   const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment || isNavigating
   const isBookingEditable = !paymentWasFailed && isBookingActive
 
@@ -219,7 +221,7 @@ export default function BookingSummaryPage() {
           <BookingConditionsCheckbox
             onChange={(checked) => setConditionsAccepted(checked)}
             checked={conditionsAccepted}
-            destination={destinationData?.name}
+            destination={destinationData?.country_name}
             onFormalitiesClick={() => {
               if (formalities.length > 0) {
                 setFormalitiesModalIsOpen(true)
