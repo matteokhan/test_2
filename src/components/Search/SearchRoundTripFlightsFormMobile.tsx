@@ -4,12 +4,14 @@ import React, { MutableRefObject, useState } from 'react'
 import { Form, Formik, Field, FormikProps } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import * as Yup from 'yup'
-import dayjs from 'dayjs'
-import 'dayjs/locale/fr'
 import { Box, Button, Drawer, Paper, Stack, TextField, Typography } from '@mui/material'
 import { DateRangeCalendar } from '@mui/x-date-pickers-pro'
 import { DestinationField, DepartureField, PassengersControls } from '@/components'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import 'dayjs/locale/fr'
+import dayjs from 'dayjs'
+
+dayjs.locale('fr')
 
 const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   adults: 1,
@@ -220,8 +222,8 @@ export const SearchRoundTripFlightsFormMobile = ({
                 sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', borderRadius: 0 }}>
                 <Stack px={3} py={2}>
                   <Typography variant="titleMd" color="grey.900" textAlign="right">
-                    Du {dayjs(values.departure).format('ddd. D MMM.')} au{' '}
-                    {dayjs(values.return).format('ddd. D MMM.')}
+                    Du {dayjs(values.departure).format('ddd D MMM')} au{' '}
+                    {dayjs(values.return).format('ddd D MMM')}
                   </Typography>
                   <Stack
                     sx={{

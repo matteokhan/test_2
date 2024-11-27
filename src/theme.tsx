@@ -6,6 +6,7 @@ import { LinkProps as RouterLinkProps } from 'next/link'
 import Link from 'next/link'
 import { createTheme, responsiveFontSizes, SimplePaletteColorOptions } from '@mui/material/styles'
 import { LinkProps } from '@mui/material/Link'
+import { frFR } from '@mui/x-date-pickers/locales'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 type LeclercPalette = {
@@ -92,169 +93,172 @@ const LinkBehavior = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props
 })
 
 const { palette } = createTheme()
-let theme = createTheme({
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 900,
-      lg: 1280, // Changed from 1200
-      xl: 1536,
+let theme = createTheme(
+  {
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1280, // Changed from 1200
+        xl: 1536,
+      },
     },
-  },
-  zIndex: {
-    searchBar: 500,
-  },
-  palette: {
-    leclerc: {
-      red: palette.augmentColor({
-        color: {
-          main: '#BE003C',
-          light: '#BD4B6F',
-        },
-      }),
-      blueLabel: palette.augmentColor({
-        color: {
-          main: '#60A0D9',
-        },
-      }),
-      blueNotif: palette.augmentColor({
-        color: {
-          main: '#E4EFF9',
-        },
-      }),
-      redNotif: palette.augmentColor({
-        color: {
-          main: '#F8E5EB',
-        },
-      }),
+    zIndex: {
+      searchBar: 500,
     },
-    primary: {
-      main: '#0066CC',
-      light: '#00A5E1',
-      dark: '#075099',
-      contrastText: '#FFFFFF',
-    },
-    common: {
-      black: 'black',
-      white: 'white',
-    },
-    grey: {
-      50: '#FAFAFA',
-      100: '#F2F2F2',
-      200: '#E6E6E6',
-      300: '#D9D9D9',
-      400: '#CCCCCC',
-      500: '#B3B3B3',
-      600: '#999999',
-      700: '#808080',
-      800: '#666666',
-      900: '#333333',
-    },
-  },
-  typography: {
-    fontFamily: roboto.style.fontFamily,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: '100px',
-          textTransform: 'none',
-          textWrap: 'nowrap',
-        },
-        outlined: {
-          borderColor: palette.grey[400],
-        },
-        sizeMedium: ({ theme }) => ({
-          height: theme.spacing(5),
+    palette: {
+      leclerc: {
+        red: palette.augmentColor({
+          color: {
+            main: '#BE003C',
+            light: '#BD4B6F',
+          },
         }),
-        sizeLarge: ({ theme }) => ({
-          height: theme.spacing(7),
-          padding: theme.spacing(2, 6),
+        blueLabel: palette.augmentColor({
+          color: {
+            main: '#60A0D9',
+          },
+        }),
+        blueNotif: palette.augmentColor({
+          color: {
+            main: '#E4EFF9',
+          },
+        }),
+        redNotif: palette.augmentColor({
+          color: {
+            main: '#F8E5EB',
+          },
         }),
       },
-      defaultProps: {
-        disableElevation: true,
+      primary: {
+        main: '#0066CC',
+        light: '#00A5E1',
+        dark: '#075099',
+        contrastText: '#FFFFFF',
+      },
+      common: {
+        black: 'black',
+        white: 'white',
+      },
+      grey: {
+        50: '#FAFAFA',
+        100: '#F2F2F2',
+        200: '#E6E6E6',
+        300: '#D9D9D9',
+        400: '#CCCCCC',
+        500: '#B3B3B3',
+        600: '#999999',
+        700: '#808080',
+        800: '#666666',
+        900: '#333333',
       },
     },
-    MuiLink: {
-      defaultProps: {
-        component: LinkBehavior,
-      } as LinkProps,
+    typography: {
+      fontFamily: roboto.style.fontFamily,
     },
-    MuiButtonBase: {
-      defaultProps: {
-        LinkComponent: LinkBehavior,
-      },
-    },
-    MuiTypography: {
-      defaultProps: {
-        variantMapping: {
-          headlineMd: 'h2',
-          headlineSm: 'h2',
-          headlineXs: 'h3',
-          titleLg: 'h2',
-          titleMd: 'h3',
-          titleSm: 'h4',
-          bodyLg: 'p',
-          bodyMd: 'p',
-          bodySm: 'p',
-          labelLg: 'label',
-          labelMd: 'label',
-          labelSm: 'label',
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '100px',
+            textTransform: 'none',
+            textWrap: 'nowrap',
+          },
+          outlined: {
+            borderColor: palette.grey[400],
+          },
+          sizeMedium: ({ theme }) => ({
+            height: theme.spacing(5),
+          }),
+          sizeLarge: ({ theme }) => ({
+            height: theme.spacing(7),
+            padding: theme.spacing(2, 6),
+          }),
+        },
+        defaultProps: {
+          disableElevation: true,
         },
       },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: '6px',
+      MuiLink: {
+        defaultProps: {
+          component: LinkBehavior,
+        } as LinkProps,
+      },
+      MuiButtonBase: {
+        defaultProps: {
+          LinkComponent: LinkBehavior,
         },
       },
-      defaultProps: {
-        elevation: 0,
-      },
-    },
-    MuiFormGroup: {
-      styleOverrides: {
-        root: {
-          gap: '6px',
+      MuiTypography: {
+        defaultProps: {
+          variantMapping: {
+            headlineMd: 'h2',
+            headlineSm: 'h2',
+            headlineXs: 'h3',
+            titleLg: 'h2',
+            titleMd: 'h3',
+            titleSm: 'h4',
+            bodyLg: 'p',
+            bodyMd: 'p',
+            bodySm: 'p',
+            labelLg: 'label',
+            labelMd: 'label',
+            labelSm: 'label',
+          },
         },
       },
-    },
-    MuiRadio: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          color: palette.grey[500],
-          padding: theme.spacing(0.5),
-        }),
-      },
-    },
-    MuiCheckbox: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          color: palette.grey[500],
-          padding: theme.spacing(0.5),
-        }),
-      },
-    },
-    MuiSlider: {
-      styleOverrides: {
-        root: {
-          height: '3px',
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            borderRadius: '6px',
+          },
         },
-        rail: {
-          color: palette.grey[400],
+        defaultProps: {
+          elevation: 0,
         },
-        thumb: {
-          height: '20px',
-          width: '20px',
+      },
+      MuiFormGroup: {
+        styleOverrides: {
+          root: {
+            gap: '6px',
+          },
+        },
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: palette.grey[500],
+            padding: theme.spacing(0.5),
+          }),
+        },
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: palette.grey[500],
+            padding: theme.spacing(0.5),
+          }),
+        },
+      },
+      MuiSlider: {
+        styleOverrides: {
+          root: {
+            height: '3px',
+          },
+          rail: {
+            color: palette.grey[400],
+          },
+          thumb: {
+            height: '20px',
+            width: '20px',
+          },
         },
       },
     },
   },
-})
+  frFR,
+)
 
 theme = createTheme(theme, {
   typography: {

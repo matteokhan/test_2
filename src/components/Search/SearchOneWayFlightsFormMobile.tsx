@@ -11,6 +11,8 @@ import { DateCalendar } from '@mui/x-date-pickers-pro'
 import { DestinationField, DepartureField, PassengersControls } from '@/components'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
+dayjs.locale('fr')
+
 const DEFAULT_VALUES: OneWayFlightSearchParams = {
   adults: 1,
   childrens: 0,
@@ -208,7 +210,7 @@ export const SearchOneWayFlightsFormMobile = ({
                 sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', borderRadius: 0 }}>
                 <Stack px={3} py={2}>
                   <Typography variant="titleMd" color="grey.900" textAlign="right">
-                    {dayjs(values.departure).format('ddd. D MMM.')}
+                    {dayjs(values.departure).format('ddd D MMM')}
                   </Typography>
                   <Stack
                     sx={{

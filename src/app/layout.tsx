@@ -6,6 +6,10 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { Providers, MuiXLicense, SelectAgencyDrawer } from '@/components'
 import { PublicEnvScript } from 'next-runtime-env'
 import './globals.css'
+import 'dayjs/locale/fr'
+import dayjs from 'dayjs'
+
+dayjs.locale('fr')
 
 const inter = Inter({ subsets: ['latin'] })
 
