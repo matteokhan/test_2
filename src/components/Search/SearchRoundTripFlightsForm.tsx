@@ -69,7 +69,10 @@ const searchParamsSchema = Yup.object().shape({
   fromLabel: Yup.string(),
   toLabel: Yup.string(),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
-  return: Yup.date().typeError('Date invalide').required('Requise'),
+  return: Yup.date()
+    .typeError('Date invalide')
+    .required('Requise')
+    .min(Yup.ref('departure'), 'La date de retour doit être après la date de départ'),
 })
 
 type SearchRoundTripFlightsFormProps = {

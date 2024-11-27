@@ -43,7 +43,10 @@ const searchParamsSchema = Yup.object().shape({
   toLabel: Yup.string(),
   toType: Yup.number(),
   departure: Yup.date().typeError('Date invalide').required('Requise'),
-  return: Yup.date().typeError('Date invalide').required('Requise'),
+  return: Yup.date()
+    .typeError('Date invalide')
+    .required('Requise')
+    .min(Yup.ref('departure'), 'La date de retour doit être après la date de départ'),
 })
 
 type SearchRoundTripFlightsFormMobileProps = {
@@ -71,6 +74,8 @@ export const SearchRoundTripFlightsFormMobile = ({
         const totalPassengers = values.adults + values.childrens + values.infants
         return (
           <Form data-testid="searchRoundTripMobile-form">
+            <p>{values.departure}</p>
+            <p>{values.return}</p>
             <Stack gap={1}>
               <Field
                 as={TextField}
@@ -102,14 +107,16 @@ export const SearchRoundTripFlightsFormMobile = ({
                 as={TextField}
                 label="Ajouter des dates"
                 variant="filled"
-                error={touched.departure && errors.departure}
-                helperText={touched.departure && errors.departure}
+                error={(touched.departure && errors.departure) || (touched.return && errors.return)}
+                helperText={
+                  (touched.departure && errors.departure) || (touched.return && errors.return)
+                }
                 inputProps={{
                   'data-testid': 'datesField',
                   readOnly: true,
                 }}
                 onClick={() => setDatesIsOpen(true)}
-                value={`${dayjs(values.departure).format('DD/MM/YYYY')} - ${dayjs(values.return).format('DD/MM/YYYY')}`}
+                value={`${values.departure ? dayjs(values.departure).format('DD/MM/YYYY') : ''} - ${values.return ? dayjs(values.return).format('DD/MM/YYYY') : ''}`}
               />
               <Field
                 as={TextField}
@@ -204,6 +211,7 @@ export const SearchRoundTripFlightsFormMobile = ({
                   value={[dayjs(values.departure), dayjs(values.return)]}
                   minDate={dayjs()}
                   onChange={(value) => {
+                    console.log(value)
                     setFieldValue('departure', value[0]?.format('YYYY-MM-DD'), true)
                     setFieldValue('return', value[1]?.format('YYYY-MM-DD'), true)
                   }}
