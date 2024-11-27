@@ -6,15 +6,16 @@ import { Skeleton, Stack, Typography } from '@mui/material'
 
 type SelectAgencyLabelProps = {
   openSelectionAgency: () => void
+  isLoading?: boolean
 }
 
-export const SelectAgencyLabel = ({ openSelectionAgency }: SelectAgencyLabelProps) => {
+export const SelectAgencyLabel = ({ openSelectionAgency, isLoading }: SelectAgencyLabelProps) => {
   const { selectedAgency, isFetchingAgency } = useAgencySelector()
 
   return (
     <>
-      {isFetchingAgency && <Skeleton variant="text" width={280} height={20} />}
-      {selectedAgency && !isFetchingAgency && (
+      {(isFetchingAgency || isLoading) && <Skeleton variant="text" width={280} height={20} />}
+      {selectedAgency && !isFetchingAgency && !isLoading && (
         <Stack direction="row">
           <Typography variant="titleSm" color="grey.600" data-testid="selectAgencyLabel-agencyName">
             Agence {selectedAgency.name} -&nbsp;

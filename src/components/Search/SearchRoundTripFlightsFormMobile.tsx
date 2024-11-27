@@ -74,8 +74,6 @@ export const SearchRoundTripFlightsFormMobile = ({
         const totalPassengers = values.adults + values.childrens + values.infants
         return (
           <Form data-testid="searchRoundTripMobile-form">
-            <p>{values.departure}</p>
-            <p>{values.return}</p>
             <Stack gap={1}>
               <Field
                 as={TextField}

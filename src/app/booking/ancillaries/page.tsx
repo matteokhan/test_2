@@ -12,7 +12,13 @@ import { useBooking } from '@/contexts'
 import { Alert, Stack, Grid } from '@mui/material'
 import { useAncillaries, useLCCAncillaries, useSelectAncillaries, useUpdateOrder } from '@/services'
 import WarningIcon from '@mui/icons-material/Warning'
-import { AncillaryServiceInfo, GDSType, UpdateOrderParams } from '@/types'
+import {
+  AncillariesQueryResult,
+  Ancillary,
+  AncillaryServiceInfo,
+  GDSType,
+  UpdateOrderParams,
+} from '@/types'
 import useMetadata from '@/contexts/useMetadata'
 
 export default function AncillariesPage() {
@@ -99,6 +105,25 @@ export default function AncillariesPage() {
     }
   }
 
+  const getPassengerData = (remoteAncillaries: AncillariesQueryResult, ancillary: Ancillary) => {
+    const remotePassengerData = remoteAncillaries.passengers.find(
+      (p) => p.id === Number(ancillary.passenger),
+    )
+    if (!remotePassengerData) throw Error("Can't find passenger index in remote passengers info")
+    const passengerData = passengers.find(
+      (p) =>
+        p.firstName.toLowerCase() === remotePassengerData.firstName.toLowerCase() &&
+        p.lastName.toLowerCase() === remotePassengerData.lastName.toLowerCase() &&
+        true,
+      // TODO: improve this comparison
+      // p.dateOfBirth?.year() === remotePassengerData.dateOfBirth.year &&
+      // p.dateOfBirth?.month() + 1 === remotePassengerData.dateOfBirth.month &&
+      // p.dateOfBirth?.date() === remotePassengerData.dateOfBirth.day,
+    )
+    if (!passengerData) throw Error("Can't find passenger index in local passengers info")
+    return passengerData
+  }
+
   return (
     <>
       {isFetching && (
@@ -113,33 +138,26 @@ export default function AncillariesPage() {
         !isFetching &&
         isSuccess &&
         ancillaries.map((ancillary) => {
-          const remotePassengerData = remoteAncillaries.passengers.find(
-            (p) => p.id === Number(ancillary.passenger),
-          )
-          if (!remotePassengerData)
-            throw Error("Can't find passenger index in remote passengers info")
-          const passengerData = passengers.find(
-            (p) =>
-              p.firstName.toLowerCase() === remotePassengerData.firstName.toLowerCase() &&
-              p.lastName.toLowerCase() === remotePassengerData.lastName.toLowerCase() &&
-              true,
-            // TODO: improve this comparison
-            // p.dateOfBirth?.year() === remotePassengerData.dateOfBirth.year &&
-            // p.dateOfBirth?.month() + 1 === remotePassengerData.dateOfBirth.month &&
-            // p.dateOfBirth?.date() === remotePassengerData.dateOfBirth.day,
-          )
-          if (!passengerData) throw Error("Can't find passenger index in local passengers info")
+          // Find passenger data
+          const passengerData = getPassengerData(remoteAncillaries, ancillary)
+
+          // We need to define the outbound segments and the inbound segments
           const totalSegments = ancillary.segments.length
+          // const outboundSegments =
+
           let outboundServices: AncillaryServiceInfo[] = []
           if (totalSegments > 0) {
+            // If all outbound segments have the anc, include it in the outbound services
             outboundServices = ancillary.segments[0].ancillaries.filter((service) =>
               ancillary.segments.every((segment) =>
                 segment.ancillaries.some((anc) => anc.code === service.code),
               ),
             )
           }
+
           let inboundServices: AncillaryServiceInfo[] = []
           if (totalSegments > 1) {
+            // If all inbound segments have the anc, include it in the inbound services
             inboundServices = ancillary.segments[1].ancillaries.filter((service) =>
               ancillary.segments.every((segment) =>
                 segment.ancillaries.some((anc) => anc.code === service.code),
@@ -175,6 +193,8 @@ export default function AncillariesPage() {
                               setAncillaries((prev) => [...prev])
                             }
                           }
+                          // service.selected = true
+                          // setAncillaries((prev) => [...prev])
                         }}
                         onUnselectService={(service) => {
                           const segmentIndex = ancillary.segments.findIndex((seg) =>

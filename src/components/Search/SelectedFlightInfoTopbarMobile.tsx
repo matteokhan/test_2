@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useFlights, useAgencySelector } from '@/contexts'
 import { SectionContainer, SearchFlightsModesMobile, SelectAgencyLabel } from '@/components'
-import { Box, Drawer, Stack, Typography, IconButton } from '@mui/material'
+import { Box, Drawer, Stack, Typography, IconButton, Skeleton } from '@mui/material'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import TuneIcon from '@mui/icons-material/Tune'
 import { locationName } from '@/utils'
@@ -26,12 +26,14 @@ type SelectedFlightInfoTopbarMobileProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
   withFilters?: boolean
   onOpenFilters?: (filterName: SearchFlightsFiltersOptions) => void
+  isLoading?: boolean
 }
 
 export const SelectedFlightInfoTopbarMobile = ({
   onSearch,
   withFilters,
   onOpenFilters,
+  isLoading,
 }: SelectedFlightInfoTopbarMobileProps) => {
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
   const { setIsAgencySelectorOpen } = useAgencySelector()
@@ -95,7 +97,7 @@ export const SelectedFlightInfoTopbarMobile = ({
           <Typography variant="bodyMd">Rechercher à nouveau</Typography>
         </Stack>
       )}
-      {withFilters && (
+      {withFilters && !isLoading && (
         <Box
           sx={{
             display: 'flex',
@@ -153,7 +155,11 @@ export const SelectedFlightInfoTopbarMobile = ({
           </TravelOptionButton>
         </Box>
       )}
-      <SelectAgencyLabel openSelectionAgency={() => setIsAgencySelectorOpen(true)} />
+      {withFilters && isLoading && <Skeleton variant="rectangular" height={34} />}
+      <SelectAgencyLabel
+        openSelectionAgency={() => setIsAgencySelectorOpen(true)}
+        isLoading={isLoading}
+      />
       <Drawer
         open={flightSearchOpen}
         anchor="right"

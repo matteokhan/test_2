@@ -276,6 +276,7 @@ export default function FlighsPage() {
               setActiveFilterOpen(true)
             }}
             onSearch={onSearch}
+            isLoading={isLoading}
           />
         </Box>
       </TopBar>

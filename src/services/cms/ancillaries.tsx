@@ -39,7 +39,11 @@ export const getAncillaries = async ({
     throw new Error('Error when getting ancillaries')
   }
 
-  return { ancillaries: data.ancillaries, passengers: data.passengerList }
+  return {
+    ancillaries: data.ancillaries,
+    passengers: data.passengerList,
+    segments: data.segmentList,
+  }
 }
 
 export const useAncillaries = ({ orderId, gdsType }: { orderId: OrderId; gdsType?: GDSType }) => {
