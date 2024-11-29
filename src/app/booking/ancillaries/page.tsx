@@ -12,14 +12,9 @@ import { useBooking } from '@/contexts'
 import { Alert, Stack, Grid } from '@mui/material'
 import { useAncillaries, useLCCAncillaries, useSelectAncillaries, useUpdateOrder } from '@/services'
 import WarningIcon from '@mui/icons-material/Warning'
-import {
-  AncillariesQueryResult,
-  Ancillary,
-  AncillaryServiceInfo,
-  GDSType,
-  UpdateOrderParams,
-} from '@/types'
+import { AncillariesQueryResult, Ancillary, GDSType, UpdateOrderParams } from '@/types'
 import useMetadata from '@/contexts/useMetadata'
+import { getAncillaryServices } from '@/utils'
 
 export default function AncillariesPage() {
   useMetadata('Options')
@@ -43,7 +38,7 @@ export default function AncillariesPage() {
     return null
   }
   const {
-    data: remoteAncillaries,
+    data: ancillariesResponse,
     isSuccess,
     isFetching,
   } = useAncillaries({ orderId: order.id, gdsType: selectedFare.gdsType })
@@ -62,8 +57,8 @@ export default function AncillariesPage() {
     isFetching || isSelectingAncillaries || isNavigating || isFetchingLcc || isUpdatingOrder
 
   useEffect(() => {
-    if (remoteAncillaries) setAncillaries(remoteAncillaries.ancillaries)
-  }, [remoteAncillaries])
+    if (ancillariesResponse) setAncillaries(ancillariesResponse.ancillaries)
+  }, [ancillariesResponse])
 
   const handleSubmit = () => {
     if (selectedFare.gdsType === GDSType.REGULAR) {
@@ -105,8 +100,8 @@ export default function AncillariesPage() {
     }
   }
 
-  const getPassengerData = (remoteAncillaries: AncillariesQueryResult, ancillary: Ancillary) => {
-    const remotePassengerData = remoteAncillaries.passengers.find(
+  const getPassengerData = (ancillariesResponse: AncillariesQueryResult, ancillary: Ancillary) => {
+    const remotePassengerData = ancillariesResponse.passengers.find(
       (p) => p.id === Number(ancillary.passenger),
     )
     if (!remotePassengerData) throw Error("Can't find passenger index in remote passengers info")
@@ -138,32 +133,12 @@ export default function AncillariesPage() {
         !isFetching &&
         isSuccess &&
         ancillaries.map((ancillary) => {
-          // Find passenger data
-          const passengerData = getPassengerData(remoteAncillaries, ancillary)
-
-          // We need to define the outbound segments and the inbound segments
-          const totalSegments = ancillary.segments.length
-          // const outboundSegments =
-
-          let outboundServices: AncillaryServiceInfo[] = []
-          if (totalSegments > 0) {
-            // If all outbound segments have the anc, include it in the outbound services
-            outboundServices = ancillary.segments[0].ancillaries.filter((service) =>
-              ancillary.segments.every((segment) =>
-                segment.ancillaries.some((anc) => anc.code === service.code),
-              ),
-            )
-          }
-
-          let inboundServices: AncillaryServiceInfo[] = []
-          if (totalSegments > 1) {
-            // If all inbound segments have the anc, include it in the inbound services
-            inboundServices = ancillary.segments[1].ancillaries.filter((service) =>
-              ancillary.segments.every((segment) =>
-                segment.ancillaries.some((anc) => anc.code === service.code),
-              ),
-            )
-          }
+          const passengerData = getPassengerData(ancillariesResponse, ancillary)
+          const [outboundServices, inboundServices] = getAncillaryServices(
+            ancillary,
+            ancillariesResponse,
+            selectedFare,
+          )
           return (
             <SimpleContainer
               key={ancillary.passenger}
@@ -193,8 +168,6 @@ export default function AncillariesPage() {
                               setAncillaries((prev) => [...prev])
                             }
                           }
-                          // service.selected = true
-                          // setAncillaries((prev) => [...prev])
                         }}
                         onUnselectService={(service) => {
                           const segmentIndex = ancillary.segments.findIndex((seg) =>
@@ -211,7 +184,9 @@ export default function AncillariesPage() {
                             }
                           }
                         }}
-                        inboundService={inboundServices.find((anc) => anc.code === service.code)}
+                        inboundService={inboundServices.find(
+                          (anc) => anc.code === service.code && anc.name === service.name,
+                        )}
                       />
                     ))}
                 </Grid>

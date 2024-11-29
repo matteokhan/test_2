@@ -211,7 +211,6 @@ export const SearchRoundTripFlightsFormMobile = ({
                   value={[dayjs(values.departure), dayjs(values.return)]}
                   minDate={dayjs()}
                   onChange={(value) => {
-                    console.log(value)
                     setFieldValue('departure', value[0]?.format('YYYY-MM-DD'), true)
                     setFieldValue('return', value[1]?.format('YYYY-MM-DD'), true)
                   }}

@@ -40,6 +40,8 @@ export type AncillaryPassengerInfo = {
 export type AncillarySegmentInfo = {
   id: string
   flightNumber: number
+  departure: { iata: string; name: string }
+  destination: { iata: string; name: string }
 }
 
 export type AncillaryServiceType = 'BAGGAGE' // TODO: add more types
