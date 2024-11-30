@@ -104,6 +104,7 @@ export const SearchRoundTripFlightsForm = ({
               </Stack>
               <Box width="25%">
                 <DateRangePicker
+                  disableAutoMonthSwitching={true}
                   sx={{ width: '100%' }}
                   slots={{ field: SingleInputDateRangeField, textField: CustomTextField }}
                   data-testid="datesField"
@@ -120,9 +121,17 @@ export const SearchRoundTripFlightsForm = ({
                     },
                   }}
                   minDate={dayjs()}
-                  onChange={(value) => {
-                    setFieldValue('departure', value[0]?.format('YYYY-MM-DD'), true)
-                    setFieldValue('return', value[1]?.format('YYYY-MM-DD'), true)
+                  onChange={([departure, destination]) => {
+                    setFieldValue(
+                      'departure',
+                      departure ? departure?.format('YYYY-MM-DD') : null,
+                      true,
+                    )
+                    setFieldValue(
+                      'return',
+                      destination ? destination?.format('YYYY-MM-DD') : null,
+                      true,
+                    )
                   }}
                 />
               </Box>
