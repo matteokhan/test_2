@@ -15,6 +15,7 @@ import {
 import { useUpdateOrder, useReserveOrder, getAncillaries, getLCCAncillaries } from '@/services'
 import { useQueryClient } from '@tanstack/react-query'
 import useMetadata from '@/contexts/useMetadata'
+import { getAncillaryServices } from '@/utils'
 
 export default function ContactInfoPage() {
   useMetadata('Informations facturation')
@@ -72,10 +73,21 @@ export default function ContactInfoPage() {
                 if (reservationData.travel_data?.passenger_name_record) {
                   setIsCheckingAncillaries(true)
                   try {
-                    await queryClient.fetchQuery<AncillariesQueryResult>({
+                    const ancillaries = await queryClient.fetchQuery<AncillariesQueryResult>({
                       queryKey: ['ancillaries', order.id],
                       queryFn: () => getAncillaries({ orderId: order.id }),
                     })
+                    const hasAncillaries = ancillaries.ancillaries.some((anc) => {
+                      const [outboundServices, inboundServices] = getAncillaryServices(
+                        anc,
+                        ancillaries,
+                        selectedFare,
+                      )
+                      return outboundServices.length > 0 || inboundServices.length > 0
+                    })
+                    if (!hasAncillaries) {
+                      skipStep('ancillaries')
+                    }
                   } catch (error) {
                     skipStep('ancillaries')
                   } finally {
