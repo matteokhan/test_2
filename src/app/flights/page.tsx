@@ -291,6 +291,7 @@ export default function FlighsPage() {
             flexDirection: 'column',
           }}>
           <SearchFlightsModes
+            sticky={true}
             onSearch={onSearch}
             sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
             disabled={isLoading}

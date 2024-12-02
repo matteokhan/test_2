@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Box, Typography } from '@mui/material'
-import { SearchFlightsModes, SectionContainer } from '@/components'
+import { SearchFlightsModes, SearchFlightsModesMobileV2, SectionContainer } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useFlights } from '@/contexts'
@@ -29,7 +29,12 @@ export const SearchFlightsBanner = () => {
           Recherchez vos billets d'avion parmi des milliers d'offres <br />
           et trouvez celle qui vous mènera vers vos plus belles vacances !
         </Typography>
-        <SearchFlightsModes sx={{ mt: 4 }} onSearch={onSearch} disabled={isNavigating} />
+        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <SearchFlightsModes sx={{ mt: 4 }} onSearch={onSearch} disabled={isNavigating} />
+        </Box>
+        <Box sx={{ display: { xs: 'flex', lg: 'none' }, mt: 2 }}>
+          <SearchFlightsModesMobileV2 onSearch={onSearch} />
+        </Box>
       </SectionContainer>
     </Box>
   )

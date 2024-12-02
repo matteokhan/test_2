@@ -130,7 +130,7 @@ export const SearchOneWayFlightsFormMobile = ({
               PaperProps={{
                 sx: {
                   width: '100%',
-                  height: 'calc(100% - 64px)',
+                  height: 'calc(100% - 60px)',
                 },
               }}>
               <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>
@@ -154,7 +154,7 @@ export const SearchOneWayFlightsFormMobile = ({
               PaperProps={{
                 sx: {
                   width: '100%',
-                  height: 'calc(100% - 64px)',
+                  height: 'calc(100% - 60px)',
                 },
               }}>
               <Stack direction="row" gap={2} alignItems="center" padding={3}>
@@ -178,7 +178,7 @@ export const SearchOneWayFlightsFormMobile = ({
               PaperProps={{
                 sx: {
                   width: '100%',
-                  height: 'calc(100% - 64px)',
+                  height: 'calc(100% - 60px)',
                 },
               }}>
               <Paper elevation={3} sx={{ borderRadius: 0 }}>
@@ -248,7 +248,7 @@ export const SearchOneWayFlightsFormMobile = ({
               PaperProps={{
                 sx: {
                   width: '100%',
-                  height: 'calc(100% - 64px)',
+                  height: 'calc(100% - 60px)',
                 },
               }}>
               <Stack direction="row" gap={1.5} alignItems="center" px={2} py={3}>

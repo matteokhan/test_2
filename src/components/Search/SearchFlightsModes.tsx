@@ -17,9 +17,10 @@ type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
   sx?: SxProps
   disabled?: boolean
+  sticky?: boolean
 }
 
-export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsModesProps) => {
+export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = useState(0)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const { searchParamsCache } = useFlights()
@@ -82,26 +83,26 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled }: SearchFlightsMode
       <SectionContainer
         ref={stickyRef}
         sx={{
-          position: 'sticky',
+          position: sticky ? 'sticky' : 'initial',
           top: 0,
           zIndex: 'searchBar',
           width: '100%',
-          p: isSticky ? '0 !important' : '',
+          p: sticky ? (isSticky ? '0 !important' : '') : '0 !important',
         }}
-        maxWidth={isSticky ? false : undefined}>
+        maxWidth={sticky ? (isSticky ? false : undefined) : undefined}>
         <Paper
-          elevation={isSticky ? 2 : 0}
+          elevation={sticky ? (isSticky ? 2 : 0) : 0}
           sx={{
             backgroundColor: 'common.white',
             paddingTop: 2,
             paddingBottom: 3,
             width: '100%',
-            borderRadius: isSticky ? 0 : 1.5,
+            borderRadius: sticky ? (isSticky ? 0 : 1.5) : 1.5,
             ...sx,
           }}>
           <SectionContainer
-            maxWidth={isSticky ? undefined : false}
-            sx={{ p: isSticky ? '' : '0 !important', width: '100%' }}>
+            maxWidth={sticky ? (isSticky ? undefined : false) : false}
+            sx={{ p: sticky ? (isSticky ? '' : '0 !important') : '0 !important', width: '100%' }}>
             <Stack direction="column" sx={{ paddingX: 4, width: '100%' }}>
               <Tabs value={activeTab} onChange={handleTabChange}>
                 <Tab label="Aller-retour" data-testid="searchMode-roundtripFlightButton" />
