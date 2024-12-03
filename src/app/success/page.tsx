@@ -1,13 +1,21 @@
 'use client'
 
-import { BookingConfirmation, FlightsLoader, Navbar, SectionContainer, TopBar } from '@/components'
+import {
+  BookingConfirmation,
+  FlightsLoader,
+  Navbar,
+  OldNavbar,
+  SectionContainer,
+  TopBar,
+} from '@/components'
 import useMetadata from '@/contexts/useMetadata'
 import { getOrder } from '@/services'
 import { OrderDto } from '@/types'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography, useTheme } from '@mui/material'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 export default function SuccessPage() {
   useMetadata('Confirmation')
@@ -17,6 +25,8 @@ export default function SuccessPage() {
   const queryClient = useQueryClient()
   const [order, setOrder] = useState<OrderDto | null>(null)
   const router = useRouter()
+  const theme = useTheme()
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
 
   if (!orderId) {
     // TODO: log this somewhere
@@ -64,8 +74,11 @@ export default function SuccessPage() {
 
   return (
     <>
-      <TopBar height={60}>
+      <TopBar height={isDesktop ? 120 : 61}>
         <Navbar />
+        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <OldNavbar />
+        </Box>
       </TopBar>
       {isLoading && (
         <SectionContainer sx={{ paddingY: 3, justifyContent: 'center' }}>
