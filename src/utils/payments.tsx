@@ -8,9 +8,9 @@ export const getPaymentMethodData = ({
 }): PaymentMethod => {
   const names = {
     CB: '',
-    ANCV: 'Chèque-vacances Connect',
-    MULTI_CB: 'Avec 2, 3 ou 4 cartes bancaires',
-    '3DS': 'Carte Bancaire',
+    ANCV: 'Chèque-vacances Connect.',
+    MULTI_CB: 'Avec 2, 3 ou 4 cartes bancaires. Visa ou Mastercard.',
+    '3DS': 'Carte Bancaire. Visa ou Mastercard.',
   }
   const icons = {
     CB: <ObIcon />,
