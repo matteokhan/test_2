@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Box, Typography, Button, Stack } from '@mui/material'
+import { Box, Typography, Button, Stack, Tooltip } from '@mui/material'
 import { useFormikContext } from 'formik'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -66,12 +66,16 @@ export const PassengersControls = () => {
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
-        <Box>
-          <Typography variant="titleSm">Enfants</Typography>
-          <Typography variant="bodyMd" color="grey.800">
-            2 - 11 ans
-          </Typography>
-        </Box>
+        <Tooltip
+          placement="left"
+          title="Un enfant doit être agé de 2 à 11 ans pendant toute la durée du voyage.">
+          <Box>
+            <Typography variant="titleSm">Enfants</Typography>
+            <Typography variant="bodyMd" color="grey.800">
+              2 - 11 ans
+            </Typography>
+          </Box>
+        </Tooltip>
         <Stack direction="row" gap={1.7} alignItems="center">
           <Button
             data-testid="passengersControls-childrens-subtract"
@@ -93,12 +97,16 @@ export const PassengersControls = () => {
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
-        <Box>
-          <Typography variant="titleSm">Bébés</Typography>
-          <Typography variant="bodyMd" color="grey.800">
-            Moins de 2 ans
-          </Typography>
-        </Box>
+        <Tooltip
+          placement="left"
+          title="Un bébé doit être agé de moins de 2 ans pendant toute la durée du voyage.">
+          <Box>
+            <Typography variant="titleSm">Bébés</Typography>
+            <Typography variant="bodyMd" color="grey.800">
+              Moins de 2 ans
+            </Typography>
+          </Box>
+        </Tooltip>
         <Stack direction="row" gap={1.7} alignItems="center">
           <Button
             data-testid="passengersControls-infant-subtract"

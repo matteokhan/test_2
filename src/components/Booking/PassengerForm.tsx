@@ -169,7 +169,11 @@ export const PassengerForm = ({
     <Box pt={2}>
       <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
         Les nom/prénom du voyageur doivent correspondre à ceux indiqués sur la pièce d’identité
-        utilisée pour voyager.
+        utilisée pour voyager.{' '}
+        {initialValues.type === 'CHD' &&
+          'Un enfant doit être agé de 2 à 11 ans pendant toute la durée du voyage.'}
+        {initialValues.type === 'INF' &&
+          'Un bébé doit être agé de 2 ans pendant toute la durée du voyage.'}
       </Alert>
       <Formik
         innerRef={formRef}
