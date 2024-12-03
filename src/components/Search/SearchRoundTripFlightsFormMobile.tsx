@@ -205,6 +205,7 @@ export const SearchRoundTripFlightsFormMobile = ({
               </Paper>
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <DateRangeCalendar
+                  disableAutoMonthSwitching={true}
                   calendars={1}
                   sx={{ mt: 2 }}
                   data-testid="datesField"

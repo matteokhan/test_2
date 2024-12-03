@@ -5,7 +5,7 @@ import {
   BookingStepActions,
   PassengerInfo,
   AtLeastOneAdultPassengerModal,
-  AtLeastOneYoungAdultPassengerModal,
+  AtLeastOneAccompanyingAdultPassengerModal,
 } from '@/components'
 import { EmailRequirementProvider, useBooking } from '@/contexts'
 import { PassengerData, UpdateOrderParams } from '@/types'
@@ -26,12 +26,18 @@ export default function PassengersPage() {
     goPreviousStep,
     order,
     setOrder,
+    departureDatetime,
   } = useBooking()
   const formRefs = useRef<(FormikProps<PassengerData> | null)[]>([])
   const [isNavigating, setIsNavigating] = useState(false)
   const [oneAdultModalIsOpen, setOneAdultModalIsOpen] = useState(false)
-  const [oneYoungAdultModalIsOpen, setOneYoungAdultModalIsOpen] = useState(false)
+  const [oneAccompanyingAdultModalIsOpen, setOneAccompanyingAdultModalIsOpen] = useState(false)
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
+
+  if (!departureDatetime) {
+    // TODO: log this somewhere
+    return
+  }
 
   const handleSubmit = async () => {
     if (!order) {
@@ -58,21 +64,19 @@ export default function PassengersPage() {
       return
     }
 
-    let atLeastOneYoungAdultPassenger = false
     let atLeastOneAdultPassenger = false
+    let atLeastOneInfantOrChildPassenger = false
     const passengers: PassengerData[] = []
     formRefs.current.forEach((formRef, index) => {
       if (formRef) {
         const passengerDataValidated = formRef.values
-        if (
-          passengerDataValidated.dateOfBirth &&
-          ageIsAtLeast(passengerDataValidated.dateOfBirth, 16)
-        )
-          atLeastOneYoungAdultPassenger = true
+
+        if (passengerDataValidated.type === 'INF' || passengerDataValidated.type === 'CHD')
+          atLeastOneInfantOrChildPassenger = true
 
         if (
           passengerDataValidated.dateOfBirth &&
-          ageIsAtLeast(passengerDataValidated.dateOfBirth, 18)
+          ageIsAtLeast(passengerDataValidated.dateOfBirth, 18, departureDatetime)
         )
           atLeastOneAdultPassenger = true
 
@@ -80,12 +84,14 @@ export default function PassengersPage() {
         handlePassengerSubmit(passengerDataValidated, index)
       }
     })
-    if (passengers.length > 1 && !atLeastOneAdultPassenger) {
-      setOneAdultModalIsOpen(true)
+
+    if (atLeastOneInfantOrChildPassenger && !atLeastOneAdultPassenger) {
+      setOneAccompanyingAdultModalIsOpen(true)
       return
     }
-    if (!atLeastOneYoungAdultPassenger) {
-      setOneYoungAdultModalIsOpen(true)
+
+    if (!atLeastOneAdultPassenger) {
+      setOneAdultModalIsOpen(true)
       return
     }
 
@@ -160,8 +166,12 @@ export default function PassengersPage() {
       <Modal open={oneAdultModalIsOpen} onClose={() => setOneAdultModalIsOpen(false)}>
         <AtLeastOneAdultPassengerModal onClose={() => setOneAdultModalIsOpen(false)} />
       </Modal>
-      <Modal open={oneYoungAdultModalIsOpen} onClose={() => setOneYoungAdultModalIsOpen(false)}>
-        <AtLeastOneYoungAdultPassengerModal onClose={() => setOneYoungAdultModalIsOpen(false)} />
+      <Modal
+        open={oneAccompanyingAdultModalIsOpen}
+        onClose={() => setOneAccompanyingAdultModalIsOpen(false)}>
+        <AtLeastOneAccompanyingAdultPassengerModal
+          onClose={() => setOneAccompanyingAdultModalIsOpen(false)}
+        />
       </Modal>
     </>
   )

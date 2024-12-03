@@ -239,10 +239,9 @@ export default function FlighsPage() {
         skipStep('fares')
       }
     } catch (error) {
-      setIsNavigating(false)
+      skipStep('fares')
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
-      throw error
     }
     selectFlight(flight)
     setFlightDetailsOpen(false)
