@@ -11,11 +11,7 @@ import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import WarningIcon from '@mui/icons-material/Warning'
 import { useBooking, useEmailRequirement } from '@/contexts'
-import {
-  getPassengerMaxBirthDate,
-  getPassengerMinBirthDate,
-  validatePhoneWithCountry,
-} from '@/utils'
+import { validatePhoneWithCountry } from '@/utils'
 
 // When atLeastOneEmail changes, it resets all the passenger form errors.
 // This is necessary because the form errors are not reset when the email condition is
@@ -38,11 +34,13 @@ const passengerSchema = ({
   atLeastOneEmail,
   atLeastOnePhone,
   departureDatetime,
+  lastDepartureDatetime,
 }: {
   type: PassengerType
   atLeastOneEmail: boolean
   atLeastOnePhone: boolean
   departureDatetime: dayjs.Dayjs
+  lastDepartureDatetime: dayjs.Dayjs
 }) =>
   Yup.object().shape({
     type: Yup.string(),
@@ -61,11 +59,29 @@ const passengerSchema = ({
         const age = departureDatetime.diff(dayjs(value), 'year')
         return age >= 2 && age < 12
       })
+      .test(
+        'will-be-child',
+        'Le passager change de type et de classe tarifaire durant le voyage. Veuillez vous rapprocher de votre Agence E. Leclerc Voyages pour effectuer votre réservation',
+        function (value) {
+          if (type !== 'CHD') return true
+          const age = lastDepartureDatetime.add(3, 'day').diff(dayjs(value), 'year')
+          return age >= 2 && age < 12
+        },
+      )
       .test('is-infant', "L'âge de l'enfant doit être inférieur à 2 ans", function (value) {
         if (type !== 'INF') return true
         const age = departureDatetime.diff(dayjs(value), 'year')
         return age < 2
-      }),
+      })
+      .test(
+        'will-be-infant',
+        'Le passager change de type et de classe tarifaire durant le voyage. Veuillez vous rapprocher de votre Agence E. Leclerc Voyages pour effectuer votre réservation',
+        function (value) {
+          if (type !== 'INF') return true
+          const age = lastDepartureDatetime.add(3, 'day').diff(dayjs(value), 'year')
+          return age < 2
+        },
+      ),
     phoneCode: Yup.string().when('type', {
       is: 'ADT',
       then: (schema) => schema.required('Le numéro de téléphone est requis'),
@@ -125,9 +141,9 @@ export const PassengerForm = ({
     setIsPhoneProvided,
     atLeastOnePhone,
   } = useEmailRequirement()
-  const { departureDatetime } = useBooking()
+  const { departureDatetime, lastDepartureDatetime } = useBooking()
 
-  if (!departureDatetime) {
+  if (!departureDatetime || !lastDepartureDatetime) {
     // TODO: log this somewhere
     return
   }
@@ -175,6 +191,7 @@ export const PassengerForm = ({
           atLeastOneEmail: atLeastOneEmail,
           atLeastOnePhone: atLeastOnePhone,
           departureDatetime: departureDatetime,
+          lastDepartureDatetime: lastDepartureDatetime,
         })}
         onSubmit={onSubmit}
         enableReinitialize={false}>
@@ -218,14 +235,7 @@ export const PassengerForm = ({
               <Stack gap={{ xs: 1, lg: 2 }} direction={{ xs: 'column', lg: 'row' }}>
                 <Box width={{ xs: '100%', lg: '50%' }}>
                   <DatePicker
-                    maxDate={getPassengerMaxBirthDate({
-                      type: initialValues.type,
-                      flightDatetime: departureDatetime,
-                    })}
-                    minDate={getPassengerMinBirthDate({
-                      type: initialValues.type,
-                      flightDatetime: departureDatetime,
-                    })}
+                    maxDate={dayjs()}
                     slotProps={{
                       textField: {
                         fullWidth: true,

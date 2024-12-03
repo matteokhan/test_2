@@ -38,7 +38,8 @@ type BookingContextType = {
   selectFlight: (flight: Solution | null) => void
   selectedFare: Solution | null
   setSelectedFare: React.Dispatch<React.SetStateAction<Solution | null>>
-  departureDatetime: dayjs.Dayjs | null
+  departureDatetime: dayjs.Dayjs | null // This is the departure date of the first segment of the whole travel
+  lastDepartureDatetime: dayjs.Dayjs | null // This is the departure date of the last segment of the whole travel
 
   // Passengers
   passengers: PassengerData[]
@@ -135,6 +136,13 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isBookingActive, setIsBookingActive] = useState(false)
   const departureDatetime = selectedFare
     ? dayjs(selectedFare.routes[0].segments[0].departureDateTime)
+    : null
+  const lastDepartureDatetime = selectedFare
+    ? dayjs(
+        selectedFare.routes[selectedFare.routes.length - 1].segments[
+          selectedFare.routes[selectedFare.routes.length - 1].segments.length - 1
+        ].departureDateTime,
+      )
     : null
 
   // Prices calculations
@@ -343,6 +351,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPreSelectedFlight,
         selectFlight,
         departureDatetime,
+        lastDepartureDatetime,
         steps,
         skipStep,
         resetBooking,
