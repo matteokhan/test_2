@@ -204,7 +204,7 @@ export const FlightDetails = ({
             </Stack>
             {withControls && onSelectFlight && (
               <Paper elevation={2} sx={{ borderRadius: 0, p: 2 }}>
-                <Stack direction="row" justifyContent="space-between">
+                <Stack direction="row" justifyContent="space-between" gap={1}>
                   <Box>
                     <Typography
                       variant="headlineSm"
