@@ -194,7 +194,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const goPreviousStep = () => {
     const previousStep = currentStep.current - 1
     if (previousStep < 0) {
-      router.push('/flights')
+      router.push('/vols')
       return
     }
     if (steps.current[previousStep].skip) {

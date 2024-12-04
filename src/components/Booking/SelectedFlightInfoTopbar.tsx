@@ -44,7 +44,7 @@ export const SelectedFlightInfoTopbar = () => {
         <Stack width="100%" height="56px" alignItems="center" direction="row">
           <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%">
             <Link
-              href="/flights"
+              href="/vols"
               style={{ textDecoration: 'none' }}
               data-testid="selectedFlightInfoTopbar-goToFlightsButton">
               <Stack

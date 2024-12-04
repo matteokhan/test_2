@@ -9,6 +9,7 @@ export const OldNavbar = () => {
   const [isPromosHovered, setIsPromosHovered] = React.useState(false)
   const [isHolidaysHovered, setIsHolidaysHovered] = React.useState(false)
   const [isSkisHovered, setIsSkisHovered] = React.useState(false)
+  const [isVolsHovered, setIsVolsHovered] = React.useState(false)
   const [isFranceLinkHovered, setIsFranceLinkHovered] = React.useState(false)
   const [isClubLinkHovered, setIsClubLinkHovered] = React.useState(false)
   const [isWeekendLinkHovered, setIsWeekendLinkHovered] = React.useState(false)
@@ -232,6 +233,20 @@ export const OldNavbar = () => {
                     </a>
                   </div>
                 </div>
+              </div>
+            </li>
+            <li
+              id="navItem_35691"
+              className={`nav-item-redoutable single ${isVolsHovered ? 'hovered' : ''}`}
+              onMouseEnter={() => setIsVolsHovered(true)}
+              onMouseLeave={() => setIsVolsHovered(false)}
+              style={{ borderBottomColor: '#00A5E1' }}>
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #00A5E1',
+                }}>
+                <a href="/vols">&nbsp;Vols&nbsp;</a>
               </div>
             </li>
             <li
