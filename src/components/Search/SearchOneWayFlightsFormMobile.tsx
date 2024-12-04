@@ -107,7 +107,7 @@ export const SearchOneWayFlightsFormMobile = ({
                   readOnly: true,
                 }}
                 onClick={() => setDatesIsOpen(true)}
-                value={`${dayjs(values.departure).format('YYYY/MM/DD')}`}
+                value={`${dayjs(values.departure).format('DD/MM/YYYY')}`}
               />
               <Field
                 as={TextField}
