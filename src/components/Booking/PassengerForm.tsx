@@ -108,6 +108,7 @@ const passengerSchema = ({
       }),
     email: Yup.string()
       .email('E-mail invalide')
+      .matches(/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/, 'E-mail invalide')
       .when(['type'], {
         is: (type: PassengerType) => type === 'ADT' && !atLeastOneEmail,
         then: (schema) => schema.required("L'e-mail est requis pour au moins un passager adulte"),
