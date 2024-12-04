@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, IconButton, Stack, Typography } from '@mui/material'
 import { SectionContainer } from '@/components'
 import Link from 'next/link'
 import { useAgencySelector } from '@/contexts'
@@ -12,6 +12,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EmailIcon from '@mui/icons-material/Email'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk'
+// import MenuIcon from '@mui/icons-material/Menu'
 
 const LOGO_REDIRECTION_URL = env('NEXT_PUBLIC_LOGO_REDIRECTION_URL') || ''
 
@@ -32,11 +33,20 @@ export const Navbar = () => {
                 height: 42,
                 width: 164,
               }}>
-              <Image src="/voyages_logo.svg" alt="voyages logo" fill />
+              <Image src="/LVLogotype.svg" alt="voyages logo" fill />
             </Box>
           </Link>
         </Stack>
-        <Stack alignItems="space-between" direction="row" gap={3}>
+        <Stack
+          alignItems="space-between"
+          direction="row"
+          gap={3}
+          sx={{
+            gap: {
+              xs: 2,
+              md: 3,
+            },
+          }}>
           <Stack
             justifyContent="center"
             alignItems="center"
@@ -48,7 +58,16 @@ export const Navbar = () => {
               },
             }}>
             <PhoneInTalkIcon data-testid={null} sx={{ p: 0, pb: 0.5, color: 'grey.400' }} />
-            <Typography variant="bodyMd" fontWeight={500} textTransform="uppercase">
+            <Typography
+              variant="bodyMd"
+              fontWeight={500}
+              textTransform="uppercase"
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex',
+                },
+              }}>
               0825 884 620*
             </Typography>
           </Stack>
@@ -64,7 +83,16 @@ export const Navbar = () => {
               },
             }}>
             <StorefrontIcon data-testid={null} sx={{ p: 0, pb: 0.5, color: 'grey.400' }} />
-            <Typography variant="bodyMd" fontWeight={500} textTransform="uppercase">
+            <Typography
+              variant="bodyMd"
+              fontWeight={500}
+              textTransform="uppercase"
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex',
+                },
+              }}>
               Nos agences
             </Typography>
           </Stack>
@@ -80,7 +108,16 @@ export const Navbar = () => {
               },
             }}>
             <EmailIcon data-testid={null} sx={{ p: 0, pb: 0.5, color: 'grey.400' }} />
-            <Typography variant="bodyMd" fontWeight={500} textTransform="uppercase">
+            <Typography
+              variant="bodyMd"
+              fontWeight={500}
+              textTransform="uppercase"
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex',
+                },
+              }}>
               Newsletter
             </Typography>
           </Stack>
@@ -96,7 +133,16 @@ export const Navbar = () => {
               },
             }}>
             <FavoriteIcon data-testid={null} sx={{ p: 0, pb: 0.5, color: 'grey.400' }} />
-            <Typography variant="bodyMd" fontWeight={500} textTransform="uppercase">
+            <Typography
+              variant="bodyMd"
+              fontWeight={500}
+              textTransform="uppercase"
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex',
+                },
+              }}>
               Favoris
             </Typography>
           </Stack>
@@ -112,11 +158,35 @@ export const Navbar = () => {
               },
             }}>
             <AccountCircleIcon data-testid={null} sx={{ p: 0, pb: 0.5, color: 'grey.400' }} />
-            <Typography variant="bodyMd" fontWeight={500} textTransform="uppercase">
+            <Typography
+              variant="bodyMd"
+              fontWeight={500}
+              textTransform="uppercase"
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex',
+                },
+              }}>
               Mon compte
             </Typography>
           </Stack>
         </Stack>
+        {/* <Stack
+          direction="row"
+          sx={{
+            display: {
+              xs: 'flex',
+              sm: 'none',
+            },
+          }}>
+          <IconButton
+            aria-label="account"
+            sx={{ color: 'common.black' }}
+            data-testid="navbar-menuButton">
+            <MenuIcon data-testid={null} />
+          </IconButton>
+        </Stack> */}
       </SectionContainer>
     </Box>
   )
