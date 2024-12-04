@@ -127,7 +127,7 @@ export const FlightDetails = ({
                       {preSelectedFlight.priceInfo.currencySymbol}{' '}
                     </Typography>
                     <Typography variant="bodySm" color="grey.800">
-                      A partir de
+                      Pour tous les passagers, à partir de
                     </Typography>
                   </Box>
                   <Button
@@ -215,7 +215,7 @@ export const FlightDetails = ({
                       {preSelectedFlight.priceInfo.currencySymbol}{' '}
                     </Typography>
                     <Typography variant="bodySm" color="grey.800">
-                      A partir de
+                      Pour tous les passagers, à partir de
                     </Typography>
                   </Box>
                   <Button
