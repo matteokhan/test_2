@@ -34,12 +34,12 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setSearchParams(searchParams)
-    router.push('/vols')
+    router.push('/search')
   }
 
   useEffect(() => {
     if (!selectedFlight && !orderId) {
-      router.push('/vols')
+      router.push('/search')
     }
   }, [router])
 

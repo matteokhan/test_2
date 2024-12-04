@@ -2,6 +2,7 @@ import React from 'react'
 import './OldNavbar.css'
 import { SectionContainer } from '@/components'
 import { Box } from '@mui/material'
+import Link from 'next/link'
 
 export const OldNavbar = () => {
   const [isFlashSalesHovered, setIsFlashSalesHovered] = React.useState(false)
@@ -246,7 +247,7 @@ export const OldNavbar = () => {
                 style={{
                   borderBottom: '3px solid #00A5E1',
                 }}>
-                <a href="/vols">&nbsp;Vols&nbsp;</a>
+                <Link href="/vol">Vols</Link>
               </div>
             </li>
             <li

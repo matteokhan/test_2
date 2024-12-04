@@ -15,7 +15,7 @@ export const SearchFlightsBanner = () => {
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setSearchParams(searchParams)
     setIsNavigating(true)
-    router.push('/vols')
+    router.push('/search')
   }
 
   return (
