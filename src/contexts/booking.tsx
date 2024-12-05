@@ -35,7 +35,6 @@ type BookingContextType = {
   setSelectedFlight: (flight: Solution | null) => void
   preSelectedFlight: Solution | null
   setPreSelectedFlight: (flight: Solution | null) => void
-  selectFlight: (flight: Solution | null) => void
   selectedFare: Solution | null
   setSelectedFare: React.Dispatch<React.SetStateAction<Solution | null>>
   departureDatetime: dayjs.Dayjs | null // This is the departure date of the first segment of the whole travel
@@ -288,11 +287,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setAncillaries([])
   }
 
-  const selectFlight = (flight: Solution | null) => {
-    setSelectedFlight(flight)
-    setSelectedFare(flight)
-  }
-
   const saveBookingState = () => {
     localStorage.setItem(
       'booking',
@@ -349,7 +343,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSelectedFlight,
         preSelectedFlight,
         setPreSelectedFlight,
-        selectFlight,
         departureDatetime,
         lastDepartureDatetime,
         steps,

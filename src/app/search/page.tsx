@@ -71,7 +71,15 @@ export default function FlighsPage() {
   })
 
   const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto, setSearchParams } = useFlights()
-  const { selectFlight, goToFirstStep, order, skipStep, setOrder, resetBooking } = useBooking()
+  const {
+    goToFirstStep,
+    order,
+    skipStep,
+    setOrder,
+    resetBooking,
+    setSelectedFare,
+    setSelectedFlight,
+  } = useBooking()
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
   const { selectedAgencyId, setIsAgencySelectorOpen } = useAgencySelector()
   const {
@@ -228,6 +236,7 @@ export default function FlighsPage() {
     resetBooking()
 
     // We can ask more information about the flight to decide which steps to follow
+    let selectedFare = flight
     try {
       const fares = await queryClient.fetchQuery<Solution[]>({
         queryKey: ['brandedFares', order.id, flight.id],
@@ -238,12 +247,21 @@ export default function FlighsPage() {
       if (fares.length === 0) {
         skipStep('fares')
       }
+      const basicFare = fares.find(
+        (solution) => solution.priceInfo.total === flight.priceInfo.total,
+      )
+      if (basicFare) {
+        selectedFare = basicFare
+      } else {
+        // TODO: log this somewhere
+      }
     } catch (error) {
       skipStep('fares')
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
     }
-    selectFlight(flight)
+    setSelectedFlight(flight)
+    setSelectedFare(selectedFare)
     setFlightDetailsOpen(false)
     goToFirstStep()
   }

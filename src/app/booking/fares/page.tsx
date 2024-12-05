@@ -79,10 +79,7 @@ export default function FaresPage() {
                   basePrice={selectedFlight.priceInfo.total}
                   fare={fare}
                   onSelect={() => setSelectedFare(solution)}
-                  isSelected={
-                    selectedFare?.routes[0].segments[0].fare.name ===
-                    solution?.routes[0].segments[0].fare.name
-                  }
+                  isSelected={selectedFare?.id === solution.id}
                 />
               )
             })}
