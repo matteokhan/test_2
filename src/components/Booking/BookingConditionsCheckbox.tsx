@@ -24,26 +24,41 @@ export const BookingConditionsCheckbox = ({
       <Box position="relative" top="6px" left="14px">
         <ul>
           <li>
-            <Typography variant="bodySm" color="grey.800">
-              Les conditions générales de vente
-            </Typography>
+            <a
+              target="_blank"
+              rel="noopener"
+              href="https://www.leclercvoyages.com/editoContent?code=conditions_generales_de_vente">
+              <Typography variant="bodySm" color="grey.800">
+                Les conditions générales de vente
+              </Typography>
+            </a>
           </li>
           <li>
-            <Typography variant="bodySm" color="grey.800">
-              Les conditions particulières de vente Leclerc Voyages
-            </Typography>
+            <a
+              target="_blank"
+              rel="noopener"
+              href="https://www.leclercvoyages.com/editoContent?code=conditions_particulieres_elv">
+              <Typography variant="bodySm" color="grey.800">
+                Les conditions particulières de vente Leclerc Voyages
+              </Typography>
+            </a>
           </li>
           <li>
-            <Typography variant="bodySm" color="grey.800">
-              Les conditions particulières de vente de l’organisateur technique
-            </Typography>
+            <a
+              target="_blank"
+              rel="noopener"
+              href="https://www.leclercvoyages.com/editoContent?code=cgv_to_VACANCESBLEUES">
+              <Typography variant="bodySm" color="grey.800">
+                Les conditions particulières de vente de l’organisateur technique
+              </Typography>
+            </a>
           </li>
           {destination && (
             <li onClick={onFormalitiesClick}>
               <Typography
                 variant="bodySm"
                 color="grey.800"
-                sx={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
                 Les formalités {destination}
               </Typography>
             </li>
