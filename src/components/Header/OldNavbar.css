@@ -2336,6 +2336,11 @@ select::-ms-expand {
   background-color: #be003c;
   color: white;
 }
+#navItem_home.hovered,
+#navItem_home.selected {
+  background-color: #666666;
+  color: white;
+}
 #navItem_35682.hovered .sub-panel:before {
   background-color: #be003c;
 }

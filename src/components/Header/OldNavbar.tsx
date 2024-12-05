@@ -1,10 +1,16 @@
+'use client'
+
 import React from 'react'
 import './OldNavbar.css'
 import { SectionContainer } from '@/components'
 import { Box } from '@mui/material'
 import Link from 'next/link'
+import HomeIcon from '@mui/icons-material/Home'
+import { usePathname } from 'next/navigation'
 
 export const OldNavbar = () => {
+  const pathname = usePathname()
+  const [isHomeHovered, setIsHomeHovered] = React.useState(false)
   const [isFlashSalesHovered, setIsFlashSalesHovered] = React.useState(false)
   const [isLastMinuteHovered, setIsLastMinuteHovered] = React.useState(false)
   const [isPromosHovered, setIsPromosHovered] = React.useState(false)
@@ -38,6 +44,30 @@ export const OldNavbar = () => {
       <SectionContainer sx={{ height: 60, justifyContent: 'space-between' }}>
         <nav className="nav-redoutable clearfix hovered" style={{ width: '100%', margin: 0 }}>
           <ul className="inner-nav-redoutable reset-list">
+            <li
+              id="navItem_home"
+              className={`nav-item-redoutable single multiline ${isHomeHovered ? 'hovered' : ''}`}
+              style={{
+                borderLeft: '1px solid rgb(230, 230, 230)',
+                borderBottomColor: '#666666',
+                fontWeight: 500,
+                color: isHomeHovered ? '#FFFFFF' : '#666666',
+              }}
+              onMouseEnter={() => setIsHomeHovered(true)}
+              onMouseLeave={() => setIsHomeHovered(false)}>
+              <div
+                className="tab"
+                style={{
+                  borderBottom: '3px solid #666666',
+                }}>
+                <a href="https://www.leclercvoyages.com">
+                  <HomeIcon
+                    data-testid={null}
+                    sx={{ p: 0, color: isHomeHovered ? '#FFFFFF' : '#666666' }}
+                  />
+                </a>
+              </div>
+            </li>
             <li
               id="navItem_35682"
               className={`nav-item-redoutable single multiline ${isFlashSalesHovered ? 'hovered' : ''}`}
@@ -238,7 +268,7 @@ export const OldNavbar = () => {
             </li>
             <li
               id="navItem_35691"
-              className={`nav-item-redoutable single ${isVolsHovered ? 'hovered' : ''}`}
+              className={`nav-item-redoutable single ${pathname === '/vol' ? 'hovered' : isVolsHovered ? 'hovered' : ''}`}
               onMouseEnter={() => setIsVolsHovered(true)}
               onMouseLeave={() => setIsVolsHovered(false)}
               style={{ borderBottomColor: '#00A5E1' }}>
