@@ -9,7 +9,7 @@ export const NoAgencyWarningModal: React.FC<{ onShowAgency: () => void }> = forw
     return (
       <SimpleModal
         imageUrl="/design_2.svg"
-        title="Aucune agence sélectionnée"
+        title="Veuillez sélectionner votre agence"
         mainAction="Valider"
         onMainAction={onShowAgency}></SimpleModal>
     )
