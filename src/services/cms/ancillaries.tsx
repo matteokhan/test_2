@@ -52,8 +52,9 @@ export const useAncillaries = ({ orderId, gdsType }: { orderId: OrderId; gdsType
     queryKey: ['ancillaries', orderId],
     queryFn: () => getAncillaries({ orderId }),
     enabled: !!orderId && gdsType === GDSType.REGULAR,
-    staleTime: 5 * 1000, // This is requiered to avoid a second request on the Ancillaries page when user came from contact page
+    staleTime: 3 * 1000, // TODO: This is requiered to avoid a second request on the Ancillaries page when user came from contact page
     refetchOnWindowFocus: false,
+    gcTime: 3 * 1000,
   })
 }
 

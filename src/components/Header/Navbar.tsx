@@ -32,7 +32,7 @@ export const Navbar = () => {
             md: 'flex',
           },
         }}>
-        <Stack gap={5} alignItems="center" direction="row">
+        <Stack gap={5} alignItems="center" direction="row" className="desktop">
           <Link href={LOGO_REDIRECTION_URL}>
             <Box
               data-testid="navbar-leclercLogo"
@@ -146,7 +146,12 @@ export const Navbar = () => {
             md: 'none',
           },
         }}>
-        <Stack direction="row" width="40%" gap={1} justifyContent="space-between">
+        <Stack
+          direction="row"
+          width="40%"
+          gap={1}
+          justifyContent="space-between"
+          className="mobile">
           <Stack
             justifyContent="center"
             alignItems="center"

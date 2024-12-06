@@ -76,6 +76,8 @@ export default function ContactInfoPage() {
                     const ancillaries = await queryClient.fetchQuery<AncillariesQueryResult>({
                       queryKey: ['ancillaries', order.id],
                       queryFn: () => getAncillaries({ orderId: order.id }),
+                      gcTime: 3 * 1000,
+                      staleTime: 3 * 1000,
                     })
                     const hasAncillaries = ancillaries.ancillaries.some((anc) => {
                       const [outboundServices, inboundServices] = getAncillaryServices(

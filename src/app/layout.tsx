@@ -15,7 +15,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Voyages E. Leclerc',
-  description: 'Voyages E. Leclerc',
+  description:
+    "Réservation vols lowcost ou vols réguliers. Trouvez vos billets d'avion Voyages E. Leclerc aux meilleurs prix",
 }
 
 export default function RootLayout({
@@ -24,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         {/* Look at this to see why this is needed: https://github.com/vercel/next.js/discussions/44628 */}
         <PublicEnvScript />

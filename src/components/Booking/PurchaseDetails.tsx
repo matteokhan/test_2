@@ -7,9 +7,10 @@ import {
   getLccAncillaryRouteCoverage,
   getPaymentMethodData,
 } from '@/utils'
-import { Box, Paper, Stack, Typography } from '@mui/material'
+import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
+import { useLCCAncillaries } from '@/services'
 
 type PurchaseDetailsProps = {
   onClose?: () => void
@@ -24,8 +25,14 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
     selectedFare,
     ancillaries,
     passengers,
+    order,
   } = useBooking()
   const { selectedAgency } = useAgencySelector()
+  const { data: lccAncillaries, isLoading: isLoadingLccAncillaries } = useLCCAncillaries({
+    orderId: order?.id,
+    solutionId: selectedFare?.id,
+    gdsType: selectedFare?.gdsType,
+  })
 
   return (
     <Paper
@@ -66,6 +73,23 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
                 </Stack>
               ))}
             </Stack>
+            {isLoadingLccAncillaries && <Skeleton variant="rectangular" sx={{ ml: 2 }} />}
+            {lccAncillaries
+              ?.filter((anc) => Number(anc.price) === 0)
+              .map((ancillary, ancillaryIndex) => (
+                <Stack
+                  key={`${ancillaryIndex}`}
+                  data-testid="purchaseDetails-includedLccAncillary"
+                  ml={2}>
+                  <Stack direction="row" width="100%" justifyContent="space-between" gap={3}>
+                    <Typography variant="bodyMd" data-testid="purchaseDetails-lccAncillary-name">
+                      {getLccAncillaryDescription(ancillary)} -{' '}
+                      {getLccAncillaryRouteCoverage(ancillary)}
+                    </Typography>
+                    <Box></Box>
+                  </Stack>
+                </Stack>
+              ))}
           </>
         )}
         {ancillaries.map((ancillary, ancillaryIndex) => (

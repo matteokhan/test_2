@@ -43,16 +43,6 @@ export const BookingConditionsCheckbox = ({
               </Typography>
             </a>
           </li>
-          <li>
-            <a
-              target="_blank"
-              rel="noopener"
-              href="https://www.leclercvoyages.com/editoContent?code=cgv_to_VACANCESBLEUES">
-              <Typography variant="bodySm" color="grey.800">
-                Les conditions particulières de vente de l’organisateur technique
-              </Typography>
-            </a>
-          </li>
           {destination && (
             <li onClick={onFormalitiesClick}>
               <Typography
