@@ -104,19 +104,7 @@ export default function AncillariesPage() {
     const remotePassengerData = ancillariesResponse.passengers.find(
       (p) => p.id === Number(ancillary.passenger),
     )
-    if (!remotePassengerData) throw Error("Can't find passenger index in remote passengers info")
-    const passengerData = passengers.find(
-      (p) =>
-        p.firstName.toLowerCase() === remotePassengerData.firstName.toLowerCase() &&
-        p.lastName.toLowerCase() === remotePassengerData.lastName.toLowerCase() &&
-        true,
-      // TODO: improve this comparison
-      // p.dateOfBirth?.year() === remotePassengerData.dateOfBirth.year &&
-      // p.dateOfBirth?.month() + 1 === remotePassengerData.dateOfBirth.month &&
-      // p.dateOfBirth?.date() === remotePassengerData.dateOfBirth.day,
-    )
-    if (!passengerData) throw Error("Can't find passenger index in local passengers info")
-    return passengerData
+    return remotePassengerData
   }
 
   return (
