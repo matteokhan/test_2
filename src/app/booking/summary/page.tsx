@@ -50,6 +50,7 @@ export default function BookingSummaryPage() {
     loadBookingState,
     selectedFare,
     isBookingActive,
+    passengers,
   } = useBooking()
   const { mutate: prepareOrderPayment, isPending: isPreparingPayment } = usePrepareOrderPayment()
   const { mutate: prepareLccOrderPayment, isPending: isPreparingLccPayment } =
@@ -58,6 +59,8 @@ export default function BookingSummaryPage() {
   const { selectedAgency } = useAgencySelector()
   const { lastSegment, isOneWay } = useFlights()
   const destinationLocation = lastSegment ? (isOneWay ? lastSegment.to : lastSegment?.from) : ''
+  const hasChildren =
+    passengers.some((p) => p.type === 'CHD') || passengers.some((p) => p.type === 'INF')
   const { data: destinationData } = useLocationData({
     locationCode: destinationLocation,
   })
@@ -71,9 +74,13 @@ export default function BookingSummaryPage() {
         : undefined
       : undefined,
   })
+  const { data: childrenFormalities } = useFormalities({
+    countryCode: hasChildren ? 'CHD' : undefined,
+  })
   const formalities = [
     ...(countryFormalities || []),
     ...(areaFormalities?.filter((f) => f.country_code === null) || []),
+    ...(childrenFormalities || []),
   ]
   const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment || isNavigating
   const isBookingEditable = !paymentWasFailed && isBookingActive
