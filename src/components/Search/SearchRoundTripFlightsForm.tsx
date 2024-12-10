@@ -23,8 +23,8 @@ const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   toCountry: '',
   toType: SearchFlightSegmentType.PLACE,
   toInputValue: '',
-  departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
-  return: dayjs().add(3, 'day').format('YYYY-MM-DD'),
+  departure: dayjs().add(3, 'day').format('YYYY-MM-DD'),
+  return: dayjs().add(4, 'day').format('YYYY-MM-DD'),
   _type: 'roundTrip',
 }
 
@@ -120,7 +120,7 @@ export const SearchRoundTripFlightsForm = ({
                       modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
                     },
                   }}
-                  minDate={dayjs()}
+                  minDate={dayjs().add(3, 'day')}
                   onChange={([departure, destination]) => {
                     setFieldValue(
                       'departure',

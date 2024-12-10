@@ -26,7 +26,7 @@ const DEFAULT_VALUES: MultiDestinationsFlightSearchParams = {
       toInputValue: '',
       toLabel: '',
       toType: SearchFlightSegmentType.PLACE,
-      departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
+      departure: dayjs().add(3, 'day').format('YYYY-MM-DD'),
     },
   ],
   _type: 'multiDestinations',
@@ -143,7 +143,7 @@ export const SearchMultiDestFlightsForm = ({
                             label="Dates"
                             value={dayjs(values.destinations[index].departure)}
                             data-testid={`departureField-${index}`}
-                            minDate={dayjs()}
+                            minDate={dayjs().add(3, 'day')}
                             onChange={(value) =>
                               setFieldValue(
                                 `destinations.${index}.departure`,
@@ -183,7 +183,7 @@ export const SearchMultiDestFlightsForm = ({
                         push({
                           from: '',
                           to: '',
-                          departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
+                          departure: dayjs().add(3, 'day').format('YYYY-MM-DD'),
                         })
                       }>
                       <AddCircleOutlineIcon data-testid={null} />

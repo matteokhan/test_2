@@ -27,7 +27,7 @@ const DEFAULT_VALUES: OneWayFlightSearchParams = {
   toCountry: '',
   toInputValue: '',
   toType: SearchFlightSegmentType.PLACE,
-  departure: dayjs().add(2, 'day').format('YYYY-MM-DD'),
+  departure: dayjs().add(3, 'day').format('YYYY-MM-DD'),
   _type: 'oneWay',
 }
 
@@ -199,7 +199,7 @@ export const SearchOneWayFlightsFormMobile = ({
                   sx={{ width: '100%' }}
                   data-testid="dateField"
                   value={dayjs(values.departure)}
-                  minDate={dayjs()}
+                  minDate={dayjs().add(3, 'day')}
                   onChange={(value) => {
                     setFieldValue('departure', value?.format('YYYY-MM-DD'), true)
                   }}
