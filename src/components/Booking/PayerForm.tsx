@@ -1,7 +1,16 @@
 'use client'
 
 import { PayerData } from '@/types'
-import { Box, Stack, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { Formik, Form, FormikHelpers, Field, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import {
@@ -13,8 +22,20 @@ import {
 import { MutableRefObject, ReactNode } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
-import { CountryCallingCode } from 'libphonenumber-js'
+import { CountryCallingCode, CountryCode, getCountries } from 'libphonenumber-js'
 import { validatePhoneWithCountry } from '@/utils'
+import ReactCountryFlag from 'react-country-flag'
+import countries from 'i18n-iso-countries'
+
+type CountryData = {
+  code: CountryCode
+  name: string
+}
+
+const countryList: CountryData[] = getCountries().map((country) => ({
+  code: country as CountryCode,
+  name: countries.getName(country, 'fr') || country,
+}))
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
@@ -74,7 +95,7 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
             address: '',
             postalCode: '',
             city: '',
-            country: '',
+            country: 'FR',
             createAccountOptIn: false,
             subscribeNewsletterOptIn: true,
           }
@@ -179,17 +200,25 @@ export const PayerForm = ({ onSubmit, formRef, initialValues }: PayerFormProps) 
                   'data-testid': 'cityField',
                 }}
               />
-              <Field
-                as={TextField}
-                name="country"
-                label="Pays"
-                variant="filled"
-                error={touched.country && errors.country}
-                helperText={touched.country && errors.country}
-                inputProps={{
-                  'data-testid': 'countryField',
-                }}
-              />
+              <FormControl variant="filled" sx={{ width: '100%' }}>
+                <InputLabel>Pays</InputLabel>
+                <Select
+                  data-testid="countryField"
+                  name="country"
+                  error={touched.country && Boolean(errors.country)}
+                  value={values.country}
+                  onChange={(ev) => setFieldValue('country', ev.target.value as CountryCode)}
+                  defaultValue="FR">
+                  {countryList.map((country) => (
+                    <MenuItem value={country.code} key={country.code}>
+                      <Stack direction="row" gap={1} alignItems="center">
+                        <ReactCountryFlag countryCode={country.code} svg />
+                        <p>{country.name}</p>
+                      </Stack>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               {/* Disabled until the functionality is created */}
               {/* <CreateAccountOptInField name="createAccountOptIn" /> */}
               <Box pt={2} sx={{ display: { xs: 'block', lg: 'block' } }}>

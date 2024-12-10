@@ -153,7 +153,7 @@ export default function ContactInfoPage() {
                     address: '',
                     postalCode: '',
                     city: '',
-                    country: '',
+                    country: 'FR',
                     createAccountOptIn: false,
                     subscribeNewsletterOptIn: true,
                   }
