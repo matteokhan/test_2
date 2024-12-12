@@ -32,10 +32,12 @@ type CountryData = {
   name: string
 }
 
-const countryList: CountryData[] = getCountries().map((country) => ({
-  code: country as CountryCode,
-  name: countries.getName(country, 'fr') || country,
-}))
+const countryList: CountryData[] = getCountries()
+  .map((country) => ({
+    code: country as CountryCode,
+    name: countries.getName(country, 'fr') || country,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name))
 
 const payerSchema = Yup.object().shape({
   salutation: Yup.string().required('La salutation est requise'),
