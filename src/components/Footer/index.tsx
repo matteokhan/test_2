@@ -1,6 +1,6 @@
 'use client'
 
-import { SectionContainer } from '@/components'
+import { CustomerSupport, SectionContainer } from '@/components'
 import './Footer.css'
 import Box from '@mui/material/Box'
 import { Stack } from '@mui/material'
@@ -209,12 +209,7 @@ export const Footer = () => {
                     </button>
                   </div>
                   {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
-                  <div className="phone-legal-image">
-                    <img
-                      alt=""
-                      src="https://wizard.leclercvoyages.com/admin/TS/fckUserFiles/Content_Image/footer/contact.png"
-                    />
-                  </div>
+                  <CustomerSupport />
                 </div>
               </div>
               <p>
@@ -244,11 +239,11 @@ export const Footer = () => {
 
       <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <Stack py="20px" gap={1}>
-          <img
-            alt=""
-            src="https://wizard.leclercvoyages.com/admin/TS/fckUserFiles/Content_Image/footer/contact.png"
-            style={{ width: '90%', margin: 'auto' }}
-          />
+          <Stack alignItems="center">
+            <Box bgcolor="white" py={1} px={2}>
+              <CustomerSupport />
+            </Box>
+          </Stack>
           <form onSubmit={handleSubmit}>
             <Stack bgcolor="primary" gap={1} py={2}>
               <Stack direction="row" alignItems="center" gap={1}>

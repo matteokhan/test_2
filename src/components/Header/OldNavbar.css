@@ -1736,9 +1736,9 @@ select::-ms-expand {
   font-family: 'Open sans', Arial, Helvetica, sans-serif;
 }
 .footer-links .footer-contact {
-  max-width: 260px;
+  max-width: 460px;
   padding-left: 20px;
-  flex: 0 0 260px;
+  flex: 0 0 460px;
 }
 .footer-links .footer-contact .field {
   margin: 10px 0;

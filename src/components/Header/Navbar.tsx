@@ -1,9 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
-import { Box, Stack, Typography } from '@mui/material'
-import { SectionContainer } from '@/components'
+import { Box, Drawer, Stack, Typography } from '@mui/material'
+import { MenuMobile, SectionContainer } from '@/components'
 import Link from 'next/link'
 import { useAgencySelector } from '@/contexts'
 import { env } from 'next-runtime-env'
@@ -17,6 +17,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 const LOGO_REDIRECTION_URL = env('NEXT_PUBLIC_LOGO_REDIRECTION_URL') || ''
 
 export const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { setIsAgencySelectorOpen } = useAgencySelector()
   return (
     <Box
@@ -138,7 +139,7 @@ export const Navbar = () => {
       </SectionContainer>
       <SectionContainer
         sx={{
-          height: 60,
+          height: 74,
           justifyContent: 'space-between',
           gap: 1,
           display: {
@@ -153,6 +154,7 @@ export const Navbar = () => {
           justifyContent="space-between"
           className="mobile">
           <Stack
+            onClick={() => setIsMenuOpen(true)}
             justifyContent="center"
             alignItems="center"
             data-testid="navbar-menuButton"
@@ -252,6 +254,18 @@ export const Navbar = () => {
           </Stack>
         </Stack>
       </SectionContainer>
+      <Drawer
+        open={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        anchor="right"
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+            width: '100%',
+          },
+        }}>
+        <MenuMobile onClose={() => setIsMenuOpen(false)} />
+      </Drawer>
     </Box>
   )
 }

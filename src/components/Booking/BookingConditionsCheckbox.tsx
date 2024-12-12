@@ -24,6 +24,11 @@ export const BookingConditionsCheckbox = ({
       <Box position="relative" top="6px" left="14px">
         <ul>
           <li>
+            <Typography variant="bodySm" color="grey.800">
+              Commande avec obligation de paiement
+            </Typography>
+          </li>
+          <li>
             <a
               target="_blank"
               rel="noopener"

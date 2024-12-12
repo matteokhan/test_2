@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 61}>
+      <TopBar height={isDesktop ? 120 : 75}>
         <Navbar />
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <OldNavbar />

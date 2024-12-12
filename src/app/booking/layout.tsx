@@ -59,7 +59,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 145} fixed>
+      <TopBar height={isDesktop ? 120 : 159} fixed>
         <Navbar />
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <SelectedFlightInfoTopbar />
