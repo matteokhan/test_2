@@ -1,10 +1,11 @@
 'use client'
 
 import React from 'react'
-import { Box, Button, Divider, Paper, Stack, Typography } from '@mui/material'
+import { Alert, Box, Button, Divider, Paper, Stack, Typography } from '@mui/material'
 import { FlightRouteDetails } from '@/components'
 import { Solution } from '@/types'
 import { useBooking, useFlights } from '@/contexts'
+import WarningIcon from '@mui/icons-material/Warning'
 
 export const FlightResult = ({ result }: { result: Solution }) => {
   const { setPreSelectedFlight } = useBooking()
@@ -13,6 +14,13 @@ export const FlightResult = ({ result }: { result: Solution }) => {
     setPreSelectedFlight(result)
     setFlightDetailsOpen(true)
   }
+  const departureLocationChange =
+    result.routes[0].segments[0].departure !==
+    result.routes.slice(-1)[0].segments.slice(-1)[0].arrival
+
+  const arrivalLocationChange =
+    result.routes[0].segments[0].arrival !==
+    result.routes.slice(-1)[0].segments.slice(-1)[0].departure
 
   const passengersDescription = () => `Vol pour ${result.priceInfo.passengerNumber} voyageurs (
       ${result.adults.number} adultes
@@ -28,9 +36,25 @@ export const FlightResult = ({ result }: { result: Solution }) => {
         className="desktop">
         <Stack gap={5.5} direction="row">
           <Stack flexGrow={1}>
+            {(departureLocationChange || arrivalLocationChange) && (
+              <Stack gap={4} direction="row">
+                <Stack minWidth="25%"></Stack>
+                <Box flexGrow={1}>
+                  <Alert severity="info" sx={{ mb: 2 }} icon={<WarningIcon fontSize="inherit" />}>
+                    Attention, aéroports différents
+                  </Alert>
+                </Box>
+              </Stack>
+            )}
             {result.routes.map((route, index, routes) => (
               <React.Fragment key={route.id}>
-                <FlightRouteDetails route={route} />
+                <FlightRouteDetails
+                  route={route}
+                  departureLocationChange={departureLocationChange}
+                  arrivalLocationChange={arrivalLocationChange}
+                  isFirstRoute={index === 0}
+                  isLastRoute={index === routes.length - 1}
+                />
                 {index < result.routes.length - 1 && (
                   <Stack gap={4} direction="row">
                     <Stack minWidth="25%"></Stack>

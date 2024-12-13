@@ -1,4 +1,4 @@
-import { Box, Chip, Stack, Typography } from '@mui/material'
+import { Alert, Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CarryOnLuggageIcon, CheckedLuggageIcon, FlightAirline, NoLuggageIcon } from '@/components'
 import { Route } from '@/types'
@@ -10,7 +10,19 @@ import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
-export const FlightRouteDetails = ({ route }: { route: Route }) => {
+export const FlightRouteDetails = ({
+  route,
+  departureLocationChange,
+  arrivalLocationChange,
+  isFirstRoute,
+  isLastRoute,
+}: {
+  route: Route
+  departureLocationChange?: boolean
+  arrivalLocationChange?: boolean
+  isFirstRoute?: boolean
+  isLastRoute?: boolean
+}) => {
   const { segments, travelTime } = route
   const firstSegment = segments[0]
   const lastSegment = segments[segments.length - 1]
@@ -29,6 +41,10 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
   const carryOnLuggage = false
   const checkedLuggage = false
   const noLuggage = route.baggages === 0
+  const warnDepartureChange =
+    (departureLocationChange && isFirstRoute) || (arrivalLocationChange && isLastRoute)
+  const warnArrivalChange =
+    (departureLocationChange && isLastRoute) || (arrivalLocationChange && isFirstRoute)
   const { data: departureLocationData } = useLocationData({ locationCode: departureLocation })
   const { data: arrivalLocationData } = useLocationData({ locationCode: arrivalLocation })
 
@@ -98,11 +114,17 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
           </Stack>
           <Stack direction="row" gap={4.5}>
             <Stack gap={0.5} width="30%">
-              <Typography variant="bodyMd" data-testid="flightRouteDetails-departureLocation">
+              <Typography
+                variant="bodyMd"
+                data-testid="flightRouteDetails-departureLocation"
+                color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
                 {locationNameExtension(departureLocationData)}
               </Typography>
               <Stack direction="row" alignItems="center" gap={0.5}>
-                <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
+                <Typography
+                  variant="labelLg"
+                  data-testid="flightRouteDetails-departureCityCode"
+                  color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
                   {departureCityCode}
                 </Typography>
                 {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
@@ -128,11 +150,17 @@ export const FlightRouteDetails = ({ route }: { route: Route }) => {
               )}
             </Stack>
             <Stack gap={0.5} textAlign="right" width="30%">
-              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalLocation">
+              <Typography
+                variant="bodyMd"
+                data-testid="flightRouteDetails-arrivalLocation"
+                color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
                 {locationNameExtension(arrivalLocationData)}
               </Typography>
               <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
-                <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
+                <Typography
+                  variant="labelLg"
+                  data-testid="flightRouteDetails-arrivalCityCode"
+                  color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
                   {arrivalCityCode}
                 </Typography>
               </Stack>
