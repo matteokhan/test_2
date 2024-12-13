@@ -8,11 +8,15 @@ export const BookingConditionsCheckbox = ({
   onChange,
   destination,
   onFormalitiesClick,
+  onChildrenFormalitiesClick,
+  withChildren,
 }: {
   checked: boolean
   onChange: (checked: boolean) => void
   destination?: string
   onFormalitiesClick?: () => void
+  onChildrenFormalitiesClick?: () => void
+  withChildren?: boolean
 }) => {
   return (
     <Stack direction="row" alignItems="flex-start">
@@ -55,6 +59,16 @@ export const BookingConditionsCheckbox = ({
                 color="grey.800"
                 sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
                 Les formalités {destination}
+              </Typography>
+            </li>
+          )}
+          {withChildren && (
+            <li onClick={onChildrenFormalitiesClick}>
+              <Typography
+                variant="bodySm"
+                color="grey.800"
+                sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
+                Les formalités pour les enfants
               </Typography>
             </li>
           )}

@@ -29,6 +29,8 @@ import { useSearchParams } from 'next/navigation'
 import WarningIcon from '@mui/icons-material/Warning'
 import useMetadata from '@/contexts/useMetadata'
 
+const FRANCE_CODE = 'FR'
+
 export default function BookingSummaryPage() {
   useMetadata('Résumé et paiement')
   const searchParams = useSearchParams()
@@ -41,6 +43,7 @@ export default function BookingSummaryPage() {
   const [noMethodSelectedModalIsOpen, setNoMethodSelectedModalIsOpen] = useState(false)
   const [acceptConditionsModalIsOpen, setAcceptConditionsModalIsOpen] = useState(false)
   const [formalitiesModalIsOpen, setFormalitiesModalIsOpen] = useState(false)
+  const [childrenFormalitiesModalIsOpen, setChildrenFormalitiesModalIsOpen] = useState(false)
   const [paymentErrorModalIsOpen, setPaymentErrorModalIsOpen] = useState(false)
   const {
     goPreviousStep,
@@ -64,8 +67,9 @@ export default function BookingSummaryPage() {
   const { data: destinationData } = useLocationData({
     locationCode: destinationLocation,
   })
+  const destinationIsFrance = destinationData?.country_code === FRANCE_CODE
   const { data: countryFormalities } = useFormalities({
-    countryCode: destinationData?.country_code,
+    countryCode: !destinationIsFrance ? destinationData?.country_code : undefined,
   })
   const { data: areaFormalities } = useFormalities({
     areaCode: countryFormalities
@@ -80,7 +84,6 @@ export default function BookingSummaryPage() {
   const formalities = [
     ...(countryFormalities || []),
     ...(areaFormalities?.filter((f) => f.country_code === null) || []),
-    ...(childrenFormalities || []),
   ]
   const isLoading = isPreparingPayment || isUpdatingOrder || isPreparingLccPayment || isNavigating
   const isBookingEditable = !paymentWasFailed && isBookingActive
@@ -228,10 +231,16 @@ export default function BookingSummaryPage() {
           <BookingConditionsCheckbox
             onChange={(checked) => setConditionsAccepted(checked)}
             checked={conditionsAccepted}
-            destination={destinationData?.country_name}
+            destination={!destinationIsFrance ? destinationData?.country_name : undefined}
             onFormalitiesClick={() => {
               if (formalities.length > 0) {
                 setFormalitiesModalIsOpen(true)
+              }
+            }}
+            withChildren={childrenFormalities && childrenFormalities.length > 0}
+            onChildrenFormalitiesClick={() => {
+              if (childrenFormalities && childrenFormalities.length > 0) {
+                setChildrenFormalitiesModalIsOpen(true)
               }
             }}
           />
@@ -250,6 +259,16 @@ export default function BookingSummaryPage() {
           formalities={formalities}
         />
       </Modal>
+      {childrenFormalities && childrenFormalities.length > 0 && (
+        <Modal
+          open={childrenFormalitiesModalIsOpen}
+          onClose={() => setChildrenFormalitiesModalIsOpen(false)}>
+          <FormalitiesModal
+            onClose={() => setChildrenFormalitiesModalIsOpen(false)}
+            formalities={childrenFormalities}
+          />
+        </Modal>
+      )}
       <Modal
         open={acceptConditionsModalIsOpen}
         onClose={() => setAcceptConditionsModalIsOpen(false)}>
