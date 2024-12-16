@@ -8,17 +8,22 @@ import CloseIcon from '@mui/icons-material/Close'
 import Image from 'next/image'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import SearchIcon from '@mui/icons-material/Search'
+import HomeIcon from '@mui/icons-material/Home'
+import Link from 'next/link'
 
 const MenuButton = styled(Box)(({ theme }) => ({
   textWrap: 'nowrap',
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
-  height: 54,
-  borderBottom: '1px solid',
-  borderColor: theme.palette.grey['400'],
+  height: 48,
   width: '100%',
   justifyContent: 'space-between',
+  padding: theme.spacing(0, 2),
+  borderRadius: theme.spacing(1),
+  borderLeft: '8px solid',
+  backgroundColor: 'white',
 }))
 
 type MenuMobileProps = {
@@ -37,21 +42,33 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
 
   return (
     <>
-      <Box>
-        <SectionContainer
-          sx={{
-            flexDirection: 'column',
-            gap: 0.5,
-            width: '100%',
-            borderBottom: '1px solid',
-            borderColor: 'grey.400',
-          }}>
+      <Box bgcolor="rgb(239, 249, 254)">
+        <Stack
+          direction="row"
+          gap={1}
+          justifyContent="space-between"
+          width="100%"
+          height={54}
+          alignItems="center"
+          position="relative">
           <Stack
-            direction="row"
-            gap={1}
-            justifyContent="space-between"
-            width="100%"
-            height={54}
+            sx={{
+              position: 'absolute',
+              left: 0,
+              bgcolor: 'rgb(239, 249, 254)',
+              height: '100%',
+              justifyContent: 'center',
+              width: 48,
+            }}>
+            <IconButton onClick={closeMenu} data-testid="menuMobile-close">
+              <CloseIcon data-testid={null} color="primary" />
+            </IconButton>
+          </Stack>
+          <Stack
+            bgcolor="white"
+            flexGrow={1}
+            height="100%"
+            justifyContent="center"
             alignItems="center">
             <Box
               sx={{
@@ -61,108 +78,116 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               }}>
               <Image src="/LVLogotype.svg" alt="voyages logo" fill />
             </Box>
-            <IconButton aria-label="close" onClick={closeMenu} data-testid="menuMobile-close">
-              <CloseIcon data-testid={null} color="primary" />
-            </IconButton>
           </Stack>
-        </SectionContainer>
+        </Stack>
         <SectionContainer>
-          <Stack width="100%">
+          <Stack width="100%" gap={1} my={1}>
+            <Link href="/search">
+              <MenuButton sx={{ borderColor: 'primary.main' }}>
+                <Typography color="common.black" variant="bodyLg">
+                  Rechercher un voyage
+                </Typography>
+                <IconButton sx={{ p: 0 }}>
+                  <SearchIcon sx={{ p: 0 }} />
+                </IconButton>
+              </MenuButton>
+            </Link>
+            <Link href="/vol">
+              <MenuButton sx={{ borderColor: 'primary.main' }}>
+                <Typography color="common.black" variant="bodyLg">
+                  Retour à l'accueil
+                </Typography>
+                <IconButton sx={{ p: 0 }}>
+                  <HomeIcon sx={{ p: 0 }} />
+                </IconButton>
+              </MenuButton>
+            </Link>
             <MenuButton
+              sx={{ borderColor: 'leclerc.red.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/ventes-flash/Offres-Speciales', '_blank')
               }>
-              <Typography color="common.black" variant="titleLg">
+              <Typography color="common.black" variant="bodyLg">
                 Ventes Flash
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
             <MenuButton
+              sx={{ borderColor: 'leclerc.red.main' }}
               onClick={() => window.open('https://m.leclercvoyages.com/Derniere_Minute', '_blank')}>
-              <Typography color="common.black" variant="titleLg">
+              <Typography color="common.black" variant="bodyLg">
                 Dernières Minutes
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
-            <MenuButton onClick={() => setIsHotelsMenuOpen(true)}>
-              <Typography color="common.black" variant="titleLg">
+            <MenuButton
+              onClick={() => setIsHotelsMenuOpen(true)}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}>
+              <Typography color="common.black" variant="bodyLg">
                 S&eacute;jours
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
+              <IconButton sx={{ p: 0 }}>
                 <ChevronRightIcon sx={{ p: 0 }} />
               </IconButton>
             </MenuButton>
-            <MenuButton onClick={() => setIsToursMenuOpen(true)}>
-              <Typography color="common.black" variant="titleLg">
+            <MenuButton
+              onClick={() => setIsToursMenuOpen(true)}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}>
+              <Typography color="common.black" variant="bodyLg">
                 Circuits
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
+              <IconButton sx={{ p: 0 }}>
                 <ChevronRightIcon sx={{ p: 0 }} />
               </IconButton>
             </MenuButton>
             <MenuButton
-              onClick={() => window.open('https://m.leclercvoyages.com/location', '_blank')}>
-              <Typography color="common.black" variant="titleLg">
+              onClick={() => window.open('https://m.leclercvoyages.com/location', '_blank')}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}>
+              <Typography color="common.black" variant="bodyLg">
                 Locations
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
             <MenuButton
-              onClick={() => window.open('https://m.leclercvoyages.com/mobilehome', '_blank')}>
-              <Typography color="common.black" variant="titleLg">
+              onClick={() => window.open('https://m.leclercvoyages.com/mobilehome', '_blank')}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}>
+              <Typography color="common.black" variant="bodyLg">
                 Mobile-Homes
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
             <MenuButton
-              onClick={() => window.open('https://m.leclercvoyages.com/weekend', '_blank')}>
-              <Typography color="common.black" variant="titleLg">
+              onClick={() => window.open('https://m.leclercvoyages.com/weekend', '_blank')}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}>
+              <Typography color="common.black" variant="bodyLg">
                 Week-Ends
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
-            <MenuButton onClick={() => setIsVacationsMenuOpen(true)}>
-              <Typography color="common.black" variant="titleLg">
+            <MenuButton
+              onClick={() => setIsVacationsMenuOpen(true)}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}>
+              <Typography color="common.black" variant="bodyLg">
                 Vacances scolaires
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
+              <IconButton sx={{ p: 0 }}>
                 <ChevronRightIcon sx={{ p: 0 }} />
               </IconButton>
             </MenuButton>
             <MenuButton
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() => window.open('https://m.leclercvoyages.com/idees_voyages', '_blank')}>
-              <Typography color="common.black" variant="titleLg">
+              <Typography color="common.black" variant="bodyLg">
                 Idées voyages
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
             <MenuButton
-              sx={{ borderBottom: 'none' }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/coffrets-cadeaux-voyages', '_blank')
               }>
-              <Typography color="common.black" variant="titleLg">
+              <Typography color="common.black" variant="bodyLg">
                 Coffrets Cadeaux
               </Typography>
-              <IconButton sx={{ p: 0 }} aria-label="close">
-                <ChevronRightIcon sx={{ p: 0 }} />
-              </IconButton>
             </MenuButton>
           </Stack>
         </SectionContainer>
-        <SectionContainer sx={{ borderTop: '1px solid', borderColor: 'grey.400', pt: 2, pb: 3 }}>
+        <SectionContainer sx={{ pt: 2, pb: 3 }}>
           <CustomerSupport />
         </SectionContainer>
       </Box>
@@ -175,54 +200,54 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
             width: '100%',
           },
         }}>
-        <SectionContainer
-          sx={{
-            flexDirection: 'column',
-            gap: 0.5,
-            width: '100%',
-            borderBottom: '1px solid',
-            borderColor: 'grey.400',
-          }}>
+        <Stack
+          direction="row"
+          gap={1}
+          justifyContent="space-between"
+          width="100%"
+          height={54}
+          alignItems="center"
+          position="relative">
           <Stack
-            direction="row"
-            gap={1}
-            justifyContent="space-between"
-            width="100%"
-            height={54}
-            alignItems="center">
-            <IconButton
-              aria-label="close"
-              onClick={() => setIsHotelsMenuOpen(false)}
-              data-testid="menuMobile-goBack">
+            sx={{
+              position: 'absolute',
+              left: 0,
+              bgcolor: 'rgb(239, 249, 254)',
+              height: '100%',
+              justifyContent: 'center',
+              width: 48,
+            }}>
+            <IconButton onClick={() => setIsHotelsMenuOpen(false)} data-testid="menuMobile-back">
               <ArrowBackIcon data-testid={null} color="primary" />
             </IconButton>
-            <Typography variant="headlineMd" sx={{ fontSize: 18 }}>
-              S&eacute;jours
-            </Typography>
-            <IconButton aria-label="close" onClick={closeMenu} data-testid="menuMobile-close">
-              <CloseIcon data-testid={null} color="primary" />
-            </IconButton>
           </Stack>
-        </SectionContainer>
-        <SectionContainer>
-          <Stack width="100%">
-            <Typography
-              variant="headlineMd"
-              pt={3}
-              pb={1.5}
-              borderBottom="1px solid"
-              borderColor="grey.400">
-              Séjours
-            </Typography>
+          <Stack
+            bgcolor="white"
+            flexGrow={1}
+            height="100%"
+            justifyContent="center"
+            alignItems="center">
+            <Box
+              sx={{
+                position: 'relative',
+                height: 32,
+                width: 128,
+              }}>
+              <Image src="/LVLogotype.svg" alt="voyages logo" fill />
+            </Box>
+          </Stack>
+        </Stack>
+        <SectionContainer sx={{ bgcolor: 'rgb(239, 249, 254)', height: '100%' }}>
+          <Stack width="100%" gap={1} my={1}>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() => window.open('https://m.leclercvoyages.com/france', '_blank')}>
               <Typography color="common.black" variant="bodyLg">
                 France
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/voyages-antilles-caraibes', '_blank')
               }>
@@ -231,7 +256,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/iles_ocean_indien', '_blank')
               }>
@@ -240,7 +265,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/sejours_pays_mediterraneens', '_blank')
               }>
@@ -249,7 +274,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/sejours_canaries_iles_atlantiques',
@@ -261,7 +286,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/sejours_maghreb_orient', '_blank')
               }>
@@ -270,7 +295,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/sejours_asie_oceanie', '_blank')
               }>
@@ -290,39 +315,47 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
             width: '100%',
           },
         }}>
-        <SectionContainer
-          sx={{
-            flexDirection: 'column',
-            gap: 0.5,
-            width: '100%',
-            borderBottom: '1px solid',
-            borderColor: 'grey.400',
-          }}>
+        <Stack
+          direction="row"
+          gap={1}
+          justifyContent="space-between"
+          width="100%"
+          height={54}
+          alignItems="center"
+          position="relative">
           <Stack
-            direction="row"
-            gap={1}
-            justifyContent="space-between"
-            width="100%"
-            height={54}
-            alignItems="center">
-            <IconButton
-              aria-label="close"
-              onClick={() => setIsToursMenuOpen(false)}
-              data-testid="menuMobile-goBack">
+            sx={{
+              position: 'absolute',
+              left: 0,
+              bgcolor: 'rgb(239, 249, 254)',
+              height: '100%',
+              justifyContent: 'center',
+              width: 48,
+            }}>
+            <IconButton onClick={() => setIsToursMenuOpen(false)} data-testid="menuMobile-back">
               <ArrowBackIcon data-testid={null} color="primary" />
             </IconButton>
-            <Typography variant="headlineMd" sx={{ fontSize: 18 }}>
-              Circuits
-            </Typography>
-            <IconButton aria-label="close" onClick={closeMenu} data-testid="menuMobile-close">
-              <CloseIcon data-testid={null} color="primary" />
-            </IconButton>
           </Stack>
-        </SectionContainer>
-        <SectionContainer>
-          <Stack width="100%">
+          <Stack
+            bgcolor="white"
+            flexGrow={1}
+            height="100%"
+            justifyContent="center"
+            alignItems="center">
+            <Box
+              sx={{
+                position: 'relative',
+                height: 32,
+                width: 128,
+              }}>
+              <Image src="/LVLogotype.svg" alt="voyages logo" fill />
+            </Box>
+          </Stack>
+        </Stack>
+        <SectionContainer sx={{ bgcolor: 'rgb(239, 249, 254)', height: '100%' }}>
+          <Stack width="100%" gap={1} my={1}>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/search?m_c.thematique=circuit-prive',
@@ -334,7 +367,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/search?m_c.thematique=auto', '_blank')
               }>
@@ -343,14 +376,14 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() => window.open('https://m.leclercvoyages.com/circuits_europe', '_blank')}>
               <Typography color="common.black" variant="bodyLg">
                 Europe
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/circuits_ameriques', '_blank')
               }>
@@ -359,14 +392,14 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() => window.open('https://m.leclercvoyages.com/circuits_asie', '_blank')}>
               <Typography color="common.black" variant="bodyLg">
                 Asie
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/circuits_afrique', '_blank')
               }>
@@ -375,7 +408,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open('https://m.leclercvoyages.com/circuits_maghreb_orient', '_blank')
               }>
@@ -395,39 +428,47 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
             width: '100%',
           },
         }}>
-        <SectionContainer
-          sx={{
-            flexDirection: 'column',
-            gap: 0.5,
-            width: '100%',
-            borderBottom: '1px solid',
-            borderColor: 'grey.400',
-          }}>
+        <Stack
+          direction="row"
+          gap={1}
+          justifyContent="space-between"
+          width="100%"
+          height={54}
+          alignItems="center"
+          position="relative">
           <Stack
-            direction="row"
-            gap={1}
-            justifyContent="space-between"
-            width="100%"
-            height={54}
-            alignItems="center">
-            <IconButton
-              aria-label="close"
-              onClick={() => setIsVacationsMenuOpen(false)}
-              data-testid="menuMobile-goBack">
+            sx={{
+              position: 'absolute',
+              left: 0,
+              bgcolor: 'rgb(239, 249, 254)',
+              height: '100%',
+              justifyContent: 'center',
+              width: 48,
+            }}>
+            <IconButton onClick={() => setIsVacationsMenuOpen(false)} data-testid="menuMobile-back">
               <ArrowBackIcon data-testid={null} color="primary" />
             </IconButton>
-            <Typography variant="headlineMd" sx={{ fontSize: 18 }}>
-              Vacances scolaires
-            </Typography>
-            <IconButton aria-label="close" onClick={closeMenu} data-testid="menuMobile-close">
-              <CloseIcon data-testid={null} color="primary" />
-            </IconButton>
           </Stack>
-        </SectionContainer>
-        <SectionContainer>
-          <Stack width="100%">
+          <Stack
+            bgcolor="white"
+            flexGrow={1}
+            height="100%"
+            justifyContent="center"
+            alignItems="center">
+            <Box
+              sx={{
+                position: 'relative',
+                height: 32,
+                width: 128,
+              }}>
+              <Image src="/LVLogotype.svg" alt="voyages logo" fill />
+            </Box>
+          </Stack>
+        </Stack>
+        <SectionContainer sx={{ bgcolor: 'rgb(239, 249, 254)', height: '100%' }}>
+          <Stack width="100%" gap={1} my={1}>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/vacances_fevrier?cat=menu_vacances_scolaires&lab=menu_vacances_fevrier',
@@ -439,7 +480,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/vacances_Paques?cat=menu_vacances_scolaires&lab=menu_vacances_paques',
@@ -451,7 +492,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/Weekend_Mai?cat=menu_vacances_scolaires&lab=menu_vacances_pont_mai',
@@ -463,7 +504,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/vacances_ete?cat=menu_vacances_scolaires&lab=menu_vacances_ete',
@@ -475,7 +516,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/vacances_Toussaint?cat=menu_vacances_scolaires&lab=menu_vacances_toussaint',
@@ -487,7 +528,7 @@ export const MenuMobile = ({ onClose }: MenuMobileProps) => {
               </Typography>
             </MenuButton>
             <MenuButton
-              sx={{ height: 48 }}
+              sx={{ borderColor: 'leclerc.blueLabel.main' }}
               onClick={() =>
                 window.open(
                   'https://m.leclercvoyages.com/vacances_noel?cat=menu_vacances_scolaires&lab=menu_vacances_noel',
