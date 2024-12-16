@@ -15,12 +15,16 @@ export const FlightResult = ({ result }: { result: Solution }) => {
     setFlightDetailsOpen(true)
   }
   const departureLocationChange =
-    result.routes[0].segments[0].departure !==
-    result.routes.slice(-1)[0].segments.slice(-1)[0].arrival
+    result.routes.length > 1
+      ? result.routes[0].segments[0].departure !==
+        result.routes.slice(-1)[0].segments.slice(-1)[0].arrival
+      : false
 
   const arrivalLocationChange =
-    result.routes[0].segments[0].arrival !==
-    result.routes.slice(-1)[0].segments.slice(-1)[0].departure
+    result.routes.length > 1
+      ? result.routes[0].segments.slice(-1)[0].arrival !==
+        result.routes.slice(-1)[0].segments[0].departure
+      : false
 
   const passengersDescription = () => `Vol pour ${result.priceInfo.passengerNumber} voyageurs (
       ${result.adults.number} adultes
