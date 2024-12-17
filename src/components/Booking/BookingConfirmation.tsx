@@ -24,7 +24,8 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
             variant="headlineMd"
             textAlign="center"
             data-testid="bookingConfirmation-confirmationText">
-            Merci {order.client?.title}. {order.client?.last_name} pour votre réservation,
+            Merci {order.client?.title == 'Mrs' ? 'Mme' : order.client?.title}{' '}
+            {order.client?.last_name} pour votre réservation,
             <br />
             Votre réservation est confirmée
           </Typography>

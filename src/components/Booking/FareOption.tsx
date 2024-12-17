@@ -21,9 +21,6 @@ export const FareOption = ({
           <Typography variant="headlineXs" pb={1} data-testid="fareOption-name">
             {fare.name}
           </Typography>
-          <Typography variant="bodyMd" data-testid="fareOption-description">
-            {fare.description}
-          </Typography>
         </Box>
         <FareServices sx={{ width: { xs: '100%', lg: '50%' } }} services={fare.services} />
       </Stack>

@@ -130,11 +130,22 @@ export const FlightResult = ({ result }: { result: Solution }) => {
         data-testid="flightResult"
         className="mobile">
         <Stack gap={1.5}>
+          {(departureLocationChange || arrivalLocationChange) && (
+            <Alert severity="info" sx={{ mx: 2 }} icon={<WarningIcon fontSize="inherit" />}>
+              Attention, aéroports différents
+            </Alert>
+          )}
           <Stack flexGrow={1}>
             {result.routes.map((route, index, routes) => (
               <React.Fragment key={route.id}>
                 <Box px={2}>
-                  <FlightRouteDetails route={route} />
+                  <FlightRouteDetails
+                    route={route}
+                    departureLocationChange={departureLocationChange}
+                    arrivalLocationChange={arrivalLocationChange}
+                    isFirstRoute={index === 0}
+                    isLastRoute={index === routes.length - 1}
+                  />
                 </Box>
                 {index < result.routes.length - 1 && (
                   <Stack gap={4} direction="row" width="100%">

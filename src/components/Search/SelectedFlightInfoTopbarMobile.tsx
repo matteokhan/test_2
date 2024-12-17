@@ -27,6 +27,7 @@ type SelectedFlightInfoTopbarMobileProps = {
   withFilters?: boolean
   onOpenFilters?: (filterName: SearchFlightsFiltersOptions) => void
   isLoading?: boolean
+  withAgencySelector?: boolean
 }
 
 export const SelectedFlightInfoTopbarMobile = ({
@@ -34,6 +35,7 @@ export const SelectedFlightInfoTopbarMobile = ({
   withFilters,
   onOpenFilters,
   isLoading,
+  withAgencySelector,
 }: SelectedFlightInfoTopbarMobileProps) => {
   const { firstSegment, lastSegment, totalPassengers, isOneWay } = useFlights()
   const { setIsAgencySelectorOpen } = useAgencySelector()
@@ -156,10 +158,12 @@ export const SelectedFlightInfoTopbarMobile = ({
         </Box>
       )}
       {withFilters && isLoading && <Skeleton variant="rectangular" height={34} />}
-      <SelectAgencyLabel
-        openSelectionAgency={() => setIsAgencySelectorOpen(true)}
-        isLoading={isLoading}
-      />
+      {withAgencySelector && (
+        <SelectAgencyLabel
+          openSelectionAgency={() => setIsAgencySelectorOpen(true)}
+          isLoading={isLoading}
+        />
+      )}
       <Drawer
         open={flightSearchOpen}
         anchor="right"

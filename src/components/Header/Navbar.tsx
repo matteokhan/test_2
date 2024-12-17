@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { Box, Drawer, Stack, Typography } from '@mui/material'
 import { MenuMobile, SectionContainer } from '@/components'
 import Link from 'next/link'
-import { useAgencySelector } from '@/contexts'
 import { env } from 'next-runtime-env'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
@@ -18,7 +17,6 @@ const LOGO_REDIRECTION_URL = env('NEXT_PUBLIC_LOGO_REDIRECTION_URL') || ''
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { setIsAgencySelectorOpen } = useAgencySelector()
   return (
     <Box
       sx={{
@@ -72,7 +70,7 @@ export const Navbar = () => {
             </Typography>
           </Stack>
           <Stack
-            onClick={() => setIsAgencySelectorOpen(true)}
+            onClick={() => window.open('https://www.leclercvoyages.com/agences', '_blank')}
             justifyContent="center"
             alignItems="center"
             data-testid="navbar-ourAgenciesButton"
@@ -190,7 +188,7 @@ export const Navbar = () => {
         </Stack>
         <Stack direction="row" width="40%" gap={1} justifyContent="space-between">
           <Stack
-            onClick={() => setIsAgencySelectorOpen(true)}
+            onClick={() => window.open('https://www.leclercvoyages.com/agences', '_blank')}
             justifyContent="center"
             alignItems="center"
             data-testid="navbar-ourAgenciesButton"

@@ -222,12 +222,18 @@ export const FlightRouteDetails = ({
               flexGrow={1}
               gap={2}>
               <Stack direction="row" alignItems="center" justifyContent="flex-start" gap={0.5}>
-                <Typography variant="bodyMd" data-testid="flightRouteDetails-departureLocation">
+                <Typography
+                  variant="bodyMd"
+                  data-testid="flightRouteDetails-departureLocation"
+                  color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
                   {locationNameExtension(departureLocationData)}
                 </Typography>
                 {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
               </Stack>
-              <Typography variant="labelLg" data-testid="flightRouteDetails-departureCityCode">
+              <Typography
+                variant="labelLg"
+                data-testid="flightRouteDetails-departureCityCode"
+                color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
                 {departureCityCode}
               </Typography>
             </Stack>
@@ -282,10 +288,16 @@ export const FlightRouteDetails = ({
               alignItems="center"
               flexGrow={1}
               gap={2}>
-              <Typography variant="bodyMd" data-testid="flightRouteDetails-arrivalLocation">
+              <Typography
+                variant="bodyMd"
+                data-testid="flightRouteDetails-arrivalLocation"
+                color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
                 {locationNameExtension(arrivalLocationData)}
               </Typography>
-              <Typography variant="labelLg" data-testid="flightRouteDetails-arrivalCityCode">
+              <Typography
+                variant="labelLg"
+                data-testid="flightRouteDetails-arrivalCityCode"
+                color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
                 {arrivalCityCode}
               </Typography>
             </Stack>

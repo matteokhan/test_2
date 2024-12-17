@@ -280,7 +280,7 @@ export default function FlighsPage() {
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 214} fixed={isDesktop ? false : true}>
+      <TopBar height={isDesktop ? 120 : 230} fixed={isDesktop ? false : true}>
         <Navbar />
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <OldNavbar />
@@ -288,6 +288,7 @@ export default function FlighsPage() {
         <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
           <SelectedFlightInfoTopbarMobile
             withFilters
+            withAgencySelector
             onOpenFilters={(filterName) => {
               setActiveFilter(filterName)
               setActiveFilterOpen(true)
