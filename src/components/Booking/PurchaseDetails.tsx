@@ -11,6 +11,7 @@ import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
 import { useLCCAncillaries } from '@/services'
+import { AgencyContractCode } from '@/types'
 
 type PurchaseDetailsProps = {
   onClose?: () => void
@@ -33,6 +34,10 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
     solutionId: selectedFare?.id,
     gdsType: selectedFare?.gdsType,
   })
+  const agency_contracts =
+    typeof selectedAgency?.available_contracts == 'object'
+      ? selectedAgency?.available_contracts
+      : selectedAgency?.available_contracts.split(',').map((s) => s.trim() as AgencyContractCode)
 
   return (
     <Paper
@@ -187,7 +192,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
           Tous frais, taxes, suppléments et frais de service Leclerc Voyages inclus
         </Typography>
         <Stack direction="row" pt={1} gap={0.75}>
-          {selectedAgency?.available_contracts.map((contract) => {
+          {agency_contracts?.map((contract) => {
             const { icon } = getPaymentMethodData({ contractCode: contract })
             return (
               <Box

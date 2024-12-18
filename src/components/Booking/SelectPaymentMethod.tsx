@@ -11,13 +11,17 @@ export const SelectPaymentMethod = ({
 }) => {
   const [selectedMethod, setSelectedMethod] = React.useState<AgencyContractCode | null>(null)
   const { selectedAgency } = useAgencySelector()
+  const agency_contracts =
+    typeof selectedAgency?.available_contracts == 'object'
+      ? selectedAgency?.available_contracts
+      : selectedAgency?.available_contracts.split(',').map((s) => s.trim() as AgencyContractCode)
 
   return (
     <Box pt={3} pb={2} data-testid="selectPaymentMethod" maxWidth={590}>
       <Stack border="1px solid" borderColor="grey.400" borderRadius={2}>
-        {selectedAgency?.available_contracts.map((contract, index) => {
+        {agency_contracts?.map((contract, index) => {
           const { name, icon } = getPaymentMethodData({ contractCode: contract })
-          const isLastOne = index === selectedAgency?.available_contracts.length - 1
+          const isLastOne = index === agency_contracts.length - 1
           return (
             <Stack
               borderBottom={isLastOne ? 'none' : '1px solid'}
