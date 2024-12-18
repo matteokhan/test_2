@@ -11,7 +11,6 @@ import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
 import { useLCCAncillaries } from '@/services'
-import { AgencyContractCode } from '@/types'
 
 type PurchaseDetailsProps = {
   onClose?: () => void
@@ -34,10 +33,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
     solutionId: selectedFare?.id,
     gdsType: selectedFare?.gdsType,
   })
-  const agency_contracts =
-    typeof selectedAgency?.available_contracts == 'object'
-      ? selectedAgency?.available_contracts
-      : selectedAgency?.available_contracts.split(',').map((s) => s.trim() as AgencyContractCode)
+  const agency_contracts = selectedAgency?.available_contracts
 
   return (
     <Paper

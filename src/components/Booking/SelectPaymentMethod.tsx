@@ -11,10 +11,7 @@ export const SelectPaymentMethod = ({
 }) => {
   const [selectedMethod, setSelectedMethod] = React.useState<AgencyContractCode | null>(null)
   const { selectedAgency } = useAgencySelector()
-  const agency_contracts =
-    typeof selectedAgency?.available_contracts == 'object'
-      ? selectedAgency?.available_contracts
-      : selectedAgency?.available_contracts.split(',').map((s) => s.trim() as AgencyContractCode)
+  const agency_contracts = selectedAgency?.available_contracts
 
   return (
     <Box pt={3} pb={2} data-testid="selectPaymentMethod" maxWidth={590}>

@@ -43,7 +43,6 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
       selectAgency(agency)
     } catch (error) {
       // TODO: log this somewhere
-      throw error
     } finally {
       setIsFetchingAgency(false)
     }
@@ -61,7 +60,6 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
       return nearAgencies ? nearAgencies[0] : null
     } catch (error) {
       // TODO: log this somewhere
-      throw error
     } finally {
       setIsFetchingAgency(false)
     }

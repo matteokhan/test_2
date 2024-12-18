@@ -4,18 +4,15 @@ import { Agency, AgencyId, PagesAPIBaseParams } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { env } from 'next-runtime-env'
 
-const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
 
 export const getAgency = async ({ agencyId }: { agencyId: AgencyId }) => {
-  const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-agency-simple/${agencyId}/`,
-    {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json',
-      },
+  const response = await fetch(`${CMS_API_URL}/api/v2/report-agency-simple/${agencyId}/`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
     },
-  )
+  })
   if (response.ok) {
     return await response.json()
   }
@@ -48,7 +45,7 @@ export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) =>
   })
 
   const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-agency-simple/?${queryParams.toString()}`,
+    `${CMS_API_URL}/api/v2/report-agency-simple/?${queryParams.toString()}`,
     {
       method: 'GET',
       headers: {
@@ -94,7 +91,7 @@ export const getNearAgencies = async ({
   })
 
   const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-agency/?${queryParams.toString()}`,
+    `${CMS_API_URL}/api/v2/report-agency-simple/?${queryParams.toString()}`,
     {
       method: 'GET',
       headers: {
@@ -107,7 +104,7 @@ export const getNearAgencies = async ({
     throw new Error('Failed to fetch arround agency')
   }
 
-  return (await response.json()).items
+  return (await response.json()).results
 }
 
 export const useNearAgencies = ({
