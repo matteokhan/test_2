@@ -102,7 +102,7 @@ export default function InsurancesPage() {
             onClick={() => {
               noInsurance ? setNoInsurance(false) : setNoInsurance(true)
             }}>
-            Je ne souhaite pas souscrite d’assurance pour mon voyage
+            Je ne souhaite pas souscrire d’assurance pour mon voyage
           </Button>
         </Stack>
       </SimpleContainer>
