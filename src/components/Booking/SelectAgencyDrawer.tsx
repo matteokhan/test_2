@@ -19,6 +19,7 @@ export function SelectAgencyDrawer() {
       <SelectAgencyMap
         onClose={() => setIsAgencySelectorOpen(false)}
         onSelectAgency={({ agency }) => {
+          document.dispatchEvent(new CustomEvent('agencySelected', { detail: { agency } }))
           selectAgency(agency)
           setIsAgencySelectorOpen(false)
         }}

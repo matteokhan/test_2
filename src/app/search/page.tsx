@@ -35,6 +35,8 @@ import {
   AirlineFilterData,
   SearchFlightFilters,
   SearchFlightsFiltersOptions,
+  AgencyId,
+  Agency,
 } from '@/types'
 import { getBrandedFares, useCreateOrder, useSearchFlights } from '@/services'
 import { useTheme } from '@mui/material/styles'
@@ -200,15 +202,22 @@ export default function FlighsPage() {
     return airlines.sort((a, b) => a.price - b.price)
   }
 
-  const searchFlights = ({ searchParams }: { searchParams?: SearchFlightsParams }) => {
-    if (!selectedAgencyId) {
+  const searchFlights = ({
+    searchParams,
+    agencyId,
+  }: {
+    searchParams?: SearchFlightsParams
+    agencyId?: AgencyId
+  }) => {
+    const aId = agencyId ? agencyId : selectedAgencyId
+    if (!aId) {
       // TODO: log this somewhere
       // TODO: Warn the user that something went wrong
       setIsAgencyWarningOpen(true)
       return
     }
     createOrder(
-      { agencyId: selectedAgencyId },
+      { agencyId: aId },
       {
         onSuccess: (order) => {
           setOrder(order)
@@ -220,10 +229,6 @@ export default function FlighsPage() {
         },
       },
     )
-  }
-
-  const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
-    searchFlights({ searchParams })
   }
 
   const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
@@ -266,9 +271,17 @@ export default function FlighsPage() {
     goToFirstStep()
   }
 
+  const handleAgencySelected = (e: CustomEventInit<{ agency: Agency }>) => {
+    if (searchParamsDto && e.detail?.agency) searchFlights({ agencyId: e.detail.agency.id })
+  }
+
   useEffect(() => {
+    document.addEventListener('agencySelected', handleAgencySelected)
     if (searchParamsDto && !order) {
       searchFlights({})
+    }
+    return () => {
+      document.removeEventListener('agencySelected', handleAgencySelected)
     }
   }, [])
 
@@ -293,7 +306,7 @@ export default function FlighsPage() {
               setActiveFilter(filterName)
               setActiveFilterOpen(true)
             }}
-            onSearch={onSearch}
+            onSearch={searchFlights}
             isLoading={isLoading}
           />
         </Box>
@@ -310,7 +323,7 @@ export default function FlighsPage() {
           }}>
           <SearchFlightsModes
             sticky={true}
-            onSearch={onSearch}
+            onSearch={searchFlights}
             sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
             disabled={isLoading}
           />
