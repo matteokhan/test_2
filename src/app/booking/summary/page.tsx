@@ -165,7 +165,7 @@ export default function BookingSummaryPage() {
 
   useEffect(() => {
     if (orderId && !isBookingActive) {
-      loadBookingState()
+      loadBookingState({ orderId: orderId })
     }
   }, [])
 

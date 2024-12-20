@@ -10,6 +10,7 @@ import {
   OrderDto,
   InsuranceWithSteps,
   Ancillary,
+  OrderId,
 } from '@/types'
 import { useRouter } from 'next/navigation'
 import { getInsurancePrice } from '@/utils'
@@ -65,7 +66,7 @@ type BookingContextType = {
   order: OrderDto | null
   setOrder: React.Dispatch<React.SetStateAction<OrderDto | null>>
   saveBookingState: () => void
-  loadBookingState: () => void
+  loadBookingState: ({ orderId }: { orderId: OrderId }) => void
   isBookingActive: boolean
   setIsBookingActive: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -304,7 +305,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     )
   }
 
-  const loadBookingState = () => {
+  const loadBookingState = ({ orderId }: { orderId: OrderId }) => {
     const booking = localStorage.getItem('booking')
     if (booking) {
       let {
@@ -323,16 +324,18 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dateOfBirth: dayjs(passenger.dateOfBirth),
       }))
       let parsedPayer: PayerData = { ...payer, dateOfBirth: dayjs(payer.dateOfBirth) }
-      setSelectedFlight(selectedFlight)
-      setPreSelectedFlight(selectedFlight)
-      setPassengers(parsedPassengers)
-      setPayer(parsedPayer)
-      setSelectedFare(selectedFare)
-      setSelectedInsurance(selectedInsurance)
-      setPnr(pnr)
-      setAncillaries(ancillaries)
-      setSearchParams(searchParamsCache)
-      setOrder(order)
+      if (order.id == orderId) {
+        setSelectedFlight(selectedFlight)
+        setPreSelectedFlight(selectedFlight)
+        setPassengers(parsedPassengers)
+        setPayer(parsedPayer)
+        setSelectedFare(selectedFare)
+        setSelectedInsurance(selectedInsurance)
+        setPnr(pnr)
+        setAncillaries(ancillaries)
+        setSearchParams(searchParamsCache)
+        setOrder(order)
+      }
     }
   }
 
