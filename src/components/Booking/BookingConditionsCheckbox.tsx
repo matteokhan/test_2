@@ -10,6 +10,7 @@ export const BookingConditionsCheckbox = ({
   onFormalitiesClick,
   onChildrenFormalitiesClick,
   withChildren,
+  withFormalities,
 }: {
   checked: boolean
   onChange: (checked: boolean) => void
@@ -17,6 +18,7 @@ export const BookingConditionsCheckbox = ({
   onFormalitiesClick?: () => void
   onChildrenFormalitiesClick?: () => void
   withChildren?: boolean
+  withFormalities?: boolean
 }) => {
   return (
     <Stack direction="row" alignItems="flex-start">
@@ -52,7 +54,7 @@ export const BookingConditionsCheckbox = ({
               </Typography>
             </a>
           </li>
-          {destination && (
+          {withFormalities && (
             <li onClick={onFormalitiesClick}>
               <Typography
                 variant="bodySm"

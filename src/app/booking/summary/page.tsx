@@ -29,8 +29,6 @@ import { useSearchParams } from 'next/navigation'
 import WarningIcon from '@mui/icons-material/Warning'
 import useMetadata from '@/contexts/useMetadata'
 
-const FRANCE_CODE = 'FR'
-
 export default function BookingSummaryPage() {
   useMetadata('Résumé et paiement')
   const searchParams = useSearchParams()
@@ -67,9 +65,8 @@ export default function BookingSummaryPage() {
   const { data: destinationData } = useLocationData({
     locationCode: destinationLocation,
   })
-  const destinationIsFrance = destinationData?.country_code === FRANCE_CODE
   const { data: countryFormalities } = useFormalities({
-    countryCode: !destinationIsFrance ? destinationData?.country_code : undefined,
+    countryCode: destinationData?.country_code,
   })
   const { data: areaFormalities } = useFormalities({
     areaCode: countryFormalities
@@ -231,12 +228,13 @@ export default function BookingSummaryPage() {
           <BookingConditionsCheckbox
             onChange={(checked) => setConditionsAccepted(checked)}
             checked={conditionsAccepted}
-            destination={!destinationIsFrance ? destinationData?.country_name : undefined}
+            destination={destinationData?.country_name}
             onFormalitiesClick={() => {
               if (formalities.length > 0) {
                 setFormalitiesModalIsOpen(true)
               }
             }}
+            withFormalities={formalities && formalities.length > 0}
             withChildren={childrenFormalities && childrenFormalities.length > 0}
             onChildrenFormalitiesClick={() => {
               if (childrenFormalities && childrenFormalities.length > 0) {
@@ -253,12 +251,14 @@ export default function BookingSummaryPage() {
           onChoosePaymentMethod={() => setNoMethodSelectedModalIsOpen(false)}
         />
       </Modal>
-      <Modal open={formalitiesModalIsOpen} onClose={() => setFormalitiesModalIsOpen(false)}>
-        <FormalitiesModal
-          onClose={() => setFormalitiesModalIsOpen(false)}
-          formalities={formalities}
-        />
-      </Modal>
+      {formalities && formalities.length > 0 && (
+        <Modal open={formalitiesModalIsOpen} onClose={() => setFormalitiesModalIsOpen(false)}>
+          <FormalitiesModal
+            onClose={() => setFormalitiesModalIsOpen(false)}
+            formalities={formalities}
+          />
+        </Modal>
+      )}
       {childrenFormalities && childrenFormalities.length > 0 && (
         <Modal
           open={childrenFormalitiesModalIsOpen}
