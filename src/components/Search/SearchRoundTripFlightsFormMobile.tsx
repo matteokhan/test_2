@@ -209,11 +209,19 @@ export const SearchRoundTripFlightsFormMobile = ({
                   calendars={1}
                   sx={{ mt: 2 }}
                   data-testid="datesField"
-                  value={[dayjs(values.departure), dayjs(values.return)]}
+                  defaultValue={[dayjs(values.departure), dayjs(values.return)]}
                   minDate={dayjs().add(3, 'day')}
-                  onChange={(value) => {
-                    setFieldValue('departure', value[0]?.format('YYYY-MM-DD'), true)
-                    setFieldValue('return', value[1]?.format('YYYY-MM-DD'), true)
+                  onChange={([departure, destination]) => {
+                    setFieldValue(
+                      'departure',
+                      departure ? departure?.format('YYYY-MM-DD') : null,
+                      true,
+                    )
+                    setFieldValue(
+                      'return',
+                      destination ? destination?.format('YYYY-MM-DD') : null,
+                      true,
+                    )
                   }}
                 />
               </Box>
