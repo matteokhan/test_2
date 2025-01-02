@@ -1,17 +1,15 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
-import { Box, Modal, Paper, Stack, SxProps, Tab, Tabs } from '@mui/material'
+import { Box, Paper, Stack, SxProps, Tab, Tabs } from '@mui/material'
 import {
   SearchOneWayFlightsForm,
   SearchRoundTripFlightsForm,
-  AlertDestinationModal,
   SelectAgencyLabel,
   SectionContainer,
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
-import { isValidSearch } from '@/utils'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
@@ -22,7 +20,6 @@ type SearchFlightsModesProps = {
 
 export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFlightsModesProps) => {
   const [activeTab, setActiveTab] = useState(0)
-  const [modalIsOpen, setModalIsOpen] = useState(false)
   const { searchParamsCache } = useFlights()
   const { setIsAgencySelectorOpen } = useAgencySelector()
   const [isSticky, setIsSticky] = useState<boolean>(false)
@@ -33,8 +30,7 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFli
     setActiveTab(newValue)
   }
   const handleSearch = (values: SearchFlightsParams) => {
-    if (isValidSearch(values)) onSearch({ searchParams: values })
-    else setModalIsOpen(true)
+    onSearch({ searchParams: values })
   }
 
   useEffect(() => {
@@ -142,17 +138,6 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFli
           </SectionContainer>
         </Paper>
       </SectionContainer>
-      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
-        <AlertDestinationModal
-          onShowAgency={() => {
-            setIsAgencySelectorOpen(true)
-            setModalIsOpen(false)
-          }}
-          onClose={() => {
-            setModalIsOpen(false)
-          }}
-        />
-      </Modal>
     </>
   )
 }

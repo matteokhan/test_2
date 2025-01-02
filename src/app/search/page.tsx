@@ -16,6 +16,8 @@ import {
   Footer,
   NoAgencyWarningModal,
   NoResultsErrorModal,
+  AlertDestinationModal,
+  RoundtripRestrictedFlightModal,
 } from '@/components'
 import {
   Box,
@@ -44,6 +46,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useQueryClient } from '@tanstack/react-query'
 import CloseIcon from '@mui/icons-material/Close'
 import useMetadata from '@/contexts/useMetadata'
+import { isFrenchFlight, isRoundtripRestricted } from '@/utils'
 
 export default function FlighsPage() {
   useMetadata('Rechercher des vols')
@@ -57,6 +60,9 @@ export default function FlighsPage() {
   const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
   const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
   const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
+  const [frenchFlightWarnModalIsOpen, setFrenchFlightWarnModalIsOpen] = React.useState(false)
+  const [roundtripRestrictedWarnModalIsOpen, setRoundtripRestrictedWarnModalIsOpen] =
+    React.useState(false)
   const [filters, setFilters] = React.useState<SearchFlightFilters>({
     routes: [
       {
@@ -72,7 +78,13 @@ export default function FlighsPage() {
     ],
   })
 
-  const { flightDetailsOpen, setFlightDetailsOpen, searchParamsDto, setSearchParams } = useFlights()
+  const {
+    flightDetailsOpen,
+    setFlightDetailsOpen,
+    searchParamsDto,
+    setSearchParams,
+    searchParamsCache,
+  } = useFlights()
   const {
     goToFirstStep,
     order,
@@ -206,9 +218,18 @@ export default function FlighsPage() {
     searchParams,
     agencyId,
   }: {
-    searchParams?: SearchFlightsParams
+    searchParams: SearchFlightsParams
     agencyId?: AgencyId
   }) => {
+    if (!isFrenchFlight(searchParams)) {
+      setFrenchFlightWarnModalIsOpen(true)
+      return
+    }
+    if (isRoundtripRestricted(searchParams)) {
+      setRoundtripRestrictedWarnModalIsOpen(true)
+      return
+    }
+
     const aId = agencyId ? agencyId : selectedAgencyId
     if (!aId) {
       // TODO: log this somewhere
@@ -272,13 +293,14 @@ export default function FlighsPage() {
   }
 
   const handleAgencySelected = (e: CustomEventInit<{ agency: Agency }>) => {
-    if (searchParamsDto && e.detail?.agency) searchFlights({ agencyId: e.detail.agency.id })
+    if (searchParamsCache && e.detail?.agency)
+      searchFlights({ agencyId: e.detail.agency.id, searchParams: searchParamsCache })
   }
 
   useEffect(() => {
     document.addEventListener('agencySelected', handleAgencySelected)
-    if (searchParamsDto && !order) {
-      searchFlights({})
+    if (searchParamsCache && !order) {
+      searchFlights({ searchParams: searchParamsCache })
     }
     return () => {
       document.removeEventListener('agencySelected', handleAgencySelected)
@@ -481,6 +503,26 @@ export default function FlighsPage() {
       </Modal>
       <Modal open={isNoResultsModalOpen} onClose={() => setIsNoResultsModalOpen(false)}>
         <NoResultsErrorModal onClose={() => setIsNoResultsModalOpen(false)} />
+      </Modal>
+      <Modal
+        open={frenchFlightWarnModalIsOpen}
+        onClose={() => setFrenchFlightWarnModalIsOpen(false)}>
+        <AlertDestinationModal
+          onShowAgency={() => {
+            setIsAgencySelectorOpen(true)
+            setFrenchFlightWarnModalIsOpen(false)
+          }}
+          onClose={() => {
+            setFrenchFlightWarnModalIsOpen(false)
+          }}
+        />
+      </Modal>
+      <Modal
+        open={roundtripRestrictedWarnModalIsOpen}
+        onClose={() => setRoundtripRestrictedWarnModalIsOpen(false)}>
+        <RoundtripRestrictedFlightModal
+          onClose={() => setRoundtripRestrictedWarnModalIsOpen(false)}
+        />
       </Modal>
     </>
   )

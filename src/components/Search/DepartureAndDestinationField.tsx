@@ -21,11 +21,13 @@ export const DepartureAndDestinationField = ({
     from: string
     fromLabel: string
     fromCountry: string
+    fromCountryCode: string
     fromType: SearchFlightSegmentType
     fromInputValue: string
     to: string
     toLabel: string
     toCountry: string
+    toCountryCode: string
     toType: SearchFlightSegmentType
     toInputValue: string
   }>()
@@ -57,6 +59,7 @@ export const DepartureAndDestinationField = ({
         from: location.code,
         fromLabel: `${location.name} (${location.code})`,
         fromCountry: location.country_name,
+        fromCountryCode: location.country_code,
         fromType:
           location.category === 'City'
             ? SearchFlightSegmentType.CITY
@@ -72,6 +75,7 @@ export const DepartureAndDestinationField = ({
     setFieldValue('from', null)
     setFieldValue('fromLabel', null)
     setFieldValue('fromCountry', null)
+    setFieldValue('fromCountryCode', null)
     setFieldValue('fromType', null)
     setFieldValue('fromInputValue', e.target.value)
     setDepartureSearchTerm(e.target.value)
@@ -108,6 +112,7 @@ export const DepartureAndDestinationField = ({
         to: location.code,
         toLabel: `${location.name} (${location.code})`,
         toCountry: location.country_name,
+        toCountryCode: location.country_code,
         toType:
           location.category === 'City'
             ? SearchFlightSegmentType.CITY
@@ -123,6 +128,7 @@ export const DepartureAndDestinationField = ({
     setFieldValue('to', null)
     setFieldValue('toLabel', null)
     setFieldValue('toCountry', null)
+    setFieldValue('toCountryCode', null)
     setFieldValue('toType', null)
     setFieldValue('toInputValue', e.target.value)
     setDestinationSearchTerm(e.target.value)
@@ -149,6 +155,8 @@ export const DepartureAndDestinationField = ({
     setFieldValue('toLabel', from.name + ' (' + from.code + ')')
     setFieldValue('fromCountry', to.country_name)
     setFieldValue('toCountry', from.country_name)
+    setFieldValue('fromCountryCode', to.country_code)
+    setFieldValue('toCountryCode', from.country_code)
     setFieldValue(
       'fromType',
       to.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,

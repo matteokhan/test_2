@@ -16,6 +16,7 @@ export type DepartureData = {
   from: string
   fromLabel: string
   fromCountry: string
+  fromCountryCode: string
   fromType: SearchFlightSegmentType
   fromInputValue: string
 }
@@ -24,6 +25,7 @@ export type DestinationData = {
   to: string
   toLabel: string
   toCountry: string
+  toCountryCode: string
   toType: SearchFlightSegmentType
   toInputValue: string
 }

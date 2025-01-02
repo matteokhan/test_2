@@ -14,6 +14,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
     to: string
     toLabel: string
     toCountry: string
+    toCountryCode: string
     toType: SearchFlightSegmentType
   }>()
 
@@ -40,6 +41,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
     setFieldValue('to', location.code)
     setFieldValue('toLabel', location.name + ' (' + location.code + ')')
     setFieldValue('toCountry', location.country_name)
+    setFieldValue('toCountryCode', location.country_code)
     setFieldValue(
       'toType',
       location.category === 'City' ? SearchFlightSegmentType.CITY : SearchFlightSegmentType.PLACE,
@@ -52,6 +54,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
     setFieldValue('to', null)
     setFieldValue('toLabel', null)
     setFieldValue('toCountry', null)
+    setFieldValue('toCountryCode', null)
     setFieldValue('toType', null)
     setSearchTerm(e.target.value)
   }

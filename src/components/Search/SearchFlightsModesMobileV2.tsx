@@ -1,17 +1,15 @@
 'use client'
 
 import React, { useRef, useEffect } from 'react'
-import { Box, Tab, Tabs, Stack, Button, Modal } from '@mui/material'
+import { Box, Tab, Tabs, Stack, Button } from '@mui/material'
 import { OneWayFlightSearchParams, RoundTripFlightSearchParams, SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
 import {
   SearchRoundTripFlightsFormMobile,
   SearchOneWayFlightsFormMobile,
-  AlertDestinationModal,
   SelectAgencyLabel,
 } from '@/components'
 import { FormikProps } from 'formik'
-import { isValidSearch } from '@/utils'
 
 type SearchFlightsModesMobileProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
@@ -19,8 +17,6 @@ type SearchFlightsModesMobileProps = {
 
 export const SearchFlightsModesMobileV2 = ({ onSearch }: SearchFlightsModesMobileProps) => {
   const [activeTab, setActiveTab] = React.useState(0)
-  const [modalIsOpen, setModalIsOpen] = React.useState(false)
-
   const formRefOneWay = useRef<FormikProps<OneWayFlightSearchParams> | null>(null)
   const formRefRoundTrip = useRef<FormikProps<RoundTripFlightSearchParams> | null>(null)
 
@@ -51,9 +47,7 @@ export const SearchFlightsModesMobileV2 = ({ onSearch }: SearchFlightsModesMobil
         )
         return
       }
-      if (isValidSearch(formRefRoundTrip.current.values))
-        onSearch({ searchParams: formRefRoundTrip.current.values })
-      else setModalIsOpen(true)
+      onSearch({ searchParams: formRefRoundTrip.current.values })
     } else if (formRefOneWay.current) {
       const errors = await formRefOneWay.current.validateForm()
       if (Object.keys(errors).length !== 0) {
@@ -62,9 +56,7 @@ export const SearchFlightsModesMobileV2 = ({ onSearch }: SearchFlightsModesMobil
         )
         return
       }
-      if (isValidSearch(formRefOneWay.current.values))
-        onSearch({ searchParams: formRefOneWay.current.values })
-      else setModalIsOpen(true)
+      onSearch({ searchParams: formRefOneWay.current.values })
     } else {
       // TODO: log this somewhere
       return
@@ -104,17 +96,6 @@ export const SearchFlightsModesMobileV2 = ({ onSearch }: SearchFlightsModesMobil
           Rechercher
         </Button>
       </Box>
-      <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
-        <AlertDestinationModal
-          onShowAgency={() => {
-            setIsAgencySelectorOpen(true)
-            setModalIsOpen(false)
-          }}
-          onClose={() => {
-            setModalIsOpen(false)
-          }}
-        />
-      </Modal>
     </Stack>
   )
 }
