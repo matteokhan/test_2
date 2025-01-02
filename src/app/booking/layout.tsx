@@ -29,8 +29,8 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname()
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
-
   const [totalPriceOpen, setTotalPriceOpen] = useState(false)
+  const [forceRerender, setForceRerender] = useState(false)
 
   const onSearch = ({ searchParams }: { searchParams: SearchFlightsParams }) => {
     setSearchParams(searchParams)
@@ -49,6 +49,9 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
       const stepIndex = getStepIndexByPath(pathname)
       if (stepIndex !== -1) {
         currentStep.current = stepIndex
+        // We force rerender here because the currentStep is not a state, it's a ref
+        // and we need to trigger a rerender when it changes
+        setForceRerender(!forceRerender)
       }
     }
   }, [pathname])
