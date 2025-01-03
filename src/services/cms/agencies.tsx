@@ -67,6 +67,29 @@ export const useSearchAgencies = ({ searchTerm }: { searchTerm?: string }) => {
   })
 }
 
+export const listAllAgencies = async () => {
+  // TODO: replace with the correct endpoint
+  // const response = await fetch(`${CMS_API_URL}/cache/agency.json`, {
+  const response = await fetch(`https://magic-sandbox.voyages.leclerc/cache/agency.json`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+    },
+  })
+  if (!response.ok) {
+    throw new Error('Failed to list all agencies')
+  }
+  return await response.json()
+}
+
+export const useListAllAgencies = () => {
+  return useQuery<Agency[]>({
+    queryKey: ['listAllAgencies'],
+    queryFn: async () => listAllAgencies(),
+    refetchOnWindowFocus: false,
+  })
+}
+
 export const getNearAgencies = async ({
   lat,
   lng,

@@ -16,7 +16,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import GpsOff from '@mui/icons-material/GpsOff'
 import SearchIcon from '@mui/icons-material/Search'
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
-import { useNearAgencies, useSearchAgencies } from '@/services'
+import { useListAllAgencies, useNearAgencies, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
 import { env } from 'next-runtime-env'
@@ -99,6 +99,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
   const places = useMapsLibrary('places')
   const map = useMap()
+  const { data: allAgencies } = useListAllAgencies()
+  const visibleAgencies = searchNearUser || searchTerm ? agencies : allAgencies
 
   useEffect(() => {
     if (searchNearUser && userLocation) {
@@ -153,7 +155,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   }, [debouncedSearchTerm])
 
   useEffect(() => {
-    let ag = agencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
+    let ag = visibleAgencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
     if (ag?.length) {
       map?.fitBounds({
         east: Math.max(...ag.map((agency) => agency.gps_longitude)),
@@ -162,7 +164,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
         west: Math.min(...ag.map((agency) => agency.gps_longitude)),
       })
     }
-  }, [map, agencies])
+  }, [map, visibleAgencies])
 
   useEffect(() => {
     if (!canAccessPosition && searchNearUser) {
@@ -188,7 +190,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   }
 
   const getMarkers = () => {
-    return agencies
+    return visibleAgencies
       ?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
       ?.map((agency) => {
         const leclercLogo = document.createElement('img')
@@ -296,7 +298,6 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
             </Stack>
           </Stack>
           <Stack overflow="scroll" data-testid="selectAgencyMap-agenciesList">
-            {/* TODO: Styles needed here */}
             {isLoading && (
               <>
                 <AgencySkeleton />
@@ -309,7 +310,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                 Aucune agence à afficher
               </Typography>
             )}
-            {agencies &&
+            {(searchTerm || searchNearUser) &&
+              agencies &&
               !isLoading &&
               agencies.map((agency) => (
                 <Box
