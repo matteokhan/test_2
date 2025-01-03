@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import {
   PassengerData,
   BookingStep as BookingStepType,
@@ -17,6 +17,9 @@ import { getInsurancePrice } from '@/utils'
 import { CountryCallingCode } from 'libphonenumber-js'
 import { useFlights } from '@/contexts'
 import dayjs from 'dayjs'
+
+const TIMER_REFRESH_INTERVAL = 200 // In milliseconds
+const TIMER_EXPIRATION = 900 // 15 minutes in seconds
 
 type BookingContextType = {
   // Steps
@@ -69,6 +72,8 @@ type BookingContextType = {
   loadBookingState: ({ orderId }: { orderId: OrderId }) => void
   isBookingActive: boolean
   setIsBookingActive: React.Dispatch<React.SetStateAction<boolean>>
+  bookingStartTime: React.MutableRefObject<number | null> // In milliseconds
+  elapsedTime: string | null // In seconds
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
@@ -120,6 +125,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   ])
 
   const router = useRouter()
+  const bookingStartTime = useRef<number | null>(null)
+  const [elapsedTime, setElapsedTime] = useState<string | null>(null)
   const { totalPassengers, searchParamsCache, setSearchParams } = useFlights()
   const currentStep = useRef(0)
   const [selectedFlight, setSelectedFlight] = useState<Solution | null>(null)
@@ -160,6 +167,20 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     : 0
   const totalInsurancePrice = selectedInsurancePrice * totalPassengers
   const totalPrice = basePrice + totalInsurancePrice
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const delta = bookingStartTime.current ? (Date.now() - bookingStartTime.current) / 1000 : 0
+      if (delta > TIMER_EXPIRATION) {
+        alert(
+          'Attention, nous ne pouvons maintenir les prix que pour une durée limitée. Veuillez vite relancer votre recherche',
+        )
+        bookingStartTime.current = null
+      }
+      setElapsedTime(delta.toFixed(1))
+    }, TIMER_REFRESH_INTERVAL)
+    return () => clearInterval(timer)
+  }, [])
 
   const getStepIndexByPath = (pathname: string) => {
     return steps.current.findIndex((s) => s.url.includes(pathname))
@@ -383,6 +404,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         loadBookingState,
         isBookingActive,
         setIsBookingActive,
+        bookingStartTime,
+        elapsedTime,
       }}>
       {children}
     </BookingContext.Provider>

@@ -93,6 +93,7 @@ export default function FlighsPage() {
     resetBooking,
     setSelectedFare,
     setSelectedFlight,
+    bookingStartTime,
   } = useBooking()
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
   const { selectedAgencyId, setIsAgencySelectorOpen } = useAgencySelector()
@@ -241,6 +242,7 @@ export default function FlighsPage() {
       { agencyId: aId },
       {
         onSuccess: (order) => {
+          bookingStartTime.current = Date.now()
           setOrder(order)
           searchParams && setSearchParams(searchParams)
         },
