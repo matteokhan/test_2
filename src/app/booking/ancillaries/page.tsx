@@ -182,7 +182,8 @@ export default function AncillariesPage() {
             </SimpleContainer>
           )
         })}
-      {selectedFare.gdsType === GDSType.LOW_COST_CARRIER &&
+      {/* TODO: Uncomment this block when LCC ancillaries work as expected */}
+      {/* {selectedFare.gdsType === GDSType.LOW_COST_CARRIER &&
         lccAncillaries &&
         !isFetchingLcc &&
         lccIsSuccess &&
@@ -237,7 +238,72 @@ export default function AncillariesPage() {
                 </Stack>
               </SimpleContainer>
             )
-          })}
+          })} */}
+      {selectedFare.gdsType === GDSType.LOW_COST_CARRIER &&
+        !isFetchingLcc &&
+        lccIsSuccess &&
+        lccAncillaries && (
+          <SimpleContainer title={`Passager : All`}>
+            <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
+              <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
+                L’achat de bagages après la réservation revient plus cher. Ajoutez-les maintenant et
+                économisez pour vous faire encore plus plaisir pendant votre voyage.
+              </Alert>
+              <Grid container spacing={2} data-testid="ancillariesPage-options">
+                {lccAncillaries
+                  .filter((a) => Number(a.price) > 0)
+                  .map((ancillary, index) => (
+                    <LccAncilliaryService
+                      key={index}
+                      ancillaryService={ancillary}
+                      onSelectService={(service) => {
+                        passengers
+                          .filter((p) => ['ADT', 'CHD'].includes(p.type))
+                          .forEach((p) => {
+                            p.ancillaries.push(service)
+                          })
+                        setPassengers((prev) => [...prev])
+                      }}
+                      onUnselectService={(service) => {
+                        passengers
+                          .filter((p) => ['ADT', 'CHD'].includes(p.type))
+                          .forEach((p) => {
+                            p.ancillaries = p.ancillaries.filter(
+                              (anc) =>
+                                !(
+                                  anc.code === service.code &&
+                                  anc.price === service.price &&
+                                  anc.baggageWeight === service.baggageWeight &&
+                                  anc.price === service.price
+                                ),
+                            )
+                          })
+                        setPassengers((prev) => [...prev])
+                      }}
+                      selected={passengers[0].ancillaries.some(
+                        (anc) =>
+                          anc.code === ancillary.code &&
+                          anc.price === ancillary.price &&
+                          anc.baggageWeight === ancillary.baggageWeight &&
+                          anc.price === ancillary.price,
+                      )}
+                      disabled={
+                        isLoading ||
+                        (!passengers[0].ancillaries.some(
+                          (anc) =>
+                            anc.code === ancillary.code &&
+                            anc.price === ancillary.price &&
+                            anc.baggageWeight === ancillary.baggageWeight &&
+                            anc.price === ancillary.price,
+                        ) &&
+                          passengers[0].ancillaries.length > 0)
+                      }
+                    />
+                  ))}
+              </Grid>
+            </Stack>
+          </SimpleContainer>
+        )}
       <BookingStepActions
         onContinue={handleSubmit}
         onGoBack={goPreviousStep}
