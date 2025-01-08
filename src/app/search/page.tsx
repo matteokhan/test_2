@@ -47,10 +47,12 @@ import { useQueryClient } from '@tanstack/react-query'
 import CloseIcon from '@mui/icons-material/Close'
 import useMetadata from '@/contexts/useMetadata'
 import { isFrenchFlight, isRoundtripRestricted } from '@/utils'
+import { useRouter } from 'next/navigation'
 
 export default function FlighsPage() {
   useMetadata('Rechercher des vols')
   const theme = useTheme()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
@@ -311,6 +313,7 @@ export default function FlighsPage() {
 
   useEffect(() => {
     if (response?.solutions.length === 0) {
+      bookingStartTime.current = null
       setIsNoResultsModalOpen(true)
     }
   }, [response])
@@ -368,6 +371,13 @@ export default function FlighsPage() {
                     </Stack>
                   </Stack>
                 </Grow>
+              )}
+              {!isDesktop && !isLoading && response?.solutions.length === 0 && (
+                <>
+                  <Button onClick={() => router.push('/vol')}>
+                    Retourner à la page de recherche
+                  </Button>
+                </>
               )}
               <Stack direction="row" spacing={isDesktop ? 2 : 0}>
                 <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
