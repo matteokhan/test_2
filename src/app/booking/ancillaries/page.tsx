@@ -111,8 +111,8 @@ export default function AncillariesPage() {
     <>
       {isFetching && (
         <Stack>
-          {passengers.map((_) => (
-            <PassengerAncillariesSkeleton />
+          {passengers.map((_, index) => (
+            <PassengerAncillariesSkeleton key={index} />
           ))}
         </Stack>
       )}
