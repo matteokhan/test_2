@@ -243,7 +243,7 @@ export default function AncillariesPage() {
         !isFetchingLcc &&
         lccIsSuccess &&
         lccAncillaries && (
-          <SimpleContainer title={`Passager : All`}>
+          <SimpleContainer>
             <Stack gap={2} sx={{ pt: { xs: 3, lg: 4 } }}>
               <Alert severity="info" icon={<WarningIcon fontSize="inherit" />}>
                 L’achat de bagages après la réservation revient plus cher. Ajoutez-les maintenant et
