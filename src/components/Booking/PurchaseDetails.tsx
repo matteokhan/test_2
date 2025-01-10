@@ -11,6 +11,7 @@ import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
 import { useLCCAncillaries } from '@/services'
+import { FloaIcon } from '@/components'
 
 type PurchaseDetailsProps = {
   onClose?: () => void
@@ -200,6 +201,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
               </Box>
             )
           })}
+          {selectedAgency?.floa_contract && <FloaIcon />}
         </Stack>
       </Stack>
     </Paper>

@@ -321,3 +321,16 @@ export const PaymentIcon = () => {
     </Box>
   )
 }
+
+export const FloaIcon = () => {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        height: 33,
+        width: 50,
+      }}>
+      <Image src="/floa_logo.svg" alt="floa logo" fill />
+    </Box>
+  )
+}

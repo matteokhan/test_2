@@ -28,6 +28,7 @@ export type Agency = {
   code: string
   center_code: string
   id_base_adherent: string // TODO: What is this?
+  floa_contract: boolean
   name: string
   address: string
   address2: string
