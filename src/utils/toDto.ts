@@ -79,8 +79,8 @@ export const getOrderClientDto = ({ payer }: { payer: PayerData }): OrderClientD
     last_name: payer.lastName,
     birth_date: payer.dateOfBirth ? payer.dateOfBirth.format('YYYY-MM-DD') : '',
     email: payer.email,
-    phone: payer.phoneNumber,
-    phone_country_prefix: '0033',
+    phone: payer.phoneNumber.replace(/\s/g, ''),
+    phone_country_prefix: payer.phoneCode.replace(/\s/g, ''),
     address: payer.address,
     postal_code: payer.postalCode,
     city: payer.city,
@@ -103,7 +103,10 @@ export const getOrderPassengerDto = ({
     last_name: passenger.lastName,
     birth_date: passenger.dateOfBirth ? passenger.dateOfBirth.format('YYYY-MM-DD') : '',
     email: passenger.email,
-    phone: `${passenger.phoneCode}${passenger.phoneNumber}`,
+    phone:
+      passenger.type == 'ADT'
+        ? `${passenger.phoneCode}${passenger.phoneNumber}`.replace(/\s/g, '')
+        : '',
     ancillaries: passenger.ancillaries,
   }
   return dto

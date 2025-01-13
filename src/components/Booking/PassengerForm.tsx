@@ -93,15 +93,27 @@ const passengerSchema = ({
         then: (schema) => schema.required('Le numéro de téléphone est requis'),
         otherwise: (schema) => schema.optional(),
       })
-      .test('phone-validation', function (value) {
+      .transform((value) => value?.replace(/\s/g, ''))
+      .test('phone_validation', "Le numéro de téléphone n'est pas valide", function (value) {
         if (!value && this.parent.type !== 'ADT') {
           return true
         }
         const countryCode = this.parent.phoneCode
-        const { isValid, message } = validatePhoneWithCountry(value || '', countryCode)
-
-        if (!isValid && message) {
-          return this.createError({ message })
+        const fullNumber = `${countryCode}${value}`.replace(/\s/g, '')
+        if (!/^\d+$/.test(fullNumber)) {
+          return this.createError({
+            message: 'Le numéro de téléphone ne doit contenir que des chiffres',
+          })
+        }
+        if (fullNumber.length < 6) {
+          return this.createError({
+            message: 'Le numéro de téléphone doit contenir au moins 6 chiffres',
+          })
+        }
+        if (fullNumber.length > 17) {
+          return this.createError({
+            message: 'Le numéro de téléphone ne doit pas dépasser 17 chiffres',
+          })
         }
 
         return true
