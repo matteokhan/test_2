@@ -35,7 +35,11 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
   const handleClose = useCallback(() => {
     setIsOpen(false)
   }, [])
-  const handleClick = (location: LocationData) => {
+  const handleSelectLocation = (location: LocationData) => {
+    document.dispatchEvent(new CustomEvent('departureSelected', { detail: { location } }))
+    selectLocation(location)
+  }
+  const selectLocation = (location: LocationData) => {
     setIsOpen(false)
     setSelectedLocation(location)
     setFieldValue('from', location.code)
@@ -49,13 +53,13 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
     setSearchTerm(location.name + ' (' + location.code + ')')
     if (onChange) onChange(location)
   }
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedLocation(null)
-    setFieldValue('from', null)
-    setFieldValue('fromLabel', null)
-    setFieldValue('fromCountry', null)
-    setFieldValue('fromCountryCode', null)
-    setFieldValue('fromType', null)
+    setFieldValue('from', '')
+    setFieldValue('fromLabel', '')
+    setFieldValue('fromCountry', '')
+    setFieldValue('fromCountryCode', '')
+    setFieldValue('fromType', '')
     setSearchTerm(e.target.value)
   }
   const handleBlur = () => {
@@ -80,7 +84,7 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
             'data-testid': 'departureField',
           }}
           label="Ville ou aéroport"
-          onChange={handleChange}
+          onChange={resetLocation}
           onBlur={handleBlur}
           value={searchTerm}
         />
@@ -107,7 +111,7 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
                   key={code}
                   location={location}
                   noBorder={array.length - 1 === index}
-                  onClick={handleClick}
+                  onClick={handleSelectLocation}
                 />
               )
             })}

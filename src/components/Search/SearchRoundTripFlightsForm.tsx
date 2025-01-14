@@ -8,6 +8,7 @@ import { Form, Formik, FormikHelpers } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
 import dayjs from 'dayjs'
+import { useSearchDataCache } from '@/contexts'
 
 const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   adults: 1,
@@ -97,61 +98,64 @@ export const SearchRoundTripFlightsForm = ({
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
       enableReinitialize>
-      {({ values, setFieldValue, touched, errors }) => (
-        <Form data-testid="searchRoundTripFlightsForm">
-          <Stack direction="row" width="100%" gap={1}>
-            <Stack gap={1} direction="row" flexGrow={1}>
-              <Stack width="50%" gap={1} direction="row">
-                <DepartureAndDestinationField sx={{ width: '100%' }} />
+      {({ values, setFieldValue, touched, errors }) => {
+        useSearchDataCache(setFieldValue)
+        return (
+          <Form data-testid="searchRoundTripFlightsForm">
+            <Stack direction="row" width="100%" gap={1}>
+              <Stack gap={1} direction="row" flexGrow={1}>
+                <Stack width="50%" gap={1} direction="row">
+                  <DepartureAndDestinationField sx={{ width: '100%' }} />
+                </Stack>
+                <Box width="25%">
+                  <DateRangePicker
+                    disableAutoMonthSwitching={true}
+                    sx={{ width: '100%' }}
+                    slots={{ field: SingleInputDateRangeField, textField: CustomTextField }}
+                    data-testid="datesField"
+                    label="Dates"
+                    defaultValue={[dayjs(values.departure), dayjs(values.return)]}
+                    slotProps={{
+                      textField: {
+                        helperText:
+                          (touched.departure && errors.departure) ||
+                          (touched.return && errors.return),
+                      },
+                      popper: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
+                      },
+                    }}
+                    minDate={dayjs().add(3, 'day')}
+                    onChange={([departure, destination]) => {
+                      setFieldValue(
+                        'departure',
+                        departure ? departure?.format('YYYY-MM-DD') : null,
+                        true,
+                      )
+                      setFieldValue(
+                        'return',
+                        destination ? destination?.format('YYYY-MM-DD') : null,
+                        true,
+                      )
+                    }}
+                  />
+                </Box>
+                <Box width="25%">
+                  <PassengersField sx={{ width: '100%' }} />
+                </Box>
               </Stack>
-              <Box width="25%">
-                <DateRangePicker
-                  disableAutoMonthSwitching={true}
-                  sx={{ width: '100%' }}
-                  slots={{ field: SingleInputDateRangeField, textField: CustomTextField }}
-                  data-testid="datesField"
-                  label="Dates"
-                  defaultValue={[dayjs(values.departure), dayjs(values.return)]}
-                  slotProps={{
-                    textField: {
-                      helperText:
-                        (touched.departure && errors.departure) ||
-                        (touched.return && errors.return),
-                    },
-                    popper: {
-                      modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
-                    },
-                  }}
-                  minDate={dayjs().add(3, 'day')}
-                  onChange={([departure, destination]) => {
-                    setFieldValue(
-                      'departure',
-                      departure ? departure?.format('YYYY-MM-DD') : null,
-                      true,
-                    )
-                    setFieldValue(
-                      'return',
-                      destination ? destination?.format('YYYY-MM-DD') : null,
-                      true,
-                    )
-                  }}
-                />
-              </Box>
-              <Box width="25%">
-                <PassengersField sx={{ width: '100%' }} />
-              </Box>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                data-testid="searchButton"
+                disabled={disabled}>
+                Rechercher
+              </Button>
             </Stack>
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              data-testid="searchButton"
-              disabled={disabled}>
-              Rechercher
-            </Button>
-          </Stack>
-        </Form>
-      )}
+          </Form>
+        )
+      }}
     </Formik>
   )
 }

@@ -12,6 +12,7 @@ import {
   DepartureAndDestinationField,
 } from '@/components'
 import dayjs from 'dayjs'
+import { useSearchDataCache } from '@/contexts'
 
 const DEFAULT_VALUES: OneWayFlightSearchParams = {
   adults: 1,
@@ -98,47 +99,50 @@ export const SearchOneWayFlightsForm = ({
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
       enableReinitialize>
-      {({ values, setFieldValue, touched, errors }) => (
-        <Form data-testid="searchOneWayFlightsForm">
-          <Stack direction="row" width="100%" gap={1}>
-            <Stack gap={1} direction="row" flexGrow={1}>
-              <Stack width="50%" gap={1} direction="row">
-                <DepartureAndDestinationField sx={{ width: '100%' }} />
+      {({ values, setFieldValue, touched, errors }) => {
+        useSearchDataCache(setFieldValue)
+        return (
+          <Form data-testid="searchOneWayFlightsForm">
+            <Stack direction="row" width="100%" gap={1}>
+              <Stack gap={1} direction="row" flexGrow={1}>
+                <Stack width="50%" gap={1} direction="row">
+                  <DepartureAndDestinationField sx={{ width: '100%' }} />
+                </Stack>
+                <Box width="25%">
+                  <DatePicker
+                    sx={{ width: '100%' }}
+                    slots={{ textField: CustomTextField }}
+                    data-testid="departureField"
+                    label="Date"
+                    value={dayjs(values.departure)}
+                    slotProps={{
+                      textField: { helperText: touched.departure && errors.departure },
+                      popper: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
+                      },
+                    }}
+                    minDate={dayjs().add(3, 'day')}
+                    onChange={(value) => {
+                      setFieldValue('departure', value?.format('YYYY-MM-DD'), true)
+                    }}
+                  />
+                </Box>
+                <Box width="25%">
+                  <PassengersField sx={{ width: '100%' }} />
+                </Box>
               </Stack>
-              <Box width="25%">
-                <DatePicker
-                  sx={{ width: '100%' }}
-                  slots={{ textField: CustomTextField }}
-                  data-testid="departureField"
-                  label="Date"
-                  value={dayjs(values.departure)}
-                  slotProps={{
-                    textField: { helperText: touched.departure && errors.departure },
-                    popper: {
-                      modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
-                    },
-                  }}
-                  minDate={dayjs().add(3, 'day')}
-                  onChange={(value) => {
-                    setFieldValue('departure', value?.format('YYYY-MM-DD'), true)
-                  }}
-                />
-              </Box>
-              <Box width="25%">
-                <PassengersField sx={{ width: '100%' }} />
-              </Box>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                data-testid="searchButton"
+                disabled={disabled}>
+                Rechercher
+              </Button>
             </Stack>
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              data-testid="searchButton"
-              disabled={disabled}>
-              Rechercher
-            </Button>
-          </Stack>
-        </Form>
-      )}
+          </Form>
+        )
+      }}
     </Formik>
   )
 }

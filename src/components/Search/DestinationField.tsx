@@ -35,7 +35,11 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
   const handleClose = useCallback(() => {
     setIsOpen(false)
   }, [])
-  const handleClick = (location: LocationData) => {
+  const handleSelectLocation = (location: LocationData) => {
+    document.dispatchEvent(new CustomEvent('destinationSelected', { detail: { location } }))
+    selectLocation(location)
+  }
+  const selectLocation = (location: LocationData) => {
     setIsOpen(false)
     setSelectedLocation(location)
     setFieldValue('to', location.code)
@@ -49,13 +53,13 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
     setSearchTerm(location.name + ' (' + location.code + ')')
     if (onChange) onChange(location)
   }
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedLocation(null)
-    setFieldValue('to', null)
-    setFieldValue('toLabel', null)
-    setFieldValue('toCountry', null)
-    setFieldValue('toCountryCode', null)
-    setFieldValue('toType', null)
+    setFieldValue('to', '')
+    setFieldValue('toLabel', '')
+    setFieldValue('toCountry', '')
+    setFieldValue('toCountryCode', '')
+    setFieldValue('toType', '')
     setSearchTerm(e.target.value)
   }
   const handleBlur = () => {
@@ -79,7 +83,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
             'data-testid': 'destinationField',
           }}
           label="Ville ou aéroport"
-          onChange={handleChange}
+          onChange={resetLocation}
           onBlur={handleBlur}
           value={searchTerm}
         />
@@ -106,7 +110,7 @@ export const DestinationField = ({ onChange }: { onChange?: (location: LocationD
                   key={code}
                   location={location}
                   noBorder={array.length - 1 === index}
-                  onClick={handleClick}
+                  onClick={handleSelectLocation}
                 />
               )
             })}

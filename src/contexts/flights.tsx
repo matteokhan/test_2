@@ -1,14 +1,21 @@
 'use client'
 
-import { SearchFlightsParams, SearchFlightSegment, SearchFlightsParamsDto } from '@/types'
+import {
+  SearchFlightsParams,
+  SearchFlightSegment,
+  SearchFlightsParamsDto,
+  LocationData,
+} from '@/types'
 import { searchParamsToDto } from '@/utils'
-import React, { createContext, useState, useContext } from 'react'
+import React, { createContext, useState, useContext, useEffect } from 'react'
 
 type FlightsContextType = {
   setSearchParams: (params: SearchFlightsParams) => void
   searchParamsDto: SearchFlightsParamsDto | undefined
   setSearchParamsDto: (params: SearchFlightsParamsDto) => void
   searchParamsCache: SearchFlightsParams | undefined
+  departureCache: LocationData | undefined
+  destinationCache: LocationData | undefined
   firstSegment: SearchFlightSegment | undefined
   lastSegment: SearchFlightSegment | undefined
   totalPassengers: number
@@ -22,6 +29,8 @@ const FlightsContext = createContext<FlightsContextType | undefined>(undefined)
 export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [searchParamsDto, setSearchParamsDto] = useState<SearchFlightsParamsDto | undefined>()
   const [searchParamsCache, setSearchParamsCache] = useState<SearchFlightsParams | undefined>()
+  const [departureCache, setDepartureCache] = useState<LocationData | undefined>()
+  const [destinationCache, setDestinationCache] = useState<LocationData | undefined>()
   const firstSegment = searchParamsDto?.search_data.segments[0]
   const lastSegment =
     searchParamsDto?.search_data.segments[searchParamsDto?.search_data.segments.length - 1]
@@ -39,6 +48,22 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setSearchParamsCache(params)
   }
 
+  const handleDestinationSelected = (e: CustomEventInit<{ location: LocationData }>) => {
+    e.detail?.location && setDestinationCache(e.detail.location)
+  }
+  const handleDepartureSelected = (e: CustomEventInit<{ location: LocationData }>) => {
+    e.detail?.location && setDepartureCache(e.detail.location)
+  }
+
+  useEffect(() => {
+    document.addEventListener('destinationSelected', handleDestinationSelected)
+    document.addEventListener('departureSelected', handleDepartureSelected)
+    return () => {
+      document.removeEventListener('destinationSelected', handleDestinationSelected)
+      document.removeEventListener('departureSelected', handleDepartureSelected)
+    }
+  }, [])
+
   return (
     <FlightsContext.Provider
       value={{
@@ -46,6 +71,8 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         searchParamsDto,
         setSearchParamsDto,
         searchParamsCache,
+        departureCache,
+        destinationCache,
         firstSegment,
         lastSegment,
         totalPassengers,

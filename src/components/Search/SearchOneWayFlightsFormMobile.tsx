@@ -10,6 +10,7 @@ import { Box, Button, Drawer, Paper, Stack, TextField, Typography } from '@mui/m
 import { DateCalendar } from '@mui/x-date-pickers-pro'
 import { DestinationField, DepartureField, PassengersControls } from '@/components'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { useSearchDataCache } from '@/contexts'
 
 dayjs.locale('fr')
 
@@ -59,6 +60,7 @@ export const SearchOneWayFlightsFormMobile = ({
   const [destinationIsOpen, setDestinationIsOpen] = useState(false)
   const [datesIsOpen, setDatesIsOpen] = useState(false)
   const [passengersIsOpen, setPassengersIsOpen] = useState(false)
+  useSearchDataCache((field, value) => formRef.current?.setFieldValue(field, value))
 
   return (
     <Formik

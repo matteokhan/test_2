@@ -10,6 +10,7 @@ import { DestinationField, DepartureField, PassengersControls } from '@/componen
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import 'dayjs/locale/fr'
 import dayjs from 'dayjs'
+import { useSearchDataCache } from '@/contexts'
 
 dayjs.locale('fr')
 
@@ -66,6 +67,7 @@ export const SearchRoundTripFlightsFormMobile = ({
   const [destinationIsOpen, setDestinationIsOpen] = useState(false)
   const [datesIsOpen, setDatesIsOpen] = useState(false)
   const [passengersIsOpen, setPassengersIsOpen] = useState(false)
+  useSearchDataCache((field, value) => formRef.current?.setFieldValue(field, value))
 
   return (
     <Formik

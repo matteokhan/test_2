@@ -8,6 +8,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { useLocationsByName } from '@/services'
 import { useDebounce } from '@uidotdev/usehooks'
 import { LocationData, SearchFlightSegmentType } from '@/types'
+import { useFlights } from '@/contexts'
 
 export const DepartureAndDestinationField = ({
   labels,
@@ -43,6 +44,7 @@ export const DepartureAndDestinationField = ({
     searchTerm: debouncedFromSearchTerm,
   })
   const departuresCodes = Object.keys(departures || {})
+  const { destinationCache, departureCache } = useFlights()
   const openDepartureSuggestions = useCallback(() => {
     setDepartureIsOpen(true)
     if (inputRefDeparture.current) inputRefDeparture.current.focus()
@@ -70,7 +72,7 @@ export const DepartureAndDestinationField = ({
       validateForm()
     })
   }
-  const handleDepartureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetDeparture = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDeparture(null)
     setFieldValue('from', null)
     setFieldValue('fromLabel', null)
@@ -123,7 +125,7 @@ export const DepartureAndDestinationField = ({
       validateForm()
     })
   }
-  const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetDestination = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDestination(null)
     setFieldValue('to', null)
     setFieldValue('toLabel', null)
@@ -169,12 +171,29 @@ export const DepartureAndDestinationField = ({
     setDestinationSearchTerm(from.name + ' (' + from.code + ')')
   }
 
+  const handleSelectDeparture = (location: LocationData) => {
+    document.dispatchEvent(new CustomEvent('departureSelected', { detail: { location } }))
+    selectDeparture(location)
+  }
+  const handleSelectDestination = (location: LocationData) => {
+    document.dispatchEvent(new CustomEvent('destinationSelected', { detail: { location } }))
+    selectDestination(location)
+  }
+
   useEffect(() => {
     if (values.fromLabel) {
       setDepartureSearchTerm(values.fromLabel)
     }
     if (values.toLabel) {
       setDestinationSearchTerm(values.toLabel)
+    }
+    if (departureCache) {
+      setSelectedDeparture(departureCache)
+      setDepartureSearchTerm(departureCache.name + ' (' + departureCache.code + ')')
+    }
+    if (destinationCache) {
+      setSelectedDestination(destinationCache)
+      setDestinationSearchTerm(destinationCache.name + ' (' + destinationCache.code + ')')
     }
   }, [])
 
@@ -201,7 +220,7 @@ export const DepartureAndDestinationField = ({
               inputProps={{
                 'data-testid': 'fromField',
               }}
-              onChange={handleDepartureChange}
+              onChange={resetDeparture}
               onBlur={handleDepartureBlur}
               value={departureSearchTerm}
             />
@@ -244,7 +263,7 @@ export const DepartureAndDestinationField = ({
               inputProps={{
                 'data-testid': 'toField',
               }}
-              onChange={handleDestinationChange}
+              onChange={resetDestination}
               onBlur={handleDestinationBlur}
               value={destinationSearchTerm}
             />
@@ -305,7 +324,7 @@ export const DepartureAndDestinationField = ({
                   key={code}
                   location={location}
                   noBorder={array.length - 1 === index}
-                  onClick={selectDeparture}
+                  onClick={handleSelectDeparture}
                 />
               )
             })}
@@ -332,7 +351,7 @@ export const DepartureAndDestinationField = ({
                   key={code}
                   location={location}
                   noBorder={array.length - 1 === index}
-                  onClick={selectDestination}
+                  onClick={handleSelectDestination}
                 />
               )
             })}
