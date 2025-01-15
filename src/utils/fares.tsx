@@ -7,15 +7,15 @@ import { FlightClass } from '@mui/icons-material'
 export const getFareDataFromSolution = (solution: Solution): Fare => {
   const brand = solution.routes[0].segments[0].fare
   const services: FareService[] = brand.options
-    .filter((option) => option.indicator !== 'Unknown')
+    .filter((option) => option.indicator !== 'Unknown' && option.description !== 'VOID')
     .map((option) => {
       switch (option.description) {
         case 'CHANGES':
           switch (option.indicator) {
             case 'IncludedInBrand':
               return {
-                name: 'Modification autorisée',
-                icon: <CheckIcon color="primary" />,
+                name: 'Modifiable avec frais',
+                icon: <PaymentsIcon />,
                 isIncluded: true,
               }
             case 'NotOffered':
@@ -25,14 +25,14 @@ export const getFareDataFromSolution = (solution: Solution): Fare => {
                 isIncluded: false,
               }
             case 'AvailableForACharge':
-              return { name: 'Modification payante', icon: <PaymentsIcon />, isIncluded: false }
+              return { name: 'Modifiable avec frais', icon: <PaymentsIcon />, isIncluded: false }
           }
         case 'REFUND':
           switch (option.indicator) {
             case 'IncludedInBrand':
               return {
-                name: 'Remboursement complet',
-                icon: <CheckIcon color="primary" />,
+                name: 'Remboursable avec frais',
+                icon: <PaymentsIcon />,
                 isIncluded: true,
               }
             case 'NotOffered':
@@ -42,24 +42,7 @@ export const getFareDataFromSolution = (solution: Solution): Fare => {
                 isIncluded: false,
               }
             case 'AvailableForACharge':
-              return { name: 'Remboursable en partie', icon: <PaymentsIcon />, isIncluded: false }
-          }
-        case 'VOID':
-          switch (option.indicator) {
-            case 'IncludedInBrand':
-              return {
-                name: 'Annulation comprise',
-                icon: <CheckIcon color="primary" />,
-                isIncluded: true,
-              }
-            case 'NotOffered':
-              return {
-                name: "Pas d'annulation possible",
-                icon: <CloseIcon color="error" />,
-                isIncluded: false,
-              }
-            case 'AvailableForACharge':
-              return { name: 'Annulation payante', icon: <PaymentsIcon />, isIncluded: false }
+              return { name: 'Remboursable avec frais', icon: <PaymentsIcon />, isIncluded: false }
           }
         case 'BAGGAGE_CHECKED':
           switch (option.indicator) {
@@ -76,7 +59,7 @@ export const getFareDataFromSolution = (solution: Solution): Fare => {
                 }
               } else {
                 return {
-                  name: 'Bagage enregistré payant',
+                  name: 'Tarif sans bagage',
                   icon: <PaymentsIcon />,
                   isIncluded: false,
                 }
@@ -88,7 +71,7 @@ export const getFareDataFromSolution = (solution: Solution): Fare => {
                 isIncluded: false,
               }
             case 'AvailableForACharge':
-              return { name: 'Bagage enregistré payant', icon: <PaymentsIcon />, isIncluded: false }
+              return { name: 'Tarif sans bagage', icon: <PaymentsIcon />, isIncluded: false }
           }
       }
       return { name: option.description, icon: <CloseIcon color="error" />, isIncluded: false }
