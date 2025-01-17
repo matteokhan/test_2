@@ -38,16 +38,6 @@ export const BookingConditionsCheckbox = ({
             <a
               target="_blank"
               rel="noopener"
-              href="https://www.leclercvoyages.com/editoContent?code=conditions_generales_de_vente">
-              <Typography variant="bodySm" color="grey.800">
-                Les conditions générales de vente
-              </Typography>
-            </a>
-          </li>
-          <li>
-            <a
-              target="_blank"
-              rel="noopener"
               href="https://www.leclercvoyages.com/editoContent?code=conditions_particulieres_elv">
               <Typography variant="bodySm" color="grey.800">
                 Les conditions particulières de vente Leclerc Voyages
