@@ -47,12 +47,14 @@ import { useQueryClient } from '@tanstack/react-query'
 import CloseIcon from '@mui/icons-material/Close'
 import useMetadata from '@/contexts/useMetadata'
 import { isFrenchFlight, isRoundtripRestricted } from '@/utils'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function FlighsPage() {
   useMetadata('Rechercher des vols')
   const theme = useTheme()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const triggerSearch = searchParams.get('rechercher')
   const queryClient = useQueryClient()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const RESULTS_PER_PAGE = 10
@@ -303,7 +305,9 @@ export default function FlighsPage() {
 
   useEffect(() => {
     document.addEventListener('agencySelected', handleAgencySelected)
-    if (searchParamsCache && !order) {
+    if (triggerSearch && searchParamsCache) {
+      searchFlights({ searchParams: searchParamsCache })
+    } else if (searchParamsCache && !order) {
       searchFlights({ searchParams: searchParamsCache })
     }
     return () => {

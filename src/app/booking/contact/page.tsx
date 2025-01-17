@@ -1,7 +1,13 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { BookingStepActions, PayerForm, SimpleContainer, ReservationErrorModal } from '@/components'
+import {
+  BookingStepActions,
+  PayerForm,
+  SimpleContainer,
+  ReservationErrorModal,
+  ReservationPriceChangeErrorModal,
+} from '@/components'
 import { useBooking } from '@/contexts'
 import { Modal } from '@mui/material'
 import { FormikProps } from 'formik'
@@ -16,6 +22,7 @@ import { useUpdateOrder, useReserveOrder, getAncillaries, getLCCAncillaries } fr
 import { useQueryClient } from '@tanstack/react-query'
 import useMetadata from '@/contexts/useMetadata'
 import { getAncillaryServices } from '@/utils'
+import { useRouter } from 'next/navigation'
 
 export default function ContactInfoPage() {
   useMetadata('Informations facturation')
@@ -23,6 +30,8 @@ export default function ContactInfoPage() {
   const queryClient = useQueryClient()
   const [isNavigating, setIsNavigating] = useState(false)
   const [reservationErrorModalIsOpen, setReservationErrorModalIsOpen] = useState(false)
+  const [reservationPriceChangeErrorModalIsOpen, setReservationPriceChangeErrorModalIsOpen] =
+    useState(false)
   const [isCheckingAncillaries, setIsCheckingAncillaries] = useState(false)
   const {
     goNextStep,
@@ -37,6 +46,7 @@ export default function ContactInfoPage() {
     setPnr,
     skipStep,
   } = useBooking()
+  const router = useRouter()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
   const { mutate: reserveOrder, isPending: isReservingOrder } = useReserveOrder()
   const isLoading = isUpdatingOrder || isNavigating || isReservingOrder || isCheckingAncillaries
@@ -100,7 +110,11 @@ export default function ContactInfoPage() {
                   goNextStep()
                 } else {
                   // TODO: log this somewhere
-                  setReservationErrorModalIsOpen(true)
+                  if (reservationData.status == 'ERROR PRICE CHANGE') {
+                    setReservationPriceChangeErrorModalIsOpen(true)
+                  } else {
+                    setReservationErrorModalIsOpen(true)
+                  }
                 }
               },
               onError: (error) => {
@@ -170,6 +184,16 @@ export default function ContactInfoPage() {
         open={reservationErrorModalIsOpen}
         onClose={() => setReservationErrorModalIsOpen(false)}>
         <ReservationErrorModal onClose={() => setReservationErrorModalIsOpen(false)} />
+      </Modal>
+      <Modal
+        open={reservationPriceChangeErrorModalIsOpen}
+        onClose={() => setReservationPriceChangeErrorModalIsOpen(false)}>
+        <ReservationPriceChangeErrorModal
+          onClose={() => {
+            setReservationPriceChangeErrorModalIsOpen(false)
+            router.push('/search?rechercher=1')
+          }}
+        />
       </Modal>
     </>
   )

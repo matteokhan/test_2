@@ -258,7 +258,7 @@ export const prepareLccOrderPayment = async ({
     },
   )
   if (!response.ok) {
-    throw new Error('Failed to get LCC payment data')
+    return await response.json() // TODO: handle error
   }
   return await response.json()
 }
@@ -266,7 +266,7 @@ export const prepareLccOrderPayment = async ({
 // Hook to fetch the payment information for an order.
 // We asume the reservation token is already in local storage.
 export const usePrepareLccOrderPayment = () => {
-  return useMutation<OrderDto, Error, { orderId: OrderId; solutionId: SolutionId }>({
+  return useMutation<OrderDto, OrderDto, { orderId: OrderId; solutionId: SolutionId }>({
     mutationFn: prepareLccOrderPayment,
   })
 }

@@ -123,6 +123,7 @@ export type OrderDto = {
     searched_at: string
     solution_id: SolutionId
   }
+  status__name: string | null
 }
 
 export type OrderTicketDto = {
@@ -133,6 +134,7 @@ export type OrderTicketDto = {
   is_reserved?: boolean
   travel_data?: OrderTravelDataDto
   trip_end_date: string | null
+  status: string | null
 }
 
 export type OrderTravelDataDto = {

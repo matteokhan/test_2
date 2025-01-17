@@ -14,6 +14,7 @@ import {
   AcceptBookingConditionsModal,
   FormalitiesModal,
   PreparePaymentErrorModal,
+  ReservationPriceChangeErrorModal,
 } from '@/components'
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import {
@@ -25,13 +26,14 @@ import {
 } from '@/services'
 import { AgencyContractCode, GDSType, UpdateOrderParams } from '@/types'
 import { Alert, Box, Modal, Typography } from '@mui/material'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import WarningIcon from '@mui/icons-material/Warning'
 import useMetadata from '@/contexts/useMetadata'
 
 export default function BookingSummaryPage() {
   useMetadata('Résumé et paiement')
   const searchParams = useSearchParams()
+  const router = useRouter()
   const orderId = searchParams.get('order_id')
   const paymentWasFailed = searchParams.get('status') === 'failed'
   const errorAlertRef = React.useRef<HTMLDivElement>(null)
@@ -43,6 +45,8 @@ export default function BookingSummaryPage() {
   const [formalitiesModalIsOpen, setFormalitiesModalIsOpen] = useState(false)
   const [childrenFormalitiesModalIsOpen, setChildrenFormalitiesModalIsOpen] = useState(false)
   const [paymentErrorModalIsOpen, setPaymentErrorModalIsOpen] = useState(false)
+  const [reservationPriceChangeErrorModalIsOpen, setReservationPriceChangeErrorModalIsOpen] =
+    useState(false)
   const {
     goPreviousStep,
     goToStep,
@@ -140,15 +144,25 @@ export default function BookingSummaryPage() {
           prepareLccOrderPayment(
             { orderId: updatedOrder.id, solutionId: selectedFare.id },
             {
-              onSuccess: (data) => {
-                if (!data.payment_redirect_url) {
+              onSuccess: (orderRes) => {
+                if (orderRes.status__name == 'ERROR PRICE CHANGE') {
+                  // TODO: log this somewhere
+                  setReservationPriceChangeErrorModalIsOpen(true)
+                  return
+                }
+                if (!orderRes.payment_redirect_url) {
                   // TODO: log this somewhere
                   setPaymentErrorModalIsOpen(true)
                   return
                 }
-                goToPayment(data.payment_redirect_url)
+                goToPayment(orderRes.payment_redirect_url)
               },
               onError: (error) => {
+                if (error.status__name == 'ERROR PRICE CHANGE') {
+                  // TODO: log this somewhere
+                  setReservationPriceChangeErrorModalIsOpen(true)
+                  return
+                }
                 // TODO: log this somewhere
                 setPaymentErrorModalIsOpen(true)
               },
@@ -276,6 +290,16 @@ export default function BookingSummaryPage() {
       </Modal>
       <Modal open={paymentErrorModalIsOpen} onClose={() => setPaymentErrorModalIsOpen(false)}>
         <PreparePaymentErrorModal onClose={() => setPaymentErrorModalIsOpen(false)} />
+      </Modal>
+      <Modal
+        open={reservationPriceChangeErrorModalIsOpen}
+        onClose={() => setReservationPriceChangeErrorModalIsOpen(false)}>
+        <ReservationPriceChangeErrorModal
+          onClose={() => {
+            setReservationPriceChangeErrorModalIsOpen(false)
+            router.push('/search?rechercher=1')
+          }}
+        />
       </Modal>
       <BookingStepActions
         onContinue={handleSubmit}
