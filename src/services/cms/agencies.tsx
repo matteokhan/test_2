@@ -68,9 +68,7 @@ export const useSearchAgencies = ({ searchTerm }: { searchTerm?: string }) => {
 }
 
 export const listAllAgencies = async () => {
-  // TODO: replace with the correct endpoint
-  // const response = await fetch(`${CMS_API_URL}/cache/agency.json`, {
-  const response = await fetch(`https://magic-sandbox.voyages.leclerc/cache/agency.json`, {
+  const response = await fetch(`${CMS_API_URL}/cache/agency.json`, {
     method: 'GET',
     headers: {
       'content-type': 'application/json',

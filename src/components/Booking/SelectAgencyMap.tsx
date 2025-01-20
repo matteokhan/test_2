@@ -99,10 +99,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
   const places = useMapsLibrary('places')
   const map = useMap()
-  // TODO: Enable this after agencies dump is ready on all envs
-  // const { data: allAgencies } = useListAllAgencies()
-  // const visibleAgencies = searchNearUser || searchTerm ? agencies : allAgencies
-  const visibleAgencies = searchNearUser || searchTerm ? agencies : agencies
+  const { data: allAgencies } = useListAllAgencies()
+  const visibleAgencies = searchNearUser || searchTerm ? agencies : allAgencies
 
   useEffect(() => {
     if (searchNearUser && userLocation) {
