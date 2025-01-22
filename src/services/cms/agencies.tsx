@@ -64,6 +64,7 @@ export const useSearchAgencies = ({ searchTerm }: { searchTerm?: string }) => {
     queryKey: ['searchAgenciesResults', searchTerm],
     queryFn: async () => searchAgencies({ searchTerm }),
     refetchOnWindowFocus: false,
+    enabled: !!searchTerm,
   })
 }
 

@@ -25,28 +25,19 @@ import { AgencyInfoModal, AgencySkeleton, CustomTextField } from '@/components'
 import { useMapsLibrary } from '@vis.gl/react-google-maps'
 import { useDebounce } from '@uidotdev/usehooks'
 
-const NEXT_PUBLIC_MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
+const MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
 const DEBOUNCE_TIME = 300 // 300 ms
 const DEFAULT_BOUNDS = {
   gps_latitude: 48.866667,
   gps_longitude: 2.333333,
 }
+const SEARCH_DISTANCE = 60000
 
-const mergeAgencies = (
-  nearAgencies: Agency[] | undefined,
-  agenciesByTerm: Agency[] | undefined,
-  onlyNear: boolean = false,
-) => {
+const mergeAgencies = (a: Agency[] | undefined, b: Agency[] | undefined) => {
   let agencies: Agency[] = []
   const uniqueSet = new Set()
-  if (onlyNear) {
-    if (!nearAgencies) return []
-    agencies = [...agencies, ...nearAgencies]
-  } else {
-    if (!nearAgencies && !agenciesByTerm) return []
-    if (nearAgencies) agencies = [...agencies, ...nearAgencies]
-    if (agenciesByTerm) agencies = [...agencies, ...agenciesByTerm]
-  }
+  if (a) agencies = [...agencies, ...a]
+  if (b) agencies = [...agencies, ...b]
   agencies = agencies.filter((ag) => {
     const duplicate = uniqueSet.has(ag.id)
     uniqueSet.add(ag.id)
@@ -71,56 +62,58 @@ type SelectAgencyMapProps = {
 }
 
 export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProps) => {
-  const [searchLocation, setSearchLocation] = useState<Position>({
-    lat: undefined,
-    lng: undefined,
-  })
   const [matchedLocation, setMatchedLocation] = useState<Position | null>(null)
   const [searchTerm, setSearchTerm] = React.useState('')
   const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_TIME)
   const [modalIsOpen, setModalIsOpen] = React.useState(false)
   const [agencyToShow, setAgencyToShow] = React.useState<Agency | undefined>(undefined)
   const [searchNearUser, setSearchNearUser] = React.useState(false)
-
-  const { position: userLocation, canAccessPosition, askUserForPermission } = useUserLocation()
-  const { data: agenciesByTerm, isFetching: isFetchingByTerm } = useSearchAgencies({
-    searchTerm: debouncedSearchTerm,
-  })
-  const { data: nearAgencies, isFetching: isFetchingByLocation } = useNearAgencies({
-    lat: searchLocation?.lat,
-    lng: searchLocation?.lng,
-    distance: 40000,
-  })
-  const agencies = mergeAgencies(nearAgencies, agenciesByTerm, searchNearUser)
-  const isLoading = isFetchingByTerm || isFetchingByLocation
-
+  const [userSearchDistance, setUserSearchDistance] = React.useState(SEARCH_DISTANCE)
   const [autocompleteService, setAutocompleteService] =
     useState<google.maps.places.AutocompleteService | null>(null)
   const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
   const places = useMapsLibrary('places')
   const map = useMap()
-  const { data: allAgencies } = useListAllAgencies()
+
+  const { position: userLocation, canAccessPosition, askUserForPermission } = useUserLocation()
+  const { data: agenciesByTerm, isFetching: isFetchingByTerm } = useSearchAgencies({
+    searchTerm: debouncedSearchTerm,
+  })
+  const { data: allAgencies, isFetching: isFetchingAllAgencies } = useListAllAgencies()
+  const {
+    data: nearUserAgencies,
+    isFetching: isFetchingNearUser,
+    isSuccess: nearUserAgenciesSuccess,
+  } = useNearAgencies({
+    lat: userLocation?.lat,
+    lng: userLocation?.lng,
+    distance: userSearchDistance,
+  })
+  const { data: nearPlaceAgencies, isFetching: isFetchingNearPlace } = useNearAgencies({
+    lat: matchedLocation?.lat,
+    lng: matchedLocation?.lng,
+    distance: SEARCH_DISTANCE,
+  })
+  let agencies: Agency[] = []
+  if (searchNearUser) {
+    agencies = mergeAgencies(agencies, nearUserAgencies)
+  }
+  if (searchTerm) {
+    agencies = mergeAgencies(agencies, agenciesByTerm)
+    agencies = mergeAgencies(agencies, nearPlaceAgencies)
+  }
   const visibleAgencies = searchNearUser || searchTerm ? agencies : allAgencies
+  const isLoading =
+    isFetchingByTerm || isFetchingNearPlace || isFetchingNearUser || isFetchingAllAgencies
 
-  useEffect(() => {
-    if (searchNearUser && userLocation) {
-      setSearchLocation(userLocation)
-    } else if (matchedLocation) {
-      setSearchLocation(matchedLocation)
-    } else {
-      setSearchLocation({
-        lat: undefined,
-        lng: undefined,
-      })
-    }
-  }, [matchedLocation, userLocation, searchNearUser])
-
+  // This is needed to initialize the autocomplete and places services.
   useEffect(() => {
     if (!places || !map) return
     setAutocompleteService(new places.AutocompleteService())
     setPlacesService(new places.PlacesService(map))
   }, [places, map])
 
+  // Search places that matches the search term
   useEffect(() => {
     if (!autocompleteService || !placesService || debouncedSearchTerm.length < 3) {
       clearMatchedLocation()
@@ -154,6 +147,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
     )
   }, [debouncedSearchTerm])
 
+  // Fit all the points in the map bounds
   useEffect(() => {
     let ag = visibleAgencies?.filter((ag) => ag.gps_latitude && ag.gps_longitude)
     if (ag?.length) {
@@ -165,6 +159,12 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
       })
     }
   }, [map, visibleAgencies])
+
+  useEffect(() => {
+    if (nearUserAgenciesSuccess && nearUserAgencies.length == 0) {
+      setUserSearchDistance(SEARCH_DISTANCE * 2)
+    }
+  }, [nearUserAgenciesSuccess])
 
   useEffect(() => {
     if (!canAccessPosition && searchNearUser) {
@@ -235,8 +235,15 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
               lng: DEFAULT_BOUNDS.gps_longitude,
             }}
             disableDefaultUI={true}
-            mapId={NEXT_PUBLIC_MAPS_MAP_ID}>
+            mapId={MAPS_MAP_ID}>
             {getMarkers()}
+            {canAccessPosition && userLocation && (
+              <AdvancedMarker
+                position={userLocation}
+                data-testid="selectAgencyMap-map-locationMarker">
+                <Pin background={'red'} borderColor={'white'} />
+              </AdvancedMarker>
+            )}
           </Map>
         </Box>
         <Stack
@@ -305,7 +312,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
                 <AgencySkeleton />
               </>
             )}
-            {!isLoading && agencies.length === 0 && (
+            {!isLoading && visibleAgencies?.length === 0 && (
               <Typography p={2} variant="headlineXs">
                 Aucune agence à afficher
               </Typography>
