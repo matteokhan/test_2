@@ -2,11 +2,10 @@
 
 import { Agency, AgencyId, PagesAPIBaseParams } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { env } from 'next-runtime-env'
-
-const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+import { getEnvVar } from '@/utils'
 
 export const getAgency = async ({ agencyId }: { agencyId: AgencyId }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const response = await fetch(`${CMS_API_URL}/api/v2/report-agency-simple/${agencyId}/`, {
     method: 'GET',
     headers: {
@@ -30,6 +29,7 @@ export const useAgency = ({ agencyId }: { agencyId: AgencyId }) => {
 }
 
 export const searchAgencies = async ({ searchTerm }: { searchTerm?: string }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const params: PagesAPIBaseParams & { status: Agency['status'] } = {
     type: 'agency.AgencyPage',
     fields: '*',
@@ -69,6 +69,7 @@ export const useSearchAgencies = ({ searchTerm }: { searchTerm?: string }) => {
 }
 
 export const listAllAgencies = async () => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const response = await fetch(`${CMS_API_URL}/cache/agency.json`, {
     method: 'GET',
     headers: {
@@ -98,6 +99,7 @@ export const getNearAgencies = async ({
   lng?: number
   distance?: number
 }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   if (!lat || !lng) return { meta: null, items: [] }
   const params = {
     lat: lat,

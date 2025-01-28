@@ -77,6 +77,7 @@ export const useLocationData = ({ locationCode }: { locationCode: string }) => {
   return useQuery<LocationData>({
     queryKey: ['locationData', locationCode],
     queryFn: () => getLocationData({ locationCode }),
+    enabled: !!locationCode,
     refetchOnWindowFocus: false,
     staleTime: Infinity,
     gcTime: Infinity,

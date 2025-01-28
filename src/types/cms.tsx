@@ -1,4 +1,7 @@
-export type PagesTypes = 'agency.AgencyPage' | 'insurance.InsurancePage'
+export type PagesTypes =
+  | 'agency.AgencyPage'
+  | 'insurance.InsurancePage'
+  | 'frontend_scripts.ScriptTagPage'
 
 export type PagesAPIBaseParams = {
   type?: PagesTypes

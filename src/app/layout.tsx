@@ -8,7 +8,7 @@ import { PublicEnvScript } from 'next-runtime-env'
 import './globals.css'
 import 'dayjs/locale/fr'
 import dayjs from 'dayjs'
-import { Datalayer } from '@/components'
+import { HeadScripts } from '@/components'
 
 dayjs.locale('fr')
 
@@ -30,7 +30,7 @@ export default function RootLayout({
       <head>
         {/* Look at this to see why this is needed: https://github.com/vercel/next.js/discussions/44628 */}
         <PublicEnvScript />
-        {/* <Datalayer /> */}
+        {/* <HeadScripts /> */}
       </head>
       {/* Overflow X visible is mandatory to make sticky components work */}
       <body className={inter.className} style={{ background: '#E6E6E6', overflowX: 'visible' }}>
