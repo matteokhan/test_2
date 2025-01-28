@@ -2,9 +2,7 @@
 
 import { OrderId, SearchFlightsParamsDto, SearchResponseDto } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { env } from 'next-runtime-env'
-
-const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+import { getEnvVar } from '@/utils'
 
 export const searchFlights = async ({
   params,
@@ -13,6 +11,7 @@ export const searchFlights = async ({
   params?: SearchFlightsParamsDto
   orderId?: OrderId
 }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
@@ -21,7 +20,7 @@ export const searchFlights = async ({
     throw new Error('No order id provided')
   }
 
-  const response = await fetch(`${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${orderId}/ticket/search`, {
+  const response = await fetch(`${CMS_API_URL}/api/v2/order/${orderId}/ticket/search`, {
     method: 'POST',
     body: JSON.stringify(params),
     headers: {

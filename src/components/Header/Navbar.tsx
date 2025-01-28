@@ -5,17 +5,16 @@ import Image from 'next/image'
 import { Box, Drawer, Stack, Typography } from '@mui/material'
 import { MenuMobile, SectionContainer } from '@/components'
 import Link from 'next/link'
-import { env } from 'next-runtime-env'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EmailIcon from '@mui/icons-material/Email'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk'
 import MenuIcon from '@mui/icons-material/Menu'
-
-const LOGO_REDIRECTION_URL = env('NEXT_PUBLIC_LOGO_REDIRECTION_URL') || ''
+import { getEnvVar } from '@/utils'
 
 export const Navbar = () => {
+  const LOGO_REDIRECTION_URL = getEnvVar({ name: 'NEXT_PUBLIC_LOGO_REDIRECTION_URL' }) || ''
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   return (
     <Box

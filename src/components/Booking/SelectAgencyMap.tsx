@@ -19,13 +19,12 @@ import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
 import { useListAllAgencies, useNearAgencies, useSearchAgencies } from '@/services'
 import { Agency } from '@/types'
 import { Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
-import { env } from 'next-runtime-env'
 import { useUserLocation } from '@/contexts'
 import { AgencyInfoModal, AgencySkeleton, CustomTextField } from '@/components'
 import { useMapsLibrary } from '@vis.gl/react-google-maps'
 import { useDebounce } from '@uidotdev/usehooks'
+import { getEnvVar } from '@/utils'
 
-const MAPS_MAP_ID = env('NEXT_PUBLIC_MAPS_MAP_ID') || ''
 const DEBOUNCE_TIME = 300 // 300 ms
 const DEFAULT_BOUNDS = {
   gps_latitude: 48.866667,
@@ -62,6 +61,7 @@ type SelectAgencyMapProps = {
 }
 
 export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProps) => {
+  const MAPS_MAP_ID = getEnvVar({ name: 'NEXT_PUBLIC_MAPS_MAP_ID' })
   const [matchedLocation, setMatchedLocation] = useState<Position | null>(null)
   const [searchTerm, setSearchTerm] = React.useState('')
   const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_TIME)

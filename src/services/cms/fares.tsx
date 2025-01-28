@@ -1,9 +1,7 @@
 import { BrandedFareRequestDto, OrderId, Solution, SolutionId } from '@/types'
 import { getSearchBrandedFaresDto } from '@/utils'
 import { useQuery } from '@tanstack/react-query'
-import { env } from 'next-runtime-env'
-
-const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+import { getEnvVar } from '@/utils'
 
 export const getBrandedFares = async ({
   orderId,
@@ -12,22 +10,20 @@ export const getBrandedFares = async ({
   orderId: OrderId
   solutionId: SolutionId
 }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
   }
   const searchParams: BrandedFareRequestDto = getSearchBrandedFaresDto({ solutionId })
-  const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/order/${orderId}/ticket/branded/search`,
-    {
-      method: 'POST',
-      body: JSON.stringify(searchParams),
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Token ${token}`,
-      },
+  const response = await fetch(`${CMS_API_URL}/api/v2/order/${orderId}/ticket/branded/search`, {
+    method: 'POST',
+    body: JSON.stringify(searchParams),
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Token ${token}`,
     },
-  )
+  })
   if (!response.ok) {
     throw new Error('Failed to fetch fares')
   }

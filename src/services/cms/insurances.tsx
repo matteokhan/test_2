@@ -2,11 +2,10 @@
 
 import { InsuranceWithSteps, PagesAPIBaseParams } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { env } from 'next-runtime-env'
-
-const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+import { getEnvVar } from '@/utils'
 
 export const listInsurances = async () => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const params: PagesAPIBaseParams = {
     type: 'insurance.InsurancePage',
     fields: '*',
@@ -17,15 +16,12 @@ export const listInsurances = async () => {
     queryParams.append(key, value as string)
   })
 
-  const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`,
-    {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json',
-      },
+  const response = await fetch(`${CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
     },
-  )
+  })
   if (response.ok) {
     return (await response.json()).items
   }

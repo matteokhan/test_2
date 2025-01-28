@@ -2,16 +2,15 @@
 
 import { Airlines, Formality, LocationData, Locations } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { env } from 'next-runtime-env'
-
-const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+import { getEnvVar } from '@/utils'
 
 export const getAirlinesData = async () => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   let allResults: Airlines = {}
 
   const fetchPage = async (pageNumber: number): Promise<void> => {
     const response = await fetch(
-      `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-airline-dict/?page_size=500&page=${pageNumber}`,
+      `${CMS_API_URL}/api/v2/report-airline-dict/?page_size=500&page=${pageNumber}`,
       {
         method: 'GET',
         headers: {
@@ -47,6 +46,7 @@ export const useAirlinesData = () => {
 }
 
 export const getLocationData = async ({ locationCode }: { locationCode: string }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const params = {
     code: locationCode,
   }
@@ -57,7 +57,7 @@ export const getLocationData = async ({ locationCode }: { locationCode: string }
   })
 
   const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-airport-dict/?${queryParams.toString()}`,
+    `${CMS_API_URL}/api/v2/report-airport-dict/?${queryParams.toString()}`,
     {
       method: 'GET',
       headers: {
@@ -85,6 +85,7 @@ export const useLocationData = ({ locationCode }: { locationCode: string }) => {
 }
 
 export const searchLocationsByName = async ({ searchTerm }: { searchTerm: string }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const params = {
     search: searchTerm,
     ordering: '-category,code',
@@ -96,7 +97,7 @@ export const searchLocationsByName = async ({ searchTerm }: { searchTerm: string
   })
 
   const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/report-airport-dict/?${queryParams.toString()}`,
+    `${CMS_API_URL}/api/v2/report-airport-dict/?${queryParams.toString()}`,
     {
       method: 'GET',
       headers: {
@@ -126,6 +127,7 @@ export const getFormalities = async ({
   countryCode?: string
   areaCode?: string
 }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const params: {
     type: string
     fields: string
@@ -146,15 +148,12 @@ export const getFormalities = async ({
     queryParams.append(key, value as string)
   })
 
-  const response = await fetch(
-    `${NEXT_PUBLIC_CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`,
-    {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json',
-      },
+  const response = await fetch(`${CMS_API_URL}/api/v2/pages/?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
     },
-  )
+  })
   if (!response.ok) {
     throw new Error('Failed to fetch locations data')
   }

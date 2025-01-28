@@ -10,15 +10,16 @@ import {
   SolutionId,
 } from '@/types'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { env } from 'next-runtime-env'
+import { getEnvVar } from '@/utils'
 
-const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
+// const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
 
 export const getAncillaries = async ({
   orderId,
 }: {
   orderId: OrderId
 }): Promise<AncillariesQueryResult> => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
@@ -65,6 +66,7 @@ export const selectAncillaries = async ({
   orderId: OrderId
   ancillaries: AncillaryServiceInfo[]
 }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
@@ -115,6 +117,7 @@ export const getLCCAncillaries = async ({
   orderId?: OrderId
   solutionId?: SolutionId
 }) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
   const token = localStorage.getItem('reservationToken')
   if (!token) {
     throw new Error('No reservation token found')
