@@ -8,7 +8,7 @@ import { PublicEnvScript } from 'next-runtime-env'
 import './globals.css'
 import 'dayjs/locale/fr'
 import dayjs from 'dayjs'
-import { HeadScripts } from '@/components'
+import { HeadScripts, BodyScripts } from '@/components'
 
 dayjs.locale('fr')
 
@@ -42,6 +42,7 @@ export default function RootLayout({
             {children}
           </Providers>
         </AppRouterCacheProvider>
+        {/* <BodyScripts /> */}
       </body>
     </html>
   )
