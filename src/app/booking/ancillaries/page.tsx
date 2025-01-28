@@ -14,7 +14,7 @@ import { useAncillaries, useLCCAncillaries, useSelectAncillaries, useUpdateOrder
 import WarningIcon from '@mui/icons-material/Warning'
 import { AncillariesQueryResult, Ancillary, GDSType, UpdateOrderParams } from '@/types'
 import useMetadata from '@/contexts/useMetadata'
-import { getAncillaryServices } from '@/utils'
+import { getAncillaryServices, AppError } from '@/utils'
 
 export default function AncillariesPage() {
   useMetadata('Options')
@@ -32,11 +32,20 @@ export default function AncillariesPage() {
   } = useBooking()
   const { mutate: selectAncillaries, isPending: isSelectingAncillaries } = useSelectAncillaries()
 
-  if (!passengers || !order || !selectedFare) {
-    // TODO: log this somewhere
-    // TODO: Warn the user that something went wrong
-    return null
+  if (passengers.length == 0 || !order || !selectedFare) {
+    throw new AppError(
+      'Something went wrong loading Ancillaries page',
+      'Ancillaries page preconditions not met',
+      {
+        missingData: {
+          passengers: passengers.length == 0,
+          order: !order,
+          selectedFare: !selectedFare,
+        },
+      },
+    )
   }
+
   const {
     data: ancillariesResponse,
     isSuccess,
