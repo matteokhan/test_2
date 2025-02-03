@@ -10,7 +10,7 @@ import {
 import { EmailRequirementProvider, useBooking } from '@/contexts'
 import { PassengerData, UpdateOrderParams } from '@/types'
 import { FormikProps } from 'formik'
-import { ageIsAtLeast } from '@/utils'
+import { ageIsAtLeast, AppError } from '@/utils'
 import { useUpdateOrder } from '@/services'
 import { Modal } from '@mui/material'
 import useMetadata from '@/contexts/useMetadata'
@@ -35,15 +35,28 @@ export default function PassengersPage() {
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
 
   if (!departureDatetime) {
-    // TODO: log this somewhere
-    return
+    throw new AppError(
+      'Something went wrong loading passengers page',
+      'Passengers page preconditions not met',
+      {
+        missingData: {
+          departureDatetime: !departureDatetime,
+        },
+      },
+    )
   }
 
   const handleSubmit = async () => {
     if (!order) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
+      throw new AppError(
+        'Something went wrong submitting passengers info',
+        'Submit passengers info preconditions not met',
+        {
+          missingData: {
+            order: !order,
+          },
+        },
+      )
     }
 
     let formErrors: { [key: number]: any } = {}
@@ -106,8 +119,11 @@ export default function PassengersPage() {
         goNextStep()
       },
       onError: (error) => {
-        // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
+        throw new AppError(
+          'Something went wrong updating order',
+          'Updating order at passengers step failed',
+          { serverError: error },
+        )
       },
     })
   }

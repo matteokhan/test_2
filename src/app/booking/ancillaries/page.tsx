@@ -85,8 +85,13 @@ export default function AncillariesPage() {
             goNextStep()
           },
           onError: (error) => {
-            // TODO: log this somewhere
-            // TODO: Warn the user that something went wrong
+            throw new AppError(
+              'Something went wrong selecting Ancillaries',
+              'Server error selecting Ancillaries',
+              {
+                serverError: error,
+              },
+            )
           },
         },
       )
@@ -102,8 +107,13 @@ export default function AncillariesPage() {
           goNextStep()
         },
         onError: (error) => {
-          // TODO: log this somewhere
-          // TODO: Warn the user that something went wrong
+          throw new AppError(
+            'Something went wrong selecting Ancillaries',
+            'Server error selecting LCC Ancillaries',
+            {
+              serverError: error,
+            },
+          )
         },
       })
     }

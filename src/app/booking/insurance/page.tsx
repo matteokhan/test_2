@@ -13,6 +13,7 @@ import { useInsurances, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
 import WarningIcon from '@mui/icons-material/Warning'
 import useMetadata from '@/contexts/useMetadata'
+import { AppError } from '@/utils'
 
 export default function InsurancesPage() {
   useMetadata('Assurances')
@@ -27,9 +28,15 @@ export default function InsurancesPage() {
 
   const handleSubmit = () => {
     if (!order) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
+      throw new AppError(
+        'Something went wrong loading insurances page',
+        'Insurances page preconditions not met',
+        {
+          missingData: {
+            order: !order,
+          },
+        },
+      )
     }
     if (!selectedInsurance && !noInsurance) {
       setFirstWarning(false)
@@ -53,8 +60,11 @@ export default function InsurancesPage() {
         goNextStep()
       },
       onError: (error) => {
-        // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
+        throw new AppError(
+          'Something went wrong updating order',
+          'Updating order at insurances step failed',
+          { serverError: error },
+        )
       },
     })
   }

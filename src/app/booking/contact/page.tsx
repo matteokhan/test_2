@@ -21,8 +21,9 @@ import {
 import { useUpdateOrder, useReserveOrder, getAncillaries, getLCCAncillaries } from '@/services'
 import { useQueryClient } from '@tanstack/react-query'
 import useMetadata from '@/contexts/useMetadata'
-import { getAncillaryServices } from '@/utils'
+import { AppError, getAncillaryServices } from '@/utils'
 import { useRouter } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 
 export default function ContactInfoPage() {
   useMetadata('Informations facturation')
@@ -53,9 +54,17 @@ export default function ContactInfoPage() {
 
   const handleSubmit = async () => {
     if (!formRef.current || !order || !selectedFare) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
+      throw new AppError(
+        'Something went wrong submitting contact info',
+        'Submit contact info preconditions not met',
+        {
+          missingData: {
+            formRef: !formRef.current,
+            order: !order,
+            selectedFare: !selectedFare,
+          },
+        },
+      )
     }
 
     const errors = await formRef.current.validateForm()
@@ -102,6 +111,16 @@ export default function ContactInfoPage() {
                     }
                   } catch (error) {
                     skipStep('ancillaries')
+                    let appError = new AppError(
+                      'Something went wrong checking ancillaries',
+                      'Server error prechecking ancillaries',
+                      {
+                        serverError: error,
+                      },
+                    )
+                    Sentry.captureException(appError, {
+                      extra: appError.extra,
+                    })
                   } finally {
                     setIsCheckingAncillaries(false)
                   }
@@ -109,17 +128,35 @@ export default function ContactInfoPage() {
                   setIsNavigating(true)
                   goNextStep()
                 } else {
-                  // TODO: log this somewhere
                   if (reservationData.status == 'ERROR PRICE CHANGE') {
                     setReservationPriceChangeErrorModalIsOpen(true)
                   } else {
                     setReservationErrorModalIsOpen(true)
                   }
+                  let appError = new AppError(
+                    'Something went wrong reserving the order',
+                    'Reserving order failed. No PNR',
+                    {
+                      reservationData: reservationData,
+                    },
+                  )
+                  Sentry.captureException(appError, {
+                    extra: appError.extra,
+                  })
                 }
               },
               onError: (error) => {
-                // TODO: log this somewhere
                 setReservationErrorModalIsOpen(true)
+                let appError = new AppError(
+                  'Something went wrong reserving the order',
+                  'Reserving order failed',
+                  {
+                    serverError: error,
+                  },
+                )
+                Sentry.captureException(appError, {
+                  extra: appError.extra,
+                })
               },
             },
           )
@@ -135,19 +172,43 @@ export default function ContactInfoPage() {
             }
           } catch (error) {
             skipStep('ancillaries')
+            let appError = new AppError(
+              'Something went wrong checking ancillaries',
+              'Server error prechecking LCC ancillaries',
+              {
+                serverError: error,
+              },
+            )
+            Sentry.captureException(appError, {
+              extra: appError.extra,
+            })
           } finally {
             setIsCheckingAncillaries(false)
           }
           setIsNavigating(true)
           goNextStep()
         } else {
-          // TODO: log this somewhere
-          // TODO: warn the user
+          throw new AppError(
+            'Something went wrong submitting contact info',
+            'Invalid selected fare GDS type',
+            {
+              selectedFare: selectedFare,
+            },
+          )
         }
       },
       onError: (error) => {
-        // TODO: log this somewhere
         setReservationErrorModalIsOpen(true)
+        let appError = new AppError(
+          'Something went wrong updating the order',
+          'Updating order at contact step failed',
+          {
+            serverError: error,
+          },
+        )
+        Sentry.captureException(appError, {
+          extra: appError.extra,
+        })
       },
     })
   }

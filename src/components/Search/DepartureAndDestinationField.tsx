@@ -142,7 +142,6 @@ export const DepartureAndDestinationField = ({
     }
   }
 
-  // TODO: Swap doesn't work after navigation between pages. Need to store the selected locations in the context to make it work
   const swapLocations = () => {
     if (!selectedDeparture || !selectedDestination) {
       return

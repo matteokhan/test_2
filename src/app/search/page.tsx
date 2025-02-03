@@ -46,8 +46,9 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useQueryClient } from '@tanstack/react-query'
 import CloseIcon from '@mui/icons-material/Close'
 import useMetadata from '@/contexts/useMetadata'
-import { isFrenchFlight, isRoundtripRestricted } from '@/utils'
+import { AppError, isFrenchFlight, isRoundtripRestricted } from '@/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 
 export default function FlighsPage() {
   useMetadata('Rechercher des vols')
@@ -237,9 +238,13 @@ export default function FlighsPage() {
 
     const aId = agencyId ? agencyId : selectedAgencyId
     if (!aId) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
       setIsAgencyWarningOpen(true)
+      let appError = new AppError('Something went wrong searching flights', 'No agency selected', {
+        agencyId: !aId,
+      })
+      Sentry.captureException(appError, {
+        extra: appError.extra,
+      })
       return
     }
     createOrder(
@@ -251,8 +256,9 @@ export default function FlighsPage() {
           searchParams && setSearchParams(searchParams)
         },
         onError: (error) => {
-          // TODO: log this somewhere
-          // TODO: Warn the user that something went wrong
+          throw new AppError('Something went wrong searching flights', 'Creating order failed', {
+            serverError: error,
+          })
         },
       },
     )
@@ -260,9 +266,15 @@ export default function FlighsPage() {
 
   const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
     if (!order) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
+      throw new AppError(
+        'Something went wrong selecting flight',
+        'Selecting flight preconditions not met',
+        {
+          missingData: {
+            order: !order,
+          },
+        },
+      )
     }
     setIsNavigating(true)
     resetBooking()
@@ -285,12 +297,31 @@ export default function FlighsPage() {
       if (basicFare) {
         selectedFare = basicFare
       } else {
-        // TODO: log this somewhere
+        let appError = new AppError(
+          'Something went wrong selecting flight',
+          'Basic fare not found',
+          {
+            basicFare: basicFare,
+            fares: fares,
+            flight: flight,
+          },
+        )
+        Sentry.captureException(appError, {
+          extra: appError.extra,
+        })
       }
     } catch (error) {
       skipStep('fares')
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
+      let appError = new AppError(
+        'Something went wrong selecting flight',
+        'Server error fetching branded fares',
+        {
+          serverError: error,
+        },
+      )
+      Sentry.captureException(appError, {
+        extra: appError.extra,
+      })
     }
     setSelectedFlight(flight)
     setSelectedFare(selectedFare)

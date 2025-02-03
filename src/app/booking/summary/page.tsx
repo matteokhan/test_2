@@ -29,6 +29,8 @@ import { Alert, Box, Modal, Typography } from '@mui/material'
 import { useSearchParams, useRouter } from 'next/navigation'
 import WarningIcon from '@mui/icons-material/Warning'
 import useMetadata from '@/contexts/useMetadata'
+import { AppError } from '@/utils'
+import * as Sentry from '@sentry/nextjs'
 
 export default function BookingSummaryPage() {
   useMetadata('Résumé et paiement')
@@ -96,9 +98,16 @@ export default function BookingSummaryPage() {
 
   const handleSubmit = async () => {
     if (!order || !selectedFare) {
-      // TODO: log this somewhere
-      // TODO: Warn the user that something went wrong
-      return
+      throw new AppError(
+        'Something went wrong submitting purchase info',
+        'Submit purchase info preconditions not met',
+        {
+          missingData: {
+            order: !order,
+            selectedFare: !selectedFare,
+          },
+        },
+      )
     }
     if (!paymentMethodCode) {
       setNoMethodSelectedModalIsOpen(true)
@@ -123,20 +132,47 @@ export default function BookingSummaryPage() {
             {
               onSuccess: (data) => {
                 if (data.ticket?.is_reserved === false) {
-                  // TODO: log this somewhere
                   setPaymentErrorModalIsOpen(true)
+                  let appError = new AppError(
+                    'Something went wrong updating purchase info',
+                    'Prepare payment at summary step failed. Ticket is not reserved',
+                    {
+                      serverResponse: data,
+                    },
+                  )
+                  Sentry.captureException(appError, {
+                    extra: appError.extra,
+                  })
                   return
                 }
                 if (!data.payment_redirect_url) {
-                  // TODO: log this somewhere
                   setPaymentErrorModalIsOpen(true)
+                  let appError = new AppError(
+                    'Something went wrong updating purchase info',
+                    'Prepare payment at summary step failed. No payment redirect url',
+                    {
+                      serverResponse: data,
+                    },
+                  )
+                  Sentry.captureException(appError, {
+                    extra: appError.extra,
+                  })
                   return
                 }
                 goToPayment(data.payment_redirect_url)
               },
               onError: (error) => {
-                // TODO: log this somewhere
                 setPaymentErrorModalIsOpen(true)
+                let appError = new AppError(
+                  'Something went wrong updating purchase info',
+                  'Server error preparing payment at summary step',
+                  {
+                    serverError: error,
+                  },
+                )
+                Sentry.captureException(appError, {
+                  extra: appError.extra,
+                })
               },
             },
           )
@@ -146,33 +182,67 @@ export default function BookingSummaryPage() {
             {
               onSuccess: (orderRes) => {
                 if (orderRes.status__name == 'ERROR PRICE CHANGE') {
-                  // TODO: log this somewhere
                   setReservationPriceChangeErrorModalIsOpen(true)
+                  let appError = new AppError(
+                    'Something went wrong updating purchase info',
+                    'Prepare LCC payment at summary step failed. Price change',
+                    {
+                      serverResponse: orderRes,
+                    },
+                  )
+                  Sentry.captureException(appError, {
+                    extra: appError.extra,
+                  })
                   return
                 }
                 if (!orderRes.payment_redirect_url) {
-                  // TODO: log this somewhere
                   setPaymentErrorModalIsOpen(true)
+                  let appError = new AppError(
+                    'Something went wrong updating purchase info',
+                    'Prepare LCC payment at summary step failed. No payment redirect url',
+                    {
+                      serverResponse: orderRes,
+                    },
+                  )
+                  Sentry.captureException(appError, {
+                    extra: appError.extra,
+                  })
                   return
                 }
                 goToPayment(orderRes.payment_redirect_url)
               },
               onError: (error) => {
-                if (error.status__name == 'ERROR PRICE CHANGE') {
-                  // TODO: log this somewhere
-                  setReservationPriceChangeErrorModalIsOpen(true)
-                  return
-                }
-                // TODO: log this somewhere
                 setPaymentErrorModalIsOpen(true)
+                if (error.status__name == 'ERROR PRICE CHANGE') {
+                  setReservationPriceChangeErrorModalIsOpen(true)
+                  let appError = new AppError(
+                    'Something went wrong updating purchase info',
+                    'Prepare LCC payment at summary step failed. Price change',
+                    {
+                      serverError: error,
+                    },
+                  )
+                  Sentry.captureException(appError, {
+                    extra: appError.extra,
+                  })
+                }
               },
             },
           )
         }
       },
       onError: (error) => {
-        // TODO: log this somewhere
         setPaymentErrorModalIsOpen(true)
+        let appError = new AppError(
+          'Something went wrong updating the order',
+          'Updating order at summary step failed',
+          {
+            serverError: error,
+          },
+        )
+        Sentry.captureException(appError, {
+          extra: appError.extra,
+        })
       },
     })
   }

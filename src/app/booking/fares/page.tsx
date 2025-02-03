@@ -6,7 +6,7 @@ import { useBooking } from '@/contexts'
 import { Stack } from '@mui/material'
 import { useBrandedFares, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
-import { getFareDataFromSolution } from '@/utils'
+import { AppError, getFareDataFromSolution } from '@/utils'
 import useMetadata from '@/contexts/useMetadata'
 
 export default function FaresPage() {
@@ -23,10 +23,18 @@ export default function FaresPage() {
   } = useBooking()
   const [isNavigating, setIsNavigating] = useState(false)
 
-  if (!selectedFlight || !passengers || !order) {
-    // TODO: log this somewhere
-    // TODO: Warn the user that something went wrong
-    return null
+  if (!selectedFlight || passengers.length == 0 || !order) {
+    throw new AppError(
+      'Something went wrong loading fares page',
+      'Fares page preconditions not met',
+      {
+        missingData: {
+          selectedFlight: !selectedFlight,
+          order: !order,
+          passengers: passengers.length == 0,
+        },
+      },
+    )
   }
 
   const {
@@ -52,8 +60,11 @@ export default function FaresPage() {
         goNextStep()
       },
       onError: (error) => {
-        // TODO: log this somewhere
-        // TODO: Warn the user that something went wrong
+        throw new AppError(
+          'Something went wrong updating order',
+          'Updating order at fares step failed',
+          { serverError: error },
+        )
       },
     })
   }
