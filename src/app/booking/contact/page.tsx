@@ -46,6 +46,7 @@ export default function ContactInfoPage() {
     selectedFare,
     setPnr,
     skipStep,
+    bookingStartTime,
   } = useBooking()
   const router = useRouter()
   const { mutate: updateOrder, isPending: isUpdatingOrder } = useUpdateOrder()
@@ -124,6 +125,8 @@ export default function ContactInfoPage() {
                   } finally {
                     setIsCheckingAncillaries(false)
                   }
+                  // If we get a PNR, the booking won't change price, so no need to warn the user
+                  bookingStartTime.current = null
                   setPnr(reservationData.travel_data.passenger_name_record)
                   setIsNavigating(true)
                   goNextStep()
