@@ -327,10 +327,10 @@ export const FloaIcon = () => {
     <Box
       sx={{
         position: 'relative',
-        height: 33,
-        width: 50,
+        height: 22,
+        width: 118,
       }}>
-      <Image src="/floa_logo.svg" alt="floa logo" fill />
+      <Image src="/FLOA-3X4X_2024_600X100.webp" alt="floa logo" fill />
     </Box>
   )
 }

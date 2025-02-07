@@ -188,7 +188,7 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
         <Typography variant="bodySm" color="grey.700">
           Tous frais, taxes, suppléments et frais de service Leclerc Voyages inclus
         </Typography>
-        <Stack direction="row" pt={1} gap={0.75}>
+        <Stack direction="row" pt={1} gap={0.75} alignItems="center">
           {agency_contracts?.map((contract) => {
             const { icon } = getPaymentMethodData({ contractCode: contract })
             return (
