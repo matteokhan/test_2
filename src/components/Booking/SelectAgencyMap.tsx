@@ -30,7 +30,8 @@ const DEFAULT_BOUNDS = {
   gps_latitude: 48.866667,
   gps_longitude: 2.333333,
 }
-const SEARCH_DISTANCE = 60000
+const SEARCH_DISTANCE = 60_000
+const MAX_SEARCH_DISTANCE = 1_000_000
 
 const mergeAgencies = (a: Agency[] | undefined, b: Agency[] | undefined) => {
   let agencies: Agency[] = []
@@ -69,6 +70,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const [agencyToShow, setAgencyToShow] = React.useState<Agency | undefined>(undefined)
   const [searchNearUser, setSearchNearUser] = React.useState(false)
   const [userSearchDistance, setUserSearchDistance] = React.useState(SEARCH_DISTANCE)
+  const [placeSearchDistance, setPlaceSearchDistance] = React.useState(SEARCH_DISTANCE)
   const [autocompleteService, setAutocompleteService] =
     useState<google.maps.places.AutocompleteService | null>(null)
   const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
@@ -89,10 +91,14 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
     lng: userLocation?.lng,
     distance: userSearchDistance,
   })
-  const { data: nearPlaceAgencies, isFetching: isFetchingNearPlace } = useNearAgencies({
+  const {
+    data: nearPlaceAgencies,
+    isFetching: isFetchingNearPlace,
+    isSuccess: nearPlaceAgenciesSuccess,
+  } = useNearAgencies({
     lat: matchedLocation?.lat,
     lng: matchedLocation?.lng,
-    distance: SEARCH_DISTANCE,
+    distance: placeSearchDistance,
   })
   let agencies: Agency[] = []
   if (searchNearUser) {
@@ -115,6 +121,9 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
 
   // Search places that matches the search term
   useEffect(() => {
+    // Reset place search distance
+    setPlaceSearchDistance(SEARCH_DISTANCE)
+
     if (!autocompleteService || !placesService || debouncedSearchTerm.length < 3) {
       clearMatchedLocation()
       return
@@ -161,10 +170,24 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   }, [map, visibleAgencies])
 
   useEffect(() => {
-    if (nearUserAgenciesSuccess && nearUserAgencies.length == 0) {
-      setUserSearchDistance(SEARCH_DISTANCE * 2)
+    if (
+      nearUserAgenciesSuccess &&
+      nearUserAgencies.length == 0 &&
+      userSearchDistance < MAX_SEARCH_DISTANCE
+    ) {
+      setUserSearchDistance((prev) => prev * 2)
     }
   }, [nearUserAgenciesSuccess])
+
+  useEffect(() => {
+    if (
+      nearPlaceAgenciesSuccess &&
+      nearPlaceAgencies.length == 0 &&
+      placeSearchDistance < MAX_SEARCH_DISTANCE
+    ) {
+      setPlaceSearchDistance((prev) => prev * 2)
+    }
+  }, [nearPlaceAgenciesSuccess])
 
   useEffect(() => {
     if (!canAccessPosition && searchNearUser) {
