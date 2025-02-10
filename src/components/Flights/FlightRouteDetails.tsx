@@ -1,6 +1,6 @@
-import { Alert, Box, Chip, Stack, Typography } from '@mui/material'
+import { Box, Chip, Stack, Typography } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
-import { CarryOnLuggageIcon, CheckedLuggageIcon, FlightAirline, NoLuggageIcon } from '@/components'
+import { CheckedLuggageIcon, FlightAirline } from '@/components'
 import { Route } from '@/types'
 import { locationNameExtension, transformDuration } from '@/utils'
 import { useLocationData } from '@/services'
@@ -38,9 +38,7 @@ export const FlightRouteDetails = ({
   const arrivalLocation = lastSegment.arrival
   const arrivalCityCode = lastSegment.arrivalCityCode
   const carbonFootprint = 'carbonFootprint'
-  const carryOnLuggage = false
-  const checkedLuggage = false
-  const noLuggage = route.baggages === 0
+  const luggageIncluded = route.baggages ? route.baggages > 0 : false
   const warnDepartureChange =
     (departureLocationChange && isFirstRoute) || (arrivalLocationChange && isLastRoute)
   const warnArrivalChange =
@@ -166,16 +164,12 @@ export const FlightRouteDetails = ({
               </Stack>
             </Stack>
           </Stack>
-          {(carryOnLuggage || checkedLuggage || noLuggage) && (
+          {luggageIncluded && (
             <Stack direction="row" justifyContent="space-between" pt={1} alignItems="center">
               <Stack direction="row" data-testid="flightRouteDetails-luggageDetails">
-                {carryOnLuggage && (
-                  <CarryOnLuggageIcon data-testid="flightRouteDetails-carryOnLuggage" />
-                )}
-                {checkedLuggage && (
+                {luggageIncluded && (
                   <CheckedLuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
                 )}
-                {noLuggage && <NoLuggageIcon data-testid="flightRouteDetails-noLuggage" />}
               </Stack>
               {/* TODO: enable carbon footprint when available */}
               {false && (
@@ -302,18 +296,14 @@ export const FlightRouteDetails = ({
               </Typography>
             </Stack>
           </Stack>
-          {(carryOnLuggage || checkedLuggage || noLuggage) && (
+          {luggageIncluded && (
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" data-testid="flightRouteDetails-luggageDetails">
-                {carryOnLuggage && (
-                  <CarryOnLuggageIcon data-testid="flightRouteDetails-carryOnLuggage" />
-                )}
-                {checkedLuggage && (
+                {luggageIncluded && (
                   <CheckedLuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
                 )}
-                {noLuggage && <NoLuggageIcon data-testid="flightRouteDetails-noLuggage" />}
               </Stack>
-
+              {/* TODO: enable carbon footprint when available */}
               {false && (
                 <Typography
                   variant="bodySm"
