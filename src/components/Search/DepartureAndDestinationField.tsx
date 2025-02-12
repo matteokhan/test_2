@@ -170,14 +170,20 @@ export const DepartureAndDestinationField = ({
     setDestinationSearchTerm(from.name + ' (' + from.code + ')')
   }
 
-  const handleSelectDeparture = (location: LocationData) => {
-    document.dispatchEvent(new CustomEvent('departureSelected', { detail: { location } }))
-    selectDeparture(location)
-  }
-  const handleSelectDestination = (location: LocationData) => {
-    document.dispatchEvent(new CustomEvent('destinationSelected', { detail: { location } }))
-    selectDestination(location)
-  }
+  const handleSelectDeparture = useCallback(
+    (location: LocationData) => {
+      document.dispatchEvent(new CustomEvent('departureSelected', { detail: { location } }))
+      selectDeparture(location)
+    },
+    [selectDeparture],
+  )
+  const handleSelectDestination = useCallback(
+    (location: LocationData) => {
+      document.dispatchEvent(new CustomEvent('destinationSelected', { detail: { location } }))
+      selectDestination(location)
+    },
+    [selectDestination],
+  )
 
   useEffect(() => {
     if (values.fromLabel) {
