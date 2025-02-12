@@ -7,7 +7,7 @@ import {
   LocationData,
 } from '@/types'
 import { searchParamsToDto } from '@/utils'
-import React, { createContext, useState, useContext, useEffect } from 'react'
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react'
 
 type FlightsContextType = {
   setSearchParams: (params: SearchFlightsParams) => void
@@ -48,12 +48,15 @@ export const FlightsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setSearchParamsCache(params)
   }
 
-  const handleDestinationSelected = (e: CustomEventInit<{ location: LocationData }>) => {
-    e.detail?.location && setDestinationCache(e.detail.location)
-  }
-  const handleDepartureSelected = (e: CustomEventInit<{ location: LocationData }>) => {
+  const handleDestinationSelected = useCallback(
+    (e: CustomEventInit<{ location: LocationData }>) => {
+      e.detail?.location && setDestinationCache(e.detail.location)
+    },
+    [],
+  )
+  const handleDepartureSelected = useCallback((e: CustomEventInit<{ location: LocationData }>) => {
     e.detail?.location && setDepartureCache(e.detail.location)
-  }
+  }, [])
 
   useEffect(() => {
     document.addEventListener('destinationSelected', handleDestinationSelected)
