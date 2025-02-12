@@ -1,4 +1,7 @@
-import { Box, Chip, Stack, Typography } from '@mui/material'
+'use client'
+
+import React, { useMemo } from 'react'
+import { Box, Chip, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
 import { CheckedLuggageIcon, FlightAirline } from '@/components'
 import { Route } from '@/types'
@@ -10,60 +13,81 @@ import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
-export const FlightRouteDetails = ({
-  route,
-  departureLocationChange,
-  arrivalLocationChange,
-  isFirstRoute,
-  isLastRoute,
-}: {
-  route: Route
-  departureLocationChange?: boolean
-  arrivalLocationChange?: boolean
-  isFirstRoute?: boolean
-  isLastRoute?: boolean
-}) => {
-  const { segments, travelTime } = route
-  const firstSegment = segments[0]
-  const lastSegment = segments[segments.length - 1]
-  const hasTrainSegment = segments.some((segment) => segment.equipment === 'TRN')
-  const tags = hasTrainSegment ? 'Vol + train' : null
-  const departureDateTime = dayjs(firstSegment.departureDateTime).utc()
-  const departureTime = departureDateTime.format('HH:mm')
-  const arrivalDateTime = dayjs(lastSegment.arrivalDateTime).utc()
-  const arrivalTime = arrivalDateTime.format('HH:mm')
-  const daysToArrival = calculateDaysBetween(departureDateTime, arrivalDateTime)
-  const departureLocation = firstSegment.departure
-  const departureCityCode = firstSegment.departureCityCode
-  const arrivalLocation = lastSegment.arrival
-  const arrivalCityCode = lastSegment.arrivalCityCode
-  const carbonFootprint = 'carbonFootprint'
-  const luggageIncluded = route.baggages ? route.baggages > 0 : false
-  const warnDepartureChange =
-    (departureLocationChange && isFirstRoute) || (arrivalLocationChange && isLastRoute)
-  const warnArrivalChange =
-    (departureLocationChange && isLastRoute) || (arrivalLocationChange && isFirstRoute)
-  const { data: departureLocationData } = useLocationData({ locationCode: departureLocation })
-  const { data: arrivalLocationData } = useLocationData({ locationCode: arrivalLocation })
+export const FlightRouteDetails = React.memo(
+  ({
+    route,
+    departureLocationChange,
+    arrivalLocationChange,
+    isFirstRoute,
+    isLastRoute,
+  }: {
+    route: Route
+    departureLocationChange?: boolean
+    arrivalLocationChange?: boolean
+    isFirstRoute?: boolean
+    isLastRoute?: boolean
+  }) => {
+    const theme = useTheme()
+    const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
+    const { segments, travelTime } = route
+    const segmentsDetails = useMemo(
+      () => ({
+        firstSegment: segments[0],
+        lastSegment: segments[segments.length - 1],
+        hasTrainSegment: segments.some((segment) => segment.equipment === 'TRN'),
+      }),
+      [segments],
+    )
+    const departureDateTime = useMemo(
+      () => dayjs(segmentsDetails.firstSegment.departureDateTime).utc(),
+      [segmentsDetails],
+    )
+    const arrivalDateTime = useMemo(
+      () => dayjs(segmentsDetails.lastSegment.arrivalDateTime).utc(),
+      [segmentsDetails],
+    )
+    const flightDetails = useMemo(
+      () => ({
+        tags: segmentsDetails.hasTrainSegment ? 'Vol + train' : null,
+        departureTime: departureDateTime.format('HH:mm'),
+        arrivalTime: arrivalDateTime.format('HH:mm'),
+        daysToArrival: calculateDaysBetween(departureDateTime, arrivalDateTime),
+        departureLocation: segmentsDetails.firstSegment.departure,
+        departureCityCode: segmentsDetails.firstSegment.departureCityCode,
+        arrivalLocation: segmentsDetails.lastSegment.arrival,
+        arrivalCityCode: segmentsDetails.lastSegment.arrivalCityCode,
+        carbonFootprint: 'carbonFootprint',
+        luggageIncluded: route.baggages ? route.baggages > 0 : false,
+        warnDepartureChange:
+          (departureLocationChange && isFirstRoute) || (arrivalLocationChange && isLastRoute),
+        warnArrivalChange:
+          (departureLocationChange && isLastRoute) || (arrivalLocationChange && isFirstRoute),
+      }),
+      [segmentsDetails, departureLocationChange, arrivalLocationChange, isFirstRoute, isLastRoute],
+    )
+    const { data: departureLocationData } = useLocationData({
+      locationCode: flightDetails.departureLocation,
+    })
+    const { data: arrivalLocationData } = useLocationData({
+      locationCode: flightDetails.arrivalLocation,
+    })
 
-  const getScaleDetails = () => {
-    if (!route.totalStopDuration) {
-      return ''
+    const getScaleDetails = () => {
+      if (!route.totalStopDuration) {
+        return ''
+      }
+      if (route.stopNumber === 0) {
+        return ''
+      }
+      if (route.stopNumber === 1) {
+        return '1 escale (' + transformDuration(route.totalStopDuration) + ')'
+      }
+      if (route.stopNumber >= 2) {
+        return route.stopNumber + ' escales (' + transformDuration(route.totalStopDuration) + ')'
+      }
     }
-    if (route.stopNumber === 0) {
-      return ''
-    }
-    if (route.stopNumber === 1) {
-      return '1 escale (' + transformDuration(route.totalStopDuration) + ')'
-    }
-    if (route.stopNumber >= 2) {
-      return route.stopNumber + ' escales (' + transformDuration(route.totalStopDuration) + ')'
-    }
-  }
 
-  return (
-    <>
-      {/* Desktop */}
+    return isDesktop ? (
       <Stack
         gap={4}
         direction="row"
@@ -71,9 +95,9 @@ export const FlightRouteDetails = ({
         className="desktop">
         <Stack gap={1} minWidth="25%" maxWidth="25%">
           <FlightAirline carrier={route.carrier} />
-          {tags && (
+          {flightDetails.tags && (
             <Stack direction="row" data-testid="flightRouteDetails-tags">
-              <Chip label={tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
+              <Chip label={flightDetails.tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
             </Stack>
           )}
         </Stack>
@@ -83,7 +107,7 @@ export const FlightRouteDetails = ({
               variant="titleLg"
               color="leclerc.red.main"
               data-testid="flightRouteDetails-departureTime">
-              {departureTime}
+              {flightDetails.departureTime}
             </Typography>
             <Stack
               flexGrow={1}
@@ -95,19 +119,19 @@ export const FlightRouteDetails = ({
               <Box width="100%" height="1px" bgcolor="grey.900"></Box>
               <Box borderRadius="4px" width="7px" height="7px" bgcolor="grey.900"></Box>
             </Stack>
-            {daysToArrival > 0 && (
+            {flightDetails.daysToArrival > 0 && (
               <Typography
                 variant="bodySm"
                 color="leclerc.red.main"
                 data-testid="flightRouteDetails-daysToArrival">
-                J+{daysToArrival}
+                J+{flightDetails.daysToArrival}
               </Typography>
             )}
             <Typography
               variant="titleLg"
               color="leclerc.red.main"
               data-testid="flightRouteDetails-arrivalTime">
-              {arrivalTime}
+              {flightDetails.arrivalTime}
             </Typography>
           </Stack>
           <Stack direction="row" gap={4.5}>
@@ -115,17 +139,19 @@ export const FlightRouteDetails = ({
               <Typography
                 variant="bodyMd"
                 data-testid="flightRouteDetails-departureLocation"
-                color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
+                color={flightDetails.warnDepartureChange ? 'leclerc.red.main' : 'black'}>
                 {locationNameExtension(departureLocationData)}
               </Typography>
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography
                   variant="labelLg"
                   data-testid="flightRouteDetails-departureCityCode"
-                  color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
-                  {departureCityCode}
+                  color={flightDetails.warnDepartureChange ? 'leclerc.red.main' : 'black'}>
+                  {flightDetails.departureCityCode}
                 </Typography>
-                {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
+                {segmentsDetails.hasTrainSegment && (
+                  <TrainIcon data-testid="flightRouteDetails-trainIcon" />
+                )}
               </Stack>
             </Stack>
             <Stack textAlign="center" width="40%" gap="2px">
@@ -151,23 +177,23 @@ export const FlightRouteDetails = ({
               <Typography
                 variant="bodyMd"
                 data-testid="flightRouteDetails-arrivalLocation"
-                color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
+                color={flightDetails.warnArrivalChange ? 'leclerc.red.main' : 'black'}>
                 {locationNameExtension(arrivalLocationData)}
               </Typography>
               <Stack direction="row" alignItems="center" gap={0.5} alignSelf="flex-end">
                 <Typography
                   variant="labelLg"
                   data-testid="flightRouteDetails-arrivalCityCode"
-                  color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
-                  {arrivalCityCode}
+                  color={flightDetails.warnArrivalChange ? 'leclerc.red.main' : 'black'}>
+                  {flightDetails.arrivalCityCode}
                 </Typography>
               </Stack>
             </Stack>
           </Stack>
-          {luggageIncluded && (
+          {flightDetails.luggageIncluded && (
             <Stack direction="row" justifyContent="space-between" pt={1} alignItems="center">
               <Stack direction="row" data-testid="flightRouteDetails-luggageDetails">
-                {luggageIncluded && (
+                {flightDetails.luggageIncluded && (
                   <CheckedLuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
                 )}
               </Stack>
@@ -177,24 +203,23 @@ export const FlightRouteDetails = ({
                   variant="bodySm"
                   color="grey.700"
                   data-testid="flightRouteDetails-carbonFootprint">
-                  {carbonFootprint}
+                  {flightDetails.carbonFootprint}
                 </Typography>
               )}
             </Stack>
           )}
         </Stack>
       </Stack>
-
-      {/* Mobile */}
+    ) : (
       <Stack gap={1.5} sx={{ display: { xs: 'flex', lg: 'none' } }} className="mobile">
         <Stack gap={1} direction="row" justifyContent="space-between" alignItems="center">
           <FlightAirline
             carrier={route.carrier}
             sx={{ gap: 1, flexDirection: 'row', alignItems: 'center', width: '100%' }}
           />
-          {tags && (
+          {flightDetails.tags && (
             <Stack direction="row" data-testid="flightRouteDetails-tags">
-              <Chip label={tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
+              <Chip label={flightDetails.tags} sx={{ backgroundColor: 'grey.100' }} size="small" />
             </Stack>
           )}
         </Stack>
@@ -206,7 +231,7 @@ export const FlightRouteDetails = ({
                 color="leclerc.red.main"
                 data-testid="flightRouteDetails-departureTime"
                 fontSize="22px">
-                {departureTime}
+                {flightDetails.departureTime}
               </Typography>
             </Box>
             <Stack
@@ -219,16 +244,18 @@ export const FlightRouteDetails = ({
                 <Typography
                   variant="bodyMd"
                   data-testid="flightRouteDetails-departureLocation"
-                  color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
+                  color={flightDetails.warnDepartureChange ? 'leclerc.red.main' : 'black'}>
                   {locationNameExtension(departureLocationData)}
                 </Typography>
-                {hasTrainSegment && <TrainIcon data-testid="flightRouteDetails-trainIcon" />}
+                {segmentsDetails.hasTrainSegment && (
+                  <TrainIcon data-testid="flightRouteDetails-trainIcon" />
+                )}
               </Stack>
               <Typography
                 variant="labelLg"
                 data-testid="flightRouteDetails-departureCityCode"
-                color={warnDepartureChange ? 'leclerc.red.main' : 'black'}>
-                {departureCityCode}
+                color={flightDetails.warnDepartureChange ? 'leclerc.red.main' : 'black'}>
+                {flightDetails.departureCityCode}
               </Typography>
             </Stack>
           </Stack>
@@ -262,16 +289,16 @@ export const FlightRouteDetails = ({
                 color="leclerc.red.main"
                 data-testid="flightRouteDetails-arrivalTime"
                 fontSize="22px">
-                {arrivalTime}
+                {flightDetails.arrivalTime}
               </Typography>
-              {daysToArrival > 0 && (
+              {flightDetails.daysToArrival > 0 && (
                 <Box sx={{ position: 'absolute', right: '-32px', top: '2px' }}>
                   {' '}
                   <Typography
                     variant="bodySm"
                     color="leclerc.red.main"
                     data-testid="flightRouteDetails-daysToArrival">
-                    J+{daysToArrival}
+                    J+{flightDetails.daysToArrival}
                   </Typography>
                 </Box>
               )}
@@ -285,21 +312,21 @@ export const FlightRouteDetails = ({
               <Typography
                 variant="bodyMd"
                 data-testid="flightRouteDetails-arrivalLocation"
-                color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
+                color={flightDetails.warnArrivalChange ? 'leclerc.red.main' : 'black'}>
                 {locationNameExtension(arrivalLocationData)}
               </Typography>
               <Typography
                 variant="labelLg"
                 data-testid="flightRouteDetails-arrivalCityCode"
-                color={warnArrivalChange ? 'leclerc.red.main' : 'black'}>
-                {arrivalCityCode}
+                color={flightDetails.warnArrivalChange ? 'leclerc.red.main' : 'black'}>
+                {flightDetails.arrivalCityCode}
               </Typography>
             </Stack>
           </Stack>
-          {luggageIncluded && (
+          {flightDetails.luggageIncluded && (
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" data-testid="flightRouteDetails-luggageDetails">
-                {luggageIncluded && (
+                {flightDetails.luggageIncluded && (
                   <CheckedLuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
                 )}
               </Stack>
@@ -309,13 +336,13 @@ export const FlightRouteDetails = ({
                   variant="bodySm"
                   color="grey.700"
                   data-testid="flightRouteDetails-carbonFootprint">
-                  {carbonFootprint}
+                  {flightDetails.carbonFootprint}
                 </Typography>
               )}
             </Stack>
           )}
         </Stack>
       </Stack>
-    </>
-  )
-}
+    )
+  },
+)
