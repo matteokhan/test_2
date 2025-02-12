@@ -35,10 +35,10 @@ export const DepartureField = ({ onChange }: { onChange?: (location: LocationDat
   const handleClose = useCallback(() => {
     setIsOpen(false)
   }, [])
-  const handleSelectLocation = (location: LocationData) => {
+  const handleSelectLocation = useCallback((location: LocationData) => {
     document.dispatchEvent(new CustomEvent('departureSelected', { detail: { location } }))
     selectLocation(location)
-  }
+  }, [])
   const selectLocation = (location: LocationData) => {
     setIsOpen(false)
     setSelectedLocation(location)
