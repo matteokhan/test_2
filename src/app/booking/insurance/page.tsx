@@ -8,7 +8,7 @@ import {
   NoInsuranceConfirmationModal,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Alert, Grid, Stack, Modal, Button } from '@mui/material'
+import { Alert, Grid2, Stack, Modal, Button } from '@mui/material'
 import { useInsurances, useUpdateOrder } from '@/services'
 import { UpdateOrderParams } from '@/types'
 import WarningIcon from '@mui/icons-material/Warning'
@@ -89,7 +89,7 @@ export default function InsurancesPage() {
             Pour votre confort nous vous recommandons de souscrire une des assurances proposées. Il
             ne sera plus possible de souscrire la garantie annulation après votre réservation.
           </Alert>
-          <Grid container spacing={2} data-testid="insurancesPage-options">
+          <Grid2 container spacing={2} data-testid="insurancesPage-options">
             {isSuccess &&
               insuranceOptions.map((insurance) => (
                 <InsuranceOption
@@ -99,7 +99,7 @@ export default function InsurancesPage() {
                   onSelect={setSelectedInsurance}
                 />
               ))}
-          </Grid>
+          </Grid2>
         </Stack>
         <Stack direction="row" width="100%" justifyContent="center">
           <Button

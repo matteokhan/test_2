@@ -1,5 +1,5 @@
 import { InsuranceWithSteps } from '@/types'
-import { Box, Button, Grid, Stack, Typography } from '@mui/material'
+import { Box, Button, Grid2, Stack, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import DOMPurify from 'dompurify'
 import { useBooking, useFlights } from '@/contexts'
@@ -19,7 +19,7 @@ export const InsuranceOption = ({
   const perPersonInsurancePrice = getInsurancePrice(basePrice, insurance, totalPassengers)
 
   return (
-    <Grid item xs={12} sm={6} style={{ display: 'flex' }} data-testid="insuranceOption">
+    <Grid2 size={{ xs: 12, sm: 6 }} style={{ display: 'flex' }} data-testid="insuranceOption">
       <Stack border="1px solid" borderColor="grey.400" borderRadius="6px" flexGrow={1} width="100%">
         {/* TODO: add image */}
         {/* <Box height="200px" flexShrink={0}>
@@ -72,6 +72,6 @@ export const InsuranceOption = ({
           </Button>
         </Stack>
       </Stack>
-    </Grid>
+    </Grid2>
   )
 }

@@ -9,7 +9,7 @@ import {
   LccAncilliaryService,
 } from '@/components'
 import { useBooking } from '@/contexts'
-import { Alert, Stack, Grid } from '@mui/material'
+import { Alert, Stack, Grid2 } from '@mui/material'
 import { useAncillaries, useLCCAncillaries, useSelectAncillaries, useUpdateOrder } from '@/services'
 import WarningIcon from '@mui/icons-material/Warning'
 import { AncillariesQueryResult, Ancillary, GDSType, UpdateOrderParams } from '@/types'
@@ -155,7 +155,7 @@ export default function AncillariesPage() {
                   L’achat de bagages après la réservation revient plus cher. Ajoutez-les maintenant
                   et économisez pour vous faire encore plus plaisir pendant votre voyage.
                 </Alert>
-                <Grid container spacing={2} data-testid="ancillariesPage-options">
+                <Grid2 container spacing={2} data-testid="ancillariesPage-options">
                   {outboundServices.length > 0 &&
                     outboundServices.map((service) => (
                       <AncilliaryService
@@ -196,7 +196,7 @@ export default function AncillariesPage() {
                         )}
                       />
                     ))}
-                </Grid>
+                </Grid2>
               </Stack>
             </SimpleContainer>
           )
@@ -220,7 +220,7 @@ export default function AncillariesPage() {
                     maintenant et économisez pour vous faire encore plus plaisir pendant votre
                     voyage.
                   </Alert>
-                  <Grid container spacing={2} data-testid="ancillariesPage-options">
+                  <Grid2 container spacing={2} data-testid="ancillariesPage-options">
                     {lccAncillaries
                       .filter((a) => Number(a.price) > 0)
                       .map((ancillary, index) => (
@@ -253,7 +253,7 @@ export default function AncillariesPage() {
                           )}
                         />
                       ))}
-                  </Grid>
+                  </Grid2>
                 </Stack>
               </SimpleContainer>
             )
@@ -268,7 +268,7 @@ export default function AncillariesPage() {
                 L’achat de bagages après la réservation revient plus cher. Ajoutez-les maintenant et
                 économisez pour vous faire encore plus plaisir pendant votre voyage.
               </Alert>
-              <Grid container spacing={2} data-testid="ancillariesPage-options">
+              <Grid2 container spacing={2} data-testid="ancillariesPage-options">
                 {lccAncillaries
                   .filter((a) => Number(a.price) > 0)
                   .map((ancillary, index) => (
@@ -319,7 +319,7 @@ export default function AncillariesPage() {
                       }
                     />
                   ))}
-              </Grid>
+              </Grid2>
             </Stack>
           </SimpleContainer>
         )}

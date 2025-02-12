@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react'
-import { Box, Grid, Typography } from '@mui/material'
+import { Box, Grid2, Typography } from '@mui/material'
 import { SimpleModal } from '@/components'
 import { Agency, AgencyOpening } from '@/types'
 
@@ -71,14 +71,14 @@ export const AgencyInfoModal: React.FC<{
       result += 'Fermé'
     }
     return (
-      <Grid container>
-        <Grid item xs={4}>
+      <Grid2 container>
+        <Grid2 item xs={4}>
           <Typography variant="bodyMd">{day?.value}</Typography>
-        </Grid>
-        <Grid item xs={8}>
+        </Grid2>
+        <Grid2 item xs={8}>
           <Typography variant="bodyMd">{result}</Typography>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     )
   }
 
