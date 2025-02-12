@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import {
   Navbar,
   SearchFlightsModes,
@@ -112,83 +112,92 @@ export default function FlighsPage() {
   })
   const isLoading = isSearching || isCreatingOrder
 
-  const filteredDataOne = response?.solutions
-    .filter((solution) => {
-      const totalStops = solution.routes.reduce(
-        (acc, route) => ((route.stopNumber || 0) > acc ? route.stopNumber : acc),
-        0,
-      )
-      if (
-        filters.maxPriceType == 'total' &&
-        filters?.maxPrice &&
-        solution.priceInfo.total > filters.maxPrice
-      )
-        return false
-      if (
-        filters.maxPriceType == 'per-person' &&
-        filters?.maxPrice &&
-        solution.adults.pricePerPerson > filters.maxPrice
-      )
-        return false
-      if (filters?.scales === 'direct' && totalStops > 0) return false
-      if (filters?.scales === '1-scale' && totalStops > 1) return false
-      if (filters?.scales === '2-scale' && totalStops > 2) return false
-
-      const flightStartAt = new Date(solution.routes[0].segments[0].departureDateTime).getUTCHours()
-      if (filters?.flightTime === '0-6' && flightStartAt >= 6) return false
-      if (filters?.flightTime === '6-12' && (flightStartAt < 6 || flightStartAt >= 12)) return false
-      if (filters?.flightTime === '12-18' && (flightStartAt < 12 || flightStartAt >= 18))
-        return false
-      if (filters?.flightTime === '18-24' && flightStartAt < 18) return false
-
-      if (solution.routes.length > 1) {
-        const flightReturnAt = new Date(
-          solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalDateTime,
-        ).getUTCHours()
-        if (filters?.flightTimeReturn === '0-6' && flightReturnAt >= 6) return false
-        if (filters?.flightTimeReturn === '6-12' && (flightReturnAt < 6 || flightReturnAt >= 12))
-          return false
-        if (filters?.flightTimeReturn === '12-18' && (flightReturnAt < 12 || flightReturnAt >= 18))
-          return false
-        if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
-      }
-
-      if (filters?.routes[0].departureAirports.length > 0) {
+  const getFilteredResults = useCallback((solutions: Solution[], filters: SearchFlightFilters) => {
+    return solutions
+      .filter((solution) => {
+        const totalStops = solution.routes.reduce(
+          (acc, route) => ((route.stopNumber || 0) > acc ? route.stopNumber : acc),
+          0,
+        )
         if (
-          !filters.routes[0].departureAirports.includes(
-            solution.routes[0].segments[0].departureCityCode,
-          )
+          filters.maxPriceType == 'total' &&
+          filters?.maxPrice &&
+          solution.priceInfo.total > filters.maxPrice
         )
           return false
-      }
+        if (
+          filters.maxPriceType == 'per-person' &&
+          filters?.maxPrice &&
+          solution.adults.pricePerPerson > filters.maxPrice
+        )
+          return false
+        if (filters?.scales === 'direct' && totalStops > 0) return false
+        if (filters?.scales === '1-scale' && totalStops > 1) return false
+        if (filters?.scales === '2-scale' && totalStops > 2) return false
 
-      if (filters?.routes[0].arrivalAirports.length > 0) {
-        const arrivalCityCode =
-          solution.routes[0].segments[solution.routes[0].segments.length - 1].arrivalCityCode
-        if (!filters.routes[0].arrivalAirports.includes(arrivalCityCode)) return false
-      }
+        const flightStartAt = new Date(
+          solution.routes[0].segments[0].departureDateTime,
+        ).getUTCHours()
+        if (filters?.flightTime === '0-6' && flightStartAt >= 6) return false
+        if (filters?.flightTime === '6-12' && (flightStartAt < 6 || flightStartAt >= 12))
+          return false
+        if (filters?.flightTime === '12-18' && (flightStartAt < 12 || flightStartAt >= 18))
+          return false
+        if (filters?.flightTime === '18-24' && flightStartAt < 18) return false
 
-      if (
-        filters?.routes[1].departureAirports.length > 0 &&
-        (searchParamsDto?.search_data.segments?.length || 0) > 1
-      ) {
-        const departureCityCode =
-          solution.routes[1].segments[solution.routes[1].segments.length - 1].departureCityCode
-        if (!filters.routes[1].departureAirports.includes(departureCityCode)) return false
-      }
+        if (solution.routes.length > 1) {
+          const flightReturnAt = new Date(
+            solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalDateTime,
+          ).getUTCHours()
+          if (filters?.flightTimeReturn === '0-6' && flightReturnAt >= 6) return false
+          if (filters?.flightTimeReturn === '6-12' && (flightReturnAt < 6 || flightReturnAt >= 12))
+            return false
+          if (
+            filters?.flightTimeReturn === '12-18' &&
+            (flightReturnAt < 12 || flightReturnAt >= 18)
+          )
+            return false
+          if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
+        }
 
-      if (
-        filters?.routes[1].arrivalAirports.length > 0 &&
-        (searchParamsDto?.search_data.segments?.length || 0) > 1
-      ) {
-        const arrivalCityCode =
-          solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalCityCode
-        if (!filters.routes[1].arrivalAirports.includes(arrivalCityCode)) return false
-      }
+        if (filters?.routes[0].departureAirports.length > 0) {
+          if (
+            !filters.routes[0].departureAirports.includes(
+              solution.routes[0].segments[0].departureCityCode,
+            )
+          )
+            return false
+        }
 
-      return true
-    })
-    .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
+        if (filters?.routes[0].arrivalAirports.length > 0) {
+          const arrivalCityCode =
+            solution.routes[0].segments[solution.routes[0].segments.length - 1].arrivalCityCode
+          if (!filters.routes[0].arrivalAirports.includes(arrivalCityCode)) return false
+        }
+
+        if (
+          filters?.routes[1].departureAirports.length > 0 &&
+          (searchParamsDto?.search_data.segments?.length || 0) > 1
+        ) {
+          const departureCityCode =
+            solution.routes[1].segments[solution.routes[1].segments.length - 1].departureCityCode
+          if (!filters.routes[1].departureAirports.includes(departureCityCode)) return false
+        }
+
+        if (
+          filters?.routes[1].arrivalAirports.length > 0 &&
+          (searchParamsDto?.search_data.segments?.length || 0) > 1
+        ) {
+          const arrivalCityCode =
+            solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalCityCode
+          if (!filters.routes[1].arrivalAirports.includes(arrivalCityCode)) return false
+        }
+
+        return true
+      })
+      .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
+  }, [])
+  const filteredDataOne = getFilteredResults(response?.solutions || [], filters)
 
   const filteredData = filteredDataOne?.filter((solution) => {
     if (filters?.airlinesSelected && filters?.airlinesSelected.length > 0) {
