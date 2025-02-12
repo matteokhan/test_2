@@ -18,7 +18,8 @@ export type AgencyMetaData = WagtailPageMetadata & {
   type: 'agency.AgencyPage'
 }
 
-export type AgencyContractCode = '3DS' | 'CB' | 'ANCV' | 'MULTI_CB'
+export type AgencyContractCode = '3DS' | 'CB' | 'ANCV' | 'MULTI_CB' | 'FLOA_BC3XC' | 'FLOA_BC4XC'
+export type FloaProductCode = Extract<AgencyContractCode, 'FLOA_BC3XC' | 'FLOA_BC4XC'>
 
 export type AgencyId = number
 export type Agency = {

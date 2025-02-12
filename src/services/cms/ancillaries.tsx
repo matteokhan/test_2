@@ -12,8 +12,6 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { getEnvVar } from '@/utils'
 
-// const CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
-
 export const getAncillaries = async ({
   orderId,
 }: {

@@ -3,6 +3,7 @@
 import {
   CreateOrderDto,
   CreateOrderParams,
+  FloaPaymentOption,
   OrderDto,
   OrderId,
   OrderTicketDto,
@@ -14,7 +15,6 @@ import { QueryClient, useMutation, useQuery } from '@tanstack/react-query'
 import { getEnvVar } from '@/utils'
 
 const queryClient = new QueryClient()
-// const NEXT_PUBLIC_CMS_API_URL = env('NEXT_PUBLIC_CMS_API_URL') || ''
 
 // Fetches a reservation token from the CMS API and stores it in localStorage.
 // A reservation token belongs to a "user" in the CMS API. It is used to create and update orders.
@@ -269,5 +269,63 @@ export const prepareLccOrderPayment = async ({
 export const usePrepareLccOrderPayment = () => {
   return useMutation<OrderDto, OrderDto, { orderId: OrderId; solutionId: SolutionId }>({
     mutationFn: prepareLccOrderPayment,
+  })
+}
+
+// Fetches the payment FLOA payment options from CMS API using the reservation token and an order ID.
+// The reservation token is required.
+export const getFloaPaymentOptions = async ({
+  orderId,
+  amount,
+}: {
+  orderId?: OrderId
+  amount?: string
+}) => {
+  const CMS_API_URL = getEnvVar({ name: 'NEXT_PUBLIC_CMS_API_URL' })
+  const token = localStorage.getItem('reservationToken')
+  if (!token) {
+    throw new Error('No reservation token found')
+  }
+
+  const params = {
+    amount: amount,
+    product_codes: 'BC3XC,BC4XC',
+  }
+
+  const queryParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    queryParams.append(key, value as string)
+  })
+
+  const response = await fetch(
+    `${CMS_API_URL}/api/v2/order/${orderId}/payment/floa/simulate?${queryParams.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Token ${token}`,
+      },
+    },
+  )
+  if (!response.ok) {
+    throw new Error('Failed to get FLOA payment options')
+  }
+  return await response.json()
+}
+
+// Hook to fetch the FLOA payment information for an order.
+// We asume the reservation token is already in local storage.
+export const useFloaPaymentOptions = ({
+  orderId,
+  amount,
+}: {
+  orderId?: OrderId
+  amount?: string
+}) => {
+  return useQuery<FloaPaymentOption[]>({
+    queryKey: ['floaOptions', orderId],
+    queryFn: () => getFloaPaymentOptions({ orderId, amount }),
+    refetchOnWindowFocus: false,
+    enabled: !!orderId,
   })
 }

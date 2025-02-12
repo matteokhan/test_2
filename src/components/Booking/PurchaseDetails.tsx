@@ -11,7 +11,7 @@ import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
 import { useLCCAncillaries } from '@/services'
-import { FloaIcon } from '@/components'
+import { PaymentMethod } from '@/types'
 
 type PurchaseDetailsProps = {
   onClose?: () => void
@@ -35,6 +35,9 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
     gdsType: selectedFare?.gdsType,
   })
   const agency_contracts = selectedAgency?.available_contracts
+  const payment_methods_logos: PaymentMethod[] | undefined = agency_contracts?.map((contract) =>
+    getPaymentMethodData({ contractCode: contract }),
+  )
 
   return (
     <Paper
@@ -189,11 +192,10 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
           Tous frais, taxes, suppléments et frais de service Leclerc Voyages inclus
         </Typography>
         <Stack direction="row" pt={1} gap={0.75} alignItems="center">
-          {agency_contracts?.map((contract) => {
-            const { icon } = getPaymentMethodData({ contractCode: contract })
+          {payment_methods_logos?.map(({ icon }, index) => {
             return (
               <Box
-                key={contract}
+                key={index}
                 sx={{
                   position: 'relative',
                 }}>
@@ -201,7 +203,6 @@ export const PurchaseDetails = ({ onClose }: PurchaseDetailsProps) => {
               </Box>
             )
           })}
-          {selectedAgency?.floa_contract && <FloaIcon />}
         </Stack>
       </Stack>
     </Paper>

@@ -334,3 +334,29 @@ export const FloaIcon = () => {
     </Box>
   )
 }
+
+export const Floa3XIcon = () => {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        height: 20,
+        width: 50,
+      }}>
+      <Image src="/floa3x.png" alt="floa 3x logo" fill />
+    </Box>
+  )
+}
+
+export const Floa4XIcon = () => {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        height: 20,
+        width: 50,
+      }}>
+      <Image src="/floa4x.png" alt="floa 4x logo" fill />
+    </Box>
+  )
+}
