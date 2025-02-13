@@ -330,7 +330,7 @@ export const FloaIcon = () => {
         height: 22,
         width: 118,
       }}>
-      <Image src="/FLOA-3X4X_2024_600X100.webp" alt="floa logo" fill />
+      <Image src="/floa_logo.webp" alt="floa logo" fill />
     </Box>
   )
 }
