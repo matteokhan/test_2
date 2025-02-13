@@ -72,10 +72,10 @@ export const AgencyInfoModal: React.FC<{
     }
     return (
       <Grid2 container>
-        <Grid2 item xs={4}>
+        <Grid2 sx={{ xs: 4 }}>
           <Typography variant="bodyMd">{day?.value}</Typography>
         </Grid2>
-        <Grid2 item xs={8}>
+        <Grid2 sx={{ xs: 8 }}>
           <Typography variant="bodyMd">{result}</Typography>
         </Grid2>
       </Grid2>
