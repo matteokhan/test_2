@@ -103,7 +103,7 @@ export const SelectPaymentMethod = ({
                 }}>
                 <Stack gap={1} flexGrow={1}>
                   <Stack direction="row" alignItems="center" gap={1}>
-                    {icon}
+                    <Box>{icon}</Box>
                     <Typography variant="titleSm">{name}</Typography>
                   </Stack>
                   <Typography variant="bodyMd">
@@ -114,14 +114,18 @@ export const SelectPaymentMethod = ({
                     {option.simulated_installments.map((installment, index) => {
                       const isFirstOne = index === 0
                       return (
-                        <Stack key={index} direction="row" justifyContent="space-between">
+                        <Stack key={index} direction="row" justifyContent="space-between" gap={2}>
                           <Typography variant="bodyMd" fontWeight={isFirstOne ? 700 : 400}>
                             {capitalizeFirstLetter(
                               dayjs(installment.date).format('dddd D MMMM YYYY'),
                             )}{' '}
                             {isFirstOne && "(Aujourd'hui)"}
                           </Typography>
-                          <Typography variant="bodyMd" fontWeight={isFirstOne ? 700 : 400}>
+                          <Typography
+                            variant="bodyMd"
+                            fontWeight={isFirstOne ? 700 : 400}
+                            noWrap
+                            sx={{ minWidth: 80, textAlign: 'right' }}>
                             {installment.amount} €
                           </Typography>
                         </Stack>
