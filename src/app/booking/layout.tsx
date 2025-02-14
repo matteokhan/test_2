@@ -123,6 +123,7 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
               bottom: 0,
               width: '100%',
               py: 1.5,
+              px: 2,
               gap: 1,
               zIndex: 'appBar',
               borderRadius: 0,
