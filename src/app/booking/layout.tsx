@@ -160,6 +160,8 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
           PaperProps={{
             sx: {
               height: 'auto',
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
             },
           }}>
           <PurchaseDetails onClose={() => setTotalPriceOpen(false)} />
