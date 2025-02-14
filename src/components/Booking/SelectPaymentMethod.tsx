@@ -45,6 +45,7 @@ export const SelectPaymentMethod = ({
                   setSelectedMethod(contract)
                 }}
                 direction="row"
+                gap={2}
                 justifyContent="space-between"
                 alignItems="center">
                 <Stack direction="row" alignItems="center" gap={2}>
