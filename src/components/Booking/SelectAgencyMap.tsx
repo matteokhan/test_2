@@ -71,6 +71,7 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   const [searchNearUser, setSearchNearUser] = React.useState(false)
   const [userSearchDistance, setUserSearchDistance] = React.useState(SEARCH_DISTANCE)
   const [placeSearchDistance, setPlaceSearchDistance] = React.useState(SEARCH_DISTANCE)
+  const [isIncreasingDistance, setIsIncreasingDistance] = React.useState(false)
   const [autocompleteService, setAutocompleteService] =
     useState<google.maps.places.AutocompleteService | null>(null)
   const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
@@ -110,7 +111,11 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   }
   const visibleAgencies = searchNearUser || searchTerm ? agencies : allAgencies
   const isLoading =
-    isFetchingByTerm || isFetchingNearPlace || isFetchingNearUser || isFetchingAllAgencies
+    isFetchingByTerm ||
+    isFetchingNearPlace ||
+    isFetchingNearUser ||
+    isFetchingAllAgencies ||
+    isIncreasingDistance
 
   // This is needed to initialize the autocomplete and places services.
   useEffect(() => {
@@ -185,9 +190,12 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
       nearPlaceAgencies.length == 0 &&
       placeSearchDistance < MAX_SEARCH_DISTANCE
     ) {
+      setIsIncreasingDistance(true)
       setPlaceSearchDistance((prev) => prev * 2)
+    } else {
+      setIsIncreasingDistance(false)
     }
-  }, [nearPlaceAgenciesSuccess])
+  }, [nearPlaceAgenciesSuccess, placeSearchDistance, nearPlaceAgencies])
 
   useEffect(() => {
     if (!canAccessPosition && searchNearUser) {
