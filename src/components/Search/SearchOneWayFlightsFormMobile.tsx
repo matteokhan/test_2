@@ -200,9 +200,8 @@ export const SearchOneWayFlightsFormMobile = ({
               </Paper>
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <DateCalendar
-                  sx={{ width: '100%' }}
                   data-testid="dateField"
-                  value={dayjs(values.departure)}
+                  defaultValue={dayjs(values.departure)}
                   minDate={dayjs().add(3, 'day')}
                   onChange={(value) => {
                     setFieldValue('departure', value?.format('YYYY-MM-DD'), true)
