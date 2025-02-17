@@ -128,6 +128,8 @@ export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProp
   useEffect(() => {
     // Reset place search distance
     setPlaceSearchDistance(SEARCH_DISTANCE)
+    setIsIncreasingDistance(false)
+    clearMatchedLocation()
 
     if (!autocompleteService || !placesService || debouncedSearchTerm.length < 3) {
       clearMatchedLocation()
