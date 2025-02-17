@@ -5,7 +5,7 @@ import { Form, Formik, Field, FormikProps } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import * as Yup from 'yup'
 import { Box, Button, Drawer, Paper, Stack, TextField, Typography } from '@mui/material'
-import { DateRangeCalendar } from '@mui/x-date-pickers-pro'
+import { DateRangeCalendar, StaticDateRangePicker } from '@mui/x-date-pickers-pro'
 import { DestinationField, DepartureField, PassengersControls } from '@/components'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import 'dayjs/locale/fr'
@@ -208,12 +208,21 @@ export const SearchRoundTripFlightsFormMobile = ({
                 </Stack>
               </Paper>
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <DateRangeCalendar
+                <StaticDateRangePicker
                   disableAutoMonthSwitching={true}
                   calendars={1}
                   sx={{ mt: 2 }}
+                  slots={{
+                    toolbar: undefined,
+                  }}
+                  slotProps={{
+                    actionBar: {
+                      actions: [],
+                    },
+                  }}
                   data-testid="datesField"
                   defaultValue={[dayjs(values.departure), dayjs(values.return)]}
+                  value={[dayjs(values.departure), dayjs(values.return)]}
                   minDate={dayjs().add(3, 'day')}
                   onChange={([departure, destination]) => {
                     setFieldValue(

@@ -114,7 +114,6 @@ export const SearchRoundTripFlightsForm = ({
                     slots={{ field: SingleInputDateRangeField, textField: CustomTextField }}
                     data-testid="datesField"
                     label="Dates"
-                    defaultValue={[dayjs(values.departure), dayjs(values.return)]}
                     slotProps={{
                       textField: {
                         helperText:
@@ -126,6 +125,7 @@ export const SearchRoundTripFlightsForm = ({
                       },
                     }}
                     minDate={dayjs().add(3, 'day')}
+                    value={[dayjs(values.departure), dayjs(values.return)]}
                     onChange={([departure, destination]) => {
                       setFieldValue(
                         'departure',

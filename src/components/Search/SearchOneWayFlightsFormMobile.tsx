@@ -7,7 +7,7 @@ import * as Yup from 'yup'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { Box, Button, Drawer, Paper, Stack, TextField, Typography } from '@mui/material'
-import { DateCalendar } from '@mui/x-date-pickers-pro'
+import { DateCalendar, StaticDatePicker } from '@mui/x-date-pickers-pro'
 import { DestinationField, DepartureField, PassengersControls } from '@/components'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useSearchDataCache } from '@/contexts'
@@ -198,16 +198,26 @@ export const SearchOneWayFlightsFormMobile = ({
                   </Typography>
                 </Stack>
               </Paper>
-              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <DateCalendar
+              <Stack sx={{ width: '100%' }} justifyContent="center">
+                <StaticDatePicker
+                  sx={{ mt: 2 }}
+                  slots={{
+                    toolbar: undefined,
+                  }}
+                  slotProps={{
+                    actionBar: {
+                      actions: [],
+                    },
+                  }}
                   data-testid="dateField"
                   defaultValue={dayjs(values.departure)}
+                  value={dayjs(values.departure)}
                   minDate={dayjs().add(3, 'day')}
                   onChange={(value) => {
                     setFieldValue('departure', value?.format('YYYY-MM-DD'), true)
                   }}
                 />
-              </Box>
+              </Stack>
               <Paper
                 elevation={3}
                 sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', borderRadius: 0 }}>
