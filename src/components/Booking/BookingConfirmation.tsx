@@ -43,12 +43,14 @@ export const BookingConfirmation = ({ order }: { order: OrderDto }) => {
               color="primary"
               fontWeight={500}
               data-testid="bookingConfirmation-reference">
-              {order.ticket?.travel_data?.passenger_name_record}
+              {order.status__name === 'ERROR FLIGHT RESERVE AFTER PAYMENT'
+                ? 'En attente de référence dossier'
+                : order.ticket?.travel_data?.passenger_name_record}
             </Typography>
           </Stack>
           <Stack pt={1} pb={3} direction="column" gap={2}>
             {order.ticket?.travel_data?.transports?.map((transport, index) => (
-              <Box>
+              <Box key={index}>
                 <Stack direction="row" justifyContent="center" alignItems="center" gap={1}>
                   <Typography variant="bodyMd" noWrap>
                     Itinéraire :
