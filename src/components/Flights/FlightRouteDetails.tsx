@@ -3,7 +3,13 @@
 import React, { useMemo } from 'react'
 import { Box, Chip, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import TrainIcon from '@mui/icons-material/Train'
-import { CheckedLuggageIcon, FlightAirline } from '@/components'
+import {
+  CarryOnLuggageIcon,
+  CheckedLuggageIcon,
+  FlightAirline,
+  LuggageIcon,
+  NoLuggageIcon,
+} from '@/components'
 import { Route } from '@/types'
 import { locationNameExtension, transformDuration } from '@/utils'
 import { useLocationData } from '@/services'
@@ -194,7 +200,7 @@ export const FlightRouteDetails = React.memo(
             <Stack direction="row" justifyContent="space-between" pt={1} alignItems="center">
               <Stack direction="row" data-testid="flightRouteDetails-luggageDetails">
                 {flightDetails.luggageIncluded && (
-                  <CheckedLuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
+                  <LuggageIcon data-testid="flightRouteDetails-checkedLuggage" />
                 )}
               </Stack>
               {/* TODO: enable carbon footprint when available */}
