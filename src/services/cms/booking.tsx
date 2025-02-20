@@ -318,14 +318,16 @@ export const getFloaPaymentOptions = async ({
 export const useFloaPaymentOptions = ({
   orderId,
   amount,
+  hasFloaOption,
 }: {
   orderId?: OrderId
   amount?: string
+  hasFloaOption?: boolean
 }) => {
   return useQuery<FloaPaymentOption[]>({
     queryKey: ['floaOptions', orderId],
     queryFn: () => getFloaPaymentOptions({ orderId, amount }),
     refetchOnWindowFocus: false,
-    enabled: !!orderId,
+    enabled: !!orderId && !!hasFloaOption,
   })
 }

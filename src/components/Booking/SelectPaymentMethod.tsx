@@ -17,12 +17,13 @@ export const SelectPaymentMethod = ({
   const { selectedAgency } = useAgencySelector()
   const { order, totalPrice } = useBooking()
 
+  let agency_contracts = selectedAgency?.available_contracts
+  let hasFloaOption = agency_contracts?.some((c) => c.startsWith('FLOA_'))
   const { data: floaOptions } = useFloaPaymentOptions({
     orderId: order?.id,
     amount: totalPrice.toString(),
+    hasFloaOption,
   })
-  let agency_contracts = selectedAgency?.available_contracts
-  let hasFloaOption = agency_contracts?.some((c) => c.startsWith('FLOA_'))
 
   return (
     <Box pt={3} pb={2} data-testid="selectPaymentMethod" maxWidth={590}>

@@ -7,7 +7,7 @@ export const getPaymentMethodData = ({
   contractCode: AgencyContractCode
 }): PaymentMethod => {
   const names = {
-    CB: '',
+    CB: 'Carte Bancaire.',
     ANCV: 'Chèque-vacances Connect.',
     MULTI_CB: 'Avec 2, 3 ou 4 cartes bancaires. Visa ou Mastercard.',
     '3DS': 'Carte Bancaire. Visa ou Mastercard.',
