@@ -316,7 +316,7 @@ export const AncvIcon = () => {
         height: 33,
         width: 50,
       }}>
-      <Image src="/ancv_logo.svg" alt="ancv logo" fill />
+      <Image src="/ancv_logo.svg" alt="Paiement via ANCV Connect" fill />
     </Box>
   )
 }
@@ -329,7 +329,7 @@ export const ObIcon = () => {
         height: 33,
         width: 50,
       }}>
-      <Image src="/ob_logo.svg" alt="ob logo" fill />
+      <Image src="/ob_logo.svg" alt="Paiement en carte bancaire" fill />
     </Box>
   )
 }
@@ -342,7 +342,7 @@ export const PaymentIcon = () => {
         height: 33,
         width: 50,
       }}>
-      <Image src="/payment_icon.svg" alt="payment logo" fill />
+      <Image src="/payment_icon.svg" alt="Paiement avec plusieurs cartes bancaires" fill />
     </Box>
   )
 }
@@ -368,7 +368,7 @@ export const Floa3XIcon = () => {
         height: 20,
         width: 50,
       }}>
-      <Image src="/floa3x.png" alt="floa 3x logo" fill />
+      <Image src="/floa3x.png" alt="Paiement en 3 fois avec FLOA" fill />
     </Box>
   )
 }
@@ -381,7 +381,7 @@ export const Floa4XIcon = () => {
         height: 20,
         width: 50,
       }}>
-      <Image src="/floa4x.png" alt="floa 4x logo" fill />
+      <Image src="/floa4x.png" alt="Paiement en 4 fois avec FLOA" fill />
     </Box>
   )
 }
