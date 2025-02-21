@@ -65,7 +65,7 @@ export const Footer = () => {
                           href="https://www.instagram.com/voyagesleclerc/">
                           <img
                             style={{ width: '30px', height: '30px' }}
-                            alt="Facebook"
+                            alt="Instagram"
                             src="https://wizard.leclercvoyages.com/admin/TS/fckUserFiles/Content_Image/Technique/styles/social-icons/instagram.svg "
                           />
                         </a>
