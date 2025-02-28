@@ -91,7 +91,12 @@ const MagicAssistantButton: React.FC = () => {
     }
   }, [isOpen]);
 
-  const toggleChat = async () => {
+  const toggleChat = async (event?: React.MouseEvent<HTMLElement>) => {
+    // Prévenir le comportement par défaut pour éviter le scroll
+    if (event) {
+      event.preventDefault();
+    }
+    
     if (isOpen) {
       // Si on ferme le chat, réinitialiser la conversation
       setMessages([]);
@@ -308,8 +313,8 @@ const MagicAssistantButton: React.FC = () => {
             userSelect: 'none'
           }}
         >
-            Rechercher avec IA 
-      </Typography>
+          Utilisez moi
+        </Typography>
       </Box>
 
       {/* Chatbox qui s'affiche/se masque */}
