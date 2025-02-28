@@ -66,7 +66,7 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
   }
 
   useEffect(() => {
-    let agencyIdStored = localStorage.getItem('agencyId')
+    let agencyIdStored = '220' //localStorage.getItem('agencyId')
     if (agencyIdStored) {
       fetchAgency(+agencyIdStored)
     } else {
@@ -75,7 +75,7 @@ export const AgencySelectorProvider: React.FC<{ children: React.ReactNode }> = (
   }, [])
 
   useEffect(() => {
-    let agencyIdStored = localStorage.getItem('agencyId')
+    let agencyIdStored = '220' // localStorage.getItem('agencyId')
     if (canAccessPosition && position && !agencyIdStored) {
       fetchNearAgency(position, 40000).then((nearAgency) => {
         if (nearAgency) {

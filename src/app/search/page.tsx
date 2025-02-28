@@ -485,7 +485,6 @@ export default function FlighsPage() {
             </Stack>
           </SectionContainer>
         </Stack>
-        <Footer />
       </Box>
       <Drawer
         open={flightDetailsOpen}

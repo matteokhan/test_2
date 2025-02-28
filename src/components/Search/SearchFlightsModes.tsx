@@ -133,7 +133,6 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFli
           />
         )} */}
               </Box>
-              <SelectAgencyLabel openSelectionAgency={() => setIsAgencySelectorOpen(true)} />
             </Stack>
           </SectionContainer>
         </Paper>

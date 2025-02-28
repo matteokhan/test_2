@@ -158,12 +158,6 @@ export const SelectedFlightInfoTopbarMobile = ({
         </Box>
       )}
       {withFilters && isLoading && <Skeleton variant="rectangular" height={34} />}
-      {withAgencySelector && (
-        <SelectAgencyLabel
-          openSelectionAgency={() => setIsAgencySelectorOpen(true)}
-          isLoading={isLoading}
-        />
-      )}
       <Drawer
         open={flightSearchOpen}
         anchor="right"

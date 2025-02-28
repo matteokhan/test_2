@@ -62,7 +62,7 @@ type SelectAgencyMapProps = {
 }
 
 export const SelectAgencyMap = ({ onClose, onSelectAgency }: SelectAgencyMapProps) => {
-  const MAPS_MAP_ID = getEnvVar({ name: 'NEXT_PUBLIC_MAPS_MAP_ID' })
+  const MAPS_MAP_ID = '123' // getEnvVar({ name: 'NEXT_PUBLIC_MAPS_MAP_ID' })
   const [matchedLocation, setMatchedLocation] = useState<Position | null>(null)
   const [searchTerm, setSearchTerm] = React.useState('')
   const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_TIME)

@@ -84,9 +84,6 @@ export const SearchFlightsModesMobileV2 = ({ onSearch }: SearchFlightsModesMobil
             initialValues={searchParamsCache?._type === 'oneWay' ? searchParamsCache : undefined}
           />
         )}
-        <Box mt={2}>
-          <SelectAgencyLabel openSelectionAgency={() => setIsAgencySelectorOpen(true)} />
-        </Box>
         <Button
           sx={{ mt: 2, width: '100%' }}
           onClick={handleSubmit}

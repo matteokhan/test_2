@@ -18,7 +18,7 @@ import { getEnvVar } from '@/utils'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient()
-  const MAPS_API_KEY = getEnvVar({ name: 'NEXT_PUBLIC_MAPS_API_KEY' }) || ''
+  const MAPS_API_KEY = '123' //getEnvVar({ name: 'NEXT_PUBLIC_MAPS_API_KEY' }) || ''
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
