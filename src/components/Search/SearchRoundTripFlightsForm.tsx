@@ -153,8 +153,7 @@ export const SearchRoundTripFlightsForm = ({
                 Rechercher
               </Button>
             </Stack>
-            <MagicAssistantButton />
-
+            <MagicAssistantButton/>
           </Form>
         )
       }}
