@@ -27,6 +27,58 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+// Composant d'animation de chargement avec effet d'écriture
+const TypingIndicator: React.FC = () => {
+  const [dots, setDots] = useState('.');
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prevDots => {
+        if (prevDots === '...') return '.';
+        return prevDots + '.';
+      });
+    }, 500);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <Box
+      sx={{
+        alignSelf: 'flex-start',
+        maxWidth: '80%',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <Box
+        sx={{
+          p: 1.5,
+          borderRadius: 2,
+          bgcolor: 'white',
+          borderBottomLeftRadius: 0,
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+          minWidth: '3rem',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          component="span"
+          sx={{
+            fontSize: '1rem',
+            fontWeight: 600,
+            color: 'text.secondary',
+            letterSpacing: '2px',
+          }}
+        >
+          {dots}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
 const MagicAssistantButton: React.FC = () => {
   // Configuration du backend
   const API_BASE_URL = 'http://localhost:5000';
@@ -144,13 +196,34 @@ const MagicAssistantButton: React.FC = () => {
       
       let assistantMessage = '';
       let flightResults = null;
+      let streamingMessageId = `assistant-stream-${Date.now()}`;
+      
+      // Créer un message vide pour commencer le streaming
+      // Au lieu d'ajouter un nouveau message, vérifier d'abord si l'indicateur de chargement est actif
+      setMessages(prevMessages => {
+        // Si isLoading est true, c'est qu'on n'a pas encore de message de streaming
+        return [
+          ...prevMessages,
+          {
+            id: streamingMessageId,
+            text: "",
+            sender: 'assistant',
+            timestamp: new Date(),
+          }
+        ];
+      });
+      
+      const textDecoder = new TextDecoder();
+      
+      // Important: désactiver l'indicateur de chargement dès que le streaming commence
+      setIsLoading(false);
       
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         
         // Convertir les chunks en texte
-        const chunk = new TextDecoder().decode(value);
+        const chunk = textDecoder.decode(value);
         
         // Vérifier si le chunk contient des résultats de vol (JSON)
         if (chunk.includes('{"FLIGHT_RESULTS":')) {
@@ -177,51 +250,36 @@ const MagicAssistantButton: React.FC = () => {
           continue;
         }
         
-        // Ajouter le texte au message (mise à jour en temps réel)
+        // Ajouter le texte au message s'il y a du contenu
         if (chunk.trim()) {
           assistantMessage += chunk;
           
-          // Ajouter ou mettre à jour le message de l'assistant en temps réel
+          // Mettre à jour le message de l'assistant en temps réel avec un effet de "typing"
           setMessages(prevMessages => {
-            const lastMessage = prevMessages[prevMessages.length - 1];
-            if (lastMessage && lastMessage.sender === 'assistant' && lastMessage.id.startsWith('assistant-stream-')) {
-              // Mettre à jour le message existant
-              return [
-                ...prevMessages.slice(0, -1),
-                {
-                  ...lastMessage,
-                  text: assistantMessage,
-                },
-              ];
-            } else {
-              // Créer un nouveau message
-              return [
-                ...prevMessages,
-                {
-                  id: `assistant-stream-${Date.now()}`,
-                  text: assistantMessage,
-                  sender: 'assistant',
-                  timestamp: new Date(),
-                },
-              ];
-            }
+            return prevMessages.map(msg => 
+              msg.id === streamingMessageId
+                ? { ...msg, text: assistantMessage }
+                : msg
+            );
           });
+          
+          // Faire défiler automatiquement vers le bas
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
       }
 
-      // Finaliser le message de l'assistant (remplacer le message streamed par un message définitif)
+      // Finaliser le message de l'assistant en remplaçant l'ID temporaire par un ID définitif
       if (assistantMessage.trim()) {
         setMessages(prevMessages => {
-          const filteredMessages = prevMessages.filter(msg => !msg.id.startsWith('assistant-stream-'));
-          return [
-            ...filteredMessages,
-            {
-              id: `assistant-${Date.now()}`,
-              text: assistantMessage.trim(),
-              sender: 'assistant',
-              timestamp: new Date(),
-            },
-          ];
+          return prevMessages.map(msg => 
+            msg.id === streamingMessageId
+              ? { 
+                  ...msg, 
+                  id: `assistant-${Date.now()}`,
+                  text: assistantMessage.trim() 
+                }
+              : msg
+          );
         });
       }
 
@@ -250,17 +308,30 @@ const MagicAssistantButton: React.FC = () => {
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
       console.error("URL appelée:", `${API_BASE_URL}/api/chatbot`);
-      setMessages(prevMessages => [
-        ...prevMessages,
-        {
-          id: `error-${Date.now()}`,
-          text: "Désolé, une erreur s'est produite lors de la communication avec l'assistant. Veuillez réessayer.",
-          sender: 'assistant',
-          timestamp: new Date(),
-        },
-      ]);
-    } finally {
+      
+      // Désactiver l'indicateur de chargement
       setIsLoading(false);
+      
+      // Pour les erreurs, vérifier si un message de streaming a déjà été créé
+      setMessages(prevMessages => {
+        // Filtrer les messages de streaming qui pourraient être vides
+        const filteredMessages = prevMessages.filter(
+          msg => !(msg.id.startsWith('assistant-stream-') && msg.text === "")
+        );
+        
+        return [
+          ...filteredMessages,
+          {
+            id: `error-${Date.now()}`,
+            text: "Désolé, une erreur s'est produite lors de la communication avec l'assistant. Veuillez réessayer.",
+            sender: 'assistant',
+            timestamp: new Date(),
+          },
+        ];
+      });
+    } finally {
+      // Note: Ne pas définir isLoading à false ici, car il est défini au début du streaming
+      // ou dans le bloc catch si une erreur se produit
     }
   };
 
@@ -403,56 +474,161 @@ const MagicAssistantButton: React.FC = () => {
                       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
                     }}
                   >
-                    {message.text.includes("destinations immanquables") ? (
-                      <Box sx={{ color: 'text.primary' }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                          Pour vos vacances ensoleillées, je vous propose ces destinations immanquables :
-                        </Typography>
+                    {/* Fonction pour formatter les réponses riches */}
+                    {(() => {
+                      // Cas spécifique: réponse formatée avec "destinations immanquables"
+                      if (message.text.includes("destinations immanquables")) {
+                        return (
+                          <Box sx={{ color: 'text.primary' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                              Pour vos vacances ensoleillées, je vous propose ces destinations immanquables :
+                            </Typography>
+                            
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
+                              Destinations proches de l'Europe :
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
+                              <Typography variant="body2"><b>Îles Canaries (Espagne)</b> : Soleil toute l'année, parfait pour randonner ou profiter de plages spectaculaires.</Typography>
+                              <Typography variant="body2"><b>Malte</b> : Une petite île méditerranéenne chargée d'histoire et de plages magnifiques.</Typography>
+                              <Typography variant="body2"><b>Grèce (Santorin, Rhodes ou Crète)</b> : Des paysages idylliques dignes de cartes postales, avec une mer cristalline.</Typography>
+                            </Box>
+                            
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
+                              Tropicales et exotiques :
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
+                              <Typography variant="body2"><b>Antilles françaises</b> : Idéal pour un dépaysement tropical sous le soleil des Caraïbes.</Typography>
+                              <Typography variant="body2"><b>Thaïlande (Phuket, Koh Samui)</b> : Des plages sublimes et une culture inoubliable.</Typography>
+                              <Typography variant="body2"><b>Bali (Indonésie)</b> : Une combinaison de plages paradisiaques, de rizières et de lieux spirituels.</Typography>
+                            </Box>
+                            
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
+                              Hors des sentiers battus :
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
+                              <Typography variant="body2"><b>Cap-Vert</b> : Une destination pour allier soleil, plages et culture africaine.</Typography>
+                              <Typography variant="body2"><b>Mexique (Cancún, Tulum)</b> : Des plages blanches et des sites archéologiques fascinants.</Typography>
+                              <Typography variant="body2"><b>Maldives</b> : Pour un luxe et un calme absolu dans des paysages paradisiaques.</Typography>
+                            </Box>
+                            
+                            <Typography variant="body2" sx={{ fontWeight: 600, mt: 2, color: '#2845b9' }}>
+                              Pour personnaliser davantage votre recherche, pouvez-vous me préciser :
+                            </Typography>
+                            <Box sx={{ ml: 1, mt: 0.5 }}>
+                              <Typography variant="body2">1. Vos dates de voyage idéales (départ et retour) ?</Typography>
+                              <Typography variant="body2">2. Votre aéroport de départ ?</Typography>
+                              <Typography variant="body2">3. Avec combien d'adultes/enfants voyagez-vous ?</Typography>
+                              <Typography variant="body2">4. Un budget ou une compagnie aérienne en tête ?</Typography>
+                            </Box>
+                            
+                            <Typography variant="body2" sx={{ mt: 1 }}>
+                              Dites-moi vos préférences, et je vous aiderai à planifier ce voyage vers le soleil parfait ! 🌞
+                            </Typography>
+                          </Box>
+                        );
+                      } 
+                      // Détection générique des formats markdown/structurés
+                      else if (message.sender === 'assistant' && 
+                        (message.text.includes('###') || 
+                         message.text.includes('**') || 
+                         message.text.includes('1. ') || 
+                         message.text.includes('- '))) {
                         
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
-                          Destinations proches de l'Europe :
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
-                          <Typography variant="body2"><b>Îles Canaries (Espagne)</b> : Soleil toute l'année, parfait pour randonner ou profiter de plages spectaculaires.</Typography>
-                          <Typography variant="body2"><b>Malte</b> : Une petite île méditerranéenne chargée d'histoire et de plages magnifiques.</Typography>
-                          <Typography variant="body2"><b>Grèce (Santorin, Rhodes ou Crète)</b> : Des paysages idylliques dignes de cartes postales, avec une mer cristalline.</Typography>
-                        </Box>
+                        // Préparation du texte
+                        const lines = message.text.split('\n');
                         
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
-                          Tropicales et exotiques :
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
-                          <Typography variant="body2"><b>Antilles françaises</b> : Idéal pour un dépaysement tropical sous le soleil des Caraïbes.</Typography>
-                          <Typography variant="body2"><b>Thaïlande (Phuket, Koh Samui)</b> : Des plages sublimes et une culture inoubliable.</Typography>
-                          <Typography variant="body2"><b>Bali (Indonésie)</b> : Une combinaison de plages paradisiaques, de rizières et de lieux spirituels.</Typography>
-                        </Box>
-                        
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
-                          Hors des sentiers battus :
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
-                          <Typography variant="body2"><b>Cap-Vert</b> : Une destination pour allier soleil, plages et culture africaine.</Typography>
-                          <Typography variant="body2"><b>Mexique (Cancún, Tulum)</b> : Des plages blanches et des sites archéologiques fascinants.</Typography>
-                          <Typography variant="body2"><b>Maldives</b> : Pour un luxe et un calme absolu dans des paysages paradisiaques.</Typography>
-                        </Box>
-                        
-                        <Typography variant="body2" sx={{ fontWeight: 600, mt: 2, color: '#2845b9' }}>
-                          Pour personnaliser davantage votre recherche, pouvez-vous me préciser :
-                        </Typography>
-                        <Box sx={{ ml: 1, mt: 0.5 }}>
-                          <Typography variant="body2">1. Vos dates de voyage idéales (départ et retour) ?</Typography>
-                          <Typography variant="body2">2. Votre aéroport de départ ?</Typography>
-                          <Typography variant="body2">3. Avec combien d'adultes/enfants voyagez-vous ?</Typography>
-                          <Typography variant="body2">4. Un budget ou une compagnie aérienne en tête ?</Typography>
-                        </Box>
-                        
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          Dites-moi vos préférences, et je vous aiderai à planifier ce voyage vers le soleil parfait ! 🌞
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <Typography variant="body2">{message.text}</Typography>
-                    )}
+                        return (
+                          <Box sx={{ color: 'text.primary' }}>
+                            {lines.map((line, index) => {
+                              // Titres (###)
+                              if (line.startsWith('###')) {
+                                return (
+                                  <Typography key={index} variant="subtitle2" 
+                                    sx={{ fontWeight: 600, color: '#2845b9', mt: 1.5, mb: 0.5 }}>
+                                    {line.replace(/^###\s*/, '')}
+                                  </Typography>
+                                );
+                              }
+                              // Sous-titres (##) 
+                              else if (line.startsWith('##')) {
+                                return (
+                                  <Typography key={index} variant="subtitle1" 
+                                    sx={{ fontWeight: 600, color: '#2845b9', mt: 2, mb: 0.5 }}>
+                                    {line.replace(/^##\s*/, '')}
+                                  </Typography>
+                                );
+                              }
+                              // Éléments de liste numérotée
+                              else if (/^\d+\.\s/.test(line)) {
+                                const content = line.replace(/^\d+\.\s/, '');
+                                // Text avec styling bold (**texte**)
+                                const parts = content.split(/(\*\*[^*]+\*\*)/g);
+                                
+                                // Extraction sécurisée du numéro
+                                const matches = line.match(/^\d+/);
+                                const number = matches ? matches[0] : "•";
+                                
+                                return (
+                                  <Box key={index} sx={{ display: 'flex', ml: 1, mb: 0.5 }}>
+                                    <Typography variant="body2" sx={{ minWidth: '18px' }}>
+                                      {number}.
+                                    </Typography>
+                                    <Typography variant="body2">
+                                      {parts.map((part, i) => {
+                                        if (part.startsWith('**') && part.endsWith('**')) {
+                                          return <b key={i}>{part.slice(2, -2)}</b>;
+                                        }
+                                        return <span key={i}>{part}</span>;
+                                      })}
+                                    </Typography>
+                                  </Box>
+                                );
+                              }
+                              // Éléments de liste à puces
+                              else if (line.startsWith('- ') || line.startsWith('* ')) {
+                                const content = line.replace(/^[-*]\s/, '');
+                                return (
+                                  <Box key={index} sx={{ display: 'flex', ml: 1, mb: 0.5 }}>
+                                    <Typography variant="body2" sx={{ minWidth: '18px' }}>•</Typography>
+                                    <Typography variant="body2">{content}</Typography>
+                                  </Box>
+                                );
+                              }
+                              // Texte avec emphasis (**texte**)
+                              else if (line.includes('**')) {
+                                const parts = line.split(/(\*\*[^*]+\*\*)/g);
+                                return (
+                                  <Typography key={index} variant="body2" sx={{ mb: 0.5 }}>
+                                    {parts.map((part, i) => {
+                                      if (part.startsWith('**') && part.endsWith('**')) {
+                                        return <b key={i}>{part.slice(2, -2)}</b>;
+                                      }
+                                      return <span key={i}>{part}</span>;
+                                    })}
+                                  </Typography>
+                                );
+                              }
+                              // Ligne vide
+                              else if (line.trim() === '') {
+                                return <Box key={index} sx={{ height: '8px' }} />;
+                              }
+                              // Texte normal
+                              else {
+                                return (
+                                  <Typography key={index} variant="body2" sx={{ mb: 0.5 }}>
+                                    {line}
+                                  </Typography>
+                                );
+                              }
+                            })}
+                          </Box>
+                        );
+                      } 
+                      // Texte simple
+                      else {
+                        return <Typography variant="body2">{message.text}</Typography>;
+                      }
+                    })()}
                   </Paper>
                   <Typography
                     variant="caption"
@@ -467,31 +643,7 @@ const MagicAssistantButton: React.FC = () => {
                   </Typography>
                 </Box>
               ))}
-              {isLoading && (
-                <Box sx={{ alignSelf: 'flex-start', maxWidth: '80%' }}>
-                  <Paper
-                    elevation={1}
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: 'white',
-                      borderBottomLeftRadius: 0,
-                      display: 'flex',
-                      gap: 0.5,
-                    }}
-                  >
-                    <Typography component="span" sx={{ fontSize: 24 }}>
-                      .
-                    </Typography>
-                    <Typography component="span" sx={{ fontSize: 24, animationDelay: '0.2s' }}>
-                      .
-                    </Typography>
-                    <Typography component="span" sx={{ fontSize: 24, animationDelay: '0.4s' }}>
-                      .
-                    </Typography>
-                  </Paper>
-                </Box>
-              )}
+              {isLoading && <TypingIndicator />}
               <div ref={messagesEndRef} />
             </Box>
 
