@@ -283,33 +283,34 @@ const MagicAssistantButton: React.FC = () => {
 
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
-      <Button
+      {/* Texte gris simple avec icône au lieu du bouton */}
+      <Box
         onClick={toggleChat}
-        variant="contained"
-        fullWidth
-        startIcon={<AutoAwesomeIcon sx={{ fontSize: 20 }} />}
         sx={{
-          height: 56,
-          borderRadius: isOpen ? 
-            '8px 8px 0 0' : // Arrondi en haut seulement quand ouvert
-            8, // Arrondi comme dans le screenshot
-          textTransform: 'none',
-          fontSize: '1rem',
-          fontWeight: 600,
-          background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)', // Plus proche de la couleur du screenshot
-          border: 'none',
-          boxShadow: isOpen ? 'none' : '0 2px 10px 0 rgba(0, 0, 0, 0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: 1,
+          padding: '12px 0',
+          margin: '0 0 8px 0',
+          cursor: 'pointer',
           transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            background: 'linear-gradient(125deg, #2845b9 20%, #483698 100%)',
-            transform: isOpen ? 'none' : 'translateY(-1px)',
-            boxShadow: isOpen ? 'none' : '0 4px 12px 0 rgba(0, 0, 0, 0.2)',
-          },
-          zIndex: 1201, // Plus élevé que la chatbox pour être au-dessus
+          width: 'fit-content',
+          zIndex: 1201,
         }}
       >
-        Utilisez moi
-      </Button>
+        <AutoAwesomeIcon sx={{ fontSize: 18, color: '#666' }} />
+        <Typography 
+          sx={{ 
+            color: '#666', 
+            fontWeight: 400,
+            fontSize: '0.9rem',
+            userSelect: 'none'
+          }}
+        >
+            Rechercher avec IA 
+      </Typography>
+      </Box>
 
       {/* Chatbox qui s'affiche/se masque */}
       <Collapse in={isOpen} timeout={300} unmountOnExit>
