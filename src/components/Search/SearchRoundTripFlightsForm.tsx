@@ -7,9 +7,9 @@ import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-
 import { Form, Formik, FormikHelpers } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
+import MagicAssistantButton from './MagicAssistantButton';
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
-
 const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   adults: 1,
   childrens: 0,
@@ -153,6 +153,8 @@ export const SearchRoundTripFlightsForm = ({
                 Rechercher
               </Button>
             </Stack>
+            <MagicAssistantButton />
+
           </Form>
         )
       }}
