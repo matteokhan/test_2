@@ -56,7 +56,6 @@ import { AppError, isFrenchFlight, isRoundtripRestricted } from '@/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as Sentry from '@sentry/nextjs'
 
-// Composant de filtre en langage naturel
 const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: SearchFlightFilters) => void }) => {
   const [filterText, setFilterText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -145,17 +144,11 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
         p: 3,
         mb: 4,
         width: '100%',
+        maxWidth: '100%',
         borderRadius: 2,
         backgroundColor: '#f9f9fb',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <AutoAwesomeIcon sx={{ mr: 1, color: 'primary.main' }} />
-        <Typography variant="h6" fontWeight={500}>
-          Affinez votre recherche en langage naturel
-        </Typography>
-      </Box>
-      
       <Typography variant="body2" color="text.secondary" mb={2.5}>
         Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
         Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
@@ -174,6 +167,10 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
             '& .MuiOutlinedInput-root': {
               borderTopRightRadius: 0,
               borderBottomRightRadius: 0,
+              height: '100%'  // Assurer que l'input prend la hauteur complète
+            },
+            '& .MuiInputBase-root': {
+              height: '56px'  // Hauteur fixe pour le TextField
             }
           }}
           onKeyPress={(e) => {
@@ -193,6 +190,13 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
             borderBottomLeftRadius: 0,
             boxShadow: 'none',
             background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+            opacity: 1,
+            height: '56px',  // Même hauteur que le TextField
+            '&.Mui-disabled': {
+              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+              opacity: 0.6,
+              color: 'white'
+            }
           }}
         >
           Filtrer
@@ -226,7 +230,6 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
     </Paper>
   );
 };
-
 export default function FlighsPage() {
   useMetadata('Rechercher des vols')
   const theme = useTheme()
@@ -577,35 +580,32 @@ export default function FlighsPage() {
           />
           <SectionContainer>
             <Stack direction="column" width="100%">
-              {isLoading && (
-                <Grow in={isLoading}>
-                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }}>
-                    {/* Filtre en langage naturel au-dessus du FlightLoader */}
-                    <Box width="100%" maxWidth="750px" mx="auto">
-                      <NaturalLanguageFilter 
-                        onApplyFilters={(newFilters) => setFilters(prevFilters => ({
-                          ...prevFilters,
-                          ...newFilters
-                        }))} 
-                      />
-                    </Box>
-                    
-                    {/* Animation de chargement et message existants */}
-                    <Stack alignItems="center">
-                      <Stack maxWidth="516px" direction="row" gap={3}>
-                        <FlightsLoader />
-                        <Box>
-                          <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                          <Typography variant="bodyMd" pt={1.5}>
-                            Merci de patienter quelques secondes le temps que nous trouvions les
-                            meilleures offres du moment !
-                          </Typography>
-                        </Box>
-                      </Stack>
+            {isLoading && (
+              <Grow in={isLoading}>
+                <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }}>
+                  {/* Filtre en langage naturel après le FlightLoader - largeur adaptée */}
+                  <NaturalLanguageFilter 
+                    onApplyFilters={(newFilters) => setFilters(prevFilters => ({
+                      ...prevFilters,
+                      ...newFilters
+                    }))} 
+                  />
+                   {/* Animation de chargement et message existants */}
+                   <Stack alignItems="center">
+                    <Stack maxWidth="516px" direction="row" gap={3}>
+                      <FlightsLoader />
+                      <Box>
+                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                        <Typography variant="bodyMd" pt={1.5}>
+                          Merci de patienter quelques secondes le temps que nous trouvions les
+                          meilleures offres du moment !
+                        </Typography>
+                      </Box>
                     </Stack>
                   </Stack>
-                </Grow>
-              )}
+                </Stack>
+              </Grow>
+            )}
               {!isDesktop && !isLoading && response?.solutions.length === 0 && (
                 <>
                   <Button onClick={() => router.push('/vol')}>
