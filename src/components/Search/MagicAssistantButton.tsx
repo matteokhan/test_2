@@ -9,16 +9,12 @@ import {
   Fade, 
   Collapse 
 } from '@mui/material';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
-
-interface Suggestion {
-  id: string;
-  text: string;
-  borderColor: string;
-}
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { RoundTripFlightSearchParams } from '@/types';
+import dayjs from 'dayjs';
 
 interface ChatMessage {
   id: string;
@@ -27,59 +23,18 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-// Composant d'animation de chargement avec effet d'écriture
-const TypingIndicator: React.FC = () => {
-  const [dots, setDots] = useState('.');
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots(prevDots => {
-        if (prevDots === '...') return '.';
-        return prevDots + '.';
-      });
-    }, 500);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  return (
-    <Box
-      sx={{
-        alignSelf: 'flex-start',
-        maxWidth: '80%',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <Box
-        sx={{
-          p: 1.5,
-          borderRadius: 2,
-          bgcolor: 'white',
-          borderBottomLeftRadius: 0,
-          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-          minWidth: '3rem',
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          component="span"
-          sx={{
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: 'text.secondary',
-            letterSpacing: '2px',
-          }}
-        >
-          {dots}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
+interface Suggestion {
+  id: string;
+  text: string;
+  borderColor: string;
+}
 
-const MagicAssistantButton: React.FC = () => {
+// Exporter l'interface pour la rendre disponible à l'importation
+export interface MagicAssistantButtonProps {
+  onSearch?: (params: RoundTripFlightSearchParams) => void;
+}
+
+const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch }) => {
   // Configuration du backend
   const API_BASE_URL = 'http://localhost:5000';
   const [isOpen, setIsOpen] = useState(false);
@@ -105,29 +60,27 @@ const MagicAssistantButton: React.FC = () => {
     }
   };
 
+  // Suggestions pour aider l'utilisateur à démarrer la conversation
   const suggestions: Suggestion[] = [
     { id: 'sun', text: 'Destinations au soleil', borderColor: '#FFC107' },
     { id: 'budget', text: 'Destination économe', borderColor: '#483698' },
     { id: 'unique', text: 'Destination insolite', borderColor: '#2196F3' },
   ];
 
-  // Envoyer un message initial lorsque le chat s'ouvre
+  // Message initial d'accueil
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      // Ajout d'un petit délai pour simuler une réponse naturelle
-      const timer = setTimeout(() => {
-        setMessages([
-          {
-            id: 'welcome',
-            text: "Bonjour ! Je suis votre assistant de voyage. Comment puis-je vous aider dans votre recherche de vol aujourd'hui ?",
-            sender: 'assistant',
-            timestamp: new Date(),
-          },
-        ]);
-      }, 500);
-      return () => clearTimeout(timer);
+      // Ajouter un message d'accueil initial
+      setMessages([
+        {
+          id: 'welcome',
+          text: "Bonjour ! Je suis votre assistant de voyage. Comment puis-je vous aider dans votre recherche de vol aujourd'hui ?",
+          sender: 'assistant',
+          timestamp: new Date(),
+        },
+      ]);
     }
-  }, [isOpen]);
+  }, [isOpen, messages.length]);
 
   // Scroll automatique vers le bas lorsque de nouveaux messages arrivent
   useEffect(() => {
@@ -143,12 +96,7 @@ const MagicAssistantButton: React.FC = () => {
     }
   }, [isOpen]);
 
-  const toggleChat = async (event?: React.MouseEvent<HTMLElement>) => {
-    // Prévenir le comportement par défaut pour éviter le scroll
-    if (event) {
-      event.preventDefault();
-    }
-    
+  const toggleChat = async () => {
     if (isOpen) {
       // Si on ferme le chat, réinitialiser la conversation
       setMessages([]);
@@ -175,7 +123,7 @@ const MagicAssistantButton: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Appel à l'API backend avec l'URL configurable
+      // Appel à l'API backend
       const response = await fetch(`${API_BASE_URL}/api/chatbot`, {
         method: 'POST',
         headers: {
@@ -195,163 +143,142 @@ const MagicAssistantButton: React.FC = () => {
       if (!reader) throw new Error("Impossible de lire la réponse");
       
       let assistantMessage = '';
-      let flightResults = null;
-      let streamingMessageId = `assistant-stream-${Date.now()}`;
-      
-      // Créer un message vide pour commencer le streaming
-      // Au lieu d'ajouter un nouveau message, vérifier d'abord si l'indicateur de chargement est actif
-      setMessages(prevMessages => {
-        // Si isLoading est true, c'est qu'on n'a pas encore de message de streaming
-        return [
-          ...prevMessages,
-          {
-            id: streamingMessageId,
-            text: "",
-            sender: 'assistant',
-            timestamp: new Date(),
-          }
-        ];
-      });
-      
-      const textDecoder = new TextDecoder();
-      
-      // Important: désactiver l'indicateur de chargement dès que le streaming commence
-      setIsLoading(false);
+      let formData = null;
       
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         
         // Convertir les chunks en texte
-        const chunk = textDecoder.decode(value);
+        const chunk = new TextDecoder().decode(value);
         
-        // Vérifier si le chunk contient des résultats de vol (JSON)
-        if (chunk.includes('{"FLIGHT_RESULTS":')) {
+        // Détecter les données structurées dans la réponse
+        if (chunk.includes('{"FORM_DATA":')) {
           try {
-            const jsonStart = chunk.indexOf('{"FLIGHT_RESULTS":');
+            const jsonStart = chunk.indexOf('{"FORM_DATA":');
             const jsonEnd = chunk.lastIndexOf('}') + 1;
             const jsonString = chunk.substring(jsonStart, jsonEnd);
-            flightResults = JSON.parse(jsonString);
-            console.log("Résultats de vol reçus:", flightResults);
-            // Ne pas ajouter cette partie JSON à la réponse affichée
+            formData = JSON.parse(jsonString);
+            console.log("Données de formulaire reçues:", formData);
             continue;
           } catch (e) {
-            console.error("Erreur lors du parsing des résultats:", e);
+            console.error("Erreur lors du parsing des données de formulaire:", e);
           }
         } else if (chunk.startsWith('\n{') && chunk.endsWith('}\n')) {
-          // Détection d'un JSON intermédiaire (données de requête) - ne pas l'afficher
-          try {
-            const jsonString = chunk.trim();
-            const requestData = JSON.parse(jsonString);
-            console.log("Données de requête intermédiaires:", requestData);
-          } catch (e) {
-            console.error("Erreur lors du parsing des données intermédiaires:", e);
-          }
+          // Ignorer les données structurées JSON intermédiaires
           continue;
         }
         
-        // Ajouter le texte au message s'il y a du contenu
+        // Ajouter le texte au message (mise à jour en temps réel)
         if (chunk.trim()) {
           assistantMessage += chunk;
           
-          // Mettre à jour le message de l'assistant en temps réel avec un effet de "typing"
+          // Ajouter ou mettre à jour le message de l'assistant en temps réel
           setMessages(prevMessages => {
-            return prevMessages.map(msg => 
-              msg.id === streamingMessageId
-                ? { ...msg, text: assistantMessage }
-                : msg
-            );
+            const lastMessage = prevMessages[prevMessages.length - 1];
+            if (lastMessage && lastMessage.sender === 'assistant' && lastMessage.id.startsWith('assistant-stream-')) {
+              // Mettre à jour le message existant
+              return [
+                ...prevMessages.slice(0, -1),
+                {
+                  ...lastMessage,
+                  text: assistantMessage,
+                },
+              ];
+            } else {
+              // Créer un nouveau message
+              return [
+                ...prevMessages,
+                {
+                  id: `assistant-stream-${Date.now()}`,
+                  text: assistantMessage,
+                  sender: 'assistant',
+                  timestamp: new Date(),
+                },
+              ];
+            }
           });
-          
-          // Faire défiler automatiquement vers le bas
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
       }
 
-      // Finaliser le message de l'assistant en remplaçant l'ID temporaire par un ID définitif
+      // Finaliser le message de l'assistant
       if (assistantMessage.trim()) {
         setMessages(prevMessages => {
-          return prevMessages.map(msg => 
-            msg.id === streamingMessageId
-              ? { 
-                  ...msg, 
-                  id: `assistant-${Date.now()}`,
-                  text: assistantMessage.trim() 
-                }
-              : msg
-          );
+          const filteredMessages = prevMessages.filter(msg => !msg.id.startsWith('assistant-stream-'));
+          return [
+            ...filteredMessages,
+            {
+              id: `assistant-${Date.now()}`,
+              text: assistantMessage.trim(),
+              sender: 'assistant',
+              timestamp: new Date(),
+            },
+          ];
         });
       }
 
-      // Si nous avons reçu des résultats de vol, afficher un message spécial
-      if (flightResults && flightResults.FLIGHT_RESULTS && flightResults.FLIGHT_RESULTS.length > 0) {
-        setMessages(prevMessages => [
-          ...prevMessages,
-          {
-            id: `results-${Date.now()}`,
-            text: "J'ai trouvé des vols correspondant à votre recherche ! Consultez les résultats ci-dessus.",
-            sender: 'assistant',
-            timestamp: new Date(),
-          },
-        ]);
-      } else if (flightResults && (!flightResults.FLIGHT_RESULTS || flightResults.FLIGHT_RESULTS.length === 0)) {
-        setMessages(prevMessages => [
-          ...prevMessages,
-          {
-            id: `no-results-${Date.now()}`,
-            text: "Je n'ai pas trouvé de vols correspondant à votre recherche. Pouvez-vous essayer avec d'autres critères ?",
-            sender: 'assistant',
-            timestamp: new Date(),
-          },
-        ]);
+      // Traiter les données de formulaire si elles sont présentes
+      if (formData && formData.FORM_DATA && onSearch) {
+        console.log("Préparation à la soumission du formulaire avec:", formData.FORM_DATA);
+        
+        // Convertir les données au format attendu par le formulaire
+        if (formData.FORM_DATA._type === "multiDestinations" && 
+            formData.FORM_DATA.destinations && 
+            formData.FORM_DATA.destinations.length > 0) {
+          
+          // Préparation des paramètres pour un vol aller-retour
+          const formParams: RoundTripFlightSearchParams = {
+            _type: "roundTrip",
+            adults: formData.FORM_DATA.adults || 1,
+            childrens: formData.FORM_DATA.childrens || 0,
+            infants: formData.FORM_DATA.infants || 0,
+            
+            // Premier segment (aller)
+            from: formData.FORM_DATA.destinations[0].from,
+            fromLabel: formData.FORM_DATA.destinations[0].fromLabel,
+            fromCountry: formData.FORM_DATA.destinations[0].fromCountry,
+            fromCountryCode: formData.FORM_DATA.destinations[0].fromCountryCode,
+            fromType: formData.FORM_DATA.destinations[0].fromType,
+            fromInputValue: formData.FORM_DATA.destinations[0].fromLabel,
+            
+            to: formData.FORM_DATA.destinations[0].to,
+            toLabel: formData.FORM_DATA.destinations[0].toLabel,
+            toCountry: formData.FORM_DATA.destinations[0].toCountry,
+            toCountryCode: formData.FORM_DATA.destinations[0].toCountryCode,
+            toType: formData.FORM_DATA.destinations[0].toType,
+            toInputValue: formData.FORM_DATA.destinations[0].toLabel,
+            
+            // Dates
+            departure: formData.FORM_DATA.destinations[0].departure,
+            return: formData.FORM_DATA.destinations.length > 1 
+              ? formData.FORM_DATA.destinations[1].departure 
+              : dayjs(formData.FORM_DATA.destinations[0].departure).add(7, 'day').format('YYYY-MM-DD')
+          };
+          
+          // Soumettre le formulaire
+          onSearch(formParams);
+        }
       }
+      
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
-      console.error("URL appelée:", `${API_BASE_URL}/api/chatbot`);
-      
-      // Désactiver l'indicateur de chargement
-      setIsLoading(false);
-      
-      // Pour les erreurs, vérifier si un message de streaming a déjà été créé
-      setMessages(prevMessages => {
-        // Filtrer les messages de streaming qui pourraient être vides
-        const filteredMessages = prevMessages.filter(
-          msg => !(msg.id.startsWith('assistant-stream-') && msg.text === "")
-        );
-        
-        return [
-          ...filteredMessages,
-          {
-            id: `error-${Date.now()}`,
-            text: "Désolé, une erreur s'est produite lors de la communication avec l'assistant. Veuillez réessayer.",
-            sender: 'assistant',
-            timestamp: new Date(),
-          },
-        ];
-      });
+      setMessages(prevMessages => [
+        ...prevMessages,
+        {
+          id: `error-${Date.now()}`,
+          text: "Désolé, une erreur s'est produite lors de la communication avec l'assistant. Veuillez réessayer.",
+          sender: 'assistant',
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
-      // Note: Ne pas définir isLoading à false ici, car il est défini au début du streaming
-      // ou dans le bloc catch si une erreur se produit
+      setIsLoading(false);
     }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    // Phrase complète basée sur la suggestion
-    let completePhrase = "";
-    
-    if (suggestion === "Destinations au soleil") {
-      completePhrase = "Je recherche des destinations ensoleillées pour mes vacances. Que me suggérez-vous ?";
-    } else if (suggestion === "Destination économe") {
-      completePhrase = "Quelles sont les meilleures destinations pour voyager à petit budget ?";
-    } else if (suggestion === "Destination insolite") {
-      completePhrase = "J'aimerais découvrir des destinations originales et peu connues. Avez-vous des idées ?";
-    } else {
-      completePhrase = suggestion; // Par défaut
-    }
-    
-    // Remplir le champ de texte avec la phrase complète
-    setInputValue(completePhrase);
-    // Focus sur l'input pour que l'utilisateur puisse modifier ou envoyer
+    // Utiliser directement la suggestion comme texte à envoyer
+    setInputValue(suggestion);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -359,54 +286,42 @@ const MagicAssistantButton: React.FC = () => {
 
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
-      {/* Texte gris simple avec icône au lieu du bouton */}
-      <Box
-        onClick={toggleChat}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          gap: 1,
-          padding: '12px 0',
-          margin: '0 0 8px 0',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease-in-out',
-          width: 'fit-content',
-          zIndex: 1201,
-        }}
-      >
-        <AutoAwesomeIcon sx={{ fontSize: 18, color: '#666' }} />
-        <Typography 
-          sx={{ 
-            color: '#666', 
-            fontWeight: 400,
+      {/* Bouton comme texte, aligné à gauche */}
+      <Box sx={{ textAlign: 'left', mb: 1 }}>
+        <Button
+          onClick={toggleChat}
+          startIcon={<AutoAwesomeIcon fontSize="small" />}
+          disableRipple
+          sx={{
+            textTransform: 'none',
+            color: '#505050',  // Texte en gris
+            backgroundColor: 'transparent',
+            padding: '4px 8px',
+            fontWeight: 700, // Texte en gras
             fontSize: '0.9rem',
-            userSelect: 'none'
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
           }}
         >
-          Utilisez moi
-        </Typography>
+          Rechercher avec l'IA
+        </Button>
       </Box>
 
       {/* Chatbox qui s'affiche/se masque */}
       <Collapse in={isOpen} timeout={300} unmountOnExit>
         <Paper
-          elevation={0} // Enlevé l'élévation pour un aspect plus plat
+          elevation={2}
           sx={{
             width: '100%',
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
-            borderBottomLeftRadius: 8,
-            borderBottomRightRadius: 8,
+            borderRadius: 2,
             overflow: 'hidden',
             zIndex: 1200,
-            height: 350, // Hauteur réduite selon le screenshot
+            height: 350,
             display: 'flex',
             flexDirection: 'column',
-            mt: 0, // Supprimé le margin négatif
-            border: 'none', // Enlevé la bordure visible
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', // Ombre légère
-            bgcolor: '#f8f9fa', // Fond légèrement grisé comme dans le screenshot
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+            bgcolor: '#f8f9fa',
           }}
         >
           {/* En-tête du chat */}
@@ -416,7 +331,7 @@ const MagicAssistantButton: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'space-between',
               p: 2,
-              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)', // Même gradient que le bouton
+              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
               color: 'white',
             }}
           >
@@ -435,7 +350,7 @@ const MagicAssistantButton: React.FC = () => {
             </Button>
           </Box>
 
-          {/* Réorganisation pour éliminer les marges: zone de message suivie directement par le champ de saisie */}
+          {/* Zone de conversation */}
           <Box
             sx={{
               display: 'flex',
@@ -474,161 +389,7 @@ const MagicAssistantButton: React.FC = () => {
                       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
                     }}
                   >
-                    {/* Fonction pour formatter les réponses riches */}
-                    {(() => {
-                      // Cas spécifique: réponse formatée avec "destinations immanquables"
-                      if (message.text.includes("destinations immanquables")) {
-                        return (
-                          <Box sx={{ color: 'text.primary' }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                              Pour vos vacances ensoleillées, je vous propose ces destinations immanquables :
-                            </Typography>
-                            
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
-                              Destinations proches de l'Europe :
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
-                              <Typography variant="body2"><b>Îles Canaries (Espagne)</b> : Soleil toute l'année, parfait pour randonner ou profiter de plages spectaculaires.</Typography>
-                              <Typography variant="body2"><b>Malte</b> : Une petite île méditerranéenne chargée d'histoire et de plages magnifiques.</Typography>
-                              <Typography variant="body2"><b>Grèce (Santorin, Rhodes ou Crète)</b> : Des paysages idylliques dignes de cartes postales, avec une mer cristalline.</Typography>
-                            </Box>
-                            
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
-                              Tropicales et exotiques :
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
-                              <Typography variant="body2"><b>Antilles françaises</b> : Idéal pour un dépaysement tropical sous le soleil des Caraïbes.</Typography>
-                              <Typography variant="body2"><b>Thaïlande (Phuket, Koh Samui)</b> : Des plages sublimes et une culture inoubliable.</Typography>
-                              <Typography variant="body2"><b>Bali (Indonésie)</b> : Une combinaison de plages paradisiaques, de rizières et de lieux spirituels.</Typography>
-                            </Box>
-                            
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2845b9', mt: 1 }}>
-                              Hors des sentiers battus :
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1, ml: 1 }}>
-                              <Typography variant="body2"><b>Cap-Vert</b> : Une destination pour allier soleil, plages et culture africaine.</Typography>
-                              <Typography variant="body2"><b>Mexique (Cancún, Tulum)</b> : Des plages blanches et des sites archéologiques fascinants.</Typography>
-                              <Typography variant="body2"><b>Maldives</b> : Pour un luxe et un calme absolu dans des paysages paradisiaques.</Typography>
-                            </Box>
-                            
-                            <Typography variant="body2" sx={{ fontWeight: 600, mt: 2, color: '#2845b9' }}>
-                              Pour personnaliser davantage votre recherche, pouvez-vous me préciser :
-                            </Typography>
-                            <Box sx={{ ml: 1, mt: 0.5 }}>
-                              <Typography variant="body2">1. Vos dates de voyage idéales (départ et retour) ?</Typography>
-                              <Typography variant="body2">2. Votre aéroport de départ ?</Typography>
-                              <Typography variant="body2">3. Avec combien d'adultes/enfants voyagez-vous ?</Typography>
-                              <Typography variant="body2">4. Un budget ou une compagnie aérienne en tête ?</Typography>
-                            </Box>
-                            
-                            <Typography variant="body2" sx={{ mt: 1 }}>
-                              Dites-moi vos préférences, et je vous aiderai à planifier ce voyage vers le soleil parfait ! 🌞
-                            </Typography>
-                          </Box>
-                        );
-                      } 
-                      // Détection générique des formats markdown/structurés
-                      else if (message.sender === 'assistant' && 
-                        (message.text.includes('###') || 
-                         message.text.includes('**') || 
-                         message.text.includes('1. ') || 
-                         message.text.includes('- '))) {
-                        
-                        // Préparation du texte
-                        const lines = message.text.split('\n');
-                        
-                        return (
-                          <Box sx={{ color: 'text.primary' }}>
-                            {lines.map((line, index) => {
-                              // Titres (###)
-                              if (line.startsWith('###')) {
-                                return (
-                                  <Typography key={index} variant="subtitle2" 
-                                    sx={{ fontWeight: 600, color: '#2845b9', mt: 1.5, mb: 0.5 }}>
-                                    {line.replace(/^###\s*/, '')}
-                                  </Typography>
-                                );
-                              }
-                              // Sous-titres (##) 
-                              else if (line.startsWith('##')) {
-                                return (
-                                  <Typography key={index} variant="subtitle1" 
-                                    sx={{ fontWeight: 600, color: '#2845b9', mt: 2, mb: 0.5 }}>
-                                    {line.replace(/^##\s*/, '')}
-                                  </Typography>
-                                );
-                              }
-                              // Éléments de liste numérotée
-                              else if (/^\d+\.\s/.test(line)) {
-                                const content = line.replace(/^\d+\.\s/, '');
-                                // Text avec styling bold (**texte**)
-                                const parts = content.split(/(\*\*[^*]+\*\*)/g);
-                                
-                                // Extraction sécurisée du numéro
-                                const matches = line.match(/^\d+/);
-                                const number = matches ? matches[0] : "•";
-                                
-                                return (
-                                  <Box key={index} sx={{ display: 'flex', ml: 1, mb: 0.5 }}>
-                                    <Typography variant="body2" sx={{ minWidth: '18px' }}>
-                                      {number}.
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      {parts.map((part, i) => {
-                                        if (part.startsWith('**') && part.endsWith('**')) {
-                                          return <b key={i}>{part.slice(2, -2)}</b>;
-                                        }
-                                        return <span key={i}>{part}</span>;
-                                      })}
-                                    </Typography>
-                                  </Box>
-                                );
-                              }
-                              // Éléments de liste à puces
-                              else if (line.startsWith('- ') || line.startsWith('* ')) {
-                                const content = line.replace(/^[-*]\s/, '');
-                                return (
-                                  <Box key={index} sx={{ display: 'flex', ml: 1, mb: 0.5 }}>
-                                    <Typography variant="body2" sx={{ minWidth: '18px' }}>•</Typography>
-                                    <Typography variant="body2">{content}</Typography>
-                                  </Box>
-                                );
-                              }
-                              // Texte avec emphasis (**texte**)
-                              else if (line.includes('**')) {
-                                const parts = line.split(/(\*\*[^*]+\*\*)/g);
-                                return (
-                                  <Typography key={index} variant="body2" sx={{ mb: 0.5 }}>
-                                    {parts.map((part, i) => {
-                                      if (part.startsWith('**') && part.endsWith('**')) {
-                                        return <b key={i}>{part.slice(2, -2)}</b>;
-                                      }
-                                      return <span key={i}>{part}</span>;
-                                    })}
-                                  </Typography>
-                                );
-                              }
-                              // Ligne vide
-                              else if (line.trim() === '') {
-                                return <Box key={index} sx={{ height: '8px' }} />;
-                              }
-                              // Texte normal
-                              else {
-                                return (
-                                  <Typography key={index} variant="body2" sx={{ mb: 0.5 }}>
-                                    {line}
-                                  </Typography>
-                                );
-                              }
-                            })}
-                          </Box>
-                        );
-                      } 
-                      // Texte simple
-                      else {
-                        return <Typography variant="body2">{message.text}</Typography>;
-                      }
-                    })()}
+                    <Typography variant="body2">{message.text}</Typography>
                   </Paper>
                   <Typography
                     variant="caption"
@@ -643,31 +404,55 @@ const MagicAssistantButton: React.FC = () => {
                   </Typography>
                 </Box>
               ))}
-              {isLoading && <TypingIndicator />}
+              {isLoading && (
+                <Box sx={{ alignSelf: 'flex-start', maxWidth: '80%' }}>
+                  <Paper
+                    elevation={1}
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      bgcolor: 'white',
+                      borderBottomLeftRadius: 0,
+                      display: 'flex',
+                      gap: 0.5,
+                    }}
+                  >
+                    <Typography component="span" sx={{ fontSize: 24 }}>
+                      .
+                    </Typography>
+                    <Typography component="span" sx={{ fontSize: 24, animationDelay: '0.2s' }}>
+                      .
+                    </Typography>
+                    <Typography component="span" sx={{ fontSize: 24, animationDelay: '0.4s' }}>
+                      .
+                    </Typography>
+                  </Paper>
+                </Box>
+              )}
               <div ref={messagesEndRef} />
             </Box>
 
-            {/* Champ de saisie avec suggestions à l'intérieur */}
+            {/* Champ de saisie avec suggestions */}
             <Box
               sx={{
                 borderTop: 'none',
-                position: 'relative', // Pour le positionnement absolu des suggestions
+                position: 'relative',
                 px: 2,
                 py: 2,
                 bgcolor: '#f8f9fa',
               }}
             >
-              {/* Positionnement absolu des suggestions au-dessus du champ de saisie */}
+              {/* Suggestions au-dessus du champ de saisie */}
               <Fade in={messages.length <= 2}>
                 <Box 
                   sx={{ 
                     position: 'absolute', 
-                    bottom: '100%', // Placer juste au-dessus du champ de saisie
+                    bottom: '100%',
                     left: 0,
                     right: 0,
                     display: 'flex', 
                     justifyContent: 'center',
-                    pb: 1, // Petit espacement en bas
+                    pb: 1,
                   }}
                 >
                   <Stack 

@@ -7,7 +7,8 @@ import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-
 import { Form, Formik, FormikHelpers } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
-import MagicAssistantButton from './MagicAssistantButton';
+// Importer MagicAssistantButton et son type
+import MagicAssistantButton, { MagicAssistantButtonProps } from './MagicAssistantButton';
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
 const DEFAULT_VALUES: RoundTripFlightSearchParams = {
@@ -92,8 +93,30 @@ export const SearchRoundTripFlightsForm = ({
   initialValues,
   disabled,
 }: SearchRoundTripFlightsFormProps) => {
+  // Référence à l'instance Formik
+  const formikRef = React.useRef<any>(null);
+
+  // Fonction pour soumettre le formulaire avec des paramètres du chatbot
+  const handleChatbotSearch = (params: RoundTripFlightSearchParams) => {
+    if (formikRef.current) {
+      // Mettre à jour les valeurs du formulaire
+      const formik = formikRef.current;
+      
+      // Mise à jour des champs avec les valeurs extraites du chatbot
+      for (const [key, value] of Object.entries(params)) {
+        formik.setFieldValue(key, value, false);
+      }
+      
+      // Soumettre le formulaire après avoir mis à jour les valeurs
+      setTimeout(() => {
+        formik.submitForm();
+      }, 100);
+    }
+  };
+
   return (
     <Formik
+      innerRef={formikRef}
       initialValues={initialValues || DEFAULT_VALUES}
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
@@ -153,7 +176,7 @@ export const SearchRoundTripFlightsForm = ({
                 Rechercher
               </Button>
             </Stack>
-            <MagicAssistantButton/>
+            <MagicAssistantButton onSearch={handleChatbotSearch} />
           </Form>
         )
       }}

@@ -60,12 +60,13 @@ import * as Sentry from '@sentry/nextjs'
 const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: SearchFlightFilters) => void }) => {
   const [filterText, setFilterText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   // Exemples de filtres suggérés
   const filterSuggestions = [
     "Vols sans escale",
     "Vols avant midi",
     "Vols avec maximum 1 escale",
+    "Vols directs les moins chers",
     "Vols de nuit"
   ];
 
@@ -139,95 +140,98 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
   };
 
   return (
-    <Paper 
-      elevation={1}
-      sx={{
-        p: 3,
-        mb: 4,
-        width: '100%',
-        borderRadius: 2,
-        backgroundColor: '#f9f9fb',
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <AutoAwesomeIcon sx={{ mr: 1, color: 'primary.main' }} />
-        <Typography variant="h6" fontWeight={500}>
-          Affinez votre recherche en langage naturel
+    <Fade in={true} timeout={800}>
+      <Paper 
+        elevation={1}
+        sx={{
+          p: 3,
+          mt: 4,
+          maxWidth: '650px',
+          mx: 'auto',
+          borderRadius: 2,
+          backgroundColor: '#f9f9fb',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <AutoAwesomeIcon sx={{ mr: 1, color: 'primary.main' }} />
+          <Typography variant="h6" fontWeight={500}>
+            Affinez votre recherche en langage naturel
+          </Typography>
+        </Box>
+        
+        <Typography variant="body2" color="text.secondary" mb={2.5}>
+          Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
+          Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
         </Typography>
-      </Box>
-      
-      <Typography variant="body2" color="text.secondary" mb={2.5}>
-        Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
-        Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
-      </Typography>
-      
-      <Box sx={{ display: 'flex', mb: 2.5 }}>
-        <TextField
-          fullWidth
-          value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
-          placeholder="Décrivez vos préférences de vol..."
-          variant="outlined"
-          size="medium"
-          disabled={isProcessing}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-            }
-          }}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleFilterSubmit();
-            }
-          }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleFilterSubmit}
-          disabled={!filterText.trim() || isProcessing}
-          startIcon={<SearchIcon />}
-          sx={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            boxShadow: 'none',
-            background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
-          }}
-        >
-          Filtrer
-        </Button>
-      </Box>
-      
-      {/* Suggestions de filtres */}
-      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-        <Typography variant="body2" color="text.secondary" sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-          Suggestions :
-        </Typography>
-        {filterSuggestions.map((suggestion) => (
-          <Chip
-            key={suggestion}
-            label={suggestion}
-            onClick={() => handleSuggestionClick(suggestion)}
+        
+        <Box sx={{ display: 'flex', mb: 2.5 }}>
+          <TextField
+            fullWidth
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            placeholder="Décrivez vos préférences de vol..."
             variant="outlined"
-            size="small"
-            sx={{ 
-              fontSize: '0.75rem',
-              height: '28px',
-              borderColor: 'rgba(0, 0, 0, 0.1)',
-              '&:hover': {
-                borderColor: 'primary.main',
-                backgroundColor: 'rgba(40, 69, 185, 0.04)',
+            size="medium"
+            disabled={isProcessing}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              }
+            }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleFilterSubmit();
               }
             }}
           />
-        ))}
-      </Stack>
-    </Paper>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleFilterSubmit}
+            disabled={!filterText.trim() || isProcessing}
+            startIcon={<SearchIcon />}
+            sx={{
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+              boxShadow: 'none',
+              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+            }}
+          >
+            Filtrer
+          </Button>
+        </Box>
+        
+        {/* Suggestions de filtres */}
+        <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+          <Typography variant="body2" color="text.secondary" sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+            Suggestions :
+          </Typography>
+          {filterSuggestions.map((suggestion) => (
+            <Chip
+              key={suggestion}
+              label={suggestion}
+              onClick={() => handleSuggestionClick(suggestion)}
+              variant="outlined"
+              size="small"
+              sx={{ 
+                fontSize: '0.75rem',
+                height: '28px',
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  backgroundColor: 'rgba(40, 69, 185, 0.04)',
+                }
+              }}
+            />
+          ))}
+        </Stack>
+      </Paper>
+    </Fade>
   );
 };
 
-export default function FlighsPage() {
+export default function SearchPage() {
   useMetadata('Rechercher des vols')
   const theme = useTheme()
   const router = useRouter()
@@ -579,30 +583,26 @@ export default function FlighsPage() {
             <Stack direction="column" width="100%">
               {isLoading && (
                 <Grow in={isLoading}>
-                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }}>
-                    {/* Filtre en langage naturel au-dessus du FlightLoader */}
-                    <Box width="100%" maxWidth="750px" mx="auto">
-                      <NaturalLanguageFilter 
-                        onApplyFilters={(newFilters) => setFilters(prevFilters => ({
-                          ...prevFilters,
-                          ...newFilters
-                        }))} 
-                      />
-                    </Box>
-                    
+                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center" width="100%">
                     {/* Animation de chargement et message existants */}
-                    <Stack alignItems="center">
-                      <Stack maxWidth="516px" direction="row" gap={3}>
-                        <FlightsLoader />
-                        <Box>
-                          <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                          <Typography variant="bodyMd" pt={1.5}>
-                            Merci de patienter quelques secondes le temps que nous trouvions les
-                            meilleures offres du moment !
-                          </Typography>
-                        </Box>
-                      </Stack>
+                    <Stack maxWidth="516px" direction="row" gap={3} width="100%">
+                      <FlightsLoader />
+                      <Box>
+                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                        <Typography variant="bodyMd" pt={1.5}>
+                          Merci de patienter quelques secondes le temps que nous trouvions les
+                          meilleures offres du moment !
+                        </Typography>
+                      </Box>
                     </Stack>
+                    
+                    {/* Ajout du filtre en langage naturel */}
+                    <Box sx={{ width: '100%', maxWidth: '650px', mt: 4 }}>
+                      <NaturalLanguageFilter onApplyFilters={(newFilters) => setFilters(prevFilters => ({
+                        ...prevFilters,
+                        ...newFilters
+                      }))} />
+                    </Box>
                   </Stack>
                 </Grow>
               )}
