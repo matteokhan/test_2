@@ -12,12 +12,16 @@ export const AirlinesFilterField = ({
   const [_, { value }, { setValue }] = useField(props)
   const { data: airlinesData } = useAirlinesData()
 
+  // Assurez-vous que value est toujours un tableau
+  const safeValue = Array.isArray(value) ? value : [];
+
   const handleChange = (carrier: string) => {
-    if (value.includes(carrier)) {
-      setValue(value.filter((v) => v !== carrier))
+    // Utiliser safeValue au lieu de value directement
+    if (safeValue.includes(carrier)) {
+      setValue(safeValue.filter((v) => v !== carrier))
       return
     }
-    setValue([...value, carrier])
+    setValue([...safeValue, carrier])
   }
 
   return (
@@ -32,7 +36,7 @@ export const AirlinesFilterField = ({
             alignItems="center">
             <FormControlLabel
               value={airline.carrier}
-              control={<Checkbox checked={value.includes(airline.carrier)} />}
+              control={<Checkbox checked={safeValue.includes(airline.carrier)} />}
               name={props.name}
               label={airlineName}
               onChange={() => {

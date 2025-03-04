@@ -51,6 +51,7 @@ type SearchFlightsFiltersProps = {
   isRoundTrip?: boolean
   activeFilter: SearchFlightsFiltersOptions
   selectedFilters?: SearchFlightFilters
+  filtersEnabled?: boolean  // Nouvelle prop
 }
 
 export const SearchFlightsFilters = ({
@@ -62,6 +63,7 @@ export const SearchFlightsFilters = ({
   isRoundTrip,
   activeFilter,
   selectedFilters,
+  filtersEnabled = false,  // Valeur par défaut
 }: SearchFlightsFiltersProps) => {
   const DEFAULT_FILTERS = {
     scales: 'all',
@@ -91,6 +93,9 @@ export const SearchFlightsFilters = ({
   })
   const { data: arrivalLocationData } = useLocationData({ locationCode: arrival ? arrival : '' })
 
+  // Fonction utilitaire pour déterminer si un champ doit être désactivé
+  const isDisabled = () => filterData === undefined && !filtersEnabled;
+
   return (
     <Paper sx={{ paddingX: 2, paddingY: { xs: 1, lg: 4 }, height: 'fit-content' }}>
       <Formik
@@ -109,11 +114,11 @@ export const SearchFlightsFilters = ({
                     Escales
                   </Typography>
                   <Box pl={1.5}>
-                    <ScalesFilterField name="scales" disabled={filterData === undefined} />
+                    <ScalesFilterField name="scales" disabled={isDisabled()} />
                     <Box sx={{ paddingTop: 1 }}>
                       <OneNightScaleFilterField
                         name="oneNightScale"
-                        disabled={filterData === undefined}
+                        disabled={isDisabled()}
                       />
                     </Box>
                   </Box>
@@ -131,12 +136,12 @@ export const SearchFlightsFilters = ({
                     name="maxPrice"
                     highestPrice={filterData?.maxPrice}
                     lowestPrice={filterData?.minPrice}
-                    disabled={filterData === undefined}
+                    disabled={isDisabled()}
                   />
                   <FormControl sx={{ m: 1, minWidth: 120, width: '100%', margin: 0 }}>
                     <MaxPriceTypeFilterField
                       name="maxPriceType"
-                      disabled={filterData === undefined}
+                      disabled={isDisabled()}
                     />
                   </FormControl>
                 </Box>
@@ -169,7 +174,7 @@ export const SearchFlightsFilters = ({
                     <Box pb={1}>
                       <FlightTimeFilterField
                         name="flightTime"
-                        disabled={filterData === undefined}
+                        disabled={isDisabled()}
                       />
                     </Box>
                     {filterData !== undefined && filterData.airports[0]?.from.length > 1 && (
@@ -233,7 +238,7 @@ export const SearchFlightsFilters = ({
                         )}
                         <FlightTimeFilterField
                           name="flightTimeReturn"
-                          disabled={filterData === undefined}
+                          disabled={isDisabled()}
                         />
                       </Box>
                     )}
@@ -278,7 +283,7 @@ export const SearchFlightsFilters = ({
                 </>
               )}
               {(activeFilter === 'all' || activeFilter === 'airlines') &&
-                filterData !== undefined && (
+                (filterData !== undefined || filtersEnabled) && (
                   <Box>
                     <Typography variant="titleMd" pb={1}>
                       Compagnies aériennes

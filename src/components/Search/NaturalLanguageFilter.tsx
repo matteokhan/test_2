@@ -1,128 +1,95 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react';
 import {
-  Navbar,
-  SearchFlightsModes,
-  SectionContainer,
-  FlightDetails,
-  TopBar,
-  FlightResultSkeleton,
-  FlightsLoader,
-  SearchFlightsFilters,
-  SearchResults,
-  SelectedFlightInfoTopbarMobile,
-  OldNavbar,
-  Footer,
-  NoAgencyWarningModal,
-  NoResultsErrorModal,
-  AlertDestinationModal,
-  RoundtripRestrictedFlightModal,
-} from '@/components'
-import {
-  Box,
-  Drawer,
-  Button,
-  Grow,
-  Stack,
-  Typography,
-  IconButton,
-  Divider,
-  Modal,
   Paper,
+  Typography,
+  Box,
   TextField,
+  Button,
+  Stack,
   Chip,
+  CircularProgress,
+  Alert,
   Fade,
-} from '@mui/material'
-import { useAgencySelector, useBooking, useFlights } from '@/contexts'
-import {
-  SearchFlightsParams,
-  Solution,
-  AirlineFilterData,
-  SearchFlightFilters,
-  SearchFlightsFiltersOptions,
-  AgencyId,
-  Agency,
-} from '@/types'
-import { getBrandedFares, useCreateOrder, useSearchFlights } from '@/services'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { useQueryClient } from '@tanstack/react-query'
-import CloseIcon from '@mui/icons-material/Close'
-import SearchIcon from '@mui/icons-material/Search'
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
-import useMetadata from '@/contexts/useMetadata'
-import { AppError, isFrenchFlight, isRoundtripRestricted } from '@/utils'
-import { useRouter, useSearchParams } from 'next/navigation'
-import * as Sentry from '@sentry/nextjs'
+  Divider
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { SearchFlightFilters } from '@/types';
 
-// Composant de filtre en langage naturel :)
 const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: SearchFlightFilters) => void }) => {
   const [filterText, setFilterText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
+  
   // Exemples de filtres suggérés
   const filterSuggestions = [
     "Vols sans escale",
     "Vols avant midi",
     "Vols avec maximum 1 escale",
-    "Vols directs les moins chers",
-    "Vols de nuit"
+    "Air France uniquement",
+    "Vols de nuit",
+    "Vols moins chers"
   ];
 
   const handleFilterSubmit = async () => {
     if (!filterText.trim()) return;
     
     setIsProcessing(true);
+    setError(null);
+    setSuccess(false);
     
     try {
-      // Convertir le texte en filtres
-      const filters: Partial<SearchFlightFilters> = {
-        routes: [
-          {
-            routeIndex: 0,
-            departureAirports: [],
-            arrivalAirports: [],
-          },
-          {
-            routeIndex: 1,
-            departureAirports: [],
-            arrivalAirports: [],
-          },
-        ]
-      };
+      // Appel à l'API backend pour analyser le texte
+      const response = await fetch('http://localhost:5000/api/analyze-filters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: filterText }),
+      });
       
-      // Logique simple de détection des filtres par mots-clés
-      if (filterText.toLowerCase().includes('sans escale') || 
-          filterText.toLowerCase().includes('direct')) {
-        filters.scales = 'direct';
-      } else if (filterText.toLowerCase().includes('1 escale') || 
-                filterText.toLowerCase().includes('une escale') ||
-                filterText.toLowerCase().includes('maximum 1 escale')) {
-        filters.scales = '1-scale';
-      } else if (filterText.toLowerCase().includes('2 escales') || 
-                filterText.toLowerCase().includes('deux escales') ||
-                filterText.toLowerCase().includes('maximum 2 escales')) {
-        filters.scales = '2-scale';
+      if (!response.ok) {
+        throw new Error(`Erreur lors de l'analyse (${response.status})`);
       }
       
-      if (filterText.toLowerCase().includes('avant midi') || 
-          filterText.toLowerCase().includes('matin')) {
-        filters.flightTime = '6-12';
-      } else if (filterText.toLowerCase().includes('après-midi')) {
-        filters.flightTime = '12-18';
-      } else if (filterText.toLowerCase().includes('soir') || 
-                filterText.toLowerCase().includes('nuit')) {
-        filters.flightTime = '18-24';
-      } else if (filterText.toLowerCase().includes('tôt le matin') ||
-                filterText.toLowerCase().includes('très tôt') ||
-                filterText.toLowerCase().includes('aube')) {
-        filters.flightTime = '0-6';
-      }
+      const data = await response.json();
       
-      // Si un callback est fourni, appliquer les filtres
-      if (onApplyFilters) {
-        onApplyFilters(filters as SearchFlightFilters);
+      // Si un callback est fourni, appliquer les filtres renvoyés par le backend
+      if (onApplyFilters && data.filters) {
+        // S'assurer que les routes sont correctement formatées si elles ne sont pas incluses
+        const formattedFilters: SearchFlightFilters = {
+          ...data.filters,
+          routes: data.filters.routes || [
+            {
+              routeIndex: 0,
+              departureAirports: [],
+              arrivalAirports: [],
+            },
+            {
+              routeIndex: 1,
+              departureAirports: [],
+              arrivalAirports: [],
+            },
+          ]
+        };
+        
+        onApplyFilters(formattedFilters);
+        setSuccess(true);
+        
+        // Garder une trace des filtres appliqués pour l'affichage
+        const filtersDescription = describeAppliedFilters(formattedFilters);
+        if (filtersDescription) {
+          setAppliedFilters([...appliedFilters, filterText]);
+        }
+        
+        // Effacer le succès après 3 secondes
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
       }
       
       // Réinitialiser le champ après soumission réussie
@@ -130,9 +97,56 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
       
     } catch (error) {
       console.error("Erreur lors de l'application des filtres:", error);
+      setError(error instanceof Error ? error.message : "Une erreur s'est produite");
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  // Fonction pour générer une description des filtres appliqués
+  const describeAppliedFilters = (filters: SearchFlightFilters): string => {
+    const descriptions: string[] = [];
+    
+    if (filters.scales) {
+      switch (filters.scales) {
+        case 'direct':
+          descriptions.push('Vols directs uniquement');
+          break;
+        case '1-scale':
+          descriptions.push('Maximum 1 escale');
+          break;
+        case '2-scale':
+          descriptions.push('Maximum 2 escales');
+          break;
+      }
+    }
+    
+    if (filters.flightTime) {
+      switch (filters.flightTime) {
+        case '0-6':
+          descriptions.push('Départ entre minuit et 6h');
+          break;
+        case '6-12':
+          descriptions.push('Départ entre 6h et midi');
+          break;
+        case '12-18':
+          descriptions.push('Départ entre midi et 18h');
+          break;
+        case '18-24':
+          descriptions.push('Départ entre 18h et minuit');
+          break;
+      }
+    }
+    
+    if (filters.maxPrice && filters.maxPrice > 0) {
+      descriptions.push(`Prix max: ${filters.maxPrice}€ (${filters.maxPriceType === 'per-person' ? 'par personne' : 'total'})`);
+    }
+    
+    if (filters.airlinesSelected && filters.airlinesSelected.length > 0) {
+      descriptions.push(`Compagnies: ${filters.airlinesSelected.join(', ')}`);
+    }
+    
+    return descriptions.join(', ');
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -140,628 +154,168 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
   };
 
   return (
-    <Fade in={true} timeout={800}>
-      <Paper 
-        elevation={1}
-        sx={{
-          p: 3,
-          mt: 4,
-          maxWidth: '650px',
-          mx: 'auto',
-          borderRadius: 2,
-          backgroundColor: '#f9f9fb',
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <AutoAwesomeIcon sx={{ mr: 1, color: 'primary.main' }} />
-          <Typography variant="h6" fontWeight={500}>
-            Affinez votre recherche en langage naturel
-          </Typography>
-        </Box>
-        
-        <Typography variant="body2" color="text.secondary" mb={2.5}>
-          Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
-          Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
-        </Typography>
-        
-        <Box sx={{ display: 'flex', mb: 2.5 }}>
-          <TextField
-            fullWidth
-            value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
-            placeholder="Décrivez vos préférences de vol..."
-            variant="outlined"
-            size="medium"
-            disabled={isProcessing}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              }
+    <Paper 
+      elevation={1}
+      sx={{
+        p: 3,
+        mb: 4,
+        width: '100%',
+        maxWidth: '650px',
+        mx: 'auto',
+        borderRadius: 2,
+        backgroundColor: '#f9f9fb',
+        position: 'relative',
+      }}
+    >
+      {/* Messages de succès ou d'erreur */}
+      {success && (
+        <Fade in={success}>
+          <Alert 
+            severity="success" 
+            sx={{ 
+              position: 'absolute', 
+              top: -15, 
+              left: 0, 
+              right: 0, 
+              width: '90%', 
+              mx: 'auto',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
             }}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleFilterSubmit();
+          >
+            Filtres appliqués avec succès
+          </Alert>
+        </Fade>
+      )}
+      
+      {error && (
+        <Fade in={!!error}>
+          <Alert 
+            severity="error" 
+            sx={{ 
+              position: 'absolute', 
+              top: -15, 
+              left: 0, 
+              right: 0, 
+              width: '90%', 
+              mx: 'auto',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+            }}
+            onClose={() => setError(null)}
+          >
+            {error}
+          </Alert>
+        </Fade>
+      )}
+      
+      <Typography variant="body2" color="text.secondary" mb={2.5}>
+        Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
+        Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
+      </Typography>
+      
+      <Box sx={{ display: 'flex', mb: 2.5 }}>
+        <TextField
+          fullWidth
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+          placeholder="Décrivez vos préférences de vol..."
+          variant="outlined"
+          size="medium"
+          disabled={isProcessing}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderTopRightRadius: 0,
+              borderBottomRightRadius: 0,
+              height: '100%'
+            },
+            '& .MuiInputBase-root': {
+              height: '56px'
+            }
+          }}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleFilterSubmit();
+            }
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleFilterSubmit}
+          disabled={!filterText.trim() || isProcessing}
+          startIcon={isProcessing ? <CircularProgress size={20} color="inherit" /> : <SearchIcon />}
+          sx={{
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            boxShadow: 'none',
+            background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+            opacity: 1,
+            height: '56px',
+            minWidth: '120px',
+            '&.Mui-disabled': {
+              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+              opacity: 0.6,
+              color: 'white'
+            }
+          }}
+        >
+          {isProcessing ? 'Analyse...' : 'Filtrer'}
+        </Button>
+      </Box>
+      
+      {/* Suggestions de filtres */}
+      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+        <Typography variant="body2" color="text.secondary" sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+          Suggestions :
+        </Typography>
+        {filterSuggestions.map((suggestion) => (
+          <Chip
+            key={suggestion}
+            label={suggestion}
+            onClick={() => handleSuggestionClick(suggestion)}
+            variant="outlined"
+            size="small"
+            sx={{ 
+              fontSize: '0.75rem',
+              height: '28px',
+              borderColor: 'rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                borderColor: 'primary.main',
+                backgroundColor: 'rgba(40, 69, 185, 0.04)',
               }
             }}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleFilterSubmit}
-            disabled={!filterText.trim() || isProcessing}
-            startIcon={<SearchIcon />}
-            sx={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-              boxShadow: 'none',
-              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
-            }}
-          >
-            Filtrer
-          </Button>
-        </Box>
-        
-        {/* Suggestions de filtres */}
-        <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-          <Typography variant="body2" color="text.secondary" sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-            Suggestions :
-          </Typography>
-          {filterSuggestions.map((suggestion) => (
-            <Chip
-              key={suggestion}
-              label={suggestion}
-              onClick={() => handleSuggestionClick(suggestion)}
-              variant="outlined"
-              size="small"
-              sx={{ 
-                fontSize: '0.75rem',
-                height: '28px',
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  backgroundColor: 'rgba(40, 69, 185, 0.04)',
-                }
-              }}
-            />
-          ))}
-        </Stack>
-      </Paper>
-    </Fade>
+        ))}
+      </Stack>
+      
+      {/* Affichage des filtres appliqués */}
+      {appliedFilters.length > 0 && (
+        <>
+          <Divider sx={{ my: 2 }} />
+          <Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+              <CheckCircleIcon sx={{ fontSize: 16, mr: 0.5, color: 'success.main' }} />
+              Filtres appliqués :
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+              {appliedFilters.map((filter, index) => (
+                <Chip
+                  key={index}
+                  label={filter}
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                  sx={{ 
+                    fontSize: '0.75rem',
+                    height: '28px'
+                  }}
+                />
+              ))}
+            </Stack>
+          </Box>
+        </>
+      )}
+    </Paper>
   );
 };
 
-export default function SearchPage() {
-  useMetadata('Rechercher des vols')
-  const theme = useTheme()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const triggerSearch = searchParams.get('rechercher')
-  const queryClient = useQueryClient()
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
-  const RESULTS_PER_PAGE = 10
-  const [isAgencyWarningOpen, setIsAgencyWarningOpen] = React.useState(false)
-  const [isNoResultsModalOpen, setIsNoResultsModalOpen] = React.useState(false)
-  const [isNavigating, setIsNavigating] = React.useState(false)
-  const [resultsNumber, setResultsNumber] = React.useState(RESULTS_PER_PAGE)
-  const [activeFilter, setActiveFilter] = React.useState<SearchFlightsFiltersOptions>('all')
-  const [activeFilterOpen, setActiveFilterOpen] = React.useState(false)
-  const [frenchFlightWarnModalIsOpen, setFrenchFlightWarnModalIsOpen] = React.useState(false)
-  const [roundtripRestrictedWarnModalIsOpen, setRoundtripRestrictedWarnModalIsOpen] =
-    React.useState(false)
-  const [filters, setFilters] = React.useState<SearchFlightFilters>({
-    routes: [
-      {
-        routeIndex: 0,
-        departureAirports: [],
-        arrivalAirports: [],
-      },
-      {
-        routeIndex: 1,
-        departureAirports: [],
-        arrivalAirports: [],
-      },
-    ],
-  })
-
-  const {
-    flightDetailsOpen,
-    setFlightDetailsOpen,
-    searchParamsDto,
-    setSearchParams,
-    searchParamsCache,
-  } = useFlights()
-  const {
-    goToFirstStep,
-    order,
-    skipStep,
-    setOrder,
-    resetBooking,
-    setSelectedFare,
-    setSelectedFlight,
-    bookingStartTime,
-  } = useBooking()
-  const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder()
-  const { selectedAgencyId, setIsAgencySelectorOpen } = useAgencySelector()
-  const {
-    data: response,
-    isSuccess,
-    isLoading: isSearching,
-  } = useSearchFlights({
-    params: searchParamsDto,
-    orderId: order?.id,
-  })
-  const isLoading = isSearching || isCreatingOrder
-
-  const getFilteredResults = useCallback((solutions: Solution[], filters: SearchFlightFilters) => {
-    return solutions
-      .filter((solution) => {
-        const totalStops = solution.routes.reduce(
-          (acc, route) => ((route.stopNumber || 0) > acc ? route.stopNumber : acc),
-          0,
-        )
-        if (
-          filters.maxPriceType == 'total' &&
-          filters?.maxPrice &&
-          solution.priceInfo.total > filters.maxPrice
-        )
-          return false
-        if (
-          filters.maxPriceType == 'per-person' &&
-          filters?.maxPrice &&
-          solution.adults.pricePerPerson > filters.maxPrice
-        )
-          return false
-        if (filters?.scales === 'direct' && totalStops > 0) return false
-        if (filters?.scales === '1-scale' && totalStops > 1) return false
-        if (filters?.scales === '2-scale' && totalStops > 2) return false
-
-        const flightStartAt = new Date(
-          solution.routes[0].segments[0].departureDateTime,
-        ).getUTCHours()
-        if (filters?.flightTime === '0-6' && flightStartAt >= 6) return false
-        if (filters?.flightTime === '6-12' && (flightStartAt < 6 || flightStartAt >= 12))
-          return false
-        if (filters?.flightTime === '12-18' && (flightStartAt < 12 || flightStartAt >= 18))
-          return false
-        if (filters?.flightTime === '18-24' && flightStartAt < 18) return false
-
-        if (solution.routes.length > 1) {
-          const flightReturnAt = new Date(
-            solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalDateTime,
-          ).getUTCHours()
-          if (filters?.flightTimeReturn === '0-6' && flightReturnAt >= 6) return false
-          if (filters?.flightTimeReturn === '6-12' && (flightReturnAt < 6 || flightReturnAt >= 12))
-            return false
-          if (
-            filters?.flightTimeReturn === '12-18' &&
-            (flightReturnAt < 12 || flightReturnAt >= 18)
-          )
-            return false
-          if (filters?.flightTimeReturn === '18-24' && flightReturnAt < 18) return false
-        }
-
-        if (filters?.routes[0].departureAirports.length > 0) {
-          if (
-            !filters.routes[0].departureAirports.includes(
-              solution.routes[0].segments[0].departureCityCode,
-            )
-          )
-            return false
-        }
-
-        if (filters?.routes[0].arrivalAirports.length > 0) {
-          const arrivalCityCode =
-            solution.routes[0].segments[solution.routes[0].segments.length - 1].arrivalCityCode
-          if (!filters.routes[0].arrivalAirports.includes(arrivalCityCode)) return false
-        }
-
-        if (
-          filters?.routes[1].departureAirports.length > 0 &&
-          (searchParamsDto?.search_data.segments?.length || 0) > 1
-        ) {
-          const departureCityCode =
-            solution.routes[1].segments[solution.routes[1].segments.length - 1].departureCityCode
-          if (!filters.routes[1].departureAirports.includes(departureCityCode)) return false
-        }
-
-        if (
-          filters?.routes[1].arrivalAirports.length > 0 &&
-          (searchParamsDto?.search_data.segments?.length || 0) > 1
-        ) {
-          const arrivalCityCode =
-            solution.routes[1].segments[solution.routes[1].segments.length - 1].arrivalCityCode
-          if (!filters.routes[1].arrivalAirports.includes(arrivalCityCode)) return false
-        }
-
-        return true
-      })
-      .sort((a, b) => a.priceInfo.total - b.priceInfo.total)
-  }, [])
-  const filteredDataOne = getFilteredResults(response?.solutions || [], filters)
-
-  const filteredData = filteredDataOne?.filter((solution) => {
-    if (filters?.airlinesSelected && filters?.airlinesSelected.length > 0) {
-      const airlines = solution.routes.map((route) => route.carrier)
-      if (!filters.airlinesSelected.some((airline) => airlines.includes(airline))) return false
-    }
-    return true
-  })
-  const hasMoreResults = resultsNumber < (filteredData?.length || 0)
-
-  const getAirlines = () => {
-    const airlines: AirlineFilterData[] = []
-    filteredDataOne?.forEach((solution) => {
-      const indexAirline = airlines.findIndex((current) =>
-        solution.routes.map((route) => route.carrier).includes(current.carrier),
-      )
-      if (indexAirline === -1) {
-        airlines.push({
-          carrier: solution.routes[0].carrier,
-          price: solution.priceInfo.total,
-          currencySymbol: solution.priceInfo.currencySymbol,
-        })
-      } else {
-        if (solution.priceInfo.total < airlines[indexAirline].price) {
-          airlines[indexAirline].price = solution.priceInfo.total
-        }
-      }
-    })
-    return airlines.sort((a, b) => a.price - b.price)
-  }
-
-  const searchFlights = ({
-    searchParams,
-    agencyId,
-  }: {
-    searchParams: SearchFlightsParams
-    agencyId?: AgencyId
-  }) => {
-    if (!isFrenchFlight(searchParams)) {
-      setFrenchFlightWarnModalIsOpen(true)
-      return
-    }
-    if (isRoundtripRestricted(searchParams)) {
-      setRoundtripRestrictedWarnModalIsOpen(true)
-      return
-    }
-
-    const aId = agencyId ? agencyId : selectedAgencyId
-    if (!aId) {
-      setIsAgencyWarningOpen(true)
-      let appError = new AppError('Something went wrong searching flights', 'No agency selected', {
-        agencyId: !aId,
-      })
-      Sentry.captureException(appError, {
-        extra: appError.extra,
-      })
-      return
-    }
-    createOrder(
-      { agencyId: aId },
-      {
-        onSuccess: (order) => {
-          bookingStartTime.current = Date.now()
-          setOrder(order)
-          searchParams && setSearchParams(searchParams)
-        },
-        onError: (error) => {
-          throw new AppError('Something went wrong searching flights', 'Creating order failed', {
-            serverError: error,
-          })
-        },
-      },
-    )
-  }
-
-  const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
-    if (!order) {
-      throw new AppError(
-        'Something went wrong selecting flight',
-        'Selecting flight preconditions not met',
-        {
-          missingData: {
-            order: !order,
-          },
-        },
-      )
-    }
-    setIsNavigating(true)
-    resetBooking()
-
-    // We can ask more information about the flight to decide which steps to follow
-    let selectedFare = flight
-    try {
-      const fares = await queryClient.fetchQuery<Solution[]>({
-        queryKey: ['brandedFares', order.id, flight.id],
-        queryFn: () => getBrandedFares({ orderId: order.id, solutionId: flight.id }),
-        gcTime: Infinity, // TODO: this is not true
-        staleTime: Infinity, // TODO: this is not true
-      })
-      if (fares.length === 0) {
-        skipStep('fares')
-      }
-      const basicFare = fares.find(
-        (solution) => solution.priceInfo.total === flight.priceInfo.total,
-      )
-      if (basicFare) {
-        selectedFare = basicFare
-      } else {
-        let appError = new AppError(
-          'Something went wrong selecting flight',
-          'Basic fare not found',
-          {
-            basicFare: basicFare,
-            fares: fares,
-            flight: flight,
-          },
-        )
-        Sentry.captureException(appError, {
-          extra: appError.extra,
-        })
-      }
-    } catch (error) {
-      skipStep('fares')
-      let appError = new AppError(
-        'Something went wrong selecting flight',
-        'Server error fetching branded fares',
-        {
-          serverError: error,
-        },
-      )
-      Sentry.captureException(appError, {
-        extra: appError.extra,
-      })
-    }
-    setSelectedFlight(flight)
-    setSelectedFare(selectedFare)
-    setFlightDetailsOpen(false)
-    goToFirstStep()
-  }
-
-  const handleAgencySelected = (e: CustomEventInit<{ agency: Agency }>) => {
-    if (searchParamsCache && e.detail?.agency)
-      searchFlights({ agencyId: e.detail.agency.id, searchParams: searchParamsCache })
-  }
-
-  useEffect(() => {
-    document.addEventListener('agencySelected', handleAgencySelected)
-    if (triggerSearch && searchParamsCache) {
-      searchFlights({ searchParams: searchParamsCache })
-    } else if (searchParamsCache && !order) {
-      searchFlights({ searchParams: searchParamsCache })
-    }
-    return () => {
-      document.removeEventListener('agencySelected', handleAgencySelected)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (response?.solutions.length === 0) {
-      bookingStartTime.current = null
-      setIsNoResultsModalOpen(true)
-    }
-  }, [response])
-
-  return (
-    <>
-      <TopBar height={isDesktop ? 120 : 230} fixed={isDesktop ? false : true}>
-        <Navbar />
-        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-          <OldNavbar />
-        </Box>
-        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-          <SelectedFlightInfoTopbarMobile
-            withFilters
-            withAgencySelector
-            onOpenFilters={(filterName) => {
-              setActiveFilter(filterName)
-              setActiveFilterOpen(true)
-            }}
-            onSearch={searchFlights}
-            isLoading={isLoading}
-          />
-        </Box>
-      </TopBar>
-      <Box
-        sx={{
-          backgroundColor: 'grey.200',
-        }}>
-        <Stack
-          sx={{
-            justifyContent: 'space-between',
-            paddingY: { xs: 2, lg: 3 },
-            flexDirection: 'column',
-          }}>
-          <SearchFlightsModes
-            sticky={true}
-            onSearch={searchFlights}
-            sx={{ mb: 3, display: { xs: 'none', lg: 'block' } }}
-            disabled={isLoading}
-          />
-          <SectionContainer>
-            <Stack direction="column" width="100%">
-              {isLoading && (
-                <Grow in={isLoading}>
-                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center" width="100%">
-                    {/* Animation de chargement et message existants */}
-                    <Stack maxWidth="516px" direction="row" gap={3} width="100%">
-                      <FlightsLoader />
-                      <Box>
-                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                        <Typography variant="bodyMd" pt={1.5}>
-                          Merci de patienter quelques secondes le temps que nous trouvions les
-                          meilleures offres du moment !
-                        </Typography>
-                      </Box>
-                    </Stack>
-                    
-                    {/* Ajout du filtre en langage naturel */}
-                    <Box sx={{ width: '100%', maxWidth: '650px', mt: 4 }}>
-                      <NaturalLanguageFilter onApplyFilters={(newFilters) => setFilters(prevFilters => ({
-                        ...prevFilters,
-                        ...newFilters
-                      }))} />
-                    </Box>
-                  </Stack>
-                </Grow>
-              )}
-              {!isDesktop && !isLoading && response?.solutions.length === 0 && (
-                <>
-                  <Button onClick={() => router.push('/vol')}>
-                    Retourner à la page de recherche
-                  </Button>
-                </>
-              )}
-              <Stack direction="row" spacing={isDesktop ? 2 : 0}>
-                <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-                  <SearchFlightsFilters
-                    filterData={response?.searchFilters}
-                    airlines={getAirlines()}
-                    departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
-                    arrival={
-                      response?.solutions[0]?.routes[0]?.segments[
-                        response.solutions[0]?.routes[0]?.segments?.length - 1
-                      ]?.arrival
-                    }
-                    isRoundTrip={
-                      searchParamsDto?.search_data.segments?.length
-                        ? searchParamsDto.search_data.segments.length > 1
-                        : false
-                    }
-                    onSubmit={(values) => setFilters(values)}
-                    activeFilter={activeFilter}
-                  />
-                </Box>
-                <Stack gap={2} flexGrow={1}>
-                  {isLoading && (
-                    <>
-                      <FlightResultSkeleton />
-                      <FlightResultSkeleton />
-                      <FlightResultSkeleton />
-                    </>
-                  )}
-                  {isSuccess && (
-                    <>
-                      <SearchResults results={filteredData?.slice(0, resultsNumber)} />
-                      {hasMoreResults && (
-                        <Button
-                          variant="contained"
-                          onClick={() => setResultsNumber(resultsNumber + RESULTS_PER_PAGE)}
-                          data-testid="searchFlights-viewMoreResultsButton">
-                          Résultats suivants
-                        </Button>
-                      )}
-                      <Typography
-                        variant="bodySm"
-                        color="grey.600"
-                        textAlign={isDesktop ? 'left' : 'center'}>
-                        Les prix affichés incluent les taxes et peuvent changer en fonction de la
-                        disponibilité. Vous pouvez consulter les frais supplémentaires avant le
-                        paiement. Les prix ne sont pas définitifs tant que vous n'avez pas finalisé
-                        votre achat.
-                      </Typography>
-                    </>
-                  )}
-                </Stack>
-              </Stack>
-            </Stack>
-          </SectionContainer>
-        </Stack>
-      </Box>
-      <Drawer
-        open={flightDetailsOpen}
-        onClose={() => setFlightDetailsOpen(false)}
-        anchor="right"
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-            height: { xs: 'calc(100% - 64px)', lg: '100%' },
-            top: 'unset',
-            bottom: 0,
-            width: { xs: '100%', lg: 'unset' },
-          },
-        }}>
-        <FlightDetails
-          isLoading={isNavigating}
-          onClose={() => setFlightDetailsOpen(false)}
-          onSelectFlight={handleSelectFlight}
-        />
-      </Drawer>
-      <Drawer
-        open={activeFilterOpen}
-        onClose={() => {
-          setActiveFilter('all')
-          setActiveFilterOpen(false)
-        }}
-        anchor="bottom"
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-            maxHeight: 'calc(100% - 200px)',
-            height: 'auto',
-          },
-        }}>
-        <Box py={0.5} px={1}>
-          <IconButton
-            aria-label="close"
-            onClick={() => setActiveFilterOpen(false)}
-            data-testid="searchFlightsDrawerFilters-closeButton"
-            sx={{ float: 'right' }}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        <Divider />
-        <SearchFlightsFilters
-          filterData={response?.searchFilters}
-          selectedFilters={filters}
-          airlines={getAirlines()}
-          departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
-          arrival={
-            response?.solutions[0]?.routes[0]?.segments[
-              response.solutions[0]?.routes[0]?.segments?.length - 1
-            ]?.arrival
-          }
-          isRoundTrip={
-            searchParamsDto?.search_data.segments?.length
-              ? searchParamsDto.search_data.segments.length > 1
-              : false
-          }
-          onSubmit={(values) => setFilters(values)}
-          activeFilter={activeFilter}
-        />
-      </Drawer>
-      <Modal open={isAgencyWarningOpen} onClose={() => setIsAgencyWarningOpen(false)}>
-        <NoAgencyWarningModal
-          onShowAgency={() => {
-            setIsAgencySelectorOpen(true)
-            setIsAgencyWarningOpen(false)
-          }}
-        />
-      </Modal>
-      <Modal open={isNoResultsModalOpen} onClose={() => setIsNoResultsModalOpen(false)}>
-        <NoResultsErrorModal onClose={() => setIsNoResultsModalOpen(false)} />
-      </Modal>
-      <Modal
-        open={frenchFlightWarnModalIsOpen}
-        onClose={() => setFrenchFlightWarnModalIsOpen(false)}>
-        <AlertDestinationModal
-          onShowAgency={() => {
-            setIsAgencySelectorOpen(true)
-            setFrenchFlightWarnModalIsOpen(false)
-          }}
-          onClose={() => {
-            setFrenchFlightWarnModalIsOpen(false)
-          }}
-        />
-      </Modal>
-      <Modal
-        open={roundtripRestrictedWarnModalIsOpen}
-        onClose={() => setRoundtripRestrictedWarnModalIsOpen(false)}>
-        <RoundtripRestrictedFlightModal
-          onClose={() => setRoundtripRestrictedWarnModalIsOpen(false)}
-        />
-      </Modal>
-    </>
-  )
-}
+export default NaturalLanguageFilter;

@@ -18,6 +18,7 @@ import {
   NoResultsErrorModal,
   AlertDestinationModal,
   RoundtripRestrictedFlightModal,
+  NaturalLanguageFilter // Importez le composant depuis les fichiers components
 } from '@/components'
 import {
   Box,
@@ -33,6 +34,8 @@ import {
   TextField,
   Chip,
   Fade,
+  Alert,
+  CircularProgress
 } from '@mui/material'
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import {
@@ -56,180 +59,6 @@ import { AppError, isFrenchFlight, isRoundtripRestricted } from '@/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as Sentry from '@sentry/nextjs'
 
-const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: SearchFlightFilters) => void }) => {
-  const [filterText, setFilterText] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  // Exemples de filtres suggérés
-  const filterSuggestions = [
-    "Vols sans escale",
-    "Vols avant midi",
-    "Vols avec maximum 1 escale",
-    "Vols de nuit"
-  ];
-
-  const handleFilterSubmit = async () => {
-    if (!filterText.trim()) return;
-    
-    setIsProcessing(true);
-    
-    try {
-      // Convertir le texte en filtres
-      const filters: Partial<SearchFlightFilters> = {
-        routes: [
-          {
-            routeIndex: 0,
-            departureAirports: [],
-            arrivalAirports: [],
-          },
-          {
-            routeIndex: 1,
-            departureAirports: [],
-            arrivalAirports: [],
-          },
-        ]
-      };
-      
-      // Logique simple de détection des filtres par mots-clés
-      if (filterText.toLowerCase().includes('sans escale') || 
-          filterText.toLowerCase().includes('direct')) {
-        filters.scales = 'direct';
-      } else if (filterText.toLowerCase().includes('1 escale') || 
-                filterText.toLowerCase().includes('une escale') ||
-                filterText.toLowerCase().includes('maximum 1 escale')) {
-        filters.scales = '1-scale';
-      } else if (filterText.toLowerCase().includes('2 escales') || 
-                filterText.toLowerCase().includes('deux escales') ||
-                filterText.toLowerCase().includes('maximum 2 escales')) {
-        filters.scales = '2-scale';
-      }
-      
-      if (filterText.toLowerCase().includes('avant midi') || 
-          filterText.toLowerCase().includes('matin')) {
-        filters.flightTime = '6-12';
-      } else if (filterText.toLowerCase().includes('après-midi')) {
-        filters.flightTime = '12-18';
-      } else if (filterText.toLowerCase().includes('soir') || 
-                filterText.toLowerCase().includes('nuit')) {
-        filters.flightTime = '18-24';
-      } else if (filterText.toLowerCase().includes('tôt le matin') ||
-                filterText.toLowerCase().includes('très tôt') ||
-                filterText.toLowerCase().includes('aube')) {
-        filters.flightTime = '0-6';
-      }
-      
-      // Si un callback est fourni, appliquer les filtres
-      if (onApplyFilters) {
-        onApplyFilters(filters as SearchFlightFilters);
-      }
-      
-      // Réinitialiser le champ après soumission réussie
-      setFilterText('');
-      
-    } catch (error) {
-      console.error("Erreur lors de l'application des filtres:", error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setFilterText(suggestion);
-  };
-
-  return (
-    <Paper 
-      elevation={1}
-      sx={{
-        p: 3,
-        mb: 4,
-        width: '100%',
-        maxWidth: '100%',
-        borderRadius: 2,
-        backgroundColor: '#f9f9fb',
-      }}
-    >
-      <Typography variant="body2" color="text.secondary" mb={2.5}>
-        Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
-        Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
-      </Typography>
-      
-      <Box sx={{ display: 'flex', mb: 2.5 }}>
-        <TextField
-          fullWidth
-          value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
-          placeholder="Décrivez vos préférences de vol..."
-          variant="outlined"
-          size="medium"
-          disabled={isProcessing}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-              height: '100%'  // Assurer que l'input prend la hauteur complète
-            },
-            '& .MuiInputBase-root': {
-              height: '56px'  // Hauteur fixe pour le TextField
-            }
-          }}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleFilterSubmit();
-            }
-          }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleFilterSubmit}
-          disabled={!filterText.trim() || isProcessing}
-          startIcon={<SearchIcon />}
-          sx={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            boxShadow: 'none',
-            background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
-            opacity: 1,
-            height: '56px',  // Même hauteur que le TextField
-            '&.Mui-disabled': {
-              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
-              opacity: 0.6,
-              color: 'white'
-            }
-          }}
-        >
-          Filtrer
-        </Button>
-      </Box>
-      
-      {/* Suggestions de filtres */}
-      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-        <Typography variant="body2" color="text.secondary" sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-          Suggestions :
-        </Typography>
-        {filterSuggestions.map((suggestion) => (
-          <Chip
-            key={suggestion}
-            label={suggestion}
-            onClick={() => handleSuggestionClick(suggestion)}
-            variant="outlined"
-            size="small"
-            sx={{ 
-              fontSize: '0.75rem',
-              height: '28px',
-              borderColor: 'rgba(0, 0, 0, 0.1)',
-              '&:hover': {
-                borderColor: 'primary.main',
-                backgroundColor: 'rgba(40, 69, 185, 0.04)',
-              }
-            }}
-          />
-        ))}
-      </Stack>
-    </Paper>
-  );
-};
 export default function FlighsPage() {
   useMetadata('Rechercher des vols')
   const theme = useTheme()
@@ -248,6 +77,8 @@ export default function FlighsPage() {
   const [frenchFlightWarnModalIsOpen, setFrenchFlightWarnModalIsOpen] = React.useState(false)
   const [roundtripRestrictedWarnModalIsOpen, setRoundtripRestrictedWarnModalIsOpen] =
     React.useState(false)
+  // Ajoutez cette ligne pour définir filtersAppliedByAI au niveau du composant principal
+  const [filtersAppliedByAI, setFiltersAppliedByAI] = useState(false)
   const [filters, setFilters] = React.useState<SearchFlightFilters>({
     routes: [
       {
@@ -581,31 +412,39 @@ export default function FlighsPage() {
           <SectionContainer>
             <Stack direction="column" width="100%">
             {isLoading && (
-              <Grow in={isLoading}>
-                <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }}>
-                  {/* Filtre en langage naturel après le FlightLoader - largeur adaptée */}
-                  <NaturalLanguageFilter 
-                    onApplyFilters={(newFilters) => setFilters(prevFilters => ({
-                      ...prevFilters,
-                      ...newFilters
-                    }))} 
-                  />
-                   {/* Animation de chargement et message existants */}
-                   <Stack alignItems="center">
-                    <Stack maxWidth="516px" direction="row" gap={3}>
-                      <FlightsLoader />
-                      <Box>
-                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                        <Typography variant="bodyMd" pt={1.5}>
-                          Merci de patienter quelques secondes le temps que nous trouvions les
-                          meilleures offres du moment !
-                        </Typography>
-                      </Box>
-                    </Stack>
+            <Grow in={isLoading}>
+              <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }}>
+                {/* Animation de chargement et message existants */}
+                <Stack alignItems="center">
+                  <Stack maxWidth="516px" direction="row" gap={3}>
+                    <FlightsLoader />
+                    <Box>
+                      <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                      <Typography variant="bodyMd" pt={1.5}>
+                        Merci de patienter quelques secondes le temps que nous trouvions les
+                        meilleures offres du moment !
+                      </Typography>
+                    </Box>
                   </Stack>
                 </Stack>
-              </Grow>
-            )}
+                
+                {/* Filtre en langage naturel - centré et avec largeur maximale */}
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 4 }}>
+                  <NaturalLanguageFilter 
+                    onApplyFilters={(newFilters) => {
+                      console.log("Filtres reçus de l'IA:", newFilters);
+                      setFilters(prevFilters => ({
+                        ...prevFilters,
+                        ...newFilters
+                      }));
+                      // Marquer que des filtres ont été appliqués par l'IA
+                      setFiltersAppliedByAI(true);
+                    }} 
+                  />
+                </Box>
+              </Stack>
+            </Grow>
+          )}
               {!isDesktop && !isLoading && response?.solutions.length === 0 && (
                 <>
                   <Button onClick={() => router.push('/vol')}>
@@ -615,23 +454,26 @@ export default function FlighsPage() {
               )}
               <Stack direction="row" spacing={isDesktop ? 2 : 0}>
                 <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-                  <SearchFlightsFilters
-                    filterData={response?.searchFilters}
-                    airlines={getAirlines()}
-                    departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
-                    arrival={
-                      response?.solutions[0]?.routes[0]?.segments[
-                        response.solutions[0]?.routes[0]?.segments?.length - 1
-                      ]?.arrival
-                    }
-                    isRoundTrip={
-                      searchParamsDto?.search_data.segments?.length
-                        ? searchParamsDto.search_data.segments.length > 1
-                        : false
-                    }
-                    onSubmit={(values) => setFilters(values)}
-                    activeFilter={activeFilter}
-                  />
+                <SearchFlightsFilters
+                  filterData={response?.searchFilters}
+                  airlines={getAirlines()}
+                  departure={response?.solutions[0]?.routes[0]?.segments[0]?.departure}
+                  arrival={
+                    response?.solutions[0]?.routes[0]?.segments[
+                      response.solutions[0]?.routes[0]?.segments?.length - 1
+                    ]?.arrival
+                  }
+                  isRoundTrip={
+                    searchParamsDto?.search_data.segments?.length
+                      ? searchParamsDto.search_data.segments.length > 1
+                      : false
+                  }
+                  onSubmit={(values) => setFilters(values)}
+                  activeFilter={activeFilter}
+                  // Ajouter la prop filtersEnabled pour forcer l'activation des filtres
+                  filtersEnabled={filtersAppliedByAI}
+                  selectedFilters={filters}
+                />
                 </Box>
                 <Stack gap={2} flexGrow={1}>
                   {isLoading && (
@@ -729,6 +571,7 @@ export default function FlighsPage() {
           }
           onSubmit={(values) => setFilters(values)}
           activeFilter={activeFilter}
+          filtersEnabled={filtersAppliedByAI}  // Ajoutez également ici pour le drawer
         />
       </Drawer>
       <Modal open={isAgencyWarningOpen} onClose={() => setIsAgencyWarningOpen(false)}>
