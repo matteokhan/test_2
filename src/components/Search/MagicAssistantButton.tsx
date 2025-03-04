@@ -462,53 +462,81 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 sx={{ 
                   alignSelf: 'flex-start', 
                   maxWidth: '80%',
-                  '@keyframes dotPulse': {
-                    '0%, 100%': { opacity: 0.5 },
-                    '50%': { opacity: 1 },
-                  }
                 }}
               >
                 <Paper
-                  elevation={1}
+                  elevation={0}
                   sx={{
                     p: 1.5,
                     borderRadius: 2,
                     bgcolor: 'white',
                     borderBottomLeftRadius: 0,
                     display: 'flex',
-                    gap: 0.5,
+                    alignItems: 'center',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                   }}
                 >
-                  <Typography 
-                    component="span" 
-                    sx={{ 
-                      fontSize: 24, 
-                      animation: 'dotPulse 1.4s infinite',
-                      animationDelay: '0s' 
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 0.7,
+                      px: 1,
+                      '@keyframes pulse': {
+                        '0%, 100%': { 
+                          transform: 'scale(0.8)',
+                          opacity: 0.5,
+                        },
+                        '50%': { 
+                          transform: 'scale(1)',
+                          opacity: 1,
+                        },
+                      },
                     }}
                   >
-                    .
-                  </Typography>
-                  <Typography 
-                    component="span" 
-                    sx={{ 
-                      fontSize: 24, 
-                      animation: 'dotPulse 1.4s infinite',
-                      animationDelay: '0.2s' 
-                    }}
-                  >
-                    .
-                  </Typography>
-                  <Typography 
-                    component="span" 
-                    sx={{ 
-                      fontSize: 24, 
-                      animation: 'dotPulse 1.4s infinite',
-                      animationDelay: '0.4s' 
-                    }}
-                  >
-                    .
-                  </Typography>
+                    <Box 
+                      sx={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#0066cc',
+                        animation: 'pulse 1.4s infinite ease-in-out',
+                        animationDelay: '0s',
+                      }}
+                    />
+                    <Box 
+                      sx={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#0066cc',
+                        animation: 'pulse 1.4s infinite ease-in-out',
+                        animationDelay: '0.2s',
+                      }}
+                    />
+                    <Box 
+                      sx={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#0066cc',
+                        animation: 'pulse 1.4s infinite ease-in-out',
+                        animationDelay: '0.4s',
+                      }}
+                    />
+                    <Typography 
+                      component="span"
+                      variant="body2"
+                      sx={{ 
+                        ml: 1,
+                        color: 'text.secondary',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      Réflexion en cours...
+                    </Typography>
+                  </Box>
                 </Paper>
               </Box>
             )}
