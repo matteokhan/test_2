@@ -412,25 +412,25 @@ export default function FlighsPage() {
           <SectionContainer>
             <Stack direction="column" width="100%">
             {isLoading && (
-            <Grow in={isLoading}>
-              <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 }, width: '100%' }}>
-                {/* Filtre en langage naturel - placé en premier et prenant toute la largeur */}
-                <Box sx={{ width: '100%', mb: 4 }}>
-                  <NaturalLanguageFilter 
-                    onApplyFilters={(newFilters) => {
-                      console.log("Filtres reçus de l'IA:", newFilters);
-                      setFilters(prevFilters => ({
-                        ...prevFilters,
-                        ...newFilters
-                      }));
-                      // Marquer que des filtres ont été appliqués par l'IA
-                      setFiltersAppliedByAI(true);
-                    }} 
-                  />
-                </Box>
-                
-                {/* Animation de chargement et message existants */}
-                <Stack alignItems="center">
+          <Grow in={isLoading}>
+            <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 }, width: '100%' }}>
+              {/* Filtre en langage naturel - placé en premier et prenant toute la largeur */}
+              <Box sx={{ width: '100%', mb: 4 }}>
+                <NaturalLanguageFilter 
+                  onApplyFilters={(newFilters) => {
+                    console.log("Filtres reçus de l'IA:", newFilters);
+                    setFilters(prevFilters => ({
+                      ...prevFilters,
+                      ...newFilters
+                    }));
+                    // Marquer que des filtres ont été appliqués par l'IA
+                    setFiltersAppliedByAI(true);
+                  }} 
+                />
+              </Box>
+              
+              {/* Animation de chargement et message existants */}
+              <Stack alignItems="center">
                   <Stack maxWidth="516px" direction="row" gap={3}>
                     <FlightsLoader />
                     <Box>

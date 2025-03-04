@@ -206,9 +206,6 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
         </Fade>
       )}
       
-      <Typography variant="h6" color="text.primary" mb={1} fontWeight="500">
-        Filtrer les résultats avec l'IA
-      </Typography>
       <Typography variant="body2" color="text.secondary" mb={2.5}>
         Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
         Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
@@ -248,15 +245,23 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
           sx={{
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
+            textTransform: 'none',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            letterSpacing: '0.5px',
             boxShadow: 'none',
-            background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
-            opacity: 1,
+            background: '#0066cc',
             height: '56px',
             minWidth: '120px',
+            px: 3,
             '&.Mui-disabled': {
-              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+              background: '#0066cc',
               opacity: 0.6,
               color: 'white'
+            },
+            '&:hover': {
+              background: '#0066cc',
+              boxShadow: '0 4px 8px rgba(0, 102, 204, 0.2)',
             }
           }}
         >

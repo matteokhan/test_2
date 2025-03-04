@@ -9,6 +9,10 @@ import {
   Fade, 
   Collapse 
 } from '@mui/material';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';  // Pour les tables et autres fonctionnalités GitHub
+import rehypeRaw from 'rehype-raw';  // Pour le HTML brut
+import remarkBreaks from 'remark-breaks';  // Pour les sauts de ligne
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -324,14 +328,14 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
             bgcolor: '#f8f9fa',
           }}
         >
-          {/* En-tête du chat */}
-          <Box
+         {/* En-tête du chat */}
+         <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               p: 2,
-              background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+              background: 'linear-gradient(125deg, #0066cc 0%, #0066cc 100%)', // Changed header gradient
               color: 'white',
             }}
           >
@@ -359,53 +363,134 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
             }}
           >
             {/* Zone des messages */}
-            <Box
-              sx={{
-                flexGrow: 1,
-                p: 2,
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1.5,
-                bgcolor: '#f8f9fa',
-              }}
-            >
-              {messages.map((message) => (
-                <Box
-                  key={message.id}
-                  sx={{
-                    alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
+<Box
+  sx={{
+    flexGrow: 1,
+    p: 2,
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1.5,
+    bgcolor: '#f8f9fa',
+  }}
+>
+  {messages.map((message) => (
+    <Box
+      key={message.id}
+      sx={{
+        alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
+        maxWidth: '80%',
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          p: 1.5,
+          borderRadius: 2,
+          bgcolor: message.sender === 'user' ? '#e3f2fd' : 'white',
+          borderBottomRightRadius: message.sender === 'user' ? 0 : 2,
+          borderBottomLeftRadius: message.sender === 'user' ? 2 : 0,
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+          '& .markdown-content': {
+            '& p': {
+              margin: 0,
+              marginBottom: '0.5em',
+              '&:last-child': {
+                marginBottom: 0,
+              }
+            },
+            '& a': {
+              color: '#0066cc',
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              }
+            },
+            '& code': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              padding: '2px 4px',
+              borderRadius: 4,
+              fontSize: '0.9em',
+            },
+            '& pre': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              padding: '8px',
+              borderRadius: 4,
+              overflowX: 'auto',
+              '& code': {
+                backgroundColor: 'transparent',
+                padding: 0,
+              }
+            },
+            '& table': {
+              borderCollapse: 'collapse',
+              width: '100%',
+              margin: '1em 0',
+              '& th, & td': {
+                border: '1px solid #ddd',
+                padding: '8px',
+                textAlign: 'left',
+              },
+              '& th': {
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              }
+            },
+            '& ul, & ol': {
+              marginTop: '0.5em',
+              marginBottom: '0.5em',
+              paddingLeft: '1.5em',
+            },
+            '& blockquote': {
+              margin: '0.5em 0',
+              paddingLeft: '1em',
+              borderLeft: '4px solid #ddd',
+              color: 'rgba(0, 0, 0, 0.7)',
+            }
+          }
+        }}
+      >
+        <Box className="markdown-content">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkBreaks]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            // Personnalisation optionnelle des composants
+            p: ({ children }) => <Typography variant="body2" component="p">{children}</Typography>,
+            a: ({ href, children }) => (
+              <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc' }}>
+                {children}
+              </a>
+            ),
+          }}
+        >
+          {message.text}
+        </ReactMarkdown>
+        </Box>
+      </Paper>
+      <Typography
+        variant="caption"
+        sx={{
+          display: 'block',
+          mt: 0.5,
+          color: 'text.secondary',
+          textAlign: message.sender === 'user' ? 'right' : 'left',
+        }}
+      >
+        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </Typography>
+    </Box>
+  ))}
+              {isLoading && (
+                <Box 
+                  sx={{ 
+                    alignSelf: 'flex-start', 
                     maxWidth: '80%',
+                    '@keyframes dotPulse': {
+                      '0%, 100%': { opacity: 0.5 },
+                      '50%': { opacity: 1 },
+                    }
                   }}
                 >
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: message.sender === 'user' ? '#e3f2fd' : 'white',
-                      borderBottomRightRadius: message.sender === 'user' ? 0 : 2,
-                      borderBottomLeftRadius: message.sender === 'user' ? 2 : 0,
-                      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-                    }}
-                  >
-                    <Typography variant="body2">{message.text}</Typography>
-                  </Paper>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      display: 'block',
-                      mt: 0.5,
-                      color: 'text.secondary',
-                      textAlign: message.sender === 'user' ? 'right' : 'left',
-                    }}
-                  >
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </Typography>
-                </Box>
-              ))}
-              {isLoading && (
-                <Box sx={{ alignSelf: 'flex-start', maxWidth: '80%' }}>
                   <Paper
                     elevation={1}
                     sx={{
@@ -417,13 +502,34 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                       gap: 0.5,
                     }}
                   >
-                    <Typography component="span" sx={{ fontSize: 24 }}>
+                    <Typography 
+                      component="span" 
+                      sx={{ 
+                        fontSize: 24, 
+                        animation: 'dotPulse 1.4s infinite',
+                        animationDelay: '0s' 
+                      }}
+                    >
                       .
                     </Typography>
-                    <Typography component="span" sx={{ fontSize: 24, animationDelay: '0.2s' }}>
+                    <Typography 
+                      component="span" 
+                      sx={{ 
+                        fontSize: 24, 
+                        animation: 'dotPulse 1.4s infinite',
+                        animationDelay: '0.2s' 
+                      }}
+                    >
                       .
                     </Typography>
-                    <Typography component="span" sx={{ fontSize: 24, animationDelay: '0.4s' }}>
+                    <Typography 
+                      component="span" 
+                      sx={{ 
+                        fontSize: 24, 
+                        animation: 'dotPulse 1.4s infinite',
+                        animationDelay: '0.4s' 
+                      }}
+                    >
                       .
                     </Typography>
                   </Paper>
@@ -510,7 +616,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                       backdropFilter: 'blur(5px)',
                       '&.Mui-focused': {
                         '& > fieldset': {
-                          borderColor: '#2845b9',
+                          borderColor: '#0066cc',
                         }
                       }
                     },
@@ -519,13 +625,18 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={!inputValue.trim() || isLoading}
                   onClick={() => handleSendMessage(inputValue)}
                   sx={{
                     minWidth: 'auto',
                     borderRadius: 3,
-                    background: 'linear-gradient(125deg, #2845b9 0%, #483698 100%)',
+                    background: 'linear-gradient(125deg, #0066cc 0%, #0066cc 100%)',
+                    '&:disabled': {
+                      opacity: 0.5,
+                      color: 'white',
+                      background: 'linear-gradient(125deg, #0066cc 0%, #0066cc 100%)',
+                    }
                   }}
+                  disabled={!inputValue.trim()}
                 >
                   <SendIcon />
                 </Button>
