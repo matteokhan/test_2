@@ -56,7 +56,7 @@ import { AppError, isFrenchFlight, isRoundtripRestricted } from '@/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
 import * as Sentry from '@sentry/nextjs'
 
-// Composant de filtre en langage naturel
+// Composant de filtre en langage naturel :)
 const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: SearchFlightFilters) => void }) => {
   const [filterText, setFilterText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
