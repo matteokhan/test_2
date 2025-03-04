@@ -285,11 +285,11 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     let promptText = suggestion;
     
     if (suggestion === "Destinations au soleil") {
-      promptText = "Bonjour, pouvez-vous me conseiller des destinations ensoleillées pour mes prochaines vacances ?";
+      promptText = "Je cherche une destination où il fait chaud et ensoleillé. Des idées ?";
     } else if (suggestion === "Destination à petit budget") {
-      promptText = "Bonjour, pouvez-vous me recommander des destinations de voyage à petit budget ?";
+      promptText = "Quelles sont les destinations les moins chères pour voyager en ce moment ?";
     } else if (suggestion === "Destination insolite") {
-      promptText = "Bonjour, j'aimerais découvrir des destinations insolites ou hors des sentiers battus. Avez-vous des suggestions ?";
+      promptText = "Suggérez-moi des destinations originales que peu de gens connaissent.";
     }
     
     // Définir le texte comme valeur d'entrée
@@ -298,6 +298,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
       inputRef.current.focus();
     }
   };
+
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
       {/* Bouton comme texte, aligné à gauche */}
@@ -325,332 +326,291 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
       {/* Chatbox qui s'affiche/se masque */}
       <Collapse in={isOpen} timeout={300} unmountOnExit>
         <Paper
-          elevation={2}
+          elevation={1}
           sx={{
             width: '100%',
-            borderRadius: 2,
+            borderRadius: 1,  // Arrondi léger et cohérent
             overflow: 'hidden',
             zIndex: 1200,
             height: 350,
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-            bgcolor: '#f8f9fa',
+            boxShadow: 'none',
+            bgcolor: 'white',
           }}
         >
-         {/* En-tête du chat */}
-         <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              p: 2,
-              background: 'linear-gradient(125deg, #0066cc 0%, #0066cc 100%)', // Changed header gradient
-              color: 'white',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <SmartToyIcon />
-              <Typography variant="subtitle1" fontWeight={600} sx={{ userSelect: 'none' }}>
-                Assistant de voyage
-              </Typography>
-            </Box>
-            <Button
-              size="small"
-              onClick={toggleChat}
-              sx={{ minWidth: 'auto', color: 'white', p: 0.5 }}
-            >
-              <CloseIcon />
-            </Button>
-          </Box>
-
           {/* Zone de conversation */}
           <Box
             sx={{
+              flexGrow: 1,
+              p: 1,
+              overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              height: '100%',
+              gap: 1.5,
+              bgcolor: 'white',
             }}
           >
-            {/* Zone des messages */}
-<Box
-  sx={{
-    flexGrow: 1,
-    p: 2,
-    overflowY: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 1.5,
-    bgcolor: '#f8f9fa',
-  }}
->
-  {messages.map((message) => (
-    <Box
-      key={message.id}
-      sx={{
-        alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
-        maxWidth: '80%',
-      }}
-    >
-      <Paper
-        elevation={0}
-        sx={{
-          p: 1.5,
-          borderRadius: 2,
-          bgcolor: message.sender === 'user' ? '#e3f2fd' : 'white',
-          borderBottomRightRadius: message.sender === 'user' ? 0 : 2,
-          borderBottomLeftRadius: message.sender === 'user' ? 2 : 0,
-          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
-          '& .markdown-content': {
-            '& p': {
-              margin: 0,
-              marginBottom: '0.5em',
-              '&:last-child': {
-                marginBottom: 0,
-              }
-            },
-            '& a': {
-              color: '#0066cc',
-              textDecoration: 'none',
-              '&:hover': {
-                textDecoration: 'underline',
-              }
-            },
-            '& code': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              padding: '2px 4px',
-              borderRadius: 4,
-              fontSize: '0.9em',
-            },
-            '& pre': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              padding: '8px',
-              borderRadius: 4,
-              overflowX: 'auto',
-              '& code': {
-                backgroundColor: 'transparent',
-                padding: 0,
-              }
-            },
-            '& table': {
-              borderCollapse: 'collapse',
-              width: '100%',
-              margin: '1em 0',
-              '& th, & td': {
-                border: '1px solid #ddd',
-                padding: '8px',
-                textAlign: 'left',
-              },
-              '& th': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              }
-            },
-            '& ul, & ol': {
-              marginTop: '0.5em',
-              marginBottom: '0.5em',
-              paddingLeft: '1.5em',
-            },
-            '& blockquote': {
-              margin: '0.5em 0',
-              paddingLeft: '1em',
-              borderLeft: '4px solid #ddd',
-              color: 'rgba(0, 0, 0, 0.7)',
-            }
-          }
-        }}
-      >
-        <Box className="markdown-content">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkBreaks]}
-          rehypePlugins={[rehypeRaw]}
-          components={{
-            // Personnalisation optionnelle des composants
-            p: ({ children }) => <Typography variant="body2" component="p">{children}</Typography>,
-            a: ({ href, children }) => (
-              <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc' }}>
-                {children}
-              </a>
-            ),
-          }}
-        >
-          {message.text}
-        </ReactMarkdown>
-        </Box>
-      </Paper>
-      <Typography
-        variant="caption"
-        sx={{
-          display: 'block',
-          mt: 0.5,
-          color: 'text.secondary',
-          textAlign: message.sender === 'user' ? 'right' : 'left',
-        }}
-      >
-        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Typography>
-    </Box>
-  ))}
-              {isLoading && (
-                <Box 
-                  sx={{ 
-                    alignSelf: 'flex-start', 
-                    maxWidth: '80%',
-                    '@keyframes dotPulse': {
-                      '0%, 100%': { opacity: 0.5 },
-                      '50%': { opacity: 1 },
+            {messages.map((message) => (
+              <Box
+                key={message.id}
+                sx={{
+                  alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '80%',
+                }}
+              >
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: message.sender === 'user' ? '#e3f2fd' : 'white',
+                    borderBottomRightRadius: message.sender === 'user' ? 0 : 2,
+                    borderBottomLeftRadius: message.sender === 'user' ? 2 : 0,
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
+                    '& .markdown-content': {
+                      '& p': {
+                        margin: 0,
+                        marginBottom: '0.5em',
+                        '&:last-child': {
+                          marginBottom: 0,
+                        }
+                      },
+                      '& a': {
+                        color: '#0066cc',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        }
+                      },
+                      '& code': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                        padding: '2px 4px',
+                        borderRadius: 4,
+                        fontSize: '0.9em',
+                      },
+                      '& pre': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                        padding: '8px',
+                        borderRadius: 4,
+                        overflowX: 'auto',
+                        '& code': {
+                          backgroundColor: 'transparent',
+                          padding: 0,
+                        }
+                      },
+                      '& table': {
+                        borderCollapse: 'collapse',
+                        width: '100%',
+                        margin: '1em 0',
+                        '& th, & td': {
+                          border: '1px solid #ddd',
+                          padding: '8px',
+                          textAlign: 'left',
+                        },
+                        '& th': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                        }
+                      },
+                      '& ul, & ol': {
+                        marginTop: '0.5em',
+                        marginBottom: '0.5em',
+                        paddingLeft: '1.5em',
+                      },
+                      '& blockquote': {
+                        margin: '0.5em 0',
+                        paddingLeft: '1em',
+                        borderLeft: '4px solid #ddd',
+                        color: 'rgba(0, 0, 0, 0.7)',
+                      }
                     }
                   }}
                 >
-                  <Paper
-                    elevation={1}
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: 'white',
-                      borderBottomLeftRadius: 0,
-                      display: 'flex',
-                      gap: 0.5,
+                  <Box className="markdown-content">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm, remarkBreaks]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        // Personnalisation optionnelle des composants
+                        p: ({ children }) => <Typography variant="body2" component="p">{children}</Typography>,
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc' }}>
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >
+                      {message.text}
+                    </ReactMarkdown>
+                  </Box>
+                </Paper>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: 'block',
+                    mt: 0.5,
+                    color: 'text.secondary',
+                    textAlign: message.sender === 'user' ? 'right' : 'left',
+                  }}
+                >
+                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </Typography>
+              </Box>
+            ))}
+            {isLoading && (
+              <Box 
+                sx={{ 
+                  alignSelf: 'flex-start', 
+                  maxWidth: '80%',
+                  '@keyframes dotPulse': {
+                    '0%, 100%': { opacity: 0.5 },
+                    '50%': { opacity: 1 },
+                  }
+                }}
+              >
+                <Paper
+                  elevation={1}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: 'white',
+                    borderBottomLeftRadius: 0,
+                    display: 'flex',
+                    gap: 0.5,
+                  }}
+                >
+                  <Typography 
+                    component="span" 
+                    sx={{ 
+                      fontSize: 24, 
+                      animation: 'dotPulse 1.4s infinite',
+                      animationDelay: '0s' 
                     }}
                   >
-                    <Typography 
-                      component="span" 
-                      sx={{ 
-                        fontSize: 24, 
-                        animation: 'dotPulse 1.4s infinite',
-                        animationDelay: '0s' 
-                      }}
-                    >
-                      .
-                    </Typography>
-                    <Typography 
-                      component="span" 
-                      sx={{ 
-                        fontSize: 24, 
-                        animation: 'dotPulse 1.4s infinite',
-                        animationDelay: '0.2s' 
-                      }}
-                    >
-                      .
-                    </Typography>
-                    <Typography 
-                      component="span" 
-                      sx={{ 
-                        fontSize: 24, 
-                        animation: 'dotPulse 1.4s infinite',
-                        animationDelay: '0.4s' 
-                      }}
-                    >
-                      .
-                    </Typography>
-                  </Paper>
-                </Box>
-              )}
-              <div ref={messagesEndRef} />
-            </Box>
-
-            {/* Champ de saisie avec suggestions */}
-            <Box
-              sx={{
-                borderTop: 'none',
-                position: 'relative',
-                px: 2,
-                py: 2,
-                bgcolor: '#f8f9fa',
-              }}
-            >
-              {/* Suggestions au-dessus du champ de saisie */}
-              <Fade in={messages.length <= 2}>
-                <Box 
-                  sx={{ 
-                    position: 'absolute', 
-                    bottom: '100%',
-                    left: 0,
-                    right: 0,
-                    display: 'flex', 
-                    justifyContent: 'center',
-                    pb: 1,
-                  }}
-                >
-                  <Stack 
-                    direction="row" 
-                    spacing={1.5}
+                    .
+                  </Typography>
+                  <Typography 
+                    component="span" 
+                    sx={{ 
+                      fontSize: 24, 
+                      animation: 'dotPulse 1.4s infinite',
+                      animationDelay: '0.2s' 
+                    }}
                   >
-                    {suggestions.map((suggestion) => (
-                      <Button
-                        key={suggestion.id}
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleSuggestionClick(suggestion.text)}
-                        sx={{
-                          textTransform: 'none',
-                          whiteSpace: 'nowrap',
-                          borderRadius: 20,
-                          borderColor: suggestion.borderColor,
-                          color: 'text.primary',
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                          fontWeight: 700,
-                          py: 0.5,
-                          px: 1.5,
-                          '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 1)',
-                            borderColor: suggestion.borderColor,
-                            boxShadow: `0 0 6px ${suggestion.borderColor}44`,
-                          },
-                        }}
-                      >
-                        {suggestion.text}
-                      </Button>
-                    ))}
-                  </Stack>
-                </Box>
-              </Fade>
-
-              {/* Champ de saisie */}
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSendMessage(inputValue);
-                    }
-                  }}
-                  placeholder="Écrivez votre message ici..."
-                  inputRef={inputRef}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 25,
-                      backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                      backdropFilter: 'blur(5px)',
-                      '&.Mui-focused': {
-                        '& > fieldset': {
-                          borderColor: '#0066cc',
-                        }
-                      }
-                    },
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleSendMessage(inputValue)}
-                  sx={{
-                    minWidth: 'auto',
-                    borderRadius: 3,
-                    background: 'linear-gradient(125deg, #0066cc 0%, #0066cc 100%)',
-                    '&:disabled': {
-                      opacity: 0.5,
-                      color: 'white',
-                      background: 'linear-gradient(125deg, #0066cc 0%, #0066cc 100%)',
-                    }
-                  }}
-                  disabled={!inputValue.trim()}
-                >
-                  <SendIcon />
-                </Button>
+                    .
+                  </Typography>
+                  <Typography 
+                    component="span" 
+                    sx={{ 
+                      fontSize: 24, 
+                      animation: 'dotPulse 1.4s infinite',
+                      animationDelay: '0.4s' 
+                    }}
+                  >
+                    .
+                  </Typography>
+                </Paper>
               </Box>
+            )}
+            <div ref={messagesEndRef} />
+          </Box>
+
+          {/* Champ de saisie avec suggestions */}
+          <Box
+            sx={{
+              borderTop: 'none',
+              position: 'relative',
+              px: 1,
+              py: 1,
+              bgcolor: 'white',
+            }}
+          >
+            {/* Suggestions au-dessus du champ de saisie */}
+            <Fade in={messages.length <= 2}>
+              <Box 
+                sx={{ 
+                  position: 'absolute', 
+                  bottom: '100%',
+                  left: 0,
+                  right: 0,
+                  display: 'flex', 
+                  justifyContent: 'center',
+                  pb: 1,
+                }}
+              >
+                <Stack 
+                  direction="row" 
+                  spacing={1.5}
+                >
+                  {suggestions.map((suggestion) => (
+                    <Button
+                      key={suggestion.id}
+                      onClick={() => handleSuggestionClick(suggestion.text)}
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        borderRadius: '4px',  // Même arrondi que dans le formulaire
+                        textTransform: 'none',
+                        color: 'text.primary',
+                        borderColor: 'rgba(0, 0, 0, 0.23)',
+                        backgroundColor: 'white',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                          borderColor: 'rgba(0, 0, 0, 0.23)',
+                        }
+                      }}
+                    >
+                      {suggestion.text}
+                    </Button>
+                  ))}
+                </Stack>
+              </Box>
+            </Fade>
+
+            {/* Champ de saisie */}
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <TextField
+                fullWidth
+                size="small"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSendMessage(inputValue);
+                  }
+                }}
+                placeholder="Écrivez votre message ici..."
+                inputRef={inputRef}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1,  // Même arrondi que partout ailleurs
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    '&.Mui-focused': {
+                      '& > fieldset': {
+                        borderColor: '#0066cc',
+                      }
+                    }
+                  },
+                }}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleSendMessage(inputValue)}
+                sx={{
+                  borderRadius: 1,  // Même arrondi
+                  minWidth: 'auto',
+                  background: '#0066cc',
+                  '&:disabled': {
+                    opacity: 0.5,
+                    color: 'white',
+                    background: '#0066cc',
+                  }
+                }}
+                disabled={!inputValue.trim()}
+              >
+                <SendIcon />
+              </Button>
             </Box>
           </Box>
         </Paper>
