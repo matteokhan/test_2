@@ -158,13 +158,12 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
       elevation={1}
       sx={{
         p: 3,
-        mb: 4,
         width: '100%',
-        maxWidth: '650px',
-        mx: 'auto',
         borderRadius: 2,
         backgroundColor: '#f9f9fb',
         position: 'relative',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        border: '1px solid rgba(0,0,0,0.05)',
       }}
     >
       {/* Messages de succès ou d'erreur */}
@@ -207,6 +206,9 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
         </Fade>
       )}
       
+      <Typography variant="h6" color="text.primary" mb={1} fontWeight="500">
+        Filtrer les résultats avec l'IA
+      </Typography>
       <Typography variant="body2" color="text.secondary" mb={2.5}>
         Pendant que nous cherchons vos vols, précisez vos préférences en langage simple.
         Exemple : "Vols sans escale avant midi" ou "Vols de nuit"
