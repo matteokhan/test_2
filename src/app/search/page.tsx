@@ -35,7 +35,8 @@ import {
   Chip,
   Fade,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Tooltip
 } from '@mui/material'
 import { useAgencySelector, useBooking, useFlights } from '@/contexts'
 import {
@@ -77,7 +78,7 @@ export default function FlighsPage() {
   const [frenchFlightWarnModalIsOpen, setFrenchFlightWarnModalIsOpen] = React.useState(false)
   const [roundtripRestrictedWarnModalIsOpen, setRoundtripRestrictedWarnModalIsOpen] =
     React.useState(false)
-  // Ajoutez cette ligne pour définir filtersAppliedByAI au niveau du composant principal
+  // Variable pour savoir si des filtres ont été appliqués par l'IA
   const [filtersAppliedByAI, setFiltersAppliedByAI] = useState(false)
   const [filters, setFilters] = React.useState<SearchFlightFilters>({
     routes: [
@@ -284,6 +285,36 @@ export default function FlighsPage() {
     )
   }
 
+  const handleAIFilters = (newFilters: SearchFlightFilters) => {
+    console.log("Filtres reçus de l'IA:", newFilters);
+    
+    // Fusionner les filtres IA avec les filtres existants en donnant priorité aux filtres IA
+    setFilters(prevFilters => {
+      // Création d'un nouvel objet qui combine les filtres existants et les nouveaux
+      const updatedFilters = {
+        ...prevFilters,
+        ...newFilters,
+        // Assurez-vous que les routes sont correctement fusionnées
+        routes: [
+          {
+            routeIndex: 0,
+            departureAirports: newFilters.routes?.[0]?.departureAirports || prevFilters.routes[0].departureAirports,
+            arrivalAirports: newFilters.routes?.[0]?.arrivalAirports || prevFilters.routes[0].arrivalAirports,
+          },
+          {
+            routeIndex: 1,
+            departureAirports: newFilters.routes?.[1]?.departureAirports || prevFilters.routes[1].departureAirports,
+            arrivalAirports: newFilters.routes?.[1]?.arrivalAirports || prevFilters.routes[1].arrivalAirports,
+          },
+        ]
+      };
+      return updatedFilters;
+    });
+    
+    // Activer l'indicateur pour montrer que des filtres ont été appliqués par l'IA
+    setFiltersAppliedByAI(true);
+  };
+
   const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
     if (!order) {
       throw new AppError(
@@ -412,39 +443,29 @@ export default function FlighsPage() {
           <SectionContainer>
             <Stack direction="column" width="100%">
             {isLoading && (
-          <Grow in={isLoading}>
-            <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 }, width: '100%' }}>
-              {/* Filtre en langage naturel - placé en premier et prenant toute la largeur */}
-              <Box sx={{ width: '100%', mb: 4 }}>
-                <NaturalLanguageFilter 
-                  onApplyFilters={(newFilters) => {
-                    console.log("Filtres reçus de l'IA:", newFilters);
-                    setFilters(prevFilters => ({
-                      ...prevFilters,
-                      ...newFilters
-                    }));
-                    // Marquer que des filtres ont été appliqués par l'IA
-                    setFiltersAppliedByAI(true);
-                  }} 
-                />
-              </Box>
-              
-              {/* Animation de chargement et message existants */}
-              <Stack alignItems="center">
-                  <Stack maxWidth="516px" direction="row" gap={3}>
-                    <FlightsLoader />
-                    <Box>
-                      <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                      <Typography variant="bodyMd" pt={1.5}>
-                        Merci de patienter quelques secondes le temps que nous trouvions les
-                        meilleures offres du moment !
-                      </Typography>
-                    </Box>
+              <Grow in={isLoading}>
+                <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 }, width: '100%' }}>
+                  {/* Filtre en langage naturel - placé en premier et prenant toute la largeur */}
+                  <Box sx={{ width: '100%', mb: 4 }}>
+                    <NaturalLanguageFilter onApplyFilters={handleAIFilters} />
+                  </Box>
+                  
+                  {/* Animation de chargement et message existants */}
+                  <Stack alignItems="center">
+                    <Stack maxWidth="516px" direction="row" gap={3}>
+                      <FlightsLoader />
+                      <Box>
+                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                        <Typography variant="bodyMd" pt={1.5}>
+                          Merci de patienter quelques secondes le temps que nous trouvions les
+                          meilleures offres du moment !
+                        </Typography>
+                      </Box>
+                    </Stack>
                   </Stack>
                 </Stack>
-              </Stack>
-            </Grow>
-          )}
+              </Grow>
+            )}
               {!isDesktop && !isLoading && response?.solutions.length === 0 && (
                 <>
                   <Button onClick={() => router.push('/vol')}>
@@ -470,7 +491,6 @@ export default function FlighsPage() {
                   }
                   onSubmit={(values) => setFilters(values)}
                   activeFilter={activeFilter}
-                  // Ajouter la prop filtersEnabled pour forcer l'activation des filtres
                   filtersEnabled={filtersAppliedByAI}
                   selectedFilters={filters}
                 />

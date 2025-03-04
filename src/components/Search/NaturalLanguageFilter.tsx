@@ -43,7 +43,7 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
     setSuccess(false);
     
     try {
-      // Appel à l'API backend pour analyser le texte
+      // Appel à l'API backend pour analyser le texte avec l'IA
       const response = await fetch('http://localhost:5000/api/analyze-filters', {
         method: 'POST',
         headers: {
@@ -58,8 +58,15 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
       
       const data = await response.json();
       
-      // Si un callback est fourni, appliquer les filtres renvoyés par le backend
-      if (onApplyFilters && data.filters) {
+      // Vérifier si l'IA a renvoyé des filtres
+      if (!data.filters) {
+        throw new Error("L'IA n'a pas pu extraire les filtres de la requête");
+      }
+      
+      console.log("Filtres extraits par l'IA:", data.filters);
+      
+      // Si un callback est fourni, appliquer les filtres renvoyés par le backend IA
+      if (onApplyFilters) {
         // S'assurer que les routes sont correctement formatées si elles ne sont pas incluses
         const formattedFilters: SearchFlightFilters = {
           ...data.filters,
@@ -81,10 +88,7 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
         setSuccess(true);
         
         // Garder une trace des filtres appliqués pour l'affichage
-        const filtersDescription = describeAppliedFilters(formattedFilters);
-        if (filtersDescription) {
-          setAppliedFilters([...appliedFilters, filterText]);
-        }
+        setAppliedFilters([...appliedFilters, filterText]);
         
         // Effacer le succès après 3 secondes
         setTimeout(() => {
@@ -101,52 +105,6 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
     } finally {
       setIsProcessing(false);
     }
-  };
-
-  // Fonction pour générer une description des filtres appliqués
-  const describeAppliedFilters = (filters: SearchFlightFilters): string => {
-    const descriptions: string[] = [];
-    
-    if (filters.scales) {
-      switch (filters.scales) {
-        case 'direct':
-          descriptions.push('Vols directs uniquement');
-          break;
-        case '1-scale':
-          descriptions.push('Maximum 1 escale');
-          break;
-        case '2-scale':
-          descriptions.push('Maximum 2 escales');
-          break;
-      }
-    }
-    
-    if (filters.flightTime) {
-      switch (filters.flightTime) {
-        case '0-6':
-          descriptions.push('Départ entre minuit et 6h');
-          break;
-        case '6-12':
-          descriptions.push('Départ entre 6h et midi');
-          break;
-        case '12-18':
-          descriptions.push('Départ entre midi et 18h');
-          break;
-        case '18-24':
-          descriptions.push('Départ entre 18h et minuit');
-          break;
-      }
-    }
-    
-    if (filters.maxPrice && filters.maxPrice > 0) {
-      descriptions.push(`Prix max: ${filters.maxPrice}€ (${filters.maxPriceType === 'per-person' ? 'par personne' : 'total'})`);
-    }
-    
-    if (filters.airlinesSelected && filters.airlinesSelected.length > 0) {
-      descriptions.push(`Compagnies: ${filters.airlinesSelected.join(', ')}`);
-    }
-    
-    return descriptions.join(', ');
   };
 
   const handleSuggestionClick = (suggestion: string) => {
