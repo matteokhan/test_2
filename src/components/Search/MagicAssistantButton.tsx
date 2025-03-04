@@ -67,7 +67,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
   // Suggestions pour aider l'utilisateur à démarrer la conversation
   const suggestions: Suggestion[] = [
     { id: 'sun', text: 'Destinations au soleil', borderColor: '#FFC107' },
-    { id: 'budget', text: 'Destination économe', borderColor: '#483698' },
+    { id: 'budget', text: 'Destination à petit budget', borderColor: '#483698' },
     { id: 'unique', text: 'Destination insolite', borderColor: '#2196F3' },
   ];
 
@@ -281,13 +281,23 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    // Utiliser directement la suggestion comme texte à envoyer
-    setInputValue(suggestion);
+    // Créer des phrases complètes pour chaque suggestion
+    let promptText = suggestion;
+    
+    if (suggestion === "Destinations au soleil") {
+      promptText = "Bonjour, pouvez-vous me conseiller des destinations ensoleillées pour mes prochaines vacances ?";
+    } else if (suggestion === "Destination à petit budget") {
+      promptText = "Bonjour, pouvez-vous me recommander des destinations de voyage à petit budget ?";
+    } else if (suggestion === "Destination insolite") {
+      promptText = "Bonjour, j'aimerais découvrir des destinations insolites ou hors des sentiers battus. Avez-vous des suggestions ?";
+    }
+    
+    // Définir le texte comme valeur d'entrée
+    setInputValue(promptText);
     if (inputRef.current) {
       inputRef.current.focus();
     }
   };
-
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
       {/* Bouton comme texte, aligné à gauche */}

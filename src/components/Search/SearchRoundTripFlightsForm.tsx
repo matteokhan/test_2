@@ -11,6 +11,8 @@ import { CustomTextField, DepartureAndDestinationField, PassengersField } from '
 import MagicAssistantButton, { MagicAssistantButtonProps } from './MagicAssistantButton';
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
+import { usePathname } from 'next/navigation'
+
 const DEFAULT_VALUES: RoundTripFlightSearchParams = {
   adults: 1,
   childrens: 0,
@@ -95,6 +97,9 @@ export const SearchRoundTripFlightsForm = ({
 }: SearchRoundTripFlightsFormProps) => {
   // Référence à l'instance Formik
   const formikRef = React.useRef<any>(null);
+  // Récupérer le chemin actuel pour déterminer si on est sur la page de recherche
+  const pathname = usePathname();
+  const isSearchPage = pathname === '/search';
 
   // Fonction pour soumettre le formulaire avec des paramètres du chatbot
   const handleChatbotSearch = (params: RoundTripFlightSearchParams) => {
@@ -176,7 +181,8 @@ export const SearchRoundTripFlightsForm = ({
                 Rechercher
               </Button>
             </Stack>
-            <MagicAssistantButton onSearch={handleChatbotSearch} />
+            {/* N'afficher le MagicAssistantButton que si on n'est pas sur la page de recherche */}
+            {!isSearchPage && <MagicAssistantButton onSearch={handleChatbotSearch} />}
           </Form>
         )
       }}
