@@ -11,8 +11,11 @@ import {
   PassengersField,
   DepartureAndDestinationField,
 } from '@/components'
+// Importer MagicAssistantButton et son type
+import MagicAssistantButton from './MagicAssistantButton';
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
+import { usePathname } from 'next/navigation'
 
 const DEFAULT_VALUES: OneWayFlightSearchParams = {
   adults: 1,
@@ -93,8 +96,45 @@ export const SearchOneWayFlightsForm = ({
   initialValues,
   disabled,
 }: SearchOneWayFlightsFormProps) => {
+  // Référence à l'instance Formik
+  const formikRef = React.useRef<any>(null);
+  // Récupérer le chemin actuel pour déterminer si on est sur la page de recherche
+  const pathname = usePathname();
+  const isSearchPage = pathname === '/search';
+
+  // Fonction pour soumettre le formulaire avec des paramètres du chatbot
+  const handleChatbotSearch = (params: any) => {
+    if (formikRef.current) {
+      // Vérifier que le type de paramètres est correct
+      if (params._type !== 'oneWay') {
+        // Convertir les paramètres si nécessaire
+        // Nous ignorons simplement la propriété "return" pour un vol aller simple
+        params = {
+          ...params,
+          _type: 'oneWay'
+        };
+        // Supprimer la propriété return si elle existe
+        delete params.return;
+      }
+      
+      // Mettre à jour les valeurs du formulaire
+      const formik = formikRef.current;
+      
+      // Mise à jour des champs avec les valeurs extraites du chatbot
+      for (const [key, value] of Object.entries(params)) {
+        formik.setFieldValue(key, value, false);
+      }
+      
+      // Soumettre le formulaire après avoir mis à jour les valeurs
+      setTimeout(() => {
+        formik.submitForm();
+      }, 100);
+    }
+  };
+
   return (
     <Formik
+      innerRef={formikRef}
       initialValues={initialValues || DEFAULT_VALUES}
       validationSchema={searchParamsSchema}
       onSubmit={onSubmit}
@@ -140,6 +180,8 @@ export const SearchOneWayFlightsForm = ({
                 Rechercher
               </Button>
             </Stack>
+            {/* N'afficher le MagicAssistantButton que si on n'est pas sur la page de recherche */}
+            {!isSearchPage && <MagicAssistantButton onSearch={handleChatbotSearch} />}
           </Form>
         )
       }}

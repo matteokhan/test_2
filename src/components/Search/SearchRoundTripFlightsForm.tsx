@@ -7,8 +7,8 @@ import { DateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-
 import { Form, Formik, FormikHelpers } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
-// Importer MagicAssistantButton et son type
-import MagicAssistantButton, { MagicAssistantButtonProps } from './MagicAssistantButton';
+// Importer MagicAssistantButton
+import MagicAssistantButton from './MagicAssistantButton';
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
 import { usePathname } from 'next/navigation'
@@ -102,8 +102,19 @@ export const SearchRoundTripFlightsForm = ({
   const isSearchPage = pathname === '/search';
 
   // Fonction pour soumettre le formulaire avec des paramètres du chatbot
-  const handleChatbotSearch = (params: RoundTripFlightSearchParams) => {
+  const handleChatbotSearch = (params: any) => {
     if (formikRef.current) {
+      // Vérifier que le type de paramètres est correct
+      if (params._type !== 'roundTrip') {
+        // Convertir les paramètres si nécessaire
+        // Pour un vol aller simple converti en aller-retour, ajouter une date de retour
+        params = {
+          ...params,
+          _type: 'roundTrip',
+          return: params.return || dayjs(params.departure).add(7, 'day').format('YYYY-MM-DD')
+        };
+      }
+      
       // Mettre à jour les valeurs du formulaire
       const formik = formikRef.current;
       

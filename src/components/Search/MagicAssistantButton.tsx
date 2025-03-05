@@ -17,8 +17,9 @@ import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { RoundTripFlightSearchParams } from '@/types';
+import { RoundTripFlightSearchParams, OneWayFlightSearchParams } from '@/types';
 import dayjs from 'dayjs';
+import { usePathname } from 'next/navigation';
 
 interface ChatMessage {
   id: string;
@@ -33,9 +34,12 @@ interface Suggestion {
   borderColor: string;
 }
 
-// Exporter l'interface pour la rendre disponible à l'importation
+// Type union qui accepte les deux formats de recherche
+type FlightSearchParams = RoundTripFlightSearchParams | OneWayFlightSearchParams;
+
+// Exporter l'interface mise à jour pour la rendre disponible à l'importation
 export interface MagicAssistantButtonProps {
-  onSearch?: (params: RoundTripFlightSearchParams) => void;
+  onSearch?: (params: FlightSearchParams) => void;
 }
 
 const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch }) => {
@@ -48,6 +52,11 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const currentDate = new Date().toISOString().split('T')[0];
+  
+  // Récupérer le chemin actuel pour déterminer si nous sommes sur la page de recherche aller simple
+  const pathname = usePathname();
+  // Détecter si nous sommes dans le formulaire aller simple ou aller-retour
+  const isOneWayForm = pathname?.includes('one-way') || false;
   
   // État pour gérer le scroll manuel de l'utilisateur
   const [userScrolling, setUserScrolling] = useState(false);
@@ -194,6 +203,8 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
         body: JSON.stringify({
           message: text,
           currentDate,
+          // Indiquer au backend le type de formulaire actuel
+          formType: isOneWayForm ? 'oneWay' : 'roundTrip'
         }),
       });
 
@@ -283,42 +294,80 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
       if (formData && formData.FORM_DATA && onSearch) {
         console.log("Préparation à la soumission du formulaire avec:", formData.FORM_DATA);
         
-        // Convertir les données au format attendu par le formulaire
-        if (formData.FORM_DATA._type === "multiDestinations" && 
-            formData.FORM_DATA.destinations && 
-            formData.FORM_DATA.destinations.length > 0) {
-          
-          // Préparation des paramètres pour un vol aller-retour
-          const formParams: RoundTripFlightSearchParams = {
-            _type: "roundTrip",
-            adults: formData.FORM_DATA.adults || 1,
-            childrens: formData.FORM_DATA.childrens || 0,
-            infants: formData.FORM_DATA.infants || 0,
+        // Vérifier le type de formulaire actuel pour formater correctement les données
+        if (isOneWayForm) {
+          // Formater pour un vol aller simple
+          if (formData.FORM_DATA._type === "multiDestinations" && 
+              formData.FORM_DATA.destinations && 
+              formData.FORM_DATA.destinations.length > 0) {
             
-            // Premier segment (aller)
-            from: formData.FORM_DATA.destinations[0].from,
-            fromLabel: formData.FORM_DATA.destinations[0].fromLabel,
-            fromCountry: formData.FORM_DATA.destinations[0].fromCountry,
-            fromCountryCode: formData.FORM_DATA.destinations[0].fromCountryCode,
-            fromType: formData.FORM_DATA.destinations[0].fromType,
-            fromInputValue: formData.FORM_DATA.destinations[0].fromLabel,
+            // Préparation des paramètres pour un vol aller simple
+            const formParams: OneWayFlightSearchParams = {
+              _type: "oneWay",
+              adults: formData.FORM_DATA.adults || 1,
+              childrens: formData.FORM_DATA.childrens || 0,
+              infants: formData.FORM_DATA.infants || 0,
+              
+              // Premier segment seulement
+              from: formData.FORM_DATA.destinations[0].from,
+              fromLabel: formData.FORM_DATA.destinations[0].fromLabel,
+              fromCountry: formData.FORM_DATA.destinations[0].fromCountry,
+              fromCountryCode: formData.FORM_DATA.destinations[0].fromCountryCode,
+              fromType: formData.FORM_DATA.destinations[0].fromType,
+              fromInputValue: formData.FORM_DATA.destinations[0].fromLabel,
+              
+              to: formData.FORM_DATA.destinations[0].to,
+              toLabel: formData.FORM_DATA.destinations[0].toLabel,
+              toCountry: formData.FORM_DATA.destinations[0].toCountry,
+              toCountryCode: formData.FORM_DATA.destinations[0].toCountryCode,
+              toType: formData.FORM_DATA.destinations[0].toType,
+              toInputValue: formData.FORM_DATA.destinations[0].toLabel,
+              
+              // Date aller seulement
+              departure: formData.FORM_DATA.destinations[0].departure,
+            };
             
-            to: formData.FORM_DATA.destinations[0].to,
-            toLabel: formData.FORM_DATA.destinations[0].toLabel,
-            toCountry: formData.FORM_DATA.destinations[0].toCountry,
-            toCountryCode: formData.FORM_DATA.destinations[0].toCountryCode,
-            toType: formData.FORM_DATA.destinations[0].toType,
-            toInputValue: formData.FORM_DATA.destinations[0].toLabel,
+            // Soumettre le formulaire aller simple
+            onSearch(formParams);
+          }
+        } else {
+          // Formater pour un vol aller-retour
+          if (formData.FORM_DATA._type === "multiDestinations" && 
+              formData.FORM_DATA.destinations && 
+              formData.FORM_DATA.destinations.length > 0) {
             
-            // Dates
-            departure: formData.FORM_DATA.destinations[0].departure,
-            return: formData.FORM_DATA.destinations.length > 1 
-              ? formData.FORM_DATA.destinations[1].departure 
-              : dayjs(formData.FORM_DATA.destinations[0].departure).add(7, 'day').format('YYYY-MM-DD')
-          };
-          
-          // Soumettre le formulaire
-          onSearch(formParams);
+            // Préparation des paramètres pour un vol aller-retour
+            const formParams: RoundTripFlightSearchParams = {
+              _type: "roundTrip",
+              adults: formData.FORM_DATA.adults || 1,
+              childrens: formData.FORM_DATA.childrens || 0,
+              infants: formData.FORM_DATA.infants || 0,
+              
+              // Premier segment (aller)
+              from: formData.FORM_DATA.destinations[0].from,
+              fromLabel: formData.FORM_DATA.destinations[0].fromLabel,
+              fromCountry: formData.FORM_DATA.destinations[0].fromCountry,
+              fromCountryCode: formData.FORM_DATA.destinations[0].fromCountryCode,
+              fromType: formData.FORM_DATA.destinations[0].fromType,
+              fromInputValue: formData.FORM_DATA.destinations[0].fromLabel,
+              
+              to: formData.FORM_DATA.destinations[0].to,
+              toLabel: formData.FORM_DATA.destinations[0].toLabel,
+              toCountry: formData.FORM_DATA.destinations[0].toCountry,
+              toCountryCode: formData.FORM_DATA.destinations[0].toCountryCode,
+              toType: formData.FORM_DATA.destinations[0].toType,
+              toInputValue: formData.FORM_DATA.destinations[0].toLabel,
+              
+              // Dates
+              departure: formData.FORM_DATA.destinations[0].departure,
+              return: formData.FORM_DATA.destinations.length > 1 
+                ? formData.FORM_DATA.destinations[1].departure 
+                : dayjs(formData.FORM_DATA.destinations[0].departure).add(7, 'day').format('YYYY-MM-DD')
+            };
+            
+            // Soumettre le formulaire aller-retour
+            onSearch(formParams);
+          }
         }
       }
       
@@ -751,7 +800,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 size="small"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => {
+                onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleSendMessage(inputValue);
                   }
