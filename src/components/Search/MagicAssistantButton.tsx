@@ -428,59 +428,57 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                     borderBottomLeftRadius: message.sender === 'user' ? 2 : 0,
                     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
                     '& .markdown-content': {
+                      color: '#333333',
+                      lineHeight: 1.5,
+                      fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                      
                       '& p': {
                         margin: 0,
-                        marginBottom: '0.5em',
+                        marginBottom: '0.7em',
+                        fontSize: '0.95rem',
                         '&:last-child': {
                           marginBottom: 0,
                         }
                       },
+                      
                       '& a': {
                         color: '#0066cc',
                         textDecoration: 'none',
+                        fontWeight: 500,
                         '&:hover': {
                           textDecoration: 'underline',
                         }
                       },
-                      '& code': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                        padding: '2px 4px',
-                        borderRadius: 4,
-                        fontSize: '0.9em',
+                      
+                      '& h1, & h2, & h3, & h4, & h5, & h6': {
+                        margin: '0.8em 0 0.4em 0',
+                        lineHeight: 1.3,
+                        fontWeight: 600,
+                        color: '#222222',
                       },
-                      '& pre': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                        padding: '8px',
-                        borderRadius: 4,
-                        overflowX: 'auto',
-                        '& code': {
-                          backgroundColor: 'transparent',
-                          padding: 0,
-                        }
-                      },
-                      '& table': {
-                        borderCollapse: 'collapse',
-                        width: '100%',
-                        margin: '1em 0',
-                        '& th, & td': {
-                          border: '1px solid #ddd',
-                          padding: '8px',
-                          textAlign: 'left',
-                        },
-                        '& th': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                        }
-                      },
+                      
+                      '& h1': { fontSize: '1.2rem' },
+                      '& h2': { fontSize: '1.1rem' },
+                      '& h3': { fontSize: '1rem' },
+                      
                       '& ul, & ol': {
-                        marginTop: '0.5em',
-                        marginBottom: '0.5em',
-                        paddingLeft: '1.5em',
+                        marginTop: '0.4em',
+                        marginBottom: '0.7em',
+                        paddingLeft: '1.6em',
                       },
-                      '& blockquote': {
-                        margin: '0.5em 0',
-                        paddingLeft: '1em',
-                        borderLeft: '4px solid #ddd',
-                        color: 'rgba(0, 0, 0, 0.7)',
+                      
+                      '& li': {
+                        marginBottom: '0.3em',
+                        fontSize: '0.95rem',
+                      },
+                      
+                      '& strong': {
+                        fontWeight: 600,
+                        color: '#222',
+                      },
+                      
+                      '& em': {
+                        fontStyle: 'italic',
                       }
                     }
                   }}
@@ -490,10 +488,102 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                       remarkPlugins={[remarkGfm, remarkBreaks]}
                       rehypePlugins={[rehypeRaw]}
                       components={{
-                        // Personnalisation optionnelle des composants
-                        p: ({ children }) => <Typography variant="body2" component="p">{children}</Typography>,
+                        // Personnalisation simplifiée pour agent de voyage
+                        p: ({ children }) => (
+                          <Typography 
+                            variant="body2" 
+                            component="p" 
+                            sx={{ 
+                              lineHeight: 1.5,
+                              fontSize: '0.95rem',
+                              mb: '0.6em',
+                              '&:last-child': { mb: 0 }
+                            }}
+                          >
+                            {children}
+                          </Typography>
+                        ),
+                        h1: ({ children }) => (
+                          <Typography 
+                            variant="h6" 
+                            component="h1" 
+                            sx={{ 
+                              mt: 1.5, 
+                              mb: 1,
+                              fontWeight: 600,
+                              fontSize: '1.1rem',
+                            }}
+                          >
+                            {children}
+                          </Typography>
+                        ),
+                        h2: ({ children }) => (
+                          <Typography 
+                            variant="subtitle1" 
+                            component="h2" 
+                            sx={{ 
+                              mt: 1.5, 
+                              mb: 0.8,
+                              fontWeight: 600,
+                              fontSize: '1.05rem',
+                            }}
+                          >
+                            {children}
+                          </Typography>
+                        ),
+                        ul: ({ children }) => (
+                          <Box 
+                            component="ul" 
+                            sx={{ 
+                              pl: 2,
+                              mt: 0.5,
+                              mb: 0.8,
+                              '& li': {
+                                mb: 0.4,
+                              }
+                            }}
+                          >
+                            {children}
+                          </Box>
+                        ),
+                        ol: ({ children }) => (
+                          <Box 
+                            component="ol" 
+                            sx={{ 
+                              pl: 2,
+                              mt: 0.5,
+                              mb: 0.8,
+                              '& li': {
+                                mb: 0.4,
+                              }
+                            }}
+                          >
+                            {children}
+                          </Box>
+                        ),
+                        li: ({ children }) => (
+                          <Typography 
+                            component="li" 
+                            variant="body2"
+                            sx={{ 
+                              fontSize: '0.95rem',
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            {children}
+                          </Typography>
+                        ),
                         a: ({ href, children }) => (
-                          <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc' }}>
+                          <a 
+                            href={href} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            style={{ 
+                              color: '#0066cc',
+                              textDecoration: 'none',
+                              fontWeight: 500,
+                            }}
+                          >
                             {children}
                           </a>
                         ),
