@@ -90,8 +90,21 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     }
   }, [isOpen, messages.length]);
 
-  // Gestionnaire d'événement de défilement
-  const handleScroll = () => {
+  // Gestionnaire d'événement de défilement avec détection de position
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    
+    // Calculer si l'utilisateur est proche du bas
+    const isNearBottom = 
+      target.scrollHeight - target.scrollTop - target.clientHeight < 50;
+    
+    // Si l'utilisateur est déjà en bas, ne pas considérer comme scroll manuel
+    if (isNearBottom) {
+      setUserScrolling(false);
+      return;
+    }
+    
+    // Sinon, activer le mode de défilement manuel
     setUserScrolling(true);
     
     // Réinitialiser le timeout précédent
@@ -99,16 +112,28 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
       clearTimeout(scrollTimeoutRef.current);
     }
     
-    // Définir un délai après lequel on considère que l'utilisateur a arrêté de scroller
+    // Définir un délai plus long après lequel on considère que l'utilisateur a arrêté de scroller
     scrollTimeoutRef.current = setTimeout(() => {
       setUserScrolling(false);
-    }, 2000); // 2 secondes d'inactivité de scroll
+    }, 5000); // 5 secondes d'inactivité avant de réactiver le défilement automatique
   };
 
-  // Scroll automatique vers le bas uniquement si l'utilisateur n'est pas en train de scroller manuellement
+  // Scroll automatique vers le bas avec comportement amélioré
   useEffect(() => {
-    if (!userScrolling && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    // Ne faire défiler automatiquement que si l'utilisateur n'est pas en train de scroller manuellement
+    // ET uniquement pour le message initial ou les réponses de l'assistant (pas après envoi de message utilisateur)
+    if (!userScrolling && messagesEndRef.current && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      
+      // Scroller doucement uniquement pour les messages de l'assistant ou le premier message
+      if (lastMessage.sender === 'assistant' || messages.length === 1) {
+        // Utiliser scrollIntoView avec alignToTop:false pour éviter de centrer le champ de texte
+        messagesEndRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'end',  // Aligner avec le bas plutôt qu'au centre
+          inline: 'nearest'
+        });
+      }
     }
   }, [messages, userScrolling]);
 
@@ -156,8 +181,8 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     setInputValue('');
     setIsLoading(true);
     
-    // Réinitialiser l'état de défilement pour permettre le scroll automatique après l'envoi d'un message
-    setUserScrolling(false);
+    // Conserver la position de défilement actuelle de l'utilisateur
+    // Ne pas réinitialiser userScrolling pour éviter le repositionnement forcé
 
     try {
       // Appel à l'API backend
