@@ -646,5 +646,4 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     </Box>
   );
 };
-
 export default MagicAssistantButton;
