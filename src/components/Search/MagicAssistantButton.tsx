@@ -49,6 +49,10 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
   const inputRef = useRef<HTMLInputElement>(null);
   const currentDate = new Date().toISOString().split('T')[0];
   
+  // État pour gérer le scroll manuel de l'utilisateur
+  const [userScrolling, setUserScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   // Réinitialiser la conversation côté serveur lorsque le chat est fermé
   const resetConversation = async () => {
     try {
@@ -86,10 +90,36 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     }
   }, [isOpen, messages.length]);
 
-  // Scroll automatique vers le bas lorsque de nouveaux messages arrivent
+  // Gestionnaire d'événement de défilement
+  const handleScroll = () => {
+    setUserScrolling(true);
+    
+    // Réinitialiser le timeout précédent
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    
+    // Définir un délai après lequel on considère que l'utilisateur a arrêté de scroller
+    scrollTimeoutRef.current = setTimeout(() => {
+      setUserScrolling(false);
+    }, 2000); // 2 secondes d'inactivité de scroll
+  };
+
+  // Scroll automatique vers le bas uniquement si l'utilisateur n'est pas en train de scroller manuellement
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (!userScrolling && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, userScrolling]);
+
+  // Nettoyer le timeout lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Focus sur l'input lorsque le chat s'ouvre
   useEffect(() => {
@@ -125,6 +155,9 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue('');
     setIsLoading(true);
+    
+    // Réinitialiser l'état de défilement pour permettre le scroll automatique après l'envoi d'un message
+    setUserScrolling(false);
 
     try {
       // Appel à l'API backend
@@ -339,7 +372,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
             bgcolor: 'white',
           }}
         >
-          {/* Zone de conversation */}
+          {/* Zone de conversation - Ajout de l'événement onScroll */}
           <Box
             sx={{
               flexGrow: 1,
@@ -350,6 +383,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
               gap: 1.5,
               bgcolor: 'white',
             }}
+            onScroll={handleScroll}
           >
             {messages.map((message) => (
               <Box
@@ -646,4 +680,5 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     </Box>
   );
 };
+
 export default MagicAssistantButton;
