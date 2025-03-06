@@ -442,30 +442,30 @@ export default function FlighsPage() {
           />
           <SectionContainer>
             <Stack direction="column" width="100%">
-            {isLoading && (
-              <Grow in={isLoading}>
-                <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 }, width: '100%' }}>
-                  {/* Filtre en langage naturel - placé en premier et prenant toute la largeur */}
-                  <Box sx={{ width: '100%', mb: 4 }}>
-                    <NaturalLanguageFilter onApplyFilters={handleAIFilters} />
-                  </Box>
-                  
-                  {/* Animation de chargement et message existants */}
-                  <Stack alignItems="center">
-                    <Stack maxWidth="516px" direction="row" gap={3}>
-                      <FlightsLoader />
-                      <Box>
-                        <Typography variant="titleLg">Votre recherche est en cours...</Typography>
-                        <Typography variant="bodyMd" pt={1.5}>
-                          Merci de patienter quelques secondes le temps que nous trouvions les
-                          meilleures offres du moment !
-                        </Typography>
-                      </Box>
+              {/* NaturalLanguageFilter placé en dehors de la condition isLoading */}
+              <Box sx={{ width: '100%', mb: 4 }}>
+                <NaturalLanguageFilter onApplyFilters={handleAIFilters} />
+              </Box>
+              
+              {isLoading && (
+                <Grow in={isLoading}>
+                  <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 }, width: '100%' }}>
+                    {/* Animation de chargement et message existants */}
+                    <Stack alignItems="center">
+                      <Stack maxWidth="516px" direction="row" gap={3}>
+                        <FlightsLoader />
+                        <Box>
+                          <Typography variant="titleLg">Votre recherche est en cours...</Typography>
+                          <Typography variant="bodyMd" pt={1.5}>
+                            Merci de patienter quelques secondes le temps que nous trouvions les
+                            meilleures offres du moment !
+                          </Typography>
+                        </Box>
+                      </Stack>
                     </Stack>
                   </Stack>
-                </Stack>
-              </Grow>
-            )}
+                </Grow>
+              )}
               {!isDesktop && !isLoading && response?.solutions.length === 0 && (
                 <>
                   <Button onClick={() => router.push('/vol')}>
