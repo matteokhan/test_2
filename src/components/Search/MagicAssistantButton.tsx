@@ -10,13 +10,14 @@ import {
   Collapse 
 } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';  // Pour les tables et autres fonctionnalités GitHub
-import rehypeRaw from 'rehype-raw';  // Pour le HTML brut
-import remarkBreaks from 'remark-breaks';  // Pour les sauts de ligne
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import remarkBreaks from 'remark-breaks';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { RoundTripFlightSearchParams, OneWayFlightSearchParams } from '@/types';
 import dayjs from 'dayjs';
 import { usePathname } from 'next/navigation';
@@ -77,12 +78,71 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     }
   };
 
-  // Suggestions pour aider l'utilisateur à démarrer la conversation
+  // Suggestions modifiées pour être des débuts de phrases
   const suggestions: Suggestion[] = [
-    { id: 'sun', text: 'Destinations au soleil', borderColor: '#FFC107' },
-    { id: 'budget', text: 'Destination à petit budget', borderColor: '#483698' },
-    { id: 'unique', text: 'Destination insolite', borderColor: '#2196F3' },
+    { id: 'sun', text: 'Je recherche une destination où il fait chaud...', borderColor: '#FFC107' },
+    { id: 'budget', text: 'Mon budget est limité à 500€, quelles options...', borderColor: '#483698' },
+    { id: 'f1', text: 'Je voudrais assister au Grand Prix de F1 à...', borderColor: '#2196F3' },
   ];
+
+  // Version simplifiée pour griser uniquement le formulaire sans flouter
+  const applyFormFieldsGreyout = (isActive: boolean) => {
+    // Sélectionner spécifiquement les formulaires de recherche de vols
+    const forms = document.querySelectorAll('form[data-testid="searchRoundTripFlightsForm"], form[data-testid="searchOneWayFlightsForm"]');
+    
+    // Supprimer les overlays existants (pour éviter les doublons)
+    document.querySelectorAll('.form-overlay-blocker').forEach(el => el.remove());
+    
+    if (isActive) {
+      // Pour chaque formulaire, créer un overlay simple
+      forms.forEach((form) => {
+        const formPosition = window.getComputedStyle(form as HTMLElement).position;
+        
+        // S'assurer que le formulaire a une position relative ou absolute pour le positionnement correct de l'overlay
+        if (formPosition === 'static') {
+          (form as HTMLElement).style.position = 'relative';
+        }
+        
+        // Créer un overlay pour ce formulaire spécifique
+        const overlay = document.createElement('div');
+        overlay.className = 'form-overlay-blocker';
+        
+        // Styles pour l'overlay - simple grisage sans flou ni changement de curseur
+        Object.assign(overlay.style, {
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(240, 240, 240, 0.4)', // Gris semi-transparent
+          zIndex: '999',
+        });
+        
+        // Ajouter l'overlay au formulaire
+        form.appendChild(overlay);
+      });
+    } else {
+      // Supprimer tous les overlays lorsque désactivé
+      document.querySelectorAll('.form-overlay-blocker').forEach(el => el.remove());
+      
+      // Rétablir les positions si nécessaire
+      forms.forEach(form => {
+        if ((form as HTMLElement).style.position === 'relative' && 
+            !(form as HTMLElement).getAttribute('data-original-position')) {
+          (form as HTMLElement).style.position = '';
+        }
+      });
+    }
+  };
+
+  // Appliquer l'effet de grisage quand l'état isOpen change
+  useEffect(() => {
+    applyFormFieldsGreyout(isOpen);
+    return () => {
+      // Restaurer l'état normal si le composant est démonté
+      applyFormFieldsGreyout(false);
+    };
+  }, [isOpen]);
 
   // Message initial d'accueil
   useEffect(() => {
@@ -388,19 +448,8 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    // Créer des phrases complètes pour chaque suggestion
-    let promptText = suggestion;
-    
-    if (suggestion === "Destinations au soleil") {
-      promptText = "Je cherche une destination où il fait chaud et ensoleillé. Des idées ?";
-    } else if (suggestion === "Destination à petit budget") {
-      promptText = "Quelles sont les destinations les moins chères pour voyager en ce moment ?";
-    } else if (suggestion === "Destination insolite") {
-      promptText = "Suggérez-moi des destinations originales que peu de gens connaissent.";
-    }
-    
     // Définir le texte comme valeur d'entrée
-    setInputValue(promptText);
+    setInputValue(suggestion);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -408,54 +457,107 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
 
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
-      {/* Bouton comme texte, aligné à gauche */}
+      {/* Bouton marketing amélioré avec style bleu Leclerc */}
       <Box sx={{ textAlign: 'left', mb: 1 }}>
         <Button
           onClick={toggleChat}
-          startIcon={<AutoAwesomeIcon fontSize="small" />}
-          disableRipple
+          startIcon={<AutoAwesomeIcon fontSize="small" sx={{ color: '#FFD700' }} />}
+          variant="contained"
           sx={{
             textTransform: 'none',
-            color: '#505050',  // Texte en gris
-            backgroundColor: 'transparent',
-            padding: '4px 8px',
-            fontWeight: 700, // Texte en gras
-            fontSize: '0.9rem',
+            color: 'white',
+            backgroundColor: '#0066cc', // Bleu Leclerc
+            padding: '8px 16px',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            border: '1px solid #0066cc',
+            borderRadius: '6px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
             '&:hover': {
-              backgroundColor: 'transparent',
+              backgroundColor: '#0055bb',
             },
+            zIndex: 1100, // S'assurer que le bouton est toujours visible
           }}
         >
-          Rechercher avec l'IA
+          Conseiller voyage intelligent
         </Button>
       </Box>
 
-      {/* Chatbox qui s'affiche/se masque */}
+      {/* Chatbox qui s'affiche/se masque avec bordure améliorée */}
       <Collapse in={isOpen} timeout={300} unmountOnExit>
         <Paper
-          elevation={1}
+          elevation={3}
+          className="magic-chatbot-container"
           sx={{
             width: '100%',
-            borderRadius: 1,  // Arrondi léger et cohérent
+            borderRadius: '8px',
             overflow: 'hidden',
             zIndex: 1200,
-            height: 350,
+            height: 400,
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: 'none',
-            bgcolor: 'white',
+            border: '2px solid #0066cc', // Bordure bleue plus visible
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            position: 'relative',
           }}
         >
+          {/* Bouton pour fermer le chat et réactiver le formulaire */}
+          <Box sx={{ 
+            position: 'absolute', 
+            top: '8px', 
+            left: '8px', 
+            zIndex: 1300
+          }}>
+            <Button
+              onClick={toggleChat}
+              variant="contained"
+              size="small"
+              startIcon={<ArrowBackIcon />}
+              sx={{
+                backgroundColor: '#0066cc',
+                color: 'white',
+                textTransform: 'none',
+                borderRadius: '4px',
+                padding: '5px 12px',
+                fontSize: '0.8rem',
+                '&:hover': {
+                  backgroundColor: '#0055bb',
+                },
+              }}
+            >
+              Retour au formulaire
+            </Button>
+          </Box>
+
+          {/* En-tête du chat */}
+          <Box sx={{ 
+            padding: '12px 16px', 
+            backgroundColor: '#0066cc', 
+            borderBottom: '1px solid #0055bb',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <Typography variant="h6" sx={{ 
+              fontWeight: 600, 
+              fontSize: '1rem',
+              color: 'white',
+              textAlign: 'center',
+            }}>
+              Assistant de voyage Leclerc
+            </Typography>
+          </Box>
+
           {/* Zone de conversation - Ajout de l'événement onScroll */}
           <Box
             sx={{
               flexGrow: 1,
-              p: 1,
+              p: 2,
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
               gap: 1.5,
-              bgcolor: 'white',
+              bgcolor: '#F8F9FA',
             }}
             onScroll={handleScroll}
           >
@@ -473,14 +575,13 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                     p: 1.5,
                     borderRadius: 2,
                     bgcolor: message.sender === 'user' ? '#e3f2fd' : 'white',
+                    color: message.sender === 'user' ? 'inherit' : 'inherit',
                     borderBottomRightRadius: message.sender === 'user' ? 0 : 2,
                     borderBottomLeftRadius: message.sender === 'user' ? 2 : 0,
                     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.08)',
                     '& .markdown-content': {
-                      color: '#333333',
                       lineHeight: 1.5,
                       fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-                      
                       '& p': {
                         margin: 0,
                         marginBottom: '0.7em',
@@ -489,9 +590,8 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                           marginBottom: 0,
                         }
                       },
-                      
                       '& a': {
-                        color: '#0066cc',
+                        color: message.sender === 'user' ? '#0066cc' : '#0066cc',
                         textDecoration: 'none',
                         fontWeight: 500,
                         '&:hover': {
@@ -503,7 +603,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                         margin: '0.8em 0 0.4em 0',
                         lineHeight: 1.3,
                         fontWeight: 600,
-                        color: '#222222',
+                        color: message.sender === 'user' ? '#333333' : '#222222',
                       },
                       
                       '& h1': { fontSize: '1.2rem' },
@@ -523,7 +623,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                       
                       '& strong': {
                         fontWeight: 600,
-                        color: '#222',
+                        color: message.sender === 'user' ? '#333333' : '#222',
                       },
                       
                       '& em': {
@@ -546,6 +646,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                               lineHeight: 1.5,
                               fontSize: '0.95rem',
                               mb: '0.6em',
+                              color: message.sender === 'user' ? 'inherit' : 'inherit',
                               '&:last-child': { mb: 0 }
                             }}
                           >
@@ -561,6 +662,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                               mb: 1,
                               fontWeight: 600,
                               fontSize: '1.1rem',
+                              color: message.sender === 'user' ? '#333333' : '#333333',
                             }}
                           >
                             {children}
@@ -575,6 +677,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                               mb: 0.8,
                               fontWeight: 600,
                               fontSize: '1.05rem',
+                              color: message.sender === 'user' ? '#333333' : '#333333',
                             }}
                           >
                             {children}
@@ -589,6 +692,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                               mb: 0.8,
                               '& li': {
                                 mb: 0.4,
+                                color: message.sender === 'user' ? 'inherit' : 'inherit',
                               }
                             }}
                           >
@@ -604,6 +708,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                               mb: 0.8,
                               '& li': {
                                 mb: 0.4,
+                                color: message.sender === 'user' ? 'inherit' : 'inherit',
                               }
                             }}
                           >
@@ -617,6 +722,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                             sx={{ 
                               fontSize: '0.95rem',
                               lineHeight: 1.5,
+                              color: message.sender === 'user' ? 'inherit' : 'inherit',
                             }}
                           >
                             {children}
@@ -628,7 +734,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                             target="_blank" 
                             rel="noopener noreferrer" 
                             style={{ 
-                              color: '#0066cc',
+                              color: message.sender === 'user' ? '#0066cc' : '#0066cc',
                               textDecoration: 'none',
                               fontWeight: 500,
                             }}
@@ -653,6 +759,42 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 >
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </Typography>
+
+                {/* Afficher les suggestions après le dernier message de l'assistant */}
+                {message.sender === 'assistant' && message === messages[messages.length - 1] && messages.length <= 2 && (
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: 1,
+                      mt: 1.5,
+                      mb: 1,
+                    }}
+                  >
+                    {suggestions.map((suggestion) => (
+                      <Button
+                        key={suggestion.id}
+                        onClick={() => handleSuggestionClick(suggestion.text)}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          borderRadius: '4px',
+                          textTransform: 'none',
+                          color: 'text.primary',
+                          borderColor: 'rgba(0, 0, 0, 0.23)',
+                          backgroundColor: 'white',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                            borderColor: 'rgba(0, 0, 0, 0.23)',
+                          }
+                        }}
+                      >
+                        {suggestion.text}
+                      </Button>
+                    ))}
+                  </Box>
+                )}
               </Box>
             ))}
             {isLoading && (
@@ -741,59 +883,16 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
             <div ref={messagesEndRef} />
           </Box>
 
-          {/* Champ de saisie avec suggestions */}
+          {/* Champ de saisie */}
           <Box
             sx={{
-              borderTop: 'none',
+              borderTop: '1px solid #E0E0E0',
               position: 'relative',
-              px: 1,
-              py: 1,
+              px: 2,
+              py: 2,
               bgcolor: 'white',
             }}
           >
-            {/* Suggestions au-dessus du champ de saisie */}
-            <Fade in={messages.length <= 2}>
-              <Box 
-                sx={{ 
-                  position: 'absolute', 
-                  bottom: '100%',
-                  left: 0,
-                  right: 0,
-                  display: 'flex', 
-                  justifyContent: 'center',
-                  pb: 1,
-                }}
-              >
-                <Stack 
-                  direction="row" 
-                  spacing={1.5}
-                >
-                  {suggestions.map((suggestion) => (
-                    <Button
-                      key={suggestion.id}
-                      onClick={() => handleSuggestionClick(suggestion.text)}
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        borderRadius: '4px',  // Même arrondi que dans le formulaire
-                        textTransform: 'none',
-                        color: 'text.primary',
-                        borderColor: 'rgba(0, 0, 0, 0.23)',
-                        backgroundColor: 'white',
-                        '&:hover': {
-                          backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                          borderColor: 'rgba(0, 0, 0, 0.23)',
-                        }
-                      }}
-                    >
-                      {suggestion.text}
-                    </Button>
-                  ))}
-                </Stack>
-              </Box>
-            </Fade>
-
-            {/* Champ de saisie */}
             <Box sx={{ display: 'flex', gap: 1 }}>
               <TextField
                 fullWidth
@@ -801,7 +900,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && inputValue.trim()) {
                     handleSendMessage(inputValue);
                   }
                 }}
@@ -809,13 +908,19 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 inputRef={inputRef}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: 1,  // Même arrondi que partout ailleurs
+                    borderRadius: '4px',
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
                     '&.Mui-focused': {
                       '& > fieldset': {
                         borderColor: '#0066cc',
                       }
                     }
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    color: 'black',
+                  },
+                  '& .MuiInputBase-input': {
+                    color: 'black',
                   },
                 }}
               />
@@ -824,9 +929,15 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                 color="primary"
                 onClick={() => handleSendMessage(inputValue)}
                 sx={{
-                  borderRadius: 1,  // Même arrondi
+                  borderRadius: '20px',
                   minWidth: 'auto',
                   background: '#0066cc',
+                  border: '1px solid #0066cc',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                  '&:hover': {
+                    background: '#0055bb',
+                    border: '1px solid #0055bb',
+                  },
                   '&:disabled': {
                     opacity: 0.5,
                     color: 'white',
