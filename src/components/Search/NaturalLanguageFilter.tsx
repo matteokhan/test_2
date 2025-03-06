@@ -31,8 +31,7 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
     "Vols avant midi",
     "Vols avec maximum 1 escale",
     "Air France uniquement",
-    "Vols de nuit",
-    "Vols moins chers"
+    "Vols de nuit"
   ];
 
   const handleFilterSubmit = async () => {
