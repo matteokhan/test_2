@@ -106,7 +106,6 @@ export const extractSuggestionButtons = (text: string): ButtonContent[] => {
       { text: "non" }
     ];
   }
-
   if (text.includes("Pouvez-vous confirmer")) {
     return [{ text: "Je confirme", iconType: 'check', iconPosition: 'start' }];
   }
