@@ -13,7 +13,8 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import remarkBreaks from 'remark-breaks';
 import { ChatMessage, Suggestion } from '../MagicAssistant/types';
-import { extractSuggestionButtons, findDisneyButtons } from '../MagicAssistant/utils';
+import { findDisneyButtons } from '../MagicAssistant/utils';
+import { BsBuilding, BsPerson, BsGeoAlt, BsCheck } from 'react-icons/bs';
 
 // Interface mise à jour avec la nouvelle prop selectedSuggestions
 export interface MessageBubbleProps {
@@ -37,10 +38,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   pendingSubmission = false
 }) => {
   // Extraire les suggestions avant le rendu du message
-  const extractedButtons = extractSuggestionButtons(message.text);
   const specialButtons = findDisneyButtons(message.text);
-  const buttonsToShow = specialButtons.length > 0 ? specialButtons : extractedButtons;
-
+  const buttonsToShow = specialButtons;
   return (
     <Box
       key={message.id}
@@ -111,11 +110,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             remarkPlugins={[remarkGfm, remarkBreaks]}
             rehypePlugins={[rehypeRaw]}
             components={{
-              // Fonction pour masquer les parenthèses dans le texte
               text: ({ children }) => {
-                // Supprime les suggestions entre parenthèses du texte affiché
-                const cleanedText = String(children).replace(/\s?\([^()]+\)/g, '');
-                return <>{cleanedText}</>;
+                return <>{children}</>;
               },
               // Personnalisation simplifiée pour agent de voyage
               p: ({ children }) => (
@@ -278,10 +274,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     },
                     transition: 'all 0.2s ease',
                     opacity: pendingSubmission ? 0.7 : 1,
-                    cursor: pendingSubmission ? 'not-allowed' : 'pointer'
+                    cursor: pendingSubmission ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
                   }}
                 >
-                  {suggestion}
+                  <SuggestionWithIcon text={suggestion} />
                 </Button>
               ))}
             </Box>
@@ -305,10 +304,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     size="small"
                     disabled={pendingSubmission}
                     sx={{
-                      borderRadius: '18px', // Même radius que les autres boutons
+                      borderRadius: '18px', // Modifié pour matcher
                       textTransform: 'none',
-                      color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc',
-                      borderColor: '#0066cc',
+                      color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc', // Modifié
+                      borderColor: '#0066cc', // Modifié
                       backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
                       fontSize: '0.85rem',
                       fontWeight: 500,
@@ -327,13 +326,52 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   </Button>
                 ))}
               </Box>
-            
             )
           )}
         </>
       )}
     </Box>
   );
+};
+
+const SuggestionWithIcon: React.FC<{ text: string }> = ({ text }) => {
+  // Pour les lieux avec icône bâtiment
+  if (["Floride", "Californie", "Paris"].includes(text)) {
+    return (
+      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <BsBuilding /> {text}
+      </span>
+    );
+  }
+  
+  // Pour les personnes
+  if (["Laurianne, épouse", "Louis, 16 ans", "Kiara, 18 ans"].includes(text)) {
+    return (
+      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <BsPerson /> {text}
+      </span>
+    );
+  }
+  
+  // Pour les villes avec pin
+  if (["Orlando", "Miami"].includes(text)) {
+    return (
+      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {text} <BsGeoAlt />
+      </span>
+    );
+  }
+  
+  // Pour la confirmation
+  if (text === "Je confirme") {
+    return (
+      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <BsCheck /> {text}
+      </span>
+    );
+  }
+  
+  return <span>{text}</span>;
 };
 
 /**
