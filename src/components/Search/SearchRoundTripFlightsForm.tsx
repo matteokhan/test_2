@@ -8,7 +8,7 @@ import { Form, Formik, FormikHelpers } from 'formik'
 import { RoundTripFlightSearchParams, SearchFlightSegmentType } from '@/types'
 import { CustomTextField, DepartureAndDestinationField, PassengersField } from '@/components'
 // Importer MagicAssistantButton
-import MagicAssistantButton from './MagicAssistantButton';
+import MagicAssistantButton from './MagicAssistant/MagicAssistantButton'
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
 import { usePathname } from 'next/navigation'

@@ -12,7 +12,7 @@ import {
   DepartureAndDestinationField,
 } from '@/components'
 // Importer MagicAssistantButton et son type
-import MagicAssistantButton from './MagicAssistantButton';
+import MagicAssistantButton from './MagicAssistant/MagicAssistantButton'
 import dayjs from 'dayjs'
 import { useSearchDataCache } from '@/contexts'
 import { usePathname } from 'next/navigation'
