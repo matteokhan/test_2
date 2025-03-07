@@ -15,11 +15,14 @@ import remarkBreaks from 'remark-breaks';
 import { ChatMessage, Suggestion } from '../MagicAssistant/types';
 import { extractSuggestionButtons, findDisneyButtons } from '../MagicAssistant/utils';
 
-interface MessageBubbleProps {
+// Interface mise à jour avec la nouvelle prop selectedSuggestions
+export interface MessageBubbleProps {
   message: ChatMessage;
   onSuggestionClick: (suggestion: string) => void;
   suggestions: Suggestion[];
   isLastMessage: boolean;
+  selectedSuggestions?: string[]; // Tableau pour sélection multiple
+  pendingSubmission?: boolean;    // Pour désactiver les boutons pendant la soumission
 }
 
 /**
@@ -29,7 +32,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message, 
   onSuggestionClick, 
   suggestions,
-  isLastMessage 
+  isLastMessage,
+  selectedSuggestions = [], // Valeur par défaut tableau vide
+  pendingSubmission = false
 }) => {
   // Extraire les suggestions avant le rendu du message
   const extractedButtons = extractSuggestionButtons(message.text);
@@ -256,20 +261,24 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   onClick={() => onSuggestionClick(suggestion)}
                   variant="outlined"
                   size="small"
+                  disabled={pendingSubmission}
                   sx={{
                     borderRadius: '18px',
                     textTransform: 'none',
-                    color: '#0066cc',
+                    color: selectedSuggestions.includes(suggestion) ? 'white' : '#0066cc',
                     borderColor: '#0066cc',
-                    backgroundColor: 'white',
+                    backgroundColor: selectedSuggestions.includes(suggestion) ? '#0066cc' : 'white',
                     fontSize: '0.85rem',
                     fontWeight: 500,
                     px: 1.5,
                     py: 0.5,
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                      backgroundColor: selectedSuggestions.includes(suggestion) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
                       borderColor: '#0066cc',
-                    }
+                    },
+                    transition: 'all 0.2s ease',
+                    opacity: pendingSubmission ? 0.7 : 1,
+                    cursor: pendingSubmission ? 'not-allowed' : 'pointer'
                   }}
                 >
                   {suggestion}
@@ -296,16 +305,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   onClick={() => onSuggestionClick(suggestion.text)}
                   variant="outlined"
                   size="small"
+                  disabled={pendingSubmission}
                   sx={{
                     borderRadius: '4px',
                     textTransform: 'none',
-                    color: 'text.primary',
+                    color: selectedSuggestions.includes(suggestion.text) ? 'white' : 'text.primary',
                     borderColor: 'rgba(0, 0, 0, 0.23)',
-                    backgroundColor: 'white',
+                    backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                      borderColor: 'rgba(0, 0, 0, 0.23)',
-                    }
+                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 0, 0, 0.02)',
+                      borderColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 0, 0, 0.23)',
+                    },
+                    transition: 'all 0.2s ease',
+                    opacity: pendingSubmission ? 0.7 : 1,
+                    cursor: pendingSubmission ? 'not-allowed' : 'pointer'
                   }}
                 >
                   {suggestion.text}
@@ -411,8 +424,10 @@ export const LoadingIndicator: React.FC = () => (
  */
 export const ChatSuggestions: React.FC<{
   suggestions: Suggestion[], 
-  onSuggestionClick: (text: string) => void
-}> = ({ suggestions, onSuggestionClick }) => (
+  onSuggestionClick: (text: string) => void,
+  selectedSuggestions?: string[],
+  pendingSubmission?: boolean
+}> = ({ suggestions, onSuggestionClick, selectedSuggestions = [], pendingSubmission = false }) => (
   <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
     {suggestions.map((suggestion) => (
       <Button
@@ -426,11 +441,13 @@ export const ChatSuggestions: React.FC<{
           textTransform: 'none',
           fontSize: '0.85rem',
           borderColor: 'rgba(0, 0, 0, 0.15)',
-          color: 'text.primary',
+          color: selectedSuggestions.includes(suggestion.text) ? 'white' : 'text.primary',
+          backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.03)',
+            backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 0, 0, 0.03)',
             borderColor: 'rgba(0, 0, 0, 0.25)',
-          }
+          },
+          transition: 'all 0.2s ease'
         }}
       >
         {suggestion.text}

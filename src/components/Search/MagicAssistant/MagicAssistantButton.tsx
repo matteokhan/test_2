@@ -172,24 +172,60 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     }, 50);
   };
 
+  // État pour suivre les suggestions sélectionnées (multiple)
+  const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
+  const [pendingSubmission, setPendingSubmission] = useState<boolean>(false);
+
   // Gérer le clic sur une suggestion
   const handleSuggestionClick = (text: string) => {
-    // Au lieu d'envoyer le message directement, on le place dans le champ de saisie
-    setInputValue(text);
-    // Focus sur le champ de texte sans causer de scroll
+    // Enregistrer la position actuelle du scroll
     const scrollPosition = window.scrollY;
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-        // Placer le curseur à la fin du texte
-        inputRef.current.selectionStart = text.length;
-        inputRef.current.selectionEnd = text.length;
+    
+    // Toggle la sélection de la suggestion
+    setSelectedSuggestions(prev => {
+      if (prev.includes(text)) {
+        // Si déjà sélectionnée, la retirer
+        return prev.filter(suggestion => suggestion !== text);
+      } else {
+        // Sinon, l'ajouter
+        return [...prev, text];
       }
+    });
+    
+    // Restaurer la position du scroll
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: 'auto'
+    });
+  };
+  
+  // Soumettre les suggestions sélectionnées
+  const submitSelectedSuggestions = () => {
+    if (selectedSuggestions.length === 0) return;
+    
+    // Enregistrer la position actuelle du scroll
+    const scrollPosition = window.scrollY;
+    
+    // Marquer comme en cours de soumission pour désactiver les boutons
+    setPendingSubmission(true);
+    
+    // Créer le message à partir des suggestions sélectionnées
+    const message = selectedSuggestions.join(', ');
+    
+    // Envoyer le message
+    handleSendMessage(message);
+    
+    // Réinitialiser les suggestions sélectionnées après un court délai
+    setTimeout(() => {
+      setSelectedSuggestions([]);
+      setPendingSubmission(false);
+      
+      // Restaurer la position du scroll
       window.scrollTo({
         top: scrollPosition,
         behavior: 'auto'
       });
-    }, 50);
+    }, 500);
   };
 
   /**
@@ -492,6 +528,8 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
                 onSuggestionClick={handleSuggestionClick}
                 suggestions={defaultSuggestions}
                 isLastMessage={index === 0 && messages.length <= 2}
+                selectedSuggestions={selectedSuggestions}
+                pendingSubmission={pendingSubmission}
               />
             ))}
             {isLoading && <LoadingIndicator />}
@@ -499,15 +537,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
           </Box>
 
           {/* Champ de saisie */}
-          <Box
-            sx={{
-              borderTop: '1px solid #E0E0E0',
-              position: 'relative',
-              px: 2,
-              py: 2,
-              bgcolor: 'white',
-            }}
-          >
+          <Box sx={{ position: 'relative', px: 2, py: 2, bgcolor: 'white' }}>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <TextField
                 fullWidth
@@ -515,17 +545,23 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim()) {
-                    // Enregistrer la position actuelle du scroll
-                    const scrollPosition = window.scrollY;
-                    handleSendMessage(inputValue);
-                    // Restaurer la position du scroll
-                    setTimeout(() => {
-                      window.scrollTo({
-                        top: scrollPosition,
-                        behavior: 'auto'
-                      });
-                    }, 50);
+                  if (e.key === 'Enter' && (inputValue.trim() || selectedSuggestions.length > 0)) {
+                    // Si des suggestions sont sélectionnées, les envoyer
+                    if (selectedSuggestions.length > 0) {
+                      submitSelectedSuggestions();
+                    } else if (inputValue.trim()) {
+                      // Sinon, envoyer le texte saisi
+                      // Enregistrer la position actuelle du scroll
+                      const scrollPosition = window.scrollY;
+                      handleSendMessage(inputValue);
+                      // Restaurer la position du scroll
+                      setTimeout(() => {
+                        window.scrollTo({
+                          top: scrollPosition,
+                          behavior: 'auto'
+                        });
+                      }, 50);
+                    }
                   }
                 }}
                 placeholder="Écrivez votre message ici..."
@@ -552,16 +588,22 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  // Enregistrer la position actuelle du scroll
-                  const scrollPosition = window.scrollY;
-                  handleSendMessage(inputValue);
-                  // Restaurer la position du scroll
-                  setTimeout(() => {
-                    window.scrollTo({
-                      top: scrollPosition,
-                      behavior: 'auto'
-                    });
-                  }, 50);
+                  // Si des suggestions sont sélectionnées, les envoyer
+                  if (selectedSuggestions.length > 0) {
+                    submitSelectedSuggestions();
+                  } else if (inputValue.trim()) {
+                    // Sinon, envoyer le texte saisi
+                    // Enregistrer la position actuelle du scroll
+                    const scrollPosition = window.scrollY;
+                    handleSendMessage(inputValue);
+                    // Restaurer la position du scroll
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'auto'
+                      });
+                    }, 50);
+                  }
                 }}
                 sx={{
                   borderRadius: '20px',
@@ -579,11 +621,44 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
                     background: '#0066cc',
                   }
                 }}
-                disabled={!inputValue.trim()}
+                disabled={!inputValue.trim() && selectedSuggestions.length === 0}
               >
                 <SendIcon />
               </Button>
             </Box>
+            
+            {/* Afficher les suggestions sélectionnées */}
+            {selectedSuggestions.length > 0 && (
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 0.5, 
+                mt: 1.5, 
+                alignItems: 'center'
+              }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                  Sélectionnés:
+                </Typography>
+                {selectedSuggestions.map((suggestion, index) => (
+                  <Typography
+                    key={index}
+                    variant="body2"
+                    sx={{
+                      backgroundColor: '#0066cc',
+                      color: 'white',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.8rem',
+                      lineHeight: 1.2,
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {suggestion}
+                  </Typography>
+                ))}
+              </Box>
+            )}
           </Box>
         </Paper>
       </Collapse>
