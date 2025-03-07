@@ -110,9 +110,9 @@ export const findDisneyButtons = (text: string): string[] => {
   return [];
 };
 
-// Suggestions modifiées pour être des débuts de phrases
+// Suggestions modifiées pour être des phrases complètes
 export const defaultSuggestions: Suggestion[] = [
-  { id: 'sun', text: 'Je recherche une destination où il fait chaud...', borderColor: '#FFC107' },
-  { id: 'budget', text: 'Mon budget est limité à 500€, quelles options...', borderColor: '#483698' },
-  { id: 'f1', text: 'Je voudrais assister au Grand Prix de F1 à...', borderColor: '#2196F3' },
+  { id: 'sun', text: 'Je cherche une destination où il fait chaud et ensoleillé. Des idées ?', borderColor: '#FFC107' },
+  { id: 'budget', text: 'Quelles sont les destinations les moins chères pour voyager en ce moment ?', borderColor: '#483698' },
+  { id: 'original', text: 'Suggérez-moi des destinations originales que peu de gens connaissent.', borderColor: '#2196F3' },
 ];

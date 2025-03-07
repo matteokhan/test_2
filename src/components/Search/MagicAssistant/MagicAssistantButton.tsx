@@ -115,15 +115,34 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
 
   // Focus sur l'input lorsque le chat s'ouvre
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
+    if (isOpen && inputRef.current) {
+      // Utiliser requestAnimationFrame pour retarder le focus et éviter le scroll automatique
+      const focusInput = () => {
+        // Enregistrer la position actuelle du scroll
+        const scrollPosition = window.scrollY;
+        
+        // Focus sur le champ de texte
         inputRef.current?.focus();
+        
+        // Restaurer la position du scroll
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'auto'
+        });
+      };
+      
+      // Petit délai pour laisser l'animation de la collapse se terminer
+      setTimeout(() => {
+        requestAnimationFrame(focusInput);
       }, 500);
     }
   }, [isOpen]);
 
   // Basculer l'état du chat (ouvert/fermé)
   const toggleChat = async () => {
+    // Enregistrer la position actuelle du scroll
+    const scrollPosition = window.scrollY;
+    
     const newIsOpenState = !isOpen;
     
     if (newIsOpenState === false) {
@@ -143,11 +162,34 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     } else {
       setInternalIsOpen(newIsOpenState);
     }
+    
+    // Restaurer la position du scroll après le rendu
+    setTimeout(() => {
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'auto'
+      });
+    }, 50);
   };
 
   // Gérer le clic sur une suggestion
   const handleSuggestionClick = (text: string) => {
-    handleSendMessage(text);
+    // Au lieu d'envoyer le message directement, on le place dans le champ de saisie
+    setInputValue(text);
+    // Focus sur le champ de texte sans causer de scroll
+    const scrollPosition = window.scrollY;
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        // Placer le curseur à la fin du texte
+        inputRef.current.selectionStart = text.length;
+        inputRef.current.selectionEnd = text.length;
+      }
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'auto'
+      });
+    }, 50);
   };
 
   /**
@@ -474,7 +516,16 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && inputValue.trim()) {
+                    // Enregistrer la position actuelle du scroll
+                    const scrollPosition = window.scrollY;
                     handleSendMessage(inputValue);
+                    // Restaurer la position du scroll
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'auto'
+                      });
+                    }, 50);
                   }
                 }}
                 placeholder="Écrivez votre message ici..."
@@ -500,7 +551,18 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => handleSendMessage(inputValue)}
+                onClick={() => {
+                  // Enregistrer la position actuelle du scroll
+                  const scrollPosition = window.scrollY;
+                  handleSendMessage(inputValue);
+                  // Restaurer la position du scroll
+                  setTimeout(() => {
+                    window.scrollTo({
+                      top: scrollPosition,
+                      behavior: 'auto'
+                    });
+                  }, 50);
+                }}
                 sx={{
                   borderRadius: '20px',
                   minWidth: 'auto',
