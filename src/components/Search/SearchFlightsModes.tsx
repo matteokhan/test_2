@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
-import { Box, Paper, Stack, SxProps, Tab, Tabs } from '@mui/material'
+import { Box, Paper, Stack, SxProps, Tab, Tabs, Button } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import {
   SearchOneWayFlightsForm,
   SearchRoundTripFlightsForm,
@@ -10,6 +11,7 @@ import {
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
+import MagicAssistantButton from './MagicAssistantButton'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
@@ -25,12 +27,20 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFli
   const [isSticky, setIsSticky] = useState<boolean>(false)
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
+  // État pour suivre si le chatbot est ouvert
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false)
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
   }
+  
   const handleSearch = (values: SearchFlightsParams) => {
     onSearch({ searchParams: values })
+  }
+
+  // Fonction pour gérer l'ouverture/fermeture du chatbot
+  const handleChatToggle = (isOpen: boolean) => {
+    setIsChatbotOpen(isOpen)
   }
 
   useEffect(() => {
@@ -100,6 +110,38 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFli
             maxWidth={sticky ? (isSticky ? undefined : false) : false}
             sx={{ p: sticky ? (isSticky ? '' : '0 !important') : '0 !important', width: '100%' }}>
             <Stack direction="column" sx={{ paddingX: 4, width: '100%' }}>
+              {/* Bouton "Recherche classique" ajouté ici */}
+              {isChatbotOpen && (
+                <Box 
+                  sx={{ 
+                    display: 'flex',
+                    justifyContent: 'flex-start', // Changé de 'center' à 'flex-start' pour aligner à gauche
+                    width: '100%',
+                    mb: 2,
+                    pb: 1,
+                  }}
+                >
+                  <Button
+                    onClick={() => handleChatToggle(false)}
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      backgroundColor: '#0066cc',
+                      color: 'white',
+                      textTransform: 'none',
+                      borderRadius: '4px',
+                      padding: '5px 12px',
+                      fontSize: '0.8rem',
+                      '&:hover': {
+                        backgroundColor: '#0055bb',
+                      },
+                    }}
+                  >
+                    Recherche classique
+                  </Button>
+                </Box>
+              )}
+              
               <Tabs value={activeTab} onChange={handleTabChange}>
                 <Tab label="Aller-retour" data-testid="searchMode-roundtripFlightButton" />
                 <Tab label="Aller simple" data-testid="searchMode-singleFlightButton" />
@@ -108,30 +150,35 @@ export const SearchFlightsModes = ({ sx, onSearch, disabled, sticky }: SearchFli
               </Tabs>
               <Box sx={{ mt: 1, pt: 1, pb: 2 }}>
                 {activeTab === 0 && (
-                  <SearchRoundTripFlightsForm
-                    disabled={disabled}
-                    onSubmit={handleSearch}
-                    initialValues={
-                      searchParamsCache?._type === 'roundTrip' ? searchParamsCache : undefined
-                    }
-                  />
+                  <>
+                    <SearchRoundTripFlightsForm
+                      disabled={disabled}
+                      onSubmit={handleSearch}
+                      initialValues={
+                        searchParamsCache?._type === 'roundTrip' ? searchParamsCache : undefined
+                      }
+                    />
+                  </>
                 )}
                 {activeTab === 1 && (
-                  <SearchOneWayFlightsForm
-                    disabled={disabled}
-                    onSubmit={handleSearch}
-                    initialValues={
-                      searchParamsCache?._type === 'oneWay' ? searchParamsCache : undefined
-                    }
-                  />
+                  <>
+                    <SearchOneWayFlightsForm
+                      disabled={disabled}
+                      onSubmit={handleSearch}
+                      initialValues={
+                        searchParamsCache?._type === 'oneWay' ? searchParamsCache : undefined
+                      }
+                    />
+                   
+                  </>
                 )}
                 {/* TODO: enable multidestinations */}
                 {/* {activeTab === 2 && (
-          <SearchMultiDestFlightsForm
-            onSubmit={handleSearch}
-            initialValues={multiDestInitialValues}
-          />
-        )} */}
+                  <SearchMultiDestFlightsForm
+                    onSubmit={handleSearch}
+                    initialValues={multiDestInitialValues}
+                  />
+                )} */}
               </Box>
             </Stack>
           </SectionContainer>

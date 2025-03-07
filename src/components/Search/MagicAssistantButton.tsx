@@ -41,18 +41,28 @@ type FlightSearchParams = RoundTripFlightSearchParams | OneWayFlightSearchParams
 // Exporter l'interface mise à jour pour la rendre disponible à l'importation
 export interface MagicAssistantButtonProps {
   onSearch?: (params: FlightSearchParams) => void;
+  isOpen?: boolean; // État du chat (ouvert/fermé)
+  onToggle?: (isOpen: boolean) => void; // Fonction pour notifier le parent du changement d'état
 }
 
-const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch }) => {
+const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ 
+  onSearch, 
+  isOpen: externalIsOpen, 
+  onToggle 
+}) => {
   // Configuration du backend
   const API_BASE_URL = 'http://localhost:5000';
-  const [isOpen, setIsOpen] = useState(false);
+  // État local pour isOpen (utilisé uniquement si externalIsOpen n'est pas fourni)
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const currentDate = new Date().toISOString().split('T')[0];
+  
+  // Utiliser l'état externe s'il est fourni, sinon utiliser l'état interne
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   
   // Récupérer le chemin actuel pour déterminer si nous sommes sur la page de recherche aller simple
   const pathname = usePathname();
@@ -159,6 +169,11 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     }
   }, [isOpen, messages.length]);
 
+  const handleSuggestionClick = (text: string) => {
+    // Simplement envoyer le message suggéré
+    handleSendMessage(text);
+  };
+
   // Gestionnaire d'événement de défilement avec détection de position
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
@@ -187,25 +202,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     }, 5000); // 5 secondes d'inactivité avant de réactiver le défilement automatique
   };
 
-  // Scroll automatique vers le bas avec comportement amélioré
-  useEffect(() => {
-    // Ne faire défiler automatiquement que si l'utilisateur n'est pas en train de scroller manuellement
-    // ET uniquement pour le message initial ou les réponses de l'assistant (pas après envoi de message utilisateur)
-    if (!userScrolling && messagesEndRef.current && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      
-      // Scroller doucement uniquement pour les messages de l'assistant ou le premier message
-      if (lastMessage.sender === 'assistant' || messages.length === 1) {
-        // Utiliser scrollIntoView avec alignToTop:false pour éviter de centrer le champ de texte
-        messagesEndRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'end',  // Aligner avec le bas plutôt qu'au centre
-          inline: 'nearest'
-        });
-      }
-    }
-  }, [messages, userScrolling]);
-
   // Nettoyer le timeout lors du démontage du composant
   useEffect(() => {
     return () => {
@@ -225,12 +221,25 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
   }, [isOpen]);
 
   const toggleChat = async () => {
-    if (isOpen) {
+    const newIsOpenState = !isOpen;
+    
+    if (newIsOpenState === false) {
       // Si on ferme le chat, réinitialiser la conversation
       setMessages([]);
       await resetConversation();
     }
-    setIsOpen(!isOpen);
+    
+    // Mettre à jour l'état local si nécessaire
+    if (externalIsOpen === undefined) {
+      setInternalIsOpen(newIsOpenState);
+    }
+    
+    // Notifier le parent du changement d'état
+    if (onToggle) {
+      onToggle(newIsOpenState);
+    } else {
+      setInternalIsOpen(newIsOpenState);
+    }
   };
 
   const handleSendMessage = async (text: string) => {
@@ -447,126 +456,138 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    // Définir le texte comme valeur d'entrée
-    setInputValue(suggestion);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
+// Ajoutez ces fonctions avant le return
+const extractSuggestionButtons = (text: string): string[] => {
+  // console.log("Texte à analyser:", text); // Log pour débogage
+  const regex = /\(([^()]+)\)/g;
+  const suggestions: string[] = [];
+  let match;
+  
+  while ((match = regex.exec(text)) !== null) {
+    // console.log("Match trouvé:", match[1]); // Log pour débogage
+    suggestions.push(match[1]);
+  }
+  
+  return suggestions;
+};
 
-  return (
-    <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
-      {/* Bouton marketing amélioré avec style bleu Leclerc */}
-      <Box sx={{ textAlign: 'left', mb: 1 }}>
-        <Button
-          onClick={toggleChat}
-          startIcon={<AutoAwesomeIcon fontSize="small" sx={{ color: '#FFD700' }} />}
-          variant="contained"
-          sx={{
-            textTransform: 'none',
+const handleSuggestionButtonClick = (suggestion: string) => {
+  // Envoyer directement le message
+  handleSendMessage(suggestion);
+};
+
+// Fonction de détection spécifique pour le scénario Disney (méthode alternative)
+const findDisneyButtons = (text: string): string[] => {
+  // Vérifie spécifiquement si le texte contient une partie de la réponse Disney
+  if (text.includes("Disney") && text.includes("Halloween")) {
+    // Retourne directement les options du scénario Disney
+    return ["Floride", "Californie", "Paris", "Laurianne, épouse", "Louis, 16 ans", "Kiara, 18 ans"];
+  }
+  
+  // Pour la question sur Orlando
+  if (text.includes("Orlando est l'aéroport international")) {
+    return ["Orlando", "Miami"];
+  }
+  
+  // Pour la question sur le départ de Marseille
+  if (text.includes("Vous partez d'habitude de Marseille")) {
+    return ["oui", "non"];
+  }
+  
+  return [];
+};
+
+// Voici le return complet
+return (
+  <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
+    {/* Bouton marketing amélioré avec style bleu Leclerc */}
+    <Box sx={{ textAlign: 'left', mb: 1 }}>
+      <Button
+        onClick={toggleChat}
+        startIcon={<AutoAwesomeIcon fontSize="small" sx={{ color: '#FFD700' }} />}
+        variant="contained"
+        sx={{
+          textTransform: 'none',
+          color: 'white',
+          backgroundColor: '#0066cc', // Bleu Leclerc
+          padding: '8px 16px',
+          fontWeight: 700,
+          fontSize: '0.95rem',
+          border: '1px solid #0066cc',
+          borderRadius: '6px',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          '&:hover': {
+            backgroundColor: '#0055bb',
+          },
+          zIndex: 1100, // S'assurer que le bouton est toujours visible
+        }}
+      >
+        Conseiller voyage intelligent
+      </Button>
+    </Box>
+
+    {/* Chatbox qui s'affiche/se masque avec bordure améliorée */}
+    <Collapse in={isOpen} timeout={300} unmountOnExit>
+      <Paper
+        elevation={3}
+        className="magic-chatbot-container"
+        sx={{
+          width: '100%',
+          borderRadius: '8px',
+          overflow: 'hidden',
+          zIndex: 1200,
+          height: 600,
+          display: 'flex',
+          flexDirection: 'column',
+          border: '2px solid #0066cc',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          position: 'relative',
+        }}
+      >
+        {/* En-tête du chat */}
+        <Box sx={{ 
+          padding: '12px 16px', 
+          backgroundColor: '#0066cc', 
+          borderBottom: '1px solid #0055bb',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <Typography variant="h6" sx={{ 
+            fontWeight: 600, 
+            fontSize: '1rem',
             color: 'white',
-            backgroundColor: '#0066cc', // Bleu Leclerc
-            padding: '8px 16px',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: '1px solid #0066cc',
-            borderRadius: '6px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            '&:hover': {
-              backgroundColor: '#0055bb',
-            },
-            zIndex: 1100, // S'assurer que le bouton est toujours visible
-          }}
-        >
-          Conseiller voyage intelligent
-        </Button>
-      </Box>
+            textAlign: 'center',
+          }}>
+            Assistant de voyage Leclerc
+          </Typography>
+        </Box>
 
-      {/* Chatbox qui s'affiche/se masque avec bordure améliorée */}
-      <Collapse in={isOpen} timeout={300} unmountOnExit>
-        <Paper
-          elevation={3}
-          className="magic-chatbot-container"
+        {/* Zone de conversation - Ajout de l'événement onScroll */}
+        <Box
           sx={{
-            width: '100%',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            zIndex: 1200,
-            height: 400,
+            flexGrow: 1,
+            p: 2,
+            overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            border: '2px solid #0066cc', // Bordure bleue plus visible
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            position: 'relative',
+            gap: 1.5,
+            bgcolor: '#F8F9FA',
           }}
+          onScroll={handleScroll}
         >
-          {/* Bouton pour fermer le chat et réactiver le formulaire */}
-          <Box sx={{ 
-            position: 'absolute', 
-            top: '8px', 
-            left: '8px', 
-            zIndex: 1300
-          }}>
-            <Button
-              onClick={toggleChat}
-              variant="contained"
-              size="small"
-              startIcon={<ArrowBackIcon />}
-              sx={{
-                backgroundColor: '#0066cc',
-                color: 'white',
-                textTransform: 'none',
-                borderRadius: '4px',
-                padding: '5px 12px',
-                fontSize: '0.8rem',
-                '&:hover': {
-                  backgroundColor: '#0055bb',
-                },
-              }}
-            >
-              Retour au formulaire
-            </Button>
-          </Box>
-
-          {/* En-tête du chat */}
-          <Box sx={{ 
-            padding: '12px 16px', 
-            backgroundColor: '#0066cc', 
-            borderBottom: '1px solid #0055bb',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Typography variant="h6" sx={{ 
-              fontWeight: 600, 
-              fontSize: '1rem',
-              color: 'white',
-              textAlign: 'center',
-            }}>
-              Assistant de voyage Leclerc
-            </Typography>
-          </Box>
-
-          {/* Zone de conversation - Ajout de l'événement onScroll */}
-          <Box
-            sx={{
-              flexGrow: 1,
-              p: 2,
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-              bgcolor: '#F8F9FA',
-            }}
-            onScroll={handleScroll}
-          >
-            {messages.map((message) => (
+          {messages.map((message) => {
+            // Extraire les suggestions avant le rendu du message
+            const extractedButtons = extractSuggestionButtons(message.text);
+            const specialButtons = findDisneyButtons(message.text);
+            const buttonsToShow = specialButtons.length > 0 ? specialButtons : extractedButtons;
+            
+            return (
               <Box
                 key={message.id}
                 sx={{
                   alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%',
+                  maxWidth: '90%', // Augmenté de 80% à 90%
                 }}
               >
                 <Paper
@@ -637,6 +658,13 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                       remarkPlugins={[remarkGfm, remarkBreaks]}
                       rehypePlugins={[rehypeRaw]}
                       components={{
+                        // Fonction pour masquer les parenthèses dans le texte
+                        text: ({ children }) => {
+                          // Supprime les suggestions entre parenthèses du texte affiché
+                          const cleanedText = String(children).replace(/\s?\([^()]+\)/g, '');
+                          return <>{cleanedText}</>;
+                        },
+                        
                         // Personnalisation simplifiée pour agent de voyage
                         p: ({ children }) => (
                           <Typography 
@@ -760,200 +788,247 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ onSearch })
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </Typography>
 
-                {/* Afficher les suggestions après le dernier message de l'assistant */}
-                {message.sender === 'assistant' && message === messages[messages.length - 1] && messages.length <= 2 && (
-                  <Box 
-                    sx={{ 
-                      display: 'flex', 
-                      flexDirection: 'row',
-                      flexWrap: 'wrap',
-                      gap: 1,
-                      mt: 1.5,
-                      mb: 1,
-                    }}
-                  >
-                    {suggestions.map((suggestion) => (
-                      <Button
-                        key={suggestion.id}
-                        onClick={() => handleSuggestionClick(suggestion.text)}
-                        variant="outlined"
-                        size="small"
-                        sx={{
-                          borderRadius: '4px',
-                          textTransform: 'none',
-                          color: 'text.primary',
-                          borderColor: 'rgba(0, 0, 0, 0.23)',
-                          backgroundColor: 'white',
-                          '&:hover': {
-                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                            borderColor: 'rgba(0, 0, 0, 0.23)',
-                          }
+                {/* BLOC DE GESTION DES SUGGESTIONS - MODIFIÉ */}
+                {message.sender === 'assistant' && (
+                  <>
+                    {/* Boutons dynamiques extraits du message */}
+                    {buttonsToShow.length > 0 && (
+                      <Box 
+                        sx={{ 
+                          display: 'flex', 
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          gap: 1,
+                          mt: 1.5,
+                          mb: 1,
                         }}
                       >
-                        {suggestion.text}
-                      </Button>
-                    ))}
-                  </Box>
+                        {buttonsToShow.map((suggestion, index) => (
+                          <Button
+                            key={`${message.id}-suggestion-${index}`}
+                            onClick={() => handleSuggestionButtonClick(suggestion)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              borderRadius: '18px',
+                              textTransform: 'none',
+                              color: '#0066cc',
+                              borderColor: '#0066cc',
+                              backgroundColor: 'white',
+                              fontSize: '0.85rem',
+                              fontWeight: 500,
+                              px: 1.5,
+                              py: 0.5,
+                              '&:hover': {
+                                backgroundColor: 'rgba(0, 102, 204, 0.08)',
+                                borderColor: '#0066cc',
+                              }
+                            }}
+                          >
+                            {suggestion}
+                          </Button>
+                        ))}
+                      </Box>
+                    )}
+                    
+                    {/* Suggestions prédéfinies pour le premier message */}
+                    {message === messages[messages.length - 1] && messages.length <= 2 && (
+                      <Box 
+                        sx={{ 
+                          display: 'flex', 
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          gap: 1,
+                          mt: 1.5,
+                          mb: 1,
+                        }}
+                      >
+                        {suggestions.map((suggestion) => (
+                          <Button
+                            key={suggestion.id}
+                            onClick={() => handleSuggestionClick(suggestion.text)}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              borderRadius: '4px',
+                              textTransform: 'none',
+                              color: 'text.primary',
+                              borderColor: 'rgba(0, 0, 0, 0.23)',
+                              backgroundColor: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                                borderColor: 'rgba(0, 0, 0, 0.23)',
+                              }
+                            }}
+                          >
+                            {suggestion.text}
+                          </Button>
+                        ))}
+                      </Box>
+                    )}
+                  </>
                 )}
+                {/* FIN DU BLOC DE SUGGESTIONS */}
               </Box>
-            ))}
-            {isLoading && (
-              <Box 
-                sx={{ 
-                  alignSelf: 'flex-start', 
-                  maxWidth: '80%',
+            );
+          })}
+          {isLoading && (
+            <Box 
+              sx={{ 
+                alignSelf: 'flex-start', 
+                maxWidth: '80%',
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: 'white',
+                  borderBottomLeftRadius: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                 }}
               >
-                <Paper
-                  elevation={0}
+                <Box
                   sx={{
-                    p: 1.5,
-                    borderRadius: 2,
-                    bgcolor: 'white',
-                    borderBottomLeftRadius: 0,
                     display: 'flex',
                     alignItems: 'center',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    justifyContent: 'center',
+                    gap: 0.7,
+                    px: 1,
+                    '@keyframes pulse': {
+                      '0%, 100%': { 
+                        transform: 'scale(0.8)',
+                        opacity: 0.5,
+                      },
+                      '50%': { 
+                        transform: 'scale(1)',
+                        opacity: 1,
+                      },
+                    },
                   }}
                 >
-                  <Box
+                  <Box 
                     sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 0.7,
-                      px: 1,
-                      '@keyframes pulse': {
-                        '0%, 100%': { 
-                          transform: 'scale(0.8)',
-                          opacity: 0.5,
-                        },
-                        '50%': { 
-                          transform: 'scale(1)',
-                          opacity: 1,
-                        },
-                      },
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#0066cc',
+                      animation: 'pulse 1.4s infinite ease-in-out',
+                      animationDelay: '0s',
+                    }}
+                  />
+                  <Box 
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#0066cc',
+                      animation: 'pulse 1.4s infinite ease-in-out',
+                      animationDelay: '0.2s',
+                    }}
+                  />
+                  <Box 
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#0066cc',
+                      animation: 'pulse 1.4s infinite ease-in-out',
+                      animationDelay: '0.4s',
+                    }}
+                  />
+                  <Typography 
+                    component="span"
+                    variant="body2"
+                    sx={{ 
+                      ml: 1,
+                      color: 'text.secondary',
+                      fontSize: '0.85rem'
                     }}
                   >
-                    <Box 
-                      sx={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: '#0066cc',
-                        animation: 'pulse 1.4s infinite ease-in-out',
-                        animationDelay: '0s',
-                      }}
-                    />
-                    <Box 
-                      sx={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: '#0066cc',
-                        animation: 'pulse 1.4s infinite ease-in-out',
-                        animationDelay: '0.2s',
-                      }}
-                    />
-                    <Box 
-                      sx={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: '#0066cc',
-                        animation: 'pulse 1.4s infinite ease-in-out',
-                        animationDelay: '0.4s',
-                      }}
-                    />
-                    <Typography 
-                      component="span"
-                      variant="body2"
-                      sx={{ 
-                        ml: 1,
-                        color: 'text.secondary',
-                        fontSize: '0.85rem'
-                      }}
-                    >
-                      Réflexion en cours...
-                    </Typography>
-                  </Box>
-                </Paper>
-              </Box>
-            )}
-            <div ref={messagesEndRef} />
-          </Box>
-
-          {/* Champ de saisie */}
-          <Box
-            sx={{
-              borderTop: '1px solid #E0E0E0',
-              position: 'relative',
-              px: 2,
-              py: 2,
-              bgcolor: 'white',
-            }}
-          >
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <TextField
-                fullWidth
-                size="small"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim()) {
-                    handleSendMessage(inputValue);
-                  }
-                }}
-                placeholder="Écrivez votre message ici..."
-                inputRef={inputRef}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    '&.Mui-focused': {
-                      '& > fieldset': {
-                        borderColor: '#0066cc',
-                      }
-                    }
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    color: 'black',
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'black',
-                  },
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleSendMessage(inputValue)}
-                sx={{
-                  borderRadius: '20px',
-                  minWidth: 'auto',
-                  background: '#0066cc',
-                  border: '1px solid #0066cc',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                  '&:hover': {
-                    background: '#0055bb',
-                    border: '1px solid #0055bb',
-                  },
-                  '&:disabled': {
-                    opacity: 0.5,
-                    color: 'white',
-                    background: '#0066cc',
-                  }
-                }}
-                disabled={!inputValue.trim()}
-              >
-                <SendIcon />
-              </Button>
+                    Réflexion en cours...
+                  </Typography>
+                </Box>
+              </Paper>
             </Box>
+          )}
+          <div ref={messagesEndRef} />
+        </Box>
+
+        {/* Champ de saisie */}
+        <Box
+          sx={{
+            borderTop: '1px solid #E0E0E0',
+            position: 'relative',
+            px: 2,
+            py: 2,
+            bgcolor: 'white',
+          }}
+        >
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <TextField
+              fullWidth
+              size="small"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && inputValue.trim()) {
+                  handleSendMessage(inputValue);
+                }
+              }}
+              placeholder="Écrivez votre message ici..."
+              inputRef={inputRef}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  '&.Mui-focused': {
+                    '& > fieldset': {
+                      borderColor: '#0066cc',
+                    }
+                  }
+                },
+                '& .MuiOutlinedInput-input': {
+                  color: 'black',
+                },
+                '& .MuiInputBase-input': {
+                  color: 'black',
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleSendMessage(inputValue)}
+              sx={{
+                borderRadius: '20px',
+                minWidth: 'auto',
+                background: '#0066cc',
+                border: '1px solid #0066cc',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                '&:hover': {
+                  background: '#0055bb',
+                  border: '1px solid #0055bb',
+                },
+                '&:disabled': {
+                  opacity: 0.5,
+                  color: 'white',
+                  background: '#0066cc',
+                }
+              }}
+              disabled={!inputValue.trim()}
+            >
+              <SendIcon />
+            </Button>
           </Box>
-        </Paper>
-      </Collapse>
-    </Box>
-  );
+        </Box>
+      </Paper>
+    </Collapse>
+  </Box>
+);
 };
 
 export default MagicAssistantButton;
