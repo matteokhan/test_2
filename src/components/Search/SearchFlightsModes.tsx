@@ -11,7 +11,7 @@ import {
 } from '@/components'
 import { SearchFlightsParams } from '@/types'
 import { useAgencySelector, useFlights } from '@/contexts'
-import MagicAssistantButton from './MagicAssistantButton'
+import MagicAssistantButton from './MagicAssistant/MagicAssistantButton'
 
 type SearchFlightsModesProps = {
   onSearch: ({ searchParams }: { searchParams: SearchFlightsParams }) => void
