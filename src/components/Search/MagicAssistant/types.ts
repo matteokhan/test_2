@@ -10,8 +10,9 @@ export interface ChatMessage {
 export interface Suggestion {
   id: string;
   text: string;
-  borderColor: string;
+  borderColor?: string; // Rendez borderColor optionnel en ajoutant '?'
 }
+
 
 // Type union qui accepte les deux formats de recherche
 export type FlightSearchParams = RoundTripFlightSearchParams | OneWayFlightSearchParams;

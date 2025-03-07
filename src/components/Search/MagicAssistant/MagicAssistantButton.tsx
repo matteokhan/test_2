@@ -64,7 +64,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
   // Message initial d'accueil
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      // Ajouter un message d'accueil initial
+      // Message d'accueil simplifié
       setMessages([
         {
           id: 'welcome',

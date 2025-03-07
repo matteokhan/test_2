@@ -92,18 +92,18 @@ export const extractSuggestionButtons = (text: string): string[] => {
  */
 export const findDisneyButtons = (text: string): string[] => {
   // Vérifie spécifiquement si le texte contient une partie de la réponse Disney
-  if (text.includes("Disney") && text.includes("Halloween")) {
+  if (text.includes("Bonjour Cyril")) {
     // Retourne directement les options du scénario Disney
     return ["Floride", "Californie", "Paris", "Laurianne, épouse", "Louis, 16 ans", "Kiara, 18 ans"];
   }
   
   // Pour la question sur Orlando
-  if (text.includes("Orlando est l'aéroport international")) {
+  if (text.includes("Orlando est une ville en Floride")) {
     return ["Orlando", "Miami"];
   }
   
   // Pour la question sur le départ de Marseille
-  if (text.includes("Vous partez d'habitude de Marseille")) {
+  if (text.includes("Vous partez habituellement de Marseille")) {
     return ["oui", "non"];
   }
   
@@ -111,8 +111,18 @@ export const findDisneyButtons = (text: string): string[] => {
 };
 
 // Suggestions modifiées pour être des phrases complètes
-export const defaultSuggestions: Suggestion[] = [
-  { id: 'sun', text: 'Je cherche une destination où il fait chaud et ensoleillé. Des idées ?', borderColor: '#FFC107' },
-  { id: 'budget', text: 'Quelles sont les destinations les moins chères pour voyager en ce moment ?', borderColor: '#483698' },
-  { id: 'original', text: 'Suggérez-moi des destinations originales que peu de gens connaissent.', borderColor: '#2196F3' },
+
+export const defaultSuggestions = [
+  {
+    id: 'warm',
+    text: 'Je cherche une destination où il fait chaud et ensoleillé. Des idées ?'
+  },
+  {
+    id: 'cheap',
+    text: 'Quelles sont les destinations les moins chères pour voyager en ce moment ?'
+  },
+  {
+    id: 'original',
+    text: 'Suggérez-moi des destinations originales que peu de gens connaissent.'
+  }
 ];

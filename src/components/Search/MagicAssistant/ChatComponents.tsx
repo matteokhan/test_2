@@ -243,8 +243,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       {/* BLOC DE GESTION DES SUGGESTIONS */}
       {message.sender === 'assistant' && (
         <>
-          {/* Boutons dynamiques extraits du message */}
-          {buttonsToShow.length > 0 && (
+          {/* Afficher soit les boutons dynamiques, soit les suggestions prédéfinies, mais pas les deux */}
+          {buttonsToShow.length > 0 ? (
             <Box 
               sx={{ 
                 display: 'flex', 
@@ -285,46 +285,50 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 </Button>
               ))}
             </Box>
-          )}
-          
-          {/* Suggestions prédéfinies pour le premier message */}
-          {isLastMessage && (
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: 1,
-                mt: 1.5,
-                mb: 1,
-              }}
-            >
-              {suggestions.map((suggestion) => (
-                <Button
-                  key={suggestion.id}
-                  onClick={() => onSuggestionClick(suggestion.text)}
-                  variant="outlined"
-                  size="small"
-                  disabled={pendingSubmission}
-                  sx={{
-                    borderRadius: '4px',
-                    textTransform: 'none',
-                    color: selectedSuggestions.includes(suggestion.text) ? 'white' : 'text.primary',
-                    borderColor: 'rgba(0, 0, 0, 0.23)',
-                    backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
-                    '&:hover': {
-                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 0, 0, 0.02)',
-                      borderColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 0, 0, 0.23)',
-                    },
-                    transition: 'all 0.2s ease',
-                    opacity: pendingSubmission ? 0.7 : 1,
-                    cursor: pendingSubmission ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {suggestion.text}
-                </Button>
-              ))}
-            </Box>
+          ) : (
+            isLastMessage && (
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: 1,
+                  mt: 1.5,
+                  mb: 1,
+                }}
+              >
+                {suggestions.map((suggestion) => (
+                  <Button
+                    key={suggestion.id}
+                    onClick={() => onSuggestionClick(suggestion.text)}
+                    variant="outlined"
+                    size="small"
+                    disabled={pendingSubmission}
+                    sx={{
+                      borderRadius: '18px', // Même radius que les autres boutons
+                      textTransform: 'none',
+                      color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc',
+                      borderColor: '#0066cc',
+                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
+                      fontSize: '0.85rem',
+                      fontWeight: 500,
+                      px: 1.5,
+                      py: 0.5,
+                      '&:hover': {
+                        backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
+                        borderColor: '#0066cc',
+                      },
+                      transition: 'all 0.2s ease',
+                      opacity: pendingSubmission ? 0.7 : 1,
+                      cursor: pendingSubmission ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    {suggestion.text}
+                  </Button>
+                ))}
+              </Box>
+            
+            )
           )}
         </>
       )}
