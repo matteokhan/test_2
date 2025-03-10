@@ -22,8 +22,9 @@ export interface MessageBubbleProps {
   onSuggestionClick: (suggestion: string) => void;
   suggestions: Suggestion[];
   isLastMessage: boolean;
-  selectedSuggestions?: string[]; // Tableau pour sélection multiple
-  pendingSubmission?: boolean;    // Pour désactiver les boutons pendant la soumission
+  isLastAssistantMessage: boolean; // Nouvelle prop pour identifier le dernier message de l'assistant
+  selectedSuggestions?: string[]; 
+  pendingSubmission?: boolean;
 }
 
 /**
@@ -34,12 +35,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onSuggestionClick, 
   suggestions,
   isLastMessage,
-  selectedSuggestions = [], // Valeur par défaut tableau vide
+  isLastAssistantMessage, // Utilisation de la nouvelle prop
+  selectedSuggestions = [],
   pendingSubmission = false
 }) => {
   // Extraire les suggestions avant le rendu du message
   const specialButtons = findDisneyButtons(message.text);
   const buttonsToShow = specialButtons;
+  const hasDynamicSuggestions = message.sender === 'assistant' && message.suggestions && message.suggestions.length > 0;
+  const shouldShowDefaultSuggestions = message.sender === 'assistant' && isLastMessage && !hasDynamicSuggestions;
+  const showSuggestions = message.sender === 'assistant' && isLastAssistantMessage;
+
   return (
     <Box
       key={message.id}
@@ -221,7 +227,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             }}
           >
             {message.text}
-          </ReactMarkdown>
+            </ReactMarkdown>
         </Box>
       </Paper>
       <Typography
@@ -236,10 +242,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </Typography>
 
-      {/* BLOC DE GESTION DES SUGGESTIONS */}
-      {message.sender === 'assistant' && (
+      {/* BLOC DE GESTION DES SUGGESTIONS - N'affiche que pour le dernier message de l'assistant */}
+      {message.sender === 'assistant' && showSuggestions && (
         <>
-          {/* Afficher soit les boutons dynamiques, soit les suggestions prédéfinies, mais pas les deux */}
+          {/* Affichage hiérarchique des suggestions */}
           {buttonsToShow.length > 0 ? (
             <Box 
               sx={{ 
@@ -253,7 +259,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             >
               {buttonsToShow.map((suggestion, index) => (
                 <Button
-                  key={`${message.id}-suggestion-${index}`}
+                  key={`${message.id}-special-${index}`}
                   onClick={() => onSuggestionClick(suggestion)}
                   variant="outlined"
                   size="small"
@@ -284,50 +290,91 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 </Button>
               ))}
             </Box>
-          ) : (
-            isLastMessage && (
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  gap: 1,
-                  mt: 1.5,
-                  mb: 1,
-                }}
-              >
-                {suggestions.map((suggestion) => (
-                  <Button
-                    key={suggestion.id}
-                    onClick={() => onSuggestionClick(suggestion.text)}
-                    variant="outlined"
-                    size="small"
-                    disabled={pendingSubmission}
-                    sx={{
-                      borderRadius: '18px', // Modifié pour matcher
-                      textTransform: 'none',
-                      color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc', // Modifié
-                      borderColor: '#0066cc', // Modifié
-                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                      px: 1.5,
-                      py: 0.5,
-                      '&:hover': {
-                        backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
-                        borderColor: '#0066cc',
-                      },
-                      transition: 'all 0.2s ease',
-                      opacity: pendingSubmission ? 0.7 : 1,
-                      cursor: pendingSubmission ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    {suggestion.text}
-                  </Button>
-                ))}
-              </Box>
-            )
-          )}
+          ) : hasDynamicSuggestions ? (
+            // Afficher les suggestions dynamiques générées par l'IA
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 1,
+                mt: 1.5,
+                mb: 1,
+              }}
+            >
+              {message.suggestions!.map((suggestion) => (
+                <Button
+                  key={suggestion.id}
+                  onClick={() => onSuggestionClick(suggestion.text)}
+                  variant="outlined"
+                  size="small"
+                  disabled={pendingSubmission}
+                  sx={{
+                    borderRadius: '18px',
+                    textTransform: 'none',
+                    color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc',
+                    borderColor: '#0066cc',
+                    backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    px: 1.5,
+                    py: 0.5,
+                    '&:hover': {
+                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
+                      borderColor: '#0066cc',
+                    },
+                    transition: 'all 0.2s ease',
+                    opacity: pendingSubmission ? 0.7 : 1,
+                    cursor: pendingSubmission ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {suggestion.text}
+                </Button>
+              ))}
+            </Box>
+          ) : shouldShowDefaultSuggestions ? (
+            // Afficher les suggestions par défaut pour le premier message d'accueil
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 1,
+                mt: 1.5,
+                mb: 1,
+              }}
+            >
+              {suggestions.map((suggestion) => (
+                <Button
+                  key={suggestion.id}
+                  onClick={() => onSuggestionClick(suggestion.text)}
+                  variant="outlined"
+                  size="small"
+                  disabled={pendingSubmission}
+                  sx={{
+                    borderRadius: '18px',
+                    textTransform: 'none',
+                    color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc',
+                    borderColor: '#0066cc',
+                    backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    px: 1.5,
+                    py: 0.5,
+                    '&:hover': {
+                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
+                      borderColor: '#0066cc',
+                    },
+                    transition: 'all 0.2s ease',
+                    opacity: pendingSubmission ? 0.7 : 1,
+                    cursor: pendingSubmission ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {suggestion.text}
+                </Button>
+              ))}
+            </Box>
+          ) : null}
         </>
       )}
     </Box>

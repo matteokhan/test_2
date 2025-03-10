@@ -5,6 +5,7 @@ export interface ChatMessage {
   text: string;
   sender: 'user' | 'assistant';
   timestamp: Date;
+  suggestions?: Suggestion[]; // Ajout de cette propriété pour les suggestions dynamiques
 }
 
 export interface Suggestion {

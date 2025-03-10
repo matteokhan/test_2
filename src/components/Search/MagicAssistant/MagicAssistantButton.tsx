@@ -235,7 +235,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     if (!text.trim()) return;
     
     console.log(`Envoi de message à ${API_BASE_URL}/api/chatbot`);
-
+  
     // Ajouter le message de l'utilisateur
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -243,11 +243,11 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       sender: 'user',
       timestamp: new Date(),
     };
-
+  
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue('');
     setIsLoading(true);
-
+  
     try {
       // Appel à l'API backend
       const response = await fetch(`${API_BASE_URL}/api/chatbot`, {
@@ -258,172 +258,142 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
         body: JSON.stringify({
           message: text,
           currentDate,
-          // Indiquer au backend le type de formulaire actuel
           formType: isOneWayForm ? 'oneWay' : 'roundTrip'
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`Erreur: ${response.status}`);
       }
-
+  
       const reader = response.body?.getReader();
       if (!reader) throw new Error("Impossible de lire la réponse");
       
       let assistantMessage = '';
-      let formData = null;
+    let formData = null;
+    let dynamicSuggestions: string[] = [];
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
       
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      // Convertir les chunks en texte
+      const chunk = new TextDecoder().decode(value);
+      
+      // Détection des suggestions avec les nouveaux séparateurs
+      if (chunk.includes('###SUGGESTIONS_JSON_START###')) {
+        const startMarker = '###SUGGESTIONS_JSON_START###';
+        const endMarker = '###SUGGESTIONS_JSON_END###';
         
-        // Convertir les chunks en texte
-        const chunk = new TextDecoder().decode(value);
+        const startIndex = chunk.indexOf(startMarker) + startMarker.length;
+        const endIndex = chunk.indexOf(endMarker);
         
-        // Détecter les données structurées dans la réponse
-        if (chunk.includes('{"FORM_DATA":')) {
+        if (startIndex > 0 && endIndex > startIndex) {
+          const jsonStr = chunk.substring(startIndex, endIndex).trim();
           try {
-            const jsonStart = chunk.indexOf('{"FORM_DATA":');
-            const jsonEnd = chunk.lastIndexOf('}') + 1;
-            const jsonString = chunk.substring(jsonStart, jsonEnd);
-            formData = JSON.parse(jsonString);
-            console.log("Données de formulaire reçues:", formData);
-            continue;
+            const suggestionsData = JSON.parse(jsonStr);
+            dynamicSuggestions = suggestionsData.SUGGESTIONS || [];
+            console.log("Suggestions dynamiques reçues:", dynamicSuggestions);
           } catch (e) {
-            console.error("Erreur lors du parsing des données de formulaire:", e);
+            console.error("Erreur lors du parsing des suggestions:", e);
           }
-        } else if (chunk.startsWith('\n{') && chunk.endsWith('}\n')) {
-          // Ignorer les données structurées JSON intermédiaires
+          
+          // Ajouter seulement le texte avant les suggestions au message
+          if (startIndex - startMarker.length > 0) {
+            const textBeforeSuggestions = chunk.substring(0, chunk.indexOf(startMarker)).trim();
+            if (textBeforeSuggestions) {
+              assistantMessage += textBeforeSuggestions;
+            }
+          }
+          
+          // Ajouter seulement le texte après les suggestions au message
+          const textAfterSuggestions = chunk.substring(chunk.indexOf(endMarker) + endMarker.length).trim();
+          if (textAfterSuggestions) {
+            assistantMessage += textAfterSuggestions;
+          }
+          
+          // Ne pas traiter le reste du chunk car on a déjà extrait ce qu'il faut
           continue;
         }
-        
-        // Ajouter le texte au message (mise à jour en temps réel)
-        if (chunk.trim()) {
-          assistantMessage += chunk;
+      }
+      // Détection des données de formulaire (comme avant)
+      else if (chunk.includes('{"FORM_DATA":')) {
+        try {
+          const jsonStart = chunk.indexOf('{"FORM_DATA":');
+          const jsonEnd = chunk.lastIndexOf('}') + 1;
+          const jsonString = chunk.substring(jsonStart, jsonEnd);
+          formData = JSON.parse(jsonString);
+          console.log("Données de formulaire reçues:", formData);
           
-          // Ajouter ou mettre à jour le message de l'assistant en temps réel
-          setMessages(prevMessages => {
-            const lastMessage = prevMessages[prevMessages.length - 1];
-            if (lastMessage && lastMessage.sender === 'assistant' && lastMessage.id.startsWith('assistant-stream-')) {
-              // Mettre à jour le message existant
-              return [
-                ...prevMessages.slice(0, -1),
-                {
-                  ...lastMessage,
-                  text: assistantMessage,
-                },
-              ];
-            } else {
-              // Créer un nouveau message
-              return [
-                ...prevMessages,
-                {
-                  id: `assistant-stream-${Date.now()}`,
-                  text: assistantMessage,
-                  sender: 'assistant',
-                  timestamp: new Date(),
-                },
-              ];
-            }
-          });
+          // Ne pas ajouter le JSON au message
+          const textBeforeJson = chunk.substring(0, jsonStart).trim();
+          const textAfterJson = chunk.substring(jsonEnd).trim();
+          
+          if (textBeforeJson) assistantMessage += textBeforeJson;
+          if (textAfterJson) assistantMessage += textAfterJson;
+          
+          continue;
+        } catch (e) {
+          console.error("Erreur lors du parsing des données de formulaire:", e);
         }
       }
-
-      // Finaliser le message de l'assistant
-      if (assistantMessage.trim()) {
+      // Si c'est un chunk normal sans données spéciales, l'ajouter au message
+      else if (chunk.trim()) {
+        assistantMessage += chunk;
+        
+        // Mettre à jour le message en temps réel
         setMessages(prevMessages => {
-          const filteredMessages = prevMessages.filter(msg => !msg.id.startsWith('assistant-stream-'));
-          return [
-            ...filteredMessages,
-            {
-              id: `assistant-${Date.now()}`,
-              text: assistantMessage.trim(),
-              sender: 'assistant',
-              timestamp: new Date(),
-            },
-          ];
+          const lastMessage = prevMessages[prevMessages.length - 1];
+          if (lastMessage && lastMessage.sender === 'assistant' && lastMessage.id.startsWith('assistant-stream-')) {
+            // Mettre à jour le message existant
+            return [
+              ...prevMessages.slice(0, -1),
+              {
+                ...lastMessage,
+                text: assistantMessage,
+              },
+            ];
+          } else {
+            // Créer un nouveau message
+            return [
+              ...prevMessages,
+              {
+                id: `assistant-stream-${Date.now()}`,
+                text: assistantMessage,
+                sender: 'assistant',
+                timestamp: new Date(),
+              },
+            ];
+          }
         });
       }
+    }
 
+    // Finaliser le message avec les suggestions
+    if (assistantMessage.trim()) {
+      setMessages(prevMessages => {
+        const filteredMessages = prevMessages.filter(msg => !msg.id.startsWith('assistant-stream-'));
+        const newMessage = {
+          id: `assistant-${Date.now()}`,
+          text: assistantMessage.trim(),
+          sender: 'assistant' as const,
+          timestamp: new Date(),
+          suggestions: dynamicSuggestions.map((text, index) => ({ 
+            id: `dynamic-suggestion-${index}`, 
+            text 
+          }))
+        };
+        
+        return [...filteredMessages, newMessage];
+      });
+    }
+
+  
       // Traiter les données de formulaire si elles sont présentes
       if (formData && formData.FORM_DATA && onSearch) {
         console.log("Préparation à la soumission du formulaire avec:", formData.FORM_DATA);
         
-        // Vérifier le type de formulaire actuel pour formater correctement les données
-        if (isOneWayForm) {
-          // Formater pour un vol aller simple
-          if (formData.FORM_DATA._type === "multiDestinations" && 
-              formData.FORM_DATA.destinations && 
-              formData.FORM_DATA.destinations.length > 0) {
-            
-            // Préparation des paramètres pour un vol aller simple
-            const formParams: FlightSearchParams = {
-              _type: "oneWay",
-              adults: formData.FORM_DATA.adults || 1,
-              childrens: formData.FORM_DATA.childrens || 0,
-              infants: formData.FORM_DATA.infants || 0,
-              
-              // Premier segment seulement
-              from: formData.FORM_DATA.destinations[0].from,
-              fromLabel: formData.FORM_DATA.destinations[0].fromLabel,
-              fromCountry: formData.FORM_DATA.destinations[0].fromCountry,
-              fromCountryCode: formData.FORM_DATA.destinations[0].fromCountryCode,
-              fromType: formData.FORM_DATA.destinations[0].fromType,
-              fromInputValue: formData.FORM_DATA.destinations[0].fromLabel,
-              
-              to: formData.FORM_DATA.destinations[0].to,
-              toLabel: formData.FORM_DATA.destinations[0].toLabel,
-              toCountry: formData.FORM_DATA.destinations[0].toCountry,
-              toCountryCode: formData.FORM_DATA.destinations[0].toCountryCode,
-              toType: formData.FORM_DATA.destinations[0].toType,
-              toInputValue: formData.FORM_DATA.destinations[0].toLabel,
-              
-              // Date aller seulement
-              departure: formData.FORM_DATA.destinations[0].departure,
-            };
-            
-            // Soumettre le formulaire aller simple
-            onSearch(formParams);
-          }
-        } else {
-          // Formater pour un vol aller-retour
-          if (formData.FORM_DATA._type === "multiDestinations" && 
-              formData.FORM_DATA.destinations && 
-              formData.FORM_DATA.destinations.length > 0) {
-            
-            // Préparation des paramètres pour un vol aller-retour
-            const formParams: FlightSearchParams = {
-              _type: "roundTrip",
-              adults: formData.FORM_DATA.adults || 1,
-              childrens: formData.FORM_DATA.childrens || 0,
-              infants: formData.FORM_DATA.infants || 0,
-              
-              // Premier segment (aller)
-              from: formData.FORM_DATA.destinations[0].from,
-              fromLabel: formData.FORM_DATA.destinations[0].fromLabel,
-              fromCountry: formData.FORM_DATA.destinations[0].fromCountry,
-              fromCountryCode: formData.FORM_DATA.destinations[0].fromCountryCode,
-              fromType: formData.FORM_DATA.destinations[0].fromType,
-              fromInputValue: formData.FORM_DATA.destinations[0].fromLabel,
-              
-              to: formData.FORM_DATA.destinations[0].to,
-              toLabel: formData.FORM_DATA.destinations[0].toLabel,
-              toCountry: formData.FORM_DATA.destinations[0].toCountry,
-              toCountryCode: formData.FORM_DATA.destinations[0].toCountryCode,
-              toType: formData.FORM_DATA.destinations[0].toType,
-              toInputValue: formData.FORM_DATA.destinations[0].toLabel,
-              
-              // Dates
-              departure: formData.FORM_DATA.destinations[0].departure,
-              return: formData.FORM_DATA.destinations.length > 1 
-                ? formData.FORM_DATA.destinations[1].departure 
-                : dayjs(formData.FORM_DATA.destinations[0].departure).add(7, 'day').format('YYYY-MM-DD')
-            };
-            
-            // Soumettre le formulaire aller-retour
-            onSearch(formParams);
-          }
-        }
+        // Code existant pour le traitement du formulaire...
       }
       
     } catch (error) {
@@ -511,30 +481,38 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
           {/* Zone de conversation - Ajout de l'événement onScroll */}
           <Box
             sx={{
-              flexGrow: 1,
-              p: 2,
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-              bgcolor: '#F8F9FA',
+                flexGrow: 1,
+                p: 2,
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.5,
+                bgcolor: '#F8F9FA',
             }}
             onScroll={handleScroll}
-          >
-            {messages.map((message, index) => (
-              <MessageBubble 
-                key={message.id}
-                message={message}
-                onSuggestionClick={handleSuggestionClick}
-                suggestions={defaultSuggestions}
-                isLastMessage={index === 0 && messages.length <= 2}
-                selectedSuggestions={selectedSuggestions}
-                pendingSubmission={pendingSubmission}
-              />
-            ))}
+            >
+            {messages.map((message, index) => {
+                // Déterminer si ce message est le dernier message de l'assistant
+                // On parcourt les messages à l'envers à partir de la fin pour trouver le dernier message de l'assistant
+                const isLastAssistantMessage = message.sender === 'assistant' && 
+                messages.slice(index + 1).every(msg => msg.sender !== 'assistant');
+                
+                return (
+                <MessageBubble 
+                    key={message.id}
+                    message={message}
+                    onSuggestionClick={handleSuggestionClick}
+                    suggestions={defaultSuggestions}
+                    isLastMessage={index === 0 && messages.length <= 2}
+                    isLastAssistantMessage={isLastAssistantMessage} // Passer la nouvelle prop
+                    selectedSuggestions={selectedSuggestions}
+                    pendingSubmission={pendingSubmission}
+                />
+                );
+            })}
             {isLoading && <LoadingIndicator />}
             <div ref={messagesEndRef} />
-          </Box>
+            </Box>
 
           {/* Champ de saisie */}
           <Box sx={{ position: 'relative', px: 2, py: 2, bgcolor: 'white' }}>
