@@ -228,11 +228,10 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     }, 500);
   };
 
-  /**
-   * Gère l'envoi d'un message à l'assistant
-   */
-
-  const handleSendMessage = async (text: string) => {
+/**
+ * Gère l'envoi d'un message à l'assistant
+ */
+const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
     
     console.log(`Envoi de message à ${API_BASE_URL}/api/chatbot`);
@@ -259,12 +258,19 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
         body: JSON.stringify({
           message: text,
           currentDate,
-          // Indiquer au backend le type de formulaire actuel
           formType: isOneWayForm ? 'oneWay' : 'roundTrip'
         }),
       });
   
       if (!response.ok) {
+        // Vérifier si la réponse est JSON (pour les erreurs formatées)
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          if (errorData && errorData.response) {
+            throw new Error(errorData.response);
+          }
+        }
         throw new Error(`Erreur: ${response.status}`);
       }
   
@@ -273,8 +279,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       
       let assistantMessage = '';
       let formData = null;
-      let jsonBuffer = '';
-      let inJsonBlock = false;
+      let dynamicSuggestions: string[] = [];
       
       while (true) {
         const { done, value } = await reader.read();
@@ -283,121 +288,68 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
         // Convertir les chunks en texte
         const chunk = new TextDecoder().decode(value);
         
-        // Recherche plus robuste des données JSON
-        if (chunk.includes('{"FORM_DATA":')) {
-          try {
-            // Capturer tout le bloc JSON complet en une fois
-            const jsonStart = chunk.indexOf('{"FORM_DATA":');
-            const jsonEnd = chunk.indexOf('}\n', jsonStart) + 1;
-            
-            if (jsonEnd > jsonStart) {
-              const jsonString = chunk.substring(jsonStart, jsonEnd);
-              console.log("JSON détecté:", jsonString);
-              
-              try {
-                formData = JSON.parse(jsonString);
-                console.log("Données de formulaire reçues:", formData);
-                
-                // Ne pas ajouter cette partie au message affiché
-                const beforeJson = chunk.substring(0, jsonStart);
-                const afterJson = chunk.substring(jsonEnd);
-                
-                if (beforeJson.trim()) {
-                  assistantMessage += beforeJson;
-                }
-                
-                if (afterJson.trim()) {
-                  assistantMessage += afterJson;
-                }
-                
-                continue;
-              } catch (parseError) {
-                console.error("Erreur de parsing JSON:", parseError);
-                jsonBuffer += chunk; // Accumuler pour essayer de parser plus tard
-                inJsonBlock = true;
-                continue;
-              }
-            } else {
-              // JSON incomplet, commencer à l'accumuler
-              jsonBuffer += chunk;
-              inJsonBlock = true;
-              continue;
-            }
-          } catch (e) {
-            console.error("Erreur lors de l'extraction du JSON:", e);
-            // Continuer normalement si l'extraction échoue
-          }
-        } 
-        else if (inJsonBlock) {
-          // Continuer à accumuler du JSON fragmenté
-          jsonBuffer += chunk;
+        // Détection des suggestions avec les nouveaux séparateurs
+        if (chunk.includes('###SUGGESTIONS_JSON_START###')) {
+          const startMarker = '###SUGGESTIONS_JSON_START###';
+          const endMarker = '###SUGGESTIONS_JSON_END###';
           
-          // Vérifier si nous avons maintenant un JSON complet
-          if (jsonBuffer.includes('}')) {
-            try {
-              const jsonStart = jsonBuffer.indexOf('{"FORM_DATA":');
-              const jsonEnd = jsonBuffer.lastIndexOf('}') + 1;
-              
-              if (jsonEnd > jsonStart) {
-                const jsonString = jsonBuffer.substring(jsonStart, jsonEnd);
-                formData = JSON.parse(jsonString);
-                console.log("Données de formulaire accumulées et analysées:", formData);
-                inJsonBlock = false;
-                jsonBuffer = '';
-                continue;
-              }
-            } catch (parseError) {
-              console.error("Erreur de parsing JSON accumulé:", parseError);
-              // Continuer à accumuler si pas encore un JSON valide
-            }
-          }
-          continue;
-        }
-        // Ignorer explicitement les blocs qui ressemblent à du JSON non pertinent
-        else if (chunk.trim().startsWith('{') && chunk.trim().endsWith('}') && !chunk.includes('FORM_DATA')) {
-          console.log("Ignoré: bloc JSON non pertinent");
-          continue;
-        }
-        // Ignorer les blocs de suggestions qui commencent par ###SUGGESTIONS_JSON_START###
-        else if (chunk.includes('###SUGGESTIONS_JSON_START###')) {
-          // Extraire les suggestions si nécessaire, mais ne pas les ajouter au message
-          const suggestionsStart = chunk.indexOf('###SUGGESTIONS_JSON_START###');
-          const suggestionsEnd = chunk.indexOf('###SUGGESTIONS_JSON_END###');
+          const startIndex = chunk.indexOf(startMarker) + startMarker.length;
+          const endIndex = chunk.indexOf(endMarker);
           
-          if (suggestionsEnd > suggestionsStart) {
-            const beforeSuggestions = chunk.substring(0, suggestionsStart);
-            if (beforeSuggestions.trim()) {
-              assistantMessage += beforeSuggestions;
-            }
-            
-            // Extraire et traiter les suggestions si nécessaire
-            const suggestionsJson = chunk.substring(
-              suggestionsStart + '###SUGGESTIONS_JSON_START###'.length,
-              suggestionsEnd
-            ).trim();
-            
+          if (startIndex > 0 && endIndex > startIndex) {
+            const jsonStr = chunk.substring(startIndex, endIndex).trim();
             try {
-              const suggestions = JSON.parse(suggestionsJson);
-              console.log("Suggestions reçues:", suggestions);
-              // Vous pouvez mettre à jour l'état des suggestions ici si nécessaire
+              const suggestionsData = JSON.parse(jsonStr);
+              dynamicSuggestions = suggestionsData.SUGGESTIONS || [];
+              console.log("Suggestions dynamiques reçues:", dynamicSuggestions);
             } catch (e) {
               console.error("Erreur lors du parsing des suggestions:", e);
             }
             
-            const afterSuggestions = chunk.substring(suggestionsEnd + '###SUGGESTIONS_JSON_END###'.length);
-            if (afterSuggestions.trim()) {
-              assistantMessage += afterSuggestions;
+            // Ajouter seulement le texte avant les suggestions au message
+            if (startIndex - startMarker.length > 0) {
+              const textBeforeSuggestions = chunk.substring(0, chunk.indexOf(startMarker)).trim();
+              if (textBeforeSuggestions) {
+                assistantMessage += textBeforeSuggestions;
+              }
             }
             
+            // Ajouter seulement le texte après les suggestions au message
+            const textAfterSuggestions = chunk.substring(chunk.indexOf(endMarker) + endMarker.length).trim();
+            if (textAfterSuggestions) {
+              assistantMessage += textAfterSuggestions;
+            }
+            
+            // Ne pas traiter le reste du chunk car on a déjà extrait ce qu'il faut
             continue;
           }
         }
-        
-        // Ajouter le texte au message (mise à jour en temps réel)
-        if (chunk.trim()) {
+        // Détection des données de formulaire (comme avant)
+        else if (chunk.includes('{"FORM_DATA":')) {
+          try {
+            const jsonStart = chunk.indexOf('{"FORM_DATA":');
+            const jsonEnd = chunk.lastIndexOf('}') + 1;
+            const jsonString = chunk.substring(jsonStart, jsonEnd);
+            formData = JSON.parse(jsonString);
+            console.log("Données de formulaire reçues:", formData);
+            
+            // Ne pas ajouter le JSON au message
+            const textBeforeJson = chunk.substring(0, jsonStart).trim();
+            const textAfterJson = chunk.substring(jsonEnd).trim();
+            
+            if (textBeforeJson) assistantMessage += textBeforeJson;
+            if (textAfterJson) assistantMessage += textAfterJson;
+            
+            continue;
+          } catch (e) {
+            console.error("Erreur lors du parsing des données de formulaire:", e);
+          }
+        }
+        // Si c'est un chunk normal sans données spéciales, l'ajouter au message
+        else if (chunk.trim()) {
           assistantMessage += chunk;
           
-          // Ajouter ou mettre à jour le message de l'assistant en temps réel
+          // Mettre à jour le message en temps réel
           setMessages(prevMessages => {
             const lastMessage = prevMessages[prevMessages.length - 1];
             if (lastMessage && lastMessage.sender === 'assistant' && lastMessage.id.startsWith('assistant-stream-')) {
@@ -425,19 +377,22 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
         }
       }
   
-      // Finaliser le message de l'assistant
+      // Finaliser le message avec les suggestions
       if (assistantMessage.trim()) {
         setMessages(prevMessages => {
           const filteredMessages = prevMessages.filter(msg => !msg.id.startsWith('assistant-stream-'));
-          return [
-            ...filteredMessages,
-            {
-              id: `assistant-${Date.now()}`,
-              text: assistantMessage.trim(),
-              sender: 'assistant',
-              timestamp: new Date(),
-            },
-          ];
+          const newMessage = {
+            id: `assistant-${Date.now()}`,
+            text: assistantMessage.trim(),
+            sender: 'assistant' as const,
+            timestamp: new Date(),
+            suggestions: dynamicSuggestions.map((text, index) => ({ 
+              id: `dynamic-suggestion-${index}`, 
+              text 
+            }))
+          };
+          
+          return [...filteredMessages, newMessage];
         });
       }
   
@@ -479,7 +434,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
             };
             
             // Soumettre le formulaire aller simple
-            console.log("Soumission du formulaire aller simple:", formParams);
             onSearch(formParams);
           }
         } else {
@@ -518,7 +472,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
             };
             
             // Soumettre le formulaire aller-retour
-            console.log("Soumission du formulaire aller-retour:", formParams);
             onSearch(formParams);
           }
         }
@@ -526,11 +479,20 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
+      
+      // Message utilisateur convivial - on check si c'est une erreur de modération 
+      // (comme vu dans les exemples d'erreurs fournis)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Message par défaut convivial pour l'interface utilisateur
+      let userFriendlyMessage = "Je suis votre assistant de voyage. Comment puis-je vous aider à rechercher un vol aujourd'hui ?";
+      
+      // Enregistrer l'erreur technique dans la console mais afficher un message convivial
       setMessages(prevMessages => [
         ...prevMessages,
         {
           id: `error-${Date.now()}`,
-          text: "Désolé, une erreur s'est produite lors de la communication avec l'assistant. Veuillez réessayer.",
+          text: userFriendlyMessage,
           sender: 'assistant',
           timestamp: new Date(),
         },
@@ -539,7 +501,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       setIsLoading(false);
     }
   };
-  
   // Rendu du composant
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
