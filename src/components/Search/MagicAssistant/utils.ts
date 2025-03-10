@@ -72,57 +72,22 @@ export const applyFormFieldsGreyout = (isActive: boolean): void => {
   }
 };
 
-interface ButtonContent {
-  text: string;
-  iconType?: 'building' | 'person' | 'geo' | 'check';
-  iconPosition?: 'start' | 'end';
-}
-
 /**
- * Extrait les suggestions de boutons du texte
+ * Ces fonctions retournent maintenant un tableau vide car les scénarios ont été supprimés
  */
-export const extractSuggestionButtons = (text: string): ButtonContent[] => {
-  if (text.includes("Bonjour Cyril")) {
-    return [
-      { text: "Floride", iconType: 'building', iconPosition: 'start' },
-      { text: "Californie", iconType: 'building', iconPosition: 'start' },
-      { text: "Paris", iconType: 'building', iconPosition: 'start' },
-      { text: "Laurianne, épouse", iconType: 'person', iconPosition: 'start' },
-      { text: "Louis, 16 ans", iconType: 'person', iconPosition: 'start' },
-      { text: "Kiara, 18 ans", iconType: 'person', iconPosition: 'start' }
-    ];
-  }
-  
-  if (text.includes("Orlando est la ville où se") || text.includes("Miami")) {
-    return [
-      { text: "Orlando", iconType: 'geo', iconPosition: 'end' },
-      { text: "Miami", iconType: 'geo', iconPosition: 'end' }
-    ];
-  }
-  
-  if (text.includes("Vous partez habituellement de Marseille") || text.includes(" Vous partez généralement de Marseille")) {
-    return [
-      { text: "oui" },
-      { text: "non" }
-    ];
-  }
-  if (text.includes("Pouvez-vous confirmer")) {
-    return [{ text: "Je confirme", iconType: 'check', iconPosition: 'start' }];
-  }
-  
+export const extractSuggestionButtons = (text: string): any[] => {
   return [];
 };
 
 /**
- * Fonction de détection spécifique pour le scénario Disney
+ * Fonction de détection des boutons spéciaux - retourne maintenant un tableau vide
  */
 export const findDisneyButtons = (text: string): string[] => {
-  const buttons = extractSuggestionButtons(text);
-  return buttons.map(button => button.text);
+  return [];
 };
 
-// Suggestions modifiées pour être des phrases complètes
-export const defaultSuggestions = [
+// Suggestions par défaut restaurées pour le premier message d'accueil
+export const defaultSuggestions: Suggestion[] = [
   {
     id: 'warm',
     text: 'Je cherche une destination où il fait chaud et ensoleillé. Des idées ?'

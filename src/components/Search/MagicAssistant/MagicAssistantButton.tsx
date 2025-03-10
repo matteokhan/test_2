@@ -64,7 +64,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
   // Message initial d'accueil
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      // Message d'accueil simplifié sans les suggestions entre parenthèses
+      // Message d'accueil simplifié qui affichera les suggestions par défaut
       setMessages([
         {
           id: 'welcome',
@@ -493,7 +493,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
             >
             {messages.map((message, index) => {
                 // Déterminer si ce message est le dernier message de l'assistant
-                // On parcourt les messages à l'envers à partir de la fin pour trouver le dernier message de l'assistant
                 const isLastAssistantMessage = message.sender === 'assistant' && 
                 messages.slice(index + 1).every(msg => msg.sender !== 'assistant');
                 
@@ -502,9 +501,9 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
                     key={message.id}
                     message={message}
                     onSuggestionClick={handleSuggestionClick}
-                    suggestions={defaultSuggestions}
+                    suggestions={defaultSuggestions} // Utiliser les suggestions par défaut
                     isLastMessage={index === 0 && messages.length <= 2}
-                    isLastAssistantMessage={isLastAssistantMessage} // Passer la nouvelle prop
+                    isLastAssistantMessage={isLastAssistantMessage}
                     selectedSuggestions={selectedSuggestions}
                     pendingSubmission={pendingSubmission}
                 />

@@ -35,16 +35,21 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onSuggestionClick, 
   suggestions,
   isLastMessage,
-  isLastAssistantMessage, // Utilisation de la nouvelle prop
+  isLastAssistantMessage,
   selectedSuggestions = [],
   pendingSubmission = false
 }) => {
+
   // Extraire les suggestions avant le rendu du message
   const specialButtons = findDisneyButtons(message.text);
-  const buttonsToShow = specialButtons;
-  const hasDynamicSuggestions = message.sender === 'assistant' && message.suggestions && message.suggestions.length > 0;
+  const buttonsToShow = findDisneyButtons(message.text);
+  const hasDynamicSuggestions = message.sender === 'assistant' && 
+    message.suggestions && 
+    message.suggestions.length > 0;
+  const showSuggestions = message.sender === 'assistant' && 
+    isLastAssistantMessage && 
+    hasDynamicSuggestions;
   const shouldShowDefaultSuggestions = message.sender === 'assistant' && isLastMessage && !hasDynamicSuggestions;
-  const showSuggestions = message.sender === 'assistant' && isLastAssistantMessage;
 
   return (
     <Box
@@ -227,7 +232,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             }}
           >
             {message.text}
-            </ReactMarkdown>
+          </ReactMarkdown>
         </Box>
       </Paper>
       <Typography
@@ -242,56 +247,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </Typography>
 
-      {/* BLOC DE GESTION DES SUGGESTIONS - N'affiche que pour le dernier message de l'assistant */}
-      {message.sender === 'assistant' && showSuggestions && (
+      {/* BLOC DE GESTION DES SUGGESTIONS */}
+      {message.sender === 'assistant' && (
         <>
-          {/* Affichage hiérarchique des suggestions */}
-          {buttonsToShow.length > 0 ? (
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: 1,
-                mt: 1.5,
-                mb: 1,
-              }}
-            >
-              {buttonsToShow.map((suggestion, index) => (
-                <Button
-                  key={`${message.id}-special-${index}`}
-                  onClick={() => onSuggestionClick(suggestion)}
-                  variant="outlined"
-                  size="small"
-                  disabled={pendingSubmission}
-                  sx={{
-                    borderRadius: '18px',
-                    textTransform: 'none',
-                    color: selectedSuggestions.includes(suggestion) ? 'white' : '#0066cc',
-                    borderColor: '#0066cc',
-                    backgroundColor: selectedSuggestions.includes(suggestion) ? '#0066cc' : 'white',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
-                    px: 1.5,
-                    py: 0.5,
-                    '&:hover': {
-                      backgroundColor: selectedSuggestions.includes(suggestion) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
-                      borderColor: '#0066cc',
-                    },
-                    transition: 'all 0.2s ease',
-                    opacity: pendingSubmission ? 0.7 : 1,
-                    cursor: pendingSubmission ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                >
-                  <SuggestionWithIcon text={suggestion} />
-                </Button>
-              ))}
-            </Box>
-          ) : hasDynamicSuggestions ? (
-            // Afficher les suggestions dynamiques générées par l'IA
+          {showSuggestions ? (
+            // Afficher les suggestions dynamiques générées par l'IA pour le dernier message de l'assistant
             <Box 
               sx={{ 
                 display: 'flex', 
@@ -333,7 +293,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               ))}
             </Box>
           ) : shouldShowDefaultSuggestions ? (
-            // Afficher les suggestions par défaut pour le premier message d'accueil
+            // Afficher les suggestions par défaut uniquement pour le premier message d'accueil
             <Box 
               sx={{ 
                 display: 'flex', 
@@ -381,6 +341,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   );
 };
 
+/**
+ * Composant pour afficher une suggestion avec un icône
+ */
 const SuggestionWithIcon: React.FC<{ text: string }> = ({ text }) => {
   // Pour les lieux avec icône bâtiment
   if (["Floride", "Californie", "Paris"].includes(text)) {
