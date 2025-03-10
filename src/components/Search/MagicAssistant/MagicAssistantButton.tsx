@@ -38,6 +38,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date().toISOString().split('T')[0];
   
   // Utiliser l'état externe s'il est fourni, sinon utiliser l'état interne
@@ -75,6 +76,21 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       ]);
     }
   }, [isOpen, messages.length]);
+  
+  // Effet pour scroller automatiquement lors de nouveaux messages
+  useEffect(() => {
+    if (messages.length > 0) {
+      if (isLoading) {
+        // Si l'assistant est en train d'écrire, toujours scroller en bas
+        scrollChatToBottom();
+        setUserScrolling(false);
+      } else if (!userScrolling) {
+        // Si l'utilisateur n'est pas en train de scroller manuellement,
+        // scroller en bas quand un nouveau message arrive
+        scrollChatToBottom();
+      }
+    }
+  }, [messages, isLoading, userScrolling]);
 
   // Gestionnaire d'événement de défilement avec détection de position
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -98,10 +114,10 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       clearTimeout(scrollTimeoutRef.current);
     }
     
-    // Définir un délai plus long après lequel on considère que l'utilisateur a arrêté de scroller
+    // Délai réduit à 3 secondes pour une meilleure expérience utilisateur
     scrollTimeoutRef.current = setTimeout(() => {
       setUserScrolling(false);
-    }, 5000); // 5 secondes d'inactivité avant de réactiver le défilement automatique
+    }, 3000);
   };
 
   // Nettoyer le timeout lors du démontage du composant
@@ -113,35 +129,39 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     };
   }, []);
 
-  // Focus sur l'input lorsque le chat s'ouvre
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      // Utiliser requestAnimationFrame pour retarder le focus et éviter le scroll automatique
-      const focusInput = () => {
-        // Enregistrer la position actuelle du scroll
-        const scrollPosition = window.scrollY;
-        
-        // Focus sur le champ de texte
-        inputRef.current?.focus();
-        
-        // Restaurer la position du scroll
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: 'auto'
-        });
-      };
-      
       // Petit délai pour laisser l'animation de la collapse se terminer
       setTimeout(() => {
-        requestAnimationFrame(focusInput);
-      }, 500);
+        if (inputRef.current) {
+          inputRef.current.focus({
+            // Prévenir le scroll automatique de la page lors du focus
+            preventScroll: true
+          });
+        }
+        
+        // Limiter le scroll uniquement à l'intérieur du conteneur de chat
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }, 300);
     }
   }, [isOpen]);
 
-  // Basculer l'état du chat (ouvert/fermé)
-  const toggleChat = async () => {
-    // Enregistrer la position actuelle du scroll
-    const scrollPosition = window.scrollY;
+  // Modifier la fonction scrollChatToBottom pour qu'elle n'affecte que le conteneur du chat
+  const scrollChatToBottom = (immediate: boolean = false) => {
+    if (chatContainerRef.current && !userScrolling) {
+      const chatContainer = chatContainerRef.current;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  };
+
+  // Basculer l'état du chat (ouvert/fermé) sans provoquer de scroll
+  const toggleChat = async (e?: React.MouseEvent) => {
+    // Empêcher le comportement par défaut qui pourrait causer un scroll
+    if (e) {
+      e.preventDefault();
+    }
     
     const newIsOpenState = !isOpen;
     
@@ -159,17 +179,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     // Notifier le parent du changement d'état
     if (onToggle) {
       onToggle(newIsOpenState);
-    } else {
-      setInternalIsOpen(newIsOpenState);
     }
-    
-    // Restaurer la position du scroll après le rendu
-    setTimeout(() => {
-      window.scrollTo({
-        top: scrollPosition,
-        behavior: 'auto'
-      });
-    }, 50);
   };
 
   // État pour suivre les suggestions sélectionnées (multiple)
@@ -178,9 +188,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
 
   // Gérer le clic sur une suggestion
   const handleSuggestionClick = (text: string) => {
-    // Enregistrer la position actuelle du scroll
-    const scrollPosition = window.scrollY;
-    
     // Toggle la sélection de la suggestion
     setSelectedSuggestions(prev => {
       if (prev.includes(text)) {
@@ -191,20 +198,11 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
         return [...prev, text];
       }
     });
-    
-    // Restaurer la position du scroll
-    window.scrollTo({
-      top: scrollPosition,
-      behavior: 'auto'
-    });
   };
   
   // Soumettre les suggestions sélectionnées
   const submitSelectedSuggestions = () => {
     if (selectedSuggestions.length === 0) return;
-    
-    // Enregistrer la position actuelle du scroll
-    const scrollPosition = window.scrollY;
     
     // Marquer comme en cours de soumission pour désactiver les boutons
     setPendingSubmission(true);
@@ -219,12 +217,6 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
     setTimeout(() => {
       setSelectedSuggestions([]);
       setPendingSubmission(false);
-      
-      // Restaurer la position du scroll
-      window.scrollTo({
-        top: scrollPosition,
-        behavior: 'auto'
-      });
     }, 500);
   };
 
@@ -247,8 +239,14 @@ const handleSendMessage = async (text: string) => {
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputValue('');
     setIsLoading(true);
+    
+    // Scroller le chat en bas après l'envoi du message
+    setTimeout(() => {
+      scrollChatToBottom();
+    }, 50);
   
     try {
+        
       // Appel à l'API backend
       const response = await fetch(`${API_BASE_URL}/api/chatbot`, {
         method: 'POST',
@@ -374,6 +372,9 @@ const handleSendMessage = async (text: string) => {
               ];
             }
           });
+          
+          // Scroller pendant que l'assistant génère sa réponse
+          scrollChatToBottom();
         }
       }
   
@@ -394,6 +395,11 @@ const handleSendMessage = async (text: string) => {
           
           return [...filteredMessages, newMessage];
         });
+        
+        // Scroller en bas après que le message final soit généré
+        setTimeout(() => {
+          scrollChatToBottom();
+        }, 50);
       }
   
       // Traiter les données de formulaire si elles sont présentes
@@ -501,6 +507,7 @@ const handleSendMessage = async (text: string) => {
       setIsLoading(false);
     }
   };
+  
   // Rendu du composant
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
@@ -535,6 +542,7 @@ const handleSendMessage = async (text: string) => {
         <Paper
           elevation={3}
           className="magic-chatbot-container"
+          id="magic-chatbot-container"
           sx={{
             width: '100%',
             borderRadius: '8px',
@@ -567,8 +575,9 @@ const handleSendMessage = async (text: string) => {
             </Typography>
           </Box>
 
-          {/* Zone de conversation - Ajout de l'événement onScroll */}
+          {/* Zone de conversation - Ajout de la référence pour contrôler le scroll */}
           <Box
+            ref={chatContainerRef}
             sx={{
                 flexGrow: 1,
                 p: 2,
@@ -617,16 +626,7 @@ const handleSendMessage = async (text: string) => {
                       submitSelectedSuggestions();
                     } else if (inputValue.trim()) {
                       // Sinon, envoyer le texte saisi
-                      // Enregistrer la position actuelle du scroll
-                      const scrollPosition = window.scrollY;
                       handleSendMessage(inputValue);
-                      // Restaurer la position du scroll
-                      setTimeout(() => {
-                        window.scrollTo({
-                          top: scrollPosition,
-                          behavior: 'auto'
-                        });
-                      }, 50);
                     }
                   }
                 }}
@@ -659,16 +659,7 @@ const handleSendMessage = async (text: string) => {
                     submitSelectedSuggestions();
                   } else if (inputValue.trim()) {
                     // Sinon, envoyer le texte saisi
-                    // Enregistrer la position actuelle du scroll
-                    const scrollPosition = window.scrollY;
                     handleSendMessage(inputValue);
-                    // Restaurer la position du scroll
-                    setTimeout(() => {
-                      window.scrollTo({
-                        top: scrollPosition,
-                        behavior: 'auto'
-                      });
-                    }, 50);
                   }
                 }}
                 sx={{
