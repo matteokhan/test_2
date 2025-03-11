@@ -8,6 +8,9 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm i 
 
+RUN pnpm add react-markdown
+RUN pnpm add react-markdown remark-gfm rehype-raw remark-breaks
+RUN pnpm add react-icons
 
 FROM deps AS builder
 WORKDIR /app

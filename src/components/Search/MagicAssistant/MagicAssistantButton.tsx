@@ -17,6 +17,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import dayjs from 'dayjs';
 import { usePathname } from 'next/navigation';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 
 // Imports des fichiers que nous avons créés
 import { MagicAssistantButtonProps, ChatMessage, FlightSearchParams } from '../MagicAssistant/types';
@@ -40,7 +41,7 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date().toISOString().split('T')[0];
-  
+  const [buttonHovered, setButtonHovered] = useState(false);
   // Utiliser l'état externe s'il est fourni, sinon utiliser l'état interne
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   
@@ -221,15 +222,18 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
       message = inputValue.trim();
     }
     
-    // Envoyer le message
-    handleSendMessage(message);
+    // Stocker le message dans une variable temporaire
+    const messageToSend = message;
     
-    // Réinitialiser les suggestions sélectionnées et l'input après un court délai
-    setTimeout(() => {
-      setSelectedSuggestions([]);
-      setInputValue('');
-      setPendingSubmission(false);
-    }, 500);
+    // Réinitialiser les suggestions et l'input immédiatement avant d'envoyer le message
+    setSelectedSuggestions([]);
+    setInputValue('');
+    
+    // Envoyer le message ensuite
+    handleSendMessage(messageToSend);
+    
+    // Désactiver l'état "en cours de soumission" immédiatement
+    setPendingSubmission(false);
   };
 
 /**
@@ -264,7 +268,10 @@ const handleSendMessage = async (text: string) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Remove any custom Authorization headers for now if they exist
         },
+        credentials: 'include',  // This is important for CORS with credentials
+        mode: 'cors',            // Explicitly set CORS mode
         body: JSON.stringify({
           message: text,
           currentDate,
@@ -534,204 +541,274 @@ const handleSendMessage = async (text: string) => {
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 2 }}>
       {/* Bouton marketing amélioré avec style bleu Leclerc */}
-      <Box sx={{ textAlign: 'left', mb: 1 }}>
+      <Box sx={{ textAlign: 'left', mb: 1, position: 'relative' }}>
         <Button
-          onClick={toggleChat}
-          startIcon={<AutoAwesomeIcon fontSize="small" sx={{ color: '#FFD700' }} />}
-          variant="contained"
-          sx={{
+            onClick={toggleChat}
+            startIcon={<AutoAwesomeIcon fontSize="small" sx={{ color: 'white' }} />}
+            variant="contained"
+            onMouseEnter={() => setButtonHovered(true)}
+            onMouseLeave={() => setButtonHovered(false)}
+            sx={{
             textTransform: 'none',
             color: 'white',
-            backgroundColor: '#0066cc', // Bleu Leclerc
-            padding: '8px 16px',
+            position: 'relative',
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #0066cc 0%, #3366ff 100%)',
+            padding: '12px 24px',
             fontWeight: 700,
-            fontSize: '0.95rem',
-            border: '1px solid #0066cc',
-            borderRadius: '6px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            fontSize: '1rem',
+            borderRadius: '30px',
+            border: 'none',
+            transition: 'all 0.4s ease',
+            letterSpacing: buttonHovered ? '1px' : 'normal',
+            boxShadow: buttonHovered 
+                ? '0 0 25px rgba(0, 102, 204, 0.8), 0 0 10px rgba(0, 102, 204, 0.4) inset' 
+                : '0 4px 10px rgba(0, 0, 0, 0.2)',
             '&:hover': {
-              backgroundColor: '#0055bb',
+                background: 'linear-gradient(135deg, #3366ff 0%, #0066cc 100%)',
             },
-            zIndex: 1100, // S'assurer que le bouton est toujours visible
-          }}
+            '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: '-50%',
+                left: '-50%',
+                width: '200%',
+                height: '200%',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
+                opacity: buttonHovered ? 1 : 0,
+                transform: buttonHovered ? 'scale(1)' : 'scale(0.5)',
+                transition: 'opacity 0.5s ease, transform 0.5s ease',
+            },
+            zIndex: 1100
+            }}
         >
-          Rechercher Intelligement
+            Voyagez en IA
         </Button>
       </Box>
 
       {/* Chatbox qui s'affiche/se masque avec bordure améliorée */}
       <Collapse in={isOpen} timeout={300} unmountOnExit>
         <Paper
-          elevation={3}
-          className="magic-chatbot-container"
-          id="magic-chatbot-container"
-          sx={{
+            elevation={8}
+            className="magic-chatbot-container"
+            id="magic-chatbot-container"
+            sx={{
             width: '100%',
-            borderRadius: '8px',
+            borderRadius: '16px',
             overflow: 'hidden',
             zIndex: 1200,
             height: 600,
             display: 'flex',
             flexDirection: 'column',
-            border: '2px solid #0066cc',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            border: 'none',
+            background: 'white',
+            boxShadow: isOpen 
+                ? '0 10px 30px rgba(0, 102, 204, 0.2), 0 0 10px rgba(0, 102, 204, 0.1)' 
+                : '0 4px 12px rgba(0,0,0,0.08)',
             position: 'relative',
-          }}
+            transition: 'all 0.4s ease-out',
+            }}
         >
           {/* En-tête du chat */}
           <Box sx={{ 
-            padding: '12px 16px', 
-            backgroundColor: '#0066cc', 
-            borderBottom: '1px solid #0055bb',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Typography variant="h6" sx={{ 
-              fontWeight: 600, 
-              fontSize: '1rem',
-              color: 'white',
-              textAlign: 'center',
-            }}>
-              Assistant de voyage Leclerc
-            </Typography>
-          </Box>
+      padding: '16px 20px', 
+      background: 'linear-gradient(135deg, #0066cc 0%, #3366ff 100%)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%)',
+        opacity: 0.8,
+      }
+    }}>
+      <Typography variant="h6" sx={{ 
+        fontWeight: 600, 
+        fontSize: '1.1rem',
+        color: 'white',
+        textAlign: 'center',
+        textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+        letterSpacing: '0.3px',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <AutoAwesomeIcon fontSize="small" sx={{ 
+          verticalAlign: 'middle', 
+          mr: 1,
+          animation: 'sparkle 1.5s infinite alternate',
+          '@keyframes sparkle': {
+            '0%': { opacity: 0.7 },
+            '100%': { opacity: 1, filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.7))' }
+          }
+        }} />
+        Assistant de voyage Leclerc
+      </Typography>
+    </Box>
 
           {/* Zone de conversation - Ajout de la référence pour contrôler le scroll */}
-          <Box
-            ref={chatContainerRef}
-            sx={{
-                flexGrow: 1,
-                p: 2,
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1.5,
-                bgcolor: '#F8F9FA',
-            }}
-            onScroll={handleScroll}
-            >
-            {messages.map((message, index) => {
-                // Déterminer si ce message est le dernier message de l'assistant
-                const isLastAssistantMessage = message.sender === 'assistant' && 
-                messages.slice(index + 1).every(msg => msg.sender !== 'assistant');
-                
-                return (
-                <MessageBubble 
-                    key={message.id}
-                    message={message}
-                    onSuggestionClick={handleSuggestionClick}
-                    suggestions={defaultSuggestions} // Utiliser les suggestions par défaut
-                    isLastMessage={index === 0 && messages.length <= 2}
-                    isLastAssistantMessage={isLastAssistantMessage}
-                    selectedSuggestions={selectedSuggestions}
-                    pendingSubmission={pendingSubmission}
-                    setInputValue={handleDefaultSuggestionClick} // Passer la fonction pour gérer les defaultSuggestions
-                />
-                );
-            })}
-            {isLoading && <LoadingIndicator />}
-            <div ref={messagesEndRef} />
-            </Box>
+          
+    {/* 3. Remplacer le style de la zone de conversation */}
+    <Box
+      ref={chatContainerRef}
+      sx={{
+        flexGrow: 1,
+        p: 2.5,
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        bgcolor: '#f8fafd',
+        background: 'linear-gradient(180deg, #f0f4ff 0%, #f9faff 100%)',
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#0066cc transparent',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#bbd0e8',
+          borderRadius: '10px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#0066cc',
+        },
+      }}
+      onScroll={handleScroll}
+    >
+      {/* Le contenu des messages reste le même */}
+      {messages.map((message, index) => {
+        const isLastAssistantMessage = message.sender === 'assistant' && 
+        messages.slice(index + 1).every(msg => msg.sender !== 'assistant');
+        
+        return (
+          <MessageBubble 
+            key={message.id}
+            message={message}
+            onSuggestionClick={handleSuggestionClick}
+            suggestions={defaultSuggestions}
+            isLastMessage={index === 0 && messages.length <= 2}
+            isLastAssistantMessage={isLastAssistantMessage}
+            selectedSuggestions={selectedSuggestions}
+            pendingSubmission={pendingSubmission}
+            setInputValue={handleDefaultSuggestionClick}
+          />
+        );
+      })}
+      {isLoading && <LoadingIndicator />}
+      <div ref={messagesEndRef} />
+    </Box>
 
-          {/* Champ de saisie */}
-          <Box sx={{ position: 'relative', px: 2, py: 2, bgcolor: 'white' }}>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <TextField
-                fullWidth
-                size="small"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && (inputValue.trim() || selectedSuggestions.length > 0)) {
-                    // Utiliser submitSelectedSuggestions qui gère maintenant tous les cas
-                    submitSelectedSuggestions();
-                  }
-                }}
-                placeholder="Écrivez votre message ici..."
-                inputRef={inputRef}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    '&.Mui-focused': {
-                      '& > fieldset': {
-                        borderColor: '#0066cc',
-                      }
-                    }
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    color: 'black',
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'black',
-                  },
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  // Toujours utiliser submitSelectedSuggestions qui gère maintenant tous les cas
-                  submitSelectedSuggestions();
-                }}
-                sx={{
-                  borderRadius: '20px',
-                  minWidth: 'auto',
-                  background: '#0066cc',
-                  border: '1px solid #0066cc',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                  '&:hover': {
-                    background: '#0055bb',
-                    border: '1px solid #0055bb',
-                  },
-                  '&:disabled': {
-                    opacity: 0.5,
-                    color: 'white',
-                    background: '#0066cc',
-                  }
-                }}
-                disabled={!inputValue.trim() && selectedSuggestions.length === 0}
-              >
-                <SendIcon />
-              </Button>
-            </Box>
-            
-            {/* Afficher les suggestions sélectionnées */}
-            {selectedSuggestions.length > 0 && (
-              <Box sx={{ 
-                display: 'flex', 
-                flexWrap: 'wrap', 
-                gap: 0.5, 
-                mt: 1.5, 
-                alignItems: 'center'
-              }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-                  Sélectionnés:
-                </Typography>
-                {selectedSuggestions.map((suggestion, index) => (
-                  <Typography
-                    key={index}
-                    variant="body2"
-                    sx={{
-                      backgroundColor: '#0066cc',
-                      color: 'white',
-                      padding: '3px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.8rem',
-                      lineHeight: 1.2,
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {suggestion}
-                  </Typography>
-                ))}
-              </Box>
-            )}
-          </Box>
-        </Paper>
-      </Collapse>
+    {/* 4. Remplacer le style de la zone de saisie */}
+    <Box sx={{ position: 'relative', px: 2, py: 2, bgcolor: 'white' }}>
+  <Box sx={{ display: 'flex', gap: 1 }}>
+    <TextField
+      fullWidth
+      size="small"
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && (inputValue.trim() || selectedSuggestions.length > 0)) {
+          // Utiliser submitSelectedSuggestions qui gère maintenant tous les cas
+          submitSelectedSuggestions();
+        }
+      }}
+      placeholder="Écrivez votre message ici..."
+      inputRef={inputRef}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: '4px',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          '&.Mui-focused': {
+            '& > fieldset': {
+              borderColor: '#0066cc',
+            }
+          }
+        },
+        '& .MuiOutlinedInput-input': {
+          color: 'black',
+        },
+        '& .MuiInputBase-input': {
+          color: 'black',
+        },
+      }}
+    />
+    
+    {/* Remplacez le bouton actuel par ce code modifié */}
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        // Toujours utiliser submitSelectedSuggestions qui gère maintenant tous les cas
+        submitSelectedSuggestions();
+      }}
+      sx={{
+        borderRadius: '30px',           // Modifié: plus arrondi comme le bouton Rechercher
+        padding: '8px 24px',            // Modifié: plus d'espace pour le texte
+        textTransform: 'none',          // Ajouté: pour éviter les majuscules auto
+        background: '#0066cc',
+        border: '1px solid #0066cc',
+        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+        '&:hover': {
+          background: '#0055bb',
+          border: '1px solid #0055bb',
+        },
+        '&:disabled': {
+          opacity: 0.5,
+          color: 'white',
+          background: '#0066cc',
+        }
+      }}
+      disabled={!inputValue.trim() && selectedSuggestions.length === 0}
+    >
+      Envoyer
+    </Button>
+  </Box>
+  
+  {/* Le reste du code reste inchangé */}
+  {/* Afficher les suggestions sélectionnées */}
+  {selectedSuggestions.length > 0 && (
+    <Box sx={{ 
+      display: 'flex', 
+      flexWrap: 'wrap', 
+      gap: 0.5, 
+      mt: 1.5, 
+      alignItems: 'center'
+    }}>
+      <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+        Sélectionnés:
+      </Typography>
+      {selectedSuggestions.map((suggestion, index) => (
+        <Typography
+          key={index}
+          variant="body2"
+          sx={{
+            backgroundColor: '#0066cc',
+            color: 'white',
+            padding: '3px 8px',
+            borderRadius: '4px',
+            fontSize: '0.8rem',
+            lineHeight: 1.2,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {suggestion}
+        </Typography>
+      ))}
+    </Box>
+  )}
+</Box>
+  </Paper>
+</Collapse>
     </Box>
   );
 };

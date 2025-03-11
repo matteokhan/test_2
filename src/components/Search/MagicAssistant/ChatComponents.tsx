@@ -394,7 +394,7 @@ const SuggestionWithIcon: React.FC<{ text: string }> = ({ text }) => {
 
 
 /**
- * Composant pour afficher un indicateur de chargement pendant que l'assistant génère une réponse
+ * Composant pour afficher un indicateur de chargement minimaliste
  */
 export const LoadingIndicator: React.FC = () => (
   <Box 
@@ -406,79 +406,53 @@ export const LoadingIndicator: React.FC = () => (
     <Paper
       elevation={0}
       sx={{
-        p: 1.5,
+        p: 2,
         borderRadius: 2,
         bgcolor: 'white',
         borderBottomLeftRadius: 0,
         display: 'flex',
         alignItems: 'center',
-        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+        boxShadow: '0 4px 12px rgba(0, 102, 204, 0.08)',
       }}
     >
-      <Box
+      {/* Icône animée */}
+      <Box sx={{
+        width: '22px',
+        height: '22px',
+        position: 'relative',
+        mr: 2,
+      }}>
+        {/* Cercle qui tourne */}
+        <Box sx={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          borderRadius: '50%',
+          border: '2px solid rgba(0, 102, 204, 0.1)',
+          borderTopColor: '#0066cc',
+          animation: 'spin 1.2s linear infinite',
+          '@keyframes spin': {
+            '0%': { transform: 'rotate(0deg)' },
+            '100%': { transform: 'rotate(360deg)' }
+          }
+        }} />
+      </Box>
+
+      {/* Texte simple */}
+      <Typography
+        variant="body2"
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 0.7,
-          px: 1,
-          '@keyframes pulse': {
-            '0%, 100%': { 
-              transform: 'scale(0.8)',
-              opacity: 0.5,
-            },
-            '50%': { 
-              transform: 'scale(1)',
-              opacity: 1,
-            },
-          },
+          fontSize: '0.9rem',
+          fontWeight: 500,
+          color: '#0066cc',
         }}
       >
-        <Box 
-          sx={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#0066cc',
-            animation: 'pulse 1.4s infinite ease-in-out',
-            animationDelay: '0s',
-          }}
-        />
-        <Box 
-          sx={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#0066cc',
-            animation: 'pulse 1.4s infinite ease-in-out',
-            animationDelay: '0.2s',
-          }}
-        />
-        <Box 
-          sx={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#0066cc',
-            animation: 'pulse 1.4s infinite ease-in-out',
-            animationDelay: '0.4s',
-          }}
-        />
-        <Typography 
-          component="span"
-          variant="body2"
-          sx={{ 
-            ml: 1,
-            color: 'text.secondary',
-            fontSize: '0.85rem'
-          }}
-        >
-          Réflexion en cours...
-        </Typography>
-      </Box>
+        Réflexion en cours
+      </Typography>
     </Paper>
   </Box>
 );
+
 
 /**
  * Suggestions par défaut à afficher dans le chat
