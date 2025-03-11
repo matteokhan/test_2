@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react';
 import { 
   Typography, 
@@ -16,15 +14,16 @@ import { ChatMessage, Suggestion } from '../MagicAssistant/types';
 import { findDisneyButtons } from '../MagicAssistant/utils';
 import { BsBuilding, BsPerson, BsGeoAlt, BsCheck } from 'react-icons/bs';
 
-// Interface mise à jour avec la nouvelle prop selectedSuggestions
+// Interface mise à jour avec la nouvelle prop setInputValue
 export interface MessageBubbleProps {
   message: ChatMessage;
   onSuggestionClick: (suggestion: string) => void;
   suggestions: Suggestion[];
   isLastMessage: boolean;
-  isLastAssistantMessage: boolean; // Nouvelle prop pour identifier le dernier message de l'assistant
+  isLastAssistantMessage: boolean;
   selectedSuggestions?: string[]; 
   pendingSubmission?: boolean;
+  setInputValue?: (value: string) => void; // Nouvelle prop pour gérer le texte d'entrée
 }
 
 /**
@@ -37,7 +36,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   isLastMessage,
   isLastAssistantMessage,
   selectedSuggestions = [],
-  pendingSubmission = false
+  pendingSubmission = false,
+  setInputValue
 }) => {
 
   // Extraire les suggestions avant le rendu du message
@@ -50,6 +50,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     isLastAssistantMessage && 
     hasDynamicSuggestions;
   const shouldShowDefaultSuggestions = message.sender === 'assistant' && isLastMessage && !hasDynamicSuggestions;
+
+  // Nouvelle fonction pour gérer le clic sur les suggestions par défaut
+  const handleDefaultSuggestionClick = (text: string) => {
+    if (setInputValue) {
+      setInputValue(text);
+    }
+  };
 
   return (
     <Box
@@ -294,6 +301,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             </Box>
           ) : shouldShowDefaultSuggestions ? (
             // Afficher les suggestions par défaut uniquement pour le premier message d'accueil
+            // Avec le nouveau comportement: insérer dans la text area
             <Box 
               sx={{ 
                 display: 'flex', 
@@ -307,22 +315,22 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               {suggestions.map((suggestion) => (
                 <Button
                   key={suggestion.id}
-                  onClick={() => onSuggestionClick(suggestion.text)}
+                  onClick={() => handleDefaultSuggestionClick(suggestion.text)}
                   variant="outlined"
                   size="small"
                   disabled={pendingSubmission}
                   sx={{
                     borderRadius: '18px',
                     textTransform: 'none',
-                    color: selectedSuggestions.includes(suggestion.text) ? 'white' : '#0066cc',
+                    color: '#0066cc',
                     borderColor: '#0066cc',
-                    backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'white',
+                    backgroundColor: 'white',
                     fontSize: '0.85rem',
                     fontWeight: 500,
                     px: 1.5,
                     py: 0.5,
                     '&:hover': {
-                      backgroundColor: selectedSuggestions.includes(suggestion.text) ? '#0066cc' : 'rgba(0, 102, 204, 0.08)',
+                      backgroundColor: 'rgba(0, 102, 204, 0.08)',
                       borderColor: '#0066cc',
                     },
                     transition: 'all 0.2s ease',

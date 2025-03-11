@@ -202,20 +202,32 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
   
   // Soumettre les suggestions sélectionnées
   const submitSelectedSuggestions = () => {
-    if (selectedSuggestions.length === 0) return;
+    if (selectedSuggestions.length === 0 && !inputValue.trim()) return;
     
     // Marquer comme en cours de soumission pour désactiver les boutons
     setPendingSubmission(true);
     
-    // Créer le message à partir des suggestions sélectionnées
-    const message = selectedSuggestions.join(', ');
+    // Créer le message en combinant suggestions et texte saisi
+    let message = "";
+    
+    if (selectedSuggestions.length > 0) {
+      message = selectedSuggestions.join(', ');
+      
+      // Ajouter le texte de l'input s'il existe
+      if (inputValue.trim()) {
+        message += ` ${inputValue.trim()}`;
+      }
+    } else if (inputValue.trim()) {
+      message = inputValue.trim();
+    }
     
     // Envoyer le message
     handleSendMessage(message);
     
-    // Réinitialiser les suggestions sélectionnées après un court délai
+    // Réinitialiser les suggestions sélectionnées et l'input après un court délai
     setTimeout(() => {
       setSelectedSuggestions([]);
+      setInputValue('');
       setPendingSubmission(false);
     }, 500);
   };
@@ -507,6 +519,16 @@ const handleSendMessage = async (text: string) => {
       setIsLoading(false);
     }
   };
+
+  // Fonction modifiée pour gérer le clic sur les suggestions par défaut
+  const handleDefaultSuggestionClick = (text: string) => {
+    // Mettre le texte dans la zone de saisie
+    setInputValue(text);
+    // Focus sur la zone de texte
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
   
   // Rendu du composant
   return (
@@ -604,6 +626,7 @@ const handleSendMessage = async (text: string) => {
                     isLastAssistantMessage={isLastAssistantMessage}
                     selectedSuggestions={selectedSuggestions}
                     pendingSubmission={pendingSubmission}
+                    setInputValue={handleDefaultSuggestionClick} // Passer la fonction pour gérer les defaultSuggestions
                 />
                 );
             })}
@@ -621,13 +644,8 @@ const handleSendMessage = async (text: string) => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && (inputValue.trim() || selectedSuggestions.length > 0)) {
-                    // Si des suggestions sont sélectionnées, les envoyer
-                    if (selectedSuggestions.length > 0) {
-                      submitSelectedSuggestions();
-                    } else if (inputValue.trim()) {
-                      // Sinon, envoyer le texte saisi
-                      handleSendMessage(inputValue);
-                    }
+                    // Utiliser submitSelectedSuggestions qui gère maintenant tous les cas
+                    submitSelectedSuggestions();
                   }
                 }}
                 placeholder="Écrivez votre message ici..."
@@ -654,13 +672,8 @@ const handleSendMessage = async (text: string) => {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  // Si des suggestions sont sélectionnées, les envoyer
-                  if (selectedSuggestions.length > 0) {
-                    submitSelectedSuggestions();
-                  } else if (inputValue.trim()) {
-                    // Sinon, envoyer le texte saisi
-                    handleSendMessage(inputValue);
-                  }
+                  // Toujours utiliser submitSelectedSuggestions qui gère maintenant tous les cas
+                  submitSelectedSuggestions();
                 }}
                 sx={{
                   borderRadius: '20px',
