@@ -384,6 +384,7 @@ const SuggestionWithIcon: React.FC<{ text: string }> = ({ text }) => {
   return <span>{text}</span>;
 };
 
+
 /**
  * Composant pour afficher un indicateur de chargement pendant que l'assistant génère une réponse
  */

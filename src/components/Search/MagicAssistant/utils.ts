@@ -73,31 +73,49 @@ export const applyFormFieldsGreyout = (isActive: boolean): void => {
 };
 
 /**
- * Ces fonctions retournent maintenant un tableau vide car les scénarios ont été supprimés
+ * Détecte les boutons spéciaux pour le scénario Disney
  */
-export const extractSuggestionButtons = (text: string): any[] => {
+export const findDisneyButtons = (text: string): string[] => {
+  // Pour le premier message du scénario Disney Halloween
+  if (text.includes("Bonjour Cyril, il existe différents parcs Disney") && 
+      text.includes("célébration d'Halloween")) {
+    return ["Floride", "Californie", "Paris", "Laurianne, épouse", "Louis, 16 ans", "Kiara, 18 ans"];
+  }
+  
+  // Pour la confirmation de recherche de vol
+  if (text.includes("Vous partez d'habitude de Marseille") && 
+      text.includes("je lance la recherche")) {
+    return ["oui", "non"];
+  }
+  
+  // Pour l'explication sur Orlando et l'alternative Miami
+  if (text.includes("Orlando est l'aéroport international le plus proche du parc") && 
+      text.includes("Miami")) {
+    return ["Orlando", "Miami"];
+  }
+  
   return [];
 };
 
 /**
- * Fonction de détection des boutons spéciaux - retourne maintenant un tableau vide
+ * Fonction auxiliaire pour extraire des boutons de suggestion du texte
  */
-export const findDisneyButtons = (text: string): string[] => {
-  return [];
+export const extractSuggestionButtons = (text: string): any[] => {
+  return findDisneyButtons(text);
 };
 
-// Suggestions par défaut restaurées pour le premier message d'accueil
+// Suggestions par défaut pour le premier message d'accueil
 export const defaultSuggestions: Suggestion[] = [
   {
     id: 'warm',
-    text: 'Je cherche une destination où il fait chaud et ensoleillé. Des idées ?'
+    text: 'Je veux visiter...'
   },
   {
     id: 'cheap',
-    text: 'Quelles sont les destinations les moins chères pour voyager en ce moment ?'
+    text: 'Quelle est la meilleure saison pour aller...'
   },
   {
     id: 'original',
-    text: 'Suggérez-moi des destinations originales que peu de gens connaissent.'
+    text: 'Réserve moi un billet pour aller...'
   }
 ];

@@ -30,7 +30,6 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
     "Vols sans escale",
     "Vols avant midi",
     "Vols avec maximum 1 escale",
-    "Air France uniquement",
     "Vols de nuit"
   ];
 
@@ -123,6 +122,19 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
         border: '1px solid rgba(0,0,0,0.05)',
       }}
     >
+      {/* Titre ajouté en haut à gauche */}
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          mb: 2, 
+          fontWeight: 600, 
+          color: '#0066cc',
+          textAlign: 'left'
+        }}
+      >
+        Conseiller Voyage : Filtrer vos résultats
+      </Typography>
+      
       {/* Messages de succès ou d'erreur */}
       {success && (
         <Fade in={success}>

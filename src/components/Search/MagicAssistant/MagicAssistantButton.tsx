@@ -533,7 +533,7 @@ const handleSendMessage = async (text: string) => {
             zIndex: 1100, // S'assurer que le bouton est toujours visible
           }}
         >
-          Conseiller voyage intelligent
+          Rechercher Intelligement
         </Button>
       </Box>
 
