@@ -349,49 +349,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   );
 };
 
-/**
- * Composant pour afficher une suggestion avec un icône
- */
-const SuggestionWithIcon: React.FC<{ text: string }> = ({ text }) => {
-  // Pour les lieux avec icône bâtiment
-  if (["Floride", "Californie", "Paris"].includes(text)) {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <BsBuilding /> {text}
-      </span>
-    );
-  }
-  
-  // Pour les personnes
-  if (["Laurianne, épouse", "Louis, 16 ans", "Kiara, 18 ans"].includes(text)) {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <BsPerson /> {text}
-      </span>
-    );
-  }
-  
-  // Pour les villes avec pin
-  if (["Orlando", "Miami"].includes(text)) {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        {text} <BsGeoAlt />
-      </span>
-    );
-  }
-  
-  // Pour la confirmation
-  if (text === "Je confirme") {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <BsCheck /> {text}
-      </span>
-    );
-  }
-  
-  return <span>{text}</span>;
-};
-
 
 /**
  * Composant pour afficher un indicateur de chargement minimaliste
