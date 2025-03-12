@@ -11,7 +11,8 @@ export interface ChatMessage {
 export interface Suggestion {
   id: string;
   text: string;
-  borderColor?: string; // Rendez borderColor optionnel en ajoutant '?'
+  type?: 'destination' | 'person' | 'airport' | 'confirm' | 'other';
+  borderColor?: string;
 }
 
 

@@ -1,7 +1,7 @@
 import { Suggestion } from '../MagicAssistant/types';
 
 // Configuration du backend
-export const API_BASE_URL = 'http://localhost:5000';
+export const API_BASE_URL = 'http://l8ks0goocw40kgsgo0wcok4c.159.69.27.55.sslip.io';
 
 /**
  * Réinitialise la conversation côté serveur
@@ -73,12 +73,9 @@ export const applyFormFieldsGreyout = (isActive: boolean): void => {
 };
 
 /**
- * Détecte les boutons spéciaux basés sur le contexte de conversation
- * Cette fonction devrait idéalement recevoir les suggestions depuis le backend
+ * Détecte les boutons spéciaux pour le scénario Disney
  */
 export const findDisneyButtons = (text: string): string[] => {
-  // La fonction ne devrait plus contenir de logique hardcodée
-  // Elle pourrait être remplacée par une version qui interprète les données du backend
   return [];
 };
 
@@ -86,9 +83,21 @@ export const findDisneyButtons = (text: string): string[] => {
  * Fonction auxiliaire pour extraire des boutons de suggestion du texte
  */
 export const extractSuggestionButtons = (text: string): any[] => {
-  // Devrait être remplacée par une logique basée sur les données de l'API
-  return [];
+  return findDisneyButtons(text);
 };
 
-// Les suggestions par défaut devraient venir du backend
-export const defaultSuggestions: Suggestion[] = [];
+// Suggestions par défaut pour le premier message d'accueil
+export const defaultSuggestions: Suggestion[] = [
+  {
+    id: 'warm',
+    text: 'Je veux visiter...'
+  },
+  {
+    id: 'cheap',
+    text: 'Quelle est la meilleure saison pour aller...'
+  },
+  {
+    id: 'original',
+    text: 'Réserve moi un billet pour aller...'
+  }
+];
