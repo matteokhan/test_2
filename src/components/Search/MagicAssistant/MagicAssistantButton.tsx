@@ -27,6 +27,10 @@ import { MessageBubble, LoadingIndicator } from '../MagicAssistant/ChatComponent
 /**
  * Composant principal du bouton d'assistant magique
  */
+// À ajouter dans MagicAssistantButton.tsx après les autres imports
+// Les imports sont déjà présents, donc vous n'avez pas besoin de les ajouter à nouveau
+
+// Mise à jour du composant MagicAssistantButton avec un nouvel effet
 const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({ 
   onSearch, 
   isOpen: externalIsOpen, 
@@ -50,10 +54,27 @@ const MagicAssistantButton: React.FC<MagicAssistantButtonProps> = ({
   // Détecter si nous sommes dans le formulaire aller simple ou aller-retour
   const isOneWayForm = pathname?.includes('one-way') || false;
   
+  // AJOUTER CE NOUVEL EFFET: Reset la conversation quand l'utilisateur arrive sur la page /vol
+  useEffect(() => {
+    // Vérifier si le pathname contient '/vol'
+    if (pathname && pathname.includes('/vol')) {
+      // Réinitialiser les messages localement
+      setMessages([]);
+      
+      // Réinitialiser la conversation côté serveur
+      resetConversation().then(() => {
+        console.log("Conversation réinitialisée automatiquement sur la page /vol");
+      }).catch(error => {
+        console.error("Erreur lors de la réinitialisation automatique:", error);
+      });
+    }
+  }, [pathname]); // Dépendance au pathname pour déclencher l'effet quand il change
+  
   // État pour gérer le scroll manuel de l'utilisateur
   const [userScrolling, setUserScrolling] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Le reste du composant reste inchangé...
   // Appliquer l'effet de grisage quand l'état isOpen change
   useEffect(() => {
     applyFormFieldsGreyout(isOpen);

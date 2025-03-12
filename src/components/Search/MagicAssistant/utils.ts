@@ -1,22 +1,32 @@
 import { Suggestion } from '../MagicAssistant/types';
 
 // Configuration du backend
-export const API_BASE_URL = 'http://l8ks0goocw40kgsgo0wcok4c.159.69.27.55.sslip.io';
+export const API_BASE_URL = 'http://localhost:5000';
 
 /**
- * Réinitialise la conversation côté serveur
+ * Réinitialise la conversation côté serveur avec gestion des erreurs améliorée
  */
-export const resetConversation = async (): Promise<void> => {
+export const resetConversation = async (): Promise<boolean> => {
   try {
-    await fetch(`${API_BASE_URL}/api/reset`, {
+    const response = await fetch(`${API_BASE_URL}/api/reset`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',  // Ajouter pour la cohérence avec les autres appels API
+      mode: 'cors',            // Explicitement définir le mode CORS
     });
+    
+    if (!response.ok) {
+      console.warn(`La réinitialisation a retourné un statut ${response.status}`);
+      return false;
+    }
+    
     console.log("Conversation réinitialisée sur le serveur");
+    return true;
   } catch (error) {
     console.error("Erreur lors de la réinitialisation de la conversation:", error);
+    return false;
   }
 };
 
