@@ -23,7 +23,7 @@ export interface MessageBubbleProps {
   isLastAssistantMessage: boolean;
   selectedSuggestions?: string[]; 
   pendingSubmission?: boolean;
-  setInputValue?: (value: string) => void; // Nouvelle prop pour gérer le texte d'entrée
+  setInputValue?: (value: string) => void;
 }
 
 /**
@@ -57,6 +57,100 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       setInputValue(text);
     }
   };
+
+  // Function to process the markdown content before rendering
+  const processMarkdown = (content: string) => {
+    // Extract the content before any suggestion JSON
+    let processedContent = content;
+    const suggestionJsonIndex = processedContent.indexOf("###SUGGESTIONS_JSON_START###");
+    if (suggestionJsonIndex !== -1) {
+      processedContent = processedContent.substring(0, suggestionJsonIndex).trim();
+    }
+
+    // CORRECTION SPÉCIFIQUE: Réparer le formatage des dates et informations de vol
+    // Rechercher les motifs problématiques dans le texte et les remplacer par le format correct
+    processedContent = processedContent.replace(/(\d{1,2} juin \d{4})-/g, '$1\n- ');
+    
+    // Fix issues with bullet point formatting
+    // 1. Make sure all lines starting with - have proper spacing
+    processedContent = processedContent.replace(/\n-\s*/g, '\n- ');
+    
+    // 2. Ensure bullet points get rendered as proper markdown list items
+    processedContent = processedContent.replace(/\n- /g, '\n* ');
+    
+    // 3. Éviter de fusionner les lignes qui ne doivent pas l'être
+    // Au lieu de supprimer tous les sauts de ligne, nous ne touchons qu'aux paragraphes standards
+    let lines = processedContent.split('\n');
+    let result = [];
+    let inList = false;
+    let tempLine = '';
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // Début d'une liste
+      if (line.startsWith('*')) {
+        // Si on a accumulé du texte avant, on l'ajoute
+        if (tempLine) {
+          result.push(tempLine);
+          tempLine = '';
+        }
+        
+        // Vérifier s'il y a des tirets internes (les dates jointes)
+        if (line.includes('- ') && !line.startsWith('* ')) {
+          // Séparer en plusieurs lignes
+          const parts = line.split('- ');
+          result.push('* ' + parts[0]);
+          for (let j = 1; j < parts.length; j++) {
+            result.push('* ' + parts[j]);
+          }
+        } else {
+          result.push(line);
+        }
+        
+        inList = true;
+      }
+      // Ligne vide (séparateur de paragraphe)
+      else if (line === '') {
+        if (tempLine) {
+          result.push(tempLine);
+          tempLine = '';
+        }
+        result.push('');
+        inList = false;
+      }
+      // Ligne de texte normale
+      else {
+        if (inList) {
+          // On préserve les listes
+          if (tempLine) {
+            result.push(tempLine);
+          }
+          result.push(line);
+          tempLine = '';
+        } else {
+          // On peut concaténer les lignes de paragraphes
+          if (tempLine) {
+            tempLine += ' ' + line;
+          } else {
+            tempLine = line;
+          }
+        }
+      }
+    }
+    
+    // Ajouter la dernière ligne si nécessaire
+    if (tempLine) {
+      result.push(tempLine);
+    }
+    
+    return result.join('\n');
+  };
+
+  // Extract the visible content (without suggestions JSON)
+  const visibleContent = React.useMemo(() => {
+    return processMarkdown(message.text);
+  }, [message.text]);
 
   return (
     <Box
@@ -217,6 +311,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     fontSize: '0.95rem',
                     lineHeight: 1.5,
                     color: message.sender === 'user' ? 'inherit' : 'inherit',
+                    display: 'list-item',
+                    marginBottom: '0.3em',
+                    '& p': {
+                      margin: 0,
+                    }
                   }}
                 >
                   {children}
@@ -238,7 +337,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               ),
             }}
           >
-            {message.text}
+            {visibleContent}
           </ReactMarkdown>
         </Box>
       </Paper>
@@ -348,7 +447,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     </Box>
   );
 };
-
 
 /**
  * Composant pour afficher un indicateur de chargement minimaliste
