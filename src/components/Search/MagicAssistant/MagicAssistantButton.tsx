@@ -654,7 +654,7 @@ const handleSendMessage = async (text: string) => {
             '100%': { opacity: 1, filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.7))' }
           }
         }} />
-        Assistant de voyage Leclerc
+        Assistant de voyage
       </Typography>
     </Box>
 
