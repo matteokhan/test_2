@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'
@@ -30,7 +30,7 @@ export default function RootLayout({
       <head>
         {/* Look at this to see why this is needed: https://github.com/vercel/next.js/discussions/44628 */}
         <PublicEnvScript />
-        <HeadScripts />
+        {/* <HeadScripts /> */}
       </head>
       {/* Overflow X visible is mandatory to make sticky components work */}
       <body className={inter.className} style={{ background: '#E6E6E6', overflowX: 'visible' }}>
@@ -39,10 +39,10 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <Providers>
             <SelectAgencyDrawer />
-            {children}
+            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
           </Providers>
         </AppRouterCacheProvider>
-        <BodyScripts />
+        {/* <BodyScripts /> */}
       </body>
     </html>
   )
