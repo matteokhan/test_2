@@ -74,12 +74,6 @@ export default function SuccessPage() {
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 75}>
-        <Navbar />
-        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-          <OldNavbar />
-        </Box>
-      </TopBar>
       {isLoading && (
         <SectionContainer sx={{ paddingY: 3, justifyContent: 'center' }}>
           <Stack sx={{ mt: { xs: 0, lg: 2 }, mb: { xs: 2, lg: 5 } }} alignItems="center">

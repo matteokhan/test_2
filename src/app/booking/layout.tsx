@@ -62,15 +62,6 @@ export default function BookingLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 136} fixed>
-        <Navbar />
-        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-          <SelectedFlightInfoTopbar />
-        </Box>
-        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-          <SelectedFlightInfoTopbarMobile onSearch={onSearch} />
-        </Box>
-      </TopBar>
       <Box sx={{ backgroundColor: 'grey.200' }}>
         {/* Desktop */}
         <SectionContainer
