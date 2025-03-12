@@ -11,7 +11,6 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import remarkBreaks from 'remark-breaks';
 import { ChatMessage, Suggestion } from '../MagicAssistant/types';
-import { findDisneyButtons } from '../MagicAssistant/utils';
 import { BsBuilding, BsPerson, BsGeoAlt, BsCheck } from 'react-icons/bs';
 
 // Interface mise à jour avec la nouvelle prop setInputValue
@@ -39,10 +38,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   pendingSubmission = false,
   setInputValue
 }) => {
-
-  // Extraire les suggestions avant le rendu du message
-  const specialButtons = findDisneyButtons(message.text);
-  const buttonsToShow = findDisneyButtons(message.text);
+  // Vérifier si le message a des suggestions
   const hasDynamicSuggestions = message.sender === 'assistant' && 
     message.suggestions && 
     message.suggestions.length > 0;
@@ -351,44 +347,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
 /**
  * Composant pour afficher une suggestion avec un icône
+ * Modifié pour utiliser une approche dynamique au lieu de hardcoder les suggestions
  */
 const SuggestionWithIcon: React.FC<{ text: string }> = ({ text }) => {
-  // Pour les lieux avec icône bâtiment
-  if (["Floride", "Californie", "Paris"].includes(text)) {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <BsBuilding /> {text}
-      </span>
-    );
-  }
-  
-  // Pour les personnes
-  if (["Laurianne, épouse", "Louis, 16 ans", "Kiara, 18 ans"].includes(text)) {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <BsPerson /> {text}
-      </span>
-    );
-  }
-  
-  // Pour les villes avec pin
-  if (["Orlando", "Miami"].includes(text)) {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        {text} <BsGeoAlt />
-      </span>
-    );
-  }
-  
-  // Pour la confirmation
-  if (text === "Je confirme") {
-    return (
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <BsCheck /> {text}
-      </span>
-    );
-  }
-  
+  // Cette fonction devrait être remplacée par une approche qui utilise des données
+  // dynamiques du backend pour déterminer quels icônes afficher
   return <span>{text}</span>;
 };
 
