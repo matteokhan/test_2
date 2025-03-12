@@ -15,9 +15,8 @@ dayjs.locale('fr')
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Voyages E. Leclerc',
-  description:
-    "Réservation vols lowcost ou vols réguliers. Trouvez vos billets d'avion Voyages E. Leclerc aux meilleurs prix",
+  title: "IA booking engine - Trouvez vos billets d'avion différemment",
+  description: "Trouvez vos billets d'avion différemment",
 }
 
 export default function RootLayout({

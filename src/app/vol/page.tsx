@@ -17,7 +17,7 @@ import banner1 from '../../../public/promo_banners/promo1.png'
 import banner2 from '../../../public/promo_banners/promo2.png'
 
 export default function Home() {
-  useMetadata("Réservation vol - billets d'avion Voyages E. Leclerc aux meilleurs prix")
+  useMetadata("IA booking engine - Trouvez vos billets d'avion différemment")
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'))
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))

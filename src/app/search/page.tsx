@@ -61,7 +61,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import * as Sentry from '@sentry/nextjs'
 
 export default function FlighsPage() {
-  useMetadata('Rechercher des vols')
+  useMetadata("IA booking engine - Trouvez vos billets d'avion différemment")
   const theme = useTheme()
   const router = useRouter()
   const searchParams = useSearchParams()
