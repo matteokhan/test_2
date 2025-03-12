@@ -42,7 +42,7 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
     
     try {
       // Appel à l'API backend pour analyser le texte avec l'IA
-      const response = await fetch('http://localhost:5000/api/analyze-filters', {
+      const response = await fetch('http://l8ks0goocw40kgsgo0wcok4c.159.69.27.55.sslip.io/api/analyze-filters', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

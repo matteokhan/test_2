@@ -11,10 +11,9 @@ export interface ChatMessage {
 export interface Suggestion {
   id: string;
   text: string;
-  type?: 'destination' | 'person' | 'airport' | 'confirm' | 'other';
+  type?: string;  // Assurez-vous que cette propriété existe
   borderColor?: string;
 }
-
 
 // Type union qui accepte les deux formats de recherche
 export type FlightSearchParams = RoundTripFlightSearchParams | OneWayFlightSearchParams;

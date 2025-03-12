@@ -296,7 +296,7 @@ const handleSendMessage = async (text: string) => {
       
       let assistantMessage = '';
       let formData = null;
-      let dynamicSuggestions: string[] = [];
+      let dynamicSuggestions: Array<{text: string, type?: string}> = [];
       
       while (true) {
         const { done, value } = await reader.read();
@@ -315,13 +315,14 @@ const handleSendMessage = async (text: string) => {
           
           if (startIndex > 0 && endIndex > startIndex) {
             const jsonStr = chunk.substring(startIndex, endIndex).trim();
-            try {
-              const suggestionsData = JSON.parse(jsonStr);
-              dynamicSuggestions = suggestionsData.SUGGESTIONS || [];
-              console.log("Suggestions dynamiques reçues:", dynamicSuggestions);
-            } catch (e) {
-              console.error("Erreur lors du parsing des suggestions:", e);
-            }
+          try {
+            const suggestionsData = JSON.parse(jsonStr);
+            // Make sure we handle both string[] and object[] formats
+            dynamicSuggestions = suggestionsData.SUGGESTIONS || [];
+            console.log("Suggestions dynamiques reçues:", dynamicSuggestions);
+          } catch (e) {
+            console.error("Erreur lors du parsing des suggestions:", e);
+          }
             
             // Ajouter seulement le texte avant les suggestions au message
             if (startIndex - startMarker.length > 0) {
@@ -406,9 +407,14 @@ const handleSendMessage = async (text: string) => {
             text: assistantMessage.trim(),
             sender: 'assistant' as const,
             timestamp: new Date(),
-            suggestions: dynamicSuggestions.map((text, index) => ({ 
+            suggestions: dynamicSuggestions.map((suggestionItem, index) => ({ 
               id: `dynamic-suggestion-${index}`, 
-              text 
+              text: typeof suggestionItem === 'string' 
+                ? suggestionItem 
+                : (suggestionItem.text || String(suggestionItem)),
+              type: typeof suggestionItem === 'string' 
+                ? undefined 
+                : suggestionItem.type
             }))
           };
           
