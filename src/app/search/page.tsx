@@ -1,3 +1,4 @@
+//pages.tsx
 'use client'
 
 import React, { useCallback, useEffect, useState } from 'react'
@@ -80,6 +81,7 @@ export default function FlighsPage() {
     React.useState(false)
   // Variable pour savoir si des filtres ont été appliqués par l'IA
   const [filtersAppliedByAI, setFiltersAppliedByAI] = useState(false)
+  const [chatbotOpen, setChatbotOpen] = useState(false);
   const [filters, setFilters] = React.useState<SearchFlightFilters>({
     routes: [
       {
@@ -315,6 +317,14 @@ export default function FlighsPage() {
     setFiltersAppliedByAI(true);
   };
 
+  const handleChatbotNavigation = () => {
+    // Indiquer à l'interface que la navigation est en cours
+    setIsNavigating(true);
+    
+    // Redirection simple vers la page d'accueil
+    router.push('/');
+  }
+  
   const handleSelectFlight = async ({ flight }: { flight: Solution }) => {
     if (!order) {
       throw new AppError(
@@ -398,6 +408,14 @@ export default function FlighsPage() {
   }, [])
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('openChatbot') === 'true') {
+      // Ouvrir le chatbot automatiquement
+      setChatbotOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (response?.solutions.length === 0) {
       bookingStartTime.current = null
       setIsNoResultsModalOpen(true)
@@ -426,7 +444,10 @@ export default function FlighsPage() {
             <Stack direction="column" width="100%">
               {/* NaturalLanguageFilter placé en dehors de la condition isLoading */}
               <Box sx={{ width: '100%', mb: 4 }}>
-                <NaturalLanguageFilter onApplyFilters={handleAIFilters} />
+                <NaturalLanguageFilter 
+                  onApplyFilters={handleAIFilters} 
+                  onOpenChatbot={() => router.push('/')}
+                  />
               </Box>
               
               {isLoading && (

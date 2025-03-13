@@ -16,9 +16,17 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { SearchFlightFilters } from '@/types';
 
-const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: SearchFlightFilters) => void }) => {
+const NaturalLanguageFilter = ({ 
+  onApplyFilters,
+  onOpenChatbot
+}: { 
+  onApplyFilters?: (filters: SearchFlightFilters) => void,
+  onOpenChatbot?: () => void
+}) => {
   const [filterText, setFilterText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,18 +130,43 @@ const NaturalLanguageFilter = ({ onApplyFilters }: { onApplyFilters?: (filters: 
         border: '1px solid rgba(0,0,0,0.05)',
       }}
     >
-      {/* Titre ajouté en haut à gauche */}
-      <Typography 
-        variant="h6" 
-        sx={{ 
-          mb: 2, 
-          fontWeight: 600, 
-          color: '#0066cc',
-          textAlign: 'left'
-        }}
-      >
-        Conseiller Voyage : Filtrer vos résultats
-      </Typography>
+      {/* En-tête avec titre et bouton du chatbot */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 600, 
+            color: '#0066cc',
+            textAlign: 'left'
+          }}
+        >
+          Conseiller Voyage : Filtrer vos résultats
+        </Typography>
+        
+        <Button
+          onClick={onOpenChatbot}
+          startIcon={<ArrowBackIcon fontSize="small" />}
+          variant="contained"
+          size="small"
+          data-testid="openChatbotButton"
+          sx={{
+            textTransform: 'none',
+            color: 'white',
+            background: 'linear-gradient(135deg, #0066cc 0%, #3366ff 100%)',
+            padding: '6px 12px',
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            borderRadius: '20px',
+            boxShadow: '0 2px 5px rgba(0, 102, 204, 0.2)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #0055bb 0%, #2255ee 100%)',
+              boxShadow: '0 4px 8px rgba(0, 102, 204, 0.3)',
+            },
+          }}
+        >
+          Retour
+        </Button>
+      </Box>
       
       {/* Messages de succès ou d'erreur */}
       {success && (
