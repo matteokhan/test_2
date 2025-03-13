@@ -406,24 +406,6 @@ export default function FlighsPage() {
 
   return (
     <>
-      <TopBar height={isDesktop ? 120 : 230} fixed={isDesktop ? false : true}>
-        <Navbar />
-        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-          <OldNavbar />
-        </Box>
-        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-          <SelectedFlightInfoTopbarMobile
-            withFilters
-            withAgencySelector
-            onOpenFilters={(filterName) => {
-              setActiveFilter(filterName)
-              setActiveFilterOpen(true)
-            }}
-            onSearch={searchFlights}
-            isLoading={isLoading}
-          />
-        </Box>
-      </TopBar>
       <Box
         sx={{
           backgroundColor: 'grey.200',
