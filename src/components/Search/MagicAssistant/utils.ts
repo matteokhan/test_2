@@ -1,7 +1,7 @@
 import { Suggestion } from '../MagicAssistant/types';
 
 // Configuration du backend
-export const API_BASE_URL = 'http://localhost:5000';
+export const API_BASE_URL = 'http://l8ks0goocw40kgsgo0wcok4c.159.69.27.55.sslip.io';
 
 /**
  * Réinitialise la conversation côté serveur avec gestion des erreurs améliorée
